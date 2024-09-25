@@ -1,0 +1,28 @@
+.sidebar-dark-light {
+    background: linear-gradient(to right, #003366, #003366, #003366);
+}
+
+/* .main-header {
+    background: linear-gradient(to right, #003366, #003366, #003366);
+} */
+
+@font-face {
+
+    font-family: 'Material Icons';
+  
+    font-style: normal;
+  
+    font-weight: 400;
+  
+    src: local('Material Icons'),
+  
+          url('/Material_Icons/MaterialIcons-Regular.woff2') format('woff2'), 
+  
+         url('/Material_Icons/MaterialIcons-Regular.ttf') format('truetype');
+  
+  }
+
+  .modal{
+    top: 40%;
+  }
+

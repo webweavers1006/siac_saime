@@ -1,0 +1,32 @@
+th,
+td {
+    padding: 2px;
+    font-size: 14px;
+}
+
+thead {
+    font-size: 14px;
+}
+
+tr:nth-child(even) {
+    background-color: #ddd;
+}
+
+.btn-xs {
+    padding: 0.10rem;
+}
+
+.btn-xs-xs {
+    position: relative;
+    top: 30px;
+    left: 240px;
+    padding: 0.25rem;
+    background-color: rgb(105, 107, 107);
+    border-radius: 5px;
+}
+
+.custom-select {
+    height: 32px;
+}
+
+

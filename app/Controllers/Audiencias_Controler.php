@@ -1,0 +1,370 @@
+<?php
+
+
+
+namespace App\Controllers;
+ini_set('display_errors', 1);
+
+ini_set('display_startup_errors', 1);
+
+error_reporting(E_ALL);
+use Config\Services;
+use App\Models\Roles_Model;
+use App\Models\Auditoria_sistema_Model;
+use CodeIgniter\API\ResponseTrait;
+
+use CodeIgniter\RESTful\ResourceController;
+
+class Audiencias_Controler extends BaseController
+{
+	use ResponseTrait;
+
+
+	public function vista_audiencias()
+	{
+		
+		if ($this->session->get('logged')) {
+			
+			echo view('template/header');
+			echo view('template/nav_bar');
+			echo view('audiencias/content.php');
+			echo view('template/footer');
+			echo view('audiencias/footer.php');
+			
+		} else {
+			return redirect()->to('/');
+		}
+	}
+
+
+	public function detalles_requerimientos($idcaso)
+	{
+		if ($this->session->get('logged')) {
+		 // Realiza la solicitud a la API para obtener los datos
+		// $datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/".$idcaso), true);
+		 //$otrosdatos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$idcaso), true);
+		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
+		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
+		
+		
+        // ******************************DATOS***************************
+		$ch = curl_init("http://172.16.0.46:70/solicitudes/".$idcaso);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		$response = curl_exec($ch);
+		curl_close($ch);
+		$datos = json_decode($response, true);
+		//********************************************************************
+
+  		// ******************************OTROS DATOS***************************
+		  $ch = curl_init("http://172.16.0.46:70/solicitudes/unicas/".$idcaso);
+		  curl_setopt_array($ch, array(
+			  CURLOPT_RETURNTRANSFER => true,
+		  ));
+		  $response = curl_exec($ch);
+		  if (curl_errno($ch)) {
+			  $error_message = curl_error($ch);
+			  $otrosdatos = array(
+				  'error' => true,
+				  'mensaje' => $error_message
+			  );
+		  } else {
+			  $response = json_decode($response, true);
+			  if (isset($response['error'])) {
+				  $otrosdatos = array(
+					  'error' => true,
+					  'mensaje' => $response['error']['message']
+				  );
+			  } elseif (!empty($response)) {
+				  $otrosdatos = array(
+					  'error' => false,
+					  'mensaje' => '',
+					  'informacion' => $response
+				  );
+			  } else {
+				  $otrosdatos = array(
+					  'error' => true,
+					  'mensaje' => 'No hay datos disponibles'
+				  );
+			  }
+		  }
+		  curl_close($ch);
+		//********************************************************************
+
+
+		
+		// Procesar los datos
+
+
+
+
+		// ******************************CITAS***************************
+		$url = "http://172.16.0.46:70/citas/ByRequerimiento/".$idcaso;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		$error = curl_error($ch);
+		curl_close($ch);
+		if ($error) {
+			echo "Error: $error";
+			
+		} else {
+			$cita = json_decode($response, true);
+		}
+		
+		 // Pasa los datos a la vista
+		 $data['datos'] = $datos;
+		 $data['datos2'] = $datos2;
+		 $data['otrosdatos'] = $otrosdatos;
+		 $data['responsable'] = $responsable;
+		 $data['cita'] = $cita;
+		 echo view('template/header');
+		 echo view('template/nav_bar');
+		 echo view('audiencias/detalles_requerimientos', $data);
+		 echo view('template/footer');
+		 echo view('audiencias/footer_detalles_requerimientos.php');
+	 } else {
+ 
+		 return redirect()->to('/');
+ 
+	 }
+	}
+
+	public function actualizar_audiencia($idcaso)
+	{
+		if ($this->session->get('logged')) {
+		 // Realiza la solicitud a la API para obtener los datos
+		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
+		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
+		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
+		 // Pasa los datos a la vista
+		 $data['estados'] = $estados;
+		 $data['pais'] = $pais;
+		 $data['datos2'] = $datos2;
+		 echo view('template/header');
+		 echo view('template/nav_bar');
+		 echo view('audiencias/actualizar_audiencia', $data);
+		 echo view('template/footer');
+		 echo view('audiencias/footer_actualizar_audiencia.php');
+	 } else {
+ 
+		 return redirect()->to('/');
+ 
+	 }
+	}
+
+
+	public function actualizar_solicitud($idcaso)
+	{
+		if ($this->session->get('logged')) {
+		 // Realiza la solicitud a la API para obtener los datos
+		 $responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
+		 $datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$idcaso), true);
+		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
+		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
+		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
+		 // Pasa los datos a la vista
+		 $data['responsable'] = $responsable;
+		 $data['datos'] = $datos;
+		 $data['estados'] = $estados;
+		 $data['pais'] = $pais;
+		 $data['datos2'] = $datos2;
+		 echo view('template/header');
+		 echo view('template/nav_bar');
+		 echo view('audiencias/actualizar_solicitud', $data);
+		 echo view('template/footer');
+		 echo view('audiencias/footer_actualizar_solicitud.php');
+	 } else {
+ 
+		 return redirect()->to('/');
+ 
+	 }
+	}
+
+
+
+	//Metodo que muestra la vista de las direcciones 
+	public function detalles_solicitudes($id)
+	{
+		if ($this->session->get('logged'))
+	{
+		// Realiza la solicitud a la API para obtener los datos
+		$datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$id), true);
+		$mensajes = json_decode(file_get_contents("http://172.16.0.46:70/mensajes/$id/1/100"), true);
+
+	
+		if ($datos['id_area']==1) {
+		
+			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/M/info"), true);
+		}else if ($datos['id_area']==2)
+		{
+			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/P/info"), true);
+		}
+
+
+
+		$url = "http://172.16.0.46:70/solicitudes/crono/".$id;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		$error = curl_error($ch);
+		curl_close($ch);
+
+		if ($error) {
+			echo "Error: $error";
+			
+		} else {
+			$cronologia = json_decode($response, true);
+
+			if (isset($cronologia['error'])) {
+				$cronologia['solicitudes']=array();
+			}
+			
+			// ...
+		}
+
+
+
+
+
+
+
+		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
+
+		// Pasa los datos a la vista
+		$data['datos'] = $datos;
+		$data['info_empresa_y_titulares'] = $info_empresa_y_titulares;
+		$data['cronologia'] = $cronologia;
+		$data['responsable'] = $responsable;
+		$data['mensajes'] = $mensajes;
+		echo view('template/header');
+		echo view('template/nav_bar');
+		echo view('audiencias/detalles_solicitudes.php', $data);
+		echo view('template/footer');
+			
+		} else {
+			return redirect()->to('/');
+		}
+	}
+
+//Metodo que muestra la vista de las direcciones 
+public function citas()
+{
+	if ($this->session->get('logged')) {
+
+	// Realiza la solicitud a la API para obtener los datos
+	$datos = json_decode(file_get_contents("http://172.16.0.46:70/citas/1/100000000000"), true);
+	// Pasa los datos a la vista
+	$data['datos'] = $datos;
+		echo view('template/header');
+		echo view('template/nav_bar');
+		echo view('audiencias/citas.php',$data);
+		//echo view('template/footer');
+		echo view('audiencias/footer_citas.php');
+	} else {
+		return redirect()->to('/');
+	}
+}
+
+public function actualizar_citas($idcaso)
+	{
+		if ($this->session->get('logged')) {
+		// Realiza la solicitud a la API para obtener los datos
+	 	$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
+		$cita = json_decode(file_get_contents("http://172.16.0.46:70/citas/".$idcaso), true);
+
+	 	// Pasa los datos a la vista
+	 	$data['datos2'] = $datos2;
+		$data['cita'] = $cita;
+		echo view('template/header');
+		echo view('template/nav_bar');
+		echo view('audiencias/actualizar_citas.php',$data);
+		
+		echo view('audiencias/footer_actualizar_citas.php');
+	} else {
+		return redirect()->to('/');
+	}
+	}
+
+	//Metodo que muestra la vista de las direcciones 
+	public function vista_agregar_requerimientos()
+	{
+		if ($this->session->get('logged')) {
+		// Realiza la solicitud a la API para obtener los datos
+		$pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
+		$estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
+		$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias"), true);
+		// Pasa los datos a la vista
+		$data['estados'] = $estados;
+		$data['pais'] = $pais;
+		$data['categorias'] = $categorias;
+		echo view('template/header');
+		echo view('template/nav_bar');
+		echo view('audiencias/agregar_requerimientos.php',$data);
+		echo view('template/footer');
+		echo view('audiencias/footer_agregar_requerimientos.php');
+		} else {
+			return redirect()->to('/');
+		}
+	}
+
+	
+
+
+public function agregar_solicitudes($idcaso)
+{
+	if ($this->session->get('logged')) {
+	// Realiza la solicitud a la API para obtener los datos
+	$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
+	$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias"), true);
+	$data['categorias'] = $categorias;
+	$data['datos2'] = $datos2;
+	echo view('template/header');
+	echo view('template/nav_bar');
+	echo view('audiencias/agregar_solicitudes.php',$data);
+	echo view('template/footer');
+	echo view('audiencias/footer_agregar_solicitudes.php');
+	} else {
+		return redirect()->to('/');
+	}
+}
+
+
+public function citas_otorgadas()
+{
+	if ($this->session->get('logged')) {
+	// Realiza la solicitud a la API para obtener los datos
+	$citas = json_decode(file_get_contents("http://172.16.0.46:70/citas/byMeses/2023"), true);
+	$data['citas'] = $citas;
+	echo view('template/header');
+	echo view('template/nav_bar');
+	echo view('audiencias/estadisticas/citas_otorgadas.php',$data);
+	echo view('template/footer');
+	echo view('audiencias/estadisticas/footer_citas_otorgadas.php');
+	} else {
+		return redirect()->to('/');
+	}
+}
+
+public function casos_categorias()
+{
+	if ($this->session->get('logged')) {
+	// Realiza la solicitud a la API para obtener los datos
+	$casos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/byCategorias"), true);
+	$data['casos'] = $casos;
+	
+	echo view('template/header');
+	echo view('template/nav_bar');
+	echo view('audiencias/estadisticas/casos_categorias.php',$data);
+	echo view('template/footer');
+	echo view('audiencias/estadisticas/footer_casos_categorias.php');
+	} else {
+		return redirect()->to('/');
+	}
+}
+
+
+
+	
+}

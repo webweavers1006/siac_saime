@@ -1,0 +1,3456 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 13.10 (Ubuntu 13.10-1.pgdg18.04+1)
+-- Dumped by pg_dump version 13.10 (Ubuntu 13.10-1.pgdg18.04+1)
+
+-- Started on 2023-10-23 15:18:30 -04
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 233 (class 1259 OID 136057)
+-- Name: sgc_auditoria_sistema; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_auditoria_sistema (
+    audi_id integer NOT NULL,
+    audi_user_id integer NOT NULL,
+    audi_accion text NOT NULL,
+    audi_fecha date DEFAULT CURRENT_DATE NOT NULL,
+    audi_hora character(11)
+);
+
+
+ALTER TABLE public.sgc_auditoria_sistema OWNER TO postgres;
+
+--
+-- TOC entry 232 (class 1259 OID 136055)
+-- Name: sgc_auditoria_sistema_audi_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_auditoria_sistema_audi_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_auditoria_sistema_audi_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3295 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: sgc_auditoria_sistema_audi_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_auditoria_sistema_audi_id_seq OWNED BY public.sgc_auditoria_sistema.audi_id;
+
+
+--
+-- TOC entry 225 (class 1259 OID 126581)
+-- Name: sgc_casos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_casos (
+    idcaso integer NOT NULL,
+    casofec date NOT NULL,
+    casoced character varying(48) NOT NULL,
+    casonom character varying(48) NOT NULL,
+    casoape character varying(48) NOT NULL,
+    casotel character varying(48) NOT NULL,
+    casonumsol character varying(48) NOT NULL,
+    idest integer NOT NULL,
+    idrrss integer NOT NULL,
+    idusuopr integer NOT NULL,
+    estadoid integer NOT NULL,
+    municipioid integer NOT NULL,
+    parroquiaid integer NOT NULL,
+    ofiid integer NOT NULL,
+    casodesc character varying(4096) NOT NULL,
+    id_tipo_atencion integer DEFAULT 0,
+    sexo integer,
+    caso_nacionalidad character varying(1),
+    borrado boolean DEFAULT false,
+    tipo_beneficiario integer DEFAULT 1,
+    direccion text,
+    correo text,
+    ente_adscrito_id integer,
+    caso_hora text
+);
+
+
+ALTER TABLE public.sgc_casos OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 136120)
+-- Name: sgc_casos_denuncias; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_casos_denuncias (
+    denu_id integer NOT NULL,
+    denu_afecta_persona boolean DEFAULT false NOT NULL,
+    denu_afecta_comunidad boolean DEFAULT false NOT NULL,
+    denu_afecta_terceros boolean DEFAULT false NOT NULL,
+    denu_involucrados text,
+    denu_fecha_hechos date DEFAULT CURRENT_DATE NOT NULL,
+    denu_instancia_popular text,
+    denu_rif_instancia text,
+    denu_ente_financiador text,
+    denu_nombre_proyecto text,
+    denu_monto_aprovado text,
+    denu_id_caso integer,
+    denu_borrado boolean DEFAULT false
+);
+
+
+ALTER TABLE public.sgc_casos_denuncias OWNER TO postgres;
+
+--
+-- TOC entry 238 (class 1259 OID 136118)
+-- Name: sgc_casos_denuncias_denu_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_casos_denuncias_denu_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_casos_denuncias_denu_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3296 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: sgc_casos_denuncias_denu_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_casos_denuncias_denu_id_seq OWNED BY public.sgc_casos_denuncias.denu_id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 126579)
+-- Name: sgc_casos_idcaso_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_casos_idcaso_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_casos_idcaso_seq OWNER TO postgres;
+
+--
+-- TOC entry 3297 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: sgc_casos_idcaso_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_casos_idcaso_seq OWNED BY public.sgc_casos.idcaso;
+
+
+--
+-- TOC entry 235 (class 1259 OID 136101)
+-- Name: sgc_casos_remitidos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_casos_remitidos (
+    casos_re_id integer NOT NULL,
+    casos_id integer NOT NULL,
+    direccion_id integer NOT NULL,
+    borrado boolean DEFAULT false NOT NULL,
+    idusuop integer
+);
+
+
+ALTER TABLE public.sgc_casos_remitidos OWNER TO postgres;
+
+--
+-- TOC entry 234 (class 1259 OID 136099)
+-- Name: sgc_casos_remitidos_casos_re_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_casos_remitidos_casos_re_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_casos_remitidos_casos_re_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3298 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: sgc_casos_remitidos_casos_re_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_casos_remitidos_casos_re_id_seq OWNED BY public.sgc_casos_remitidos.casos_re_id;
+
+
+--
+-- TOC entry 245 (class 1259 OID 136231)
+-- Name: sgc_direcciones_administrativas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_direcciones_administrativas (
+    id integer NOT NULL,
+    descripcion text NOT NULL,
+    borrado boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.sgc_direcciones_administrativas OWNER TO postgres;
+
+--
+-- TOC entry 244 (class 1259 OID 136229)
+-- Name: sgc_direcciones_administrativas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_direcciones_administrativas_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_direcciones_administrativas_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3299 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: sgc_direcciones_administrativas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_direcciones_administrativas_id_seq OWNED BY public.sgc_direcciones_administrativas.id;
+
+
+--
+-- TOC entry 241 (class 1259 OID 136169)
+-- Name: sgc_documentos_casos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_documentos_casos (
+    docu_id integer NOT NULL,
+    docu_id_caso integer NOT NULL,
+    docu_ruta text NOT NULL
+);
+
+
+ALTER TABLE public.sgc_documentos_casos OWNER TO postgres;
+
+--
+-- TOC entry 240 (class 1259 OID 136167)
+-- Name: sgc_documentos_casos_docu_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_documentos_casos_docu_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_documentos_casos_docu_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3300 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: sgc_documentos_casos_docu_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_documentos_casos_docu_id_seq OWNED BY public.sgc_documentos_casos.docu_id;
+
+
+--
+-- TOC entry 243 (class 1259 OID 136180)
+-- Name: sgc_ente_asdcrito; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_ente_asdcrito (
+    ente_id integer NOT NULL,
+    ente_nombre text NOT NULL,
+    borrado boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.sgc_ente_asdcrito OWNER TO postgres;
+
+--
+-- TOC entry 242 (class 1259 OID 136178)
+-- Name: sgc_ente_asdcrito_ente_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_ente_asdcrito_ente_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_ente_asdcrito_ente_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3301 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: sgc_ente_asdcrito_ente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_ente_asdcrito_ente_id_seq OWNED BY public.sgc_ente_asdcrito.ente_id;
+
+
+--
+-- TOC entry 200 (class 1259 OID 124898)
+-- Name: sgc_estados; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_estados (
+    estadoid integer NOT NULL,
+    estadonom character varying(48) NOT NULL,
+    paisid integer NOT NULL,
+    borrado boolean DEFAULT false
+);
+
+
+ALTER TABLE public.sgc_estados OWNER TO postgres;
+
+--
+-- TOC entry 201 (class 1259 OID 124901)
+-- Name: sgc_estados_estadoid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_estados_estadoid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_estados_estadoid_seq OWNER TO postgres;
+
+--
+-- TOC entry 3302 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: sgc_estados_estadoid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_estados_estadoid_seq OWNED BY public.sgc_estados.estadoid;
+
+
+--
+-- TOC entry 202 (class 1259 OID 124903)
+-- Name: sgc_estatus; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_estatus (
+    idest integer NOT NULL,
+    estnom character varying(48) NOT NULL
+);
+
+
+ALTER TABLE public.sgc_estatus OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 124906)
+-- Name: sgc_estatus_idest_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_estatus_idest_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_estatus_idest_seq OWNER TO postgres;
+
+--
+-- TOC entry 3303 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: sgc_estatus_idest_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_estatus_idest_seq OWNED BY public.sgc_estatus.idest;
+
+
+--
+-- TOC entry 204 (class 1259 OID 124908)
+-- Name: sgc_estatus_llamadas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_estatus_llamadas (
+    idestllam integer NOT NULL,
+    estllamnom character varying(48) NOT NULL
+);
+
+
+ALTER TABLE public.sgc_estatus_llamadas OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 124911)
+-- Name: sgc_estatus_llamadas_idestllam_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_estatus_llamadas_idestllam_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_estatus_llamadas_idestllam_seq OWNER TO postgres;
+
+--
+-- TOC entry 3304 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: sgc_estatus_llamadas_idestllam_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_estatus_llamadas_idestllam_seq OWNED BY public.sgc_estatus_llamadas.idestllam;
+
+
+--
+-- TOC entry 206 (class 1259 OID 124913)
+-- Name: sgc_migrations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_migrations (
+    id bigint NOT NULL,
+    version character varying(255) NOT NULL,
+    class character varying(255) NOT NULL,
+    "group" character varying(255) NOT NULL,
+    namespace character varying(255) NOT NULL,
+    "time" integer NOT NULL,
+    batch integer NOT NULL
+);
+
+
+ALTER TABLE public.sgc_migrations OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 124919)
+-- Name: sgc_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_migrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_migrations_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3305 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: sgc_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_migrations_id_seq OWNED BY public.sgc_migrations.id;
+
+
+--
+-- TOC entry 208 (class 1259 OID 124921)
+-- Name: sgc_municipio; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_municipio (
+    municipioid integer NOT NULL,
+    municipionom character varying(48) NOT NULL,
+    estadoid integer NOT NULL
+);
+
+
+ALTER TABLE public.sgc_municipio OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 124924)
+-- Name: sgc_municipio_municipioid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_municipio_municipioid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_municipio_municipioid_seq OWNER TO postgres;
+
+--
+-- TOC entry 3306 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: sgc_municipio_municipioid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_municipio_municipioid_seq OWNED BY public.sgc_municipio.municipioid;
+
+
+--
+-- TOC entry 210 (class 1259 OID 124926)
+-- Name: sgc_oficinas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_oficinas (
+    idofi integer NOT NULL,
+    ofinom character varying(48) NOT NULL
+);
+
+
+ALTER TABLE public.sgc_oficinas OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 124929)
+-- Name: sgc_oficinas_idofi_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_oficinas_idofi_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_oficinas_idofi_seq OWNER TO postgres;
+
+--
+-- TOC entry 3307 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: sgc_oficinas_idofi_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_oficinas_idofi_seq OWNED BY public.sgc_oficinas.idofi;
+
+
+--
+-- TOC entry 212 (class 1259 OID 124931)
+-- Name: sgc_paises; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_paises (
+    paisid integer NOT NULL,
+    paisnom character varying(48) NOT NULL
+);
+
+
+ALTER TABLE public.sgc_paises OWNER TO postgres;
+
+--
+-- TOC entry 213 (class 1259 OID 124934)
+-- Name: sgc_paises_paisid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_paises_paisid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_paises_paisid_seq OWNER TO postgres;
+
+--
+-- TOC entry 3308 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: sgc_paises_paisid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_paises_paisid_seq OWNED BY public.sgc_paises.paisid;
+
+
+--
+-- TOC entry 214 (class 1259 OID 124936)
+-- Name: sgc_parroquias; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_parroquias (
+    parroquiaid integer NOT NULL,
+    parroquianom character varying(48) NOT NULL,
+    municipioid integer NOT NULL
+);
+
+
+ALTER TABLE public.sgc_parroquias OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 124939)
+-- Name: sgc_parroquias_parroquiaid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_parroquias_parroquiaid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_parroquias_parroquiaid_seq OWNER TO postgres;
+
+--
+-- TOC entry 3309 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: sgc_parroquias_parroquiaid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_parroquias_parroquiaid_seq OWNED BY public.sgc_parroquias.parroquiaid;
+
+
+--
+-- TOC entry 216 (class 1259 OID 124941)
+-- Name: sgc_red_social; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_red_social (
+    red_s_id integer NOT NULL,
+    red_s_nom character varying(48) NOT NULL,
+    red_s_borrado boolean DEFAULT false
+);
+
+
+ALTER TABLE public.sgc_red_social OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 124944)
+-- Name: sgc_red_social_idrrss_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_red_social_idrrss_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_red_social_idrrss_seq OWNER TO postgres;
+
+--
+-- TOC entry 3310 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: sgc_red_social_idrrss_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_red_social_idrrss_seq OWNED BY public.sgc_red_social.red_s_id;
+
+
+--
+-- TOC entry 237 (class 1259 OID 136111)
+-- Name: sgc_registro_cgr; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_registro_cgr (
+    id_cgr integer NOT NULL,
+    competencia_cgr integer NOT NULL,
+    asume_cgr integer NOT NULL,
+    borrado_cgr boolean DEFAULT false NOT NULL,
+    id_caso integer
+);
+
+
+ALTER TABLE public.sgc_registro_cgr OWNER TO postgres;
+
+--
+-- TOC entry 236 (class 1259 OID 136109)
+-- Name: sgc_registro_cgr_id_cgr_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_registro_cgr_id_cgr_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_registro_cgr_id_cgr_seq OWNER TO postgres;
+
+--
+-- TOC entry 3311 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: sgc_registro_cgr_id_cgr_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_registro_cgr_id_cgr_seq OWNED BY public.sgc_registro_cgr.id_cgr;
+
+
+--
+-- TOC entry 218 (class 1259 OID 124946)
+-- Name: sgc_roles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_roles (
+    idrol integer NOT NULL,
+    rolnom character varying(48) NOT NULL
+);
+
+
+ALTER TABLE public.sgc_roles OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 124949)
+-- Name: sgc_roles_idrol_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_roles_idrol_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_roles_idrol_seq OWNER TO postgres;
+
+--
+-- TOC entry 3312 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: sgc_roles_idrol_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_roles_idrol_seq OWNED BY public.sgc_roles.idrol;
+
+
+--
+-- TOC entry 227 (class 1259 OID 126622)
+-- Name: sgc_seguimiento_caso; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_seguimiento_caso (
+    idsegcas integer NOT NULL,
+    idcaso integer NOT NULL,
+    idestllam integer NOT NULL,
+    segcoment character varying(512) NOT NULL,
+    segfec date NOT NULL,
+    idusuopr integer NOT NULL,
+    borrado boolean DEFAULT false
+);
+
+
+ALTER TABLE public.sgc_seguimiento_caso OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 126620)
+-- Name: sgc_seguimiento_caso_idsegcas_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_seguimiento_caso_idsegcas_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_seguimiento_caso_idsegcas_seq OWNER TO postgres;
+
+--
+-- TOC entry 3313 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: sgc_seguimiento_caso_idsegcas_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_seguimiento_caso_idsegcas_seq OWNED BY public.sgc_seguimiento_caso.idsegcas;
+
+
+--
+-- TOC entry 231 (class 1259 OID 136039)
+-- Name: sgc_tipo_prop_caso; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_tipo_prop_caso (
+    idtipopropcaso integer NOT NULL,
+    idtippropint integer NOT NULL,
+    idcaso integer NOT NULL
+);
+
+
+ALTER TABLE public.sgc_tipo_prop_caso OWNER TO postgres;
+
+--
+-- TOC entry 230 (class 1259 OID 136037)
+-- Name: sgc_tipo_prop_caso_idtipopropcaso_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_tipo_prop_caso_idtipopropcaso_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_tipo_prop_caso_idtipopropcaso_seq OWNER TO postgres;
+
+--
+-- TOC entry 3314 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: sgc_tipo_prop_caso_idtipopropcaso_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_tipo_prop_caso_idtipopropcaso_seq OWNED BY public.sgc_tipo_prop_caso.idtipopropcaso;
+
+
+--
+-- TOC entry 220 (class 1259 OID 124964)
+-- Name: sgc_tipo_prop_intelec; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_tipo_prop_intelec (
+    tipo_prop_id integer NOT NULL,
+    tipo_prop_nombre character varying(48) NOT NULL,
+    tipo_prop_borrado boolean DEFAULT false
+);
+
+
+ALTER TABLE public.sgc_tipo_prop_intelec OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 124967)
+-- Name: sgc_tipo_prop_intelec_idtippropint_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_tipo_prop_intelec_idtippropint_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_tipo_prop_intelec_idtippropint_seq OWNER TO postgres;
+
+--
+-- TOC entry 3315 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: sgc_tipo_prop_intelec_idtippropint_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_tipo_prop_intelec_idtippropint_seq OWNED BY public.sgc_tipo_prop_intelec.tipo_prop_id;
+
+
+--
+-- TOC entry 229 (class 1259 OID 134870)
+-- Name: sgc_tipoatencion_usu; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_tipoatencion_usu (
+    tipo_aten_id integer NOT NULL,
+    tipo_aten_nombre text NOT NULL,
+    tipo_aten_borrado boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.sgc_tipoatencion_usu OWNER TO postgres;
+
+--
+-- TOC entry 228 (class 1259 OID 134868)
+-- Name: sgc_tipoatencion_usu_tipo_anten_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_tipoatencion_usu_tipo_anten_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_tipoatencion_usu_tipo_anten_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3316 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: sgc_tipoatencion_usu_tipo_anten_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_tipoatencion_usu_tipo_anten_id_seq OWNED BY public.sgc_tipoatencion_usu.tipo_aten_id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 124986)
+-- Name: sgc_usuario_operador; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgc_usuario_operador (
+    idusuopr integer NOT NULL,
+    usuopnom character varying(48) NOT NULL,
+    usuopape character varying(48) NOT NULL,
+    usuoppass character varying(255) NOT NULL,
+    usuopemail character varying(48) NOT NULL,
+    idrol integer NOT NULL,
+    usuopborrado boolean DEFAULT false,
+    usercargo text
+);
+
+
+ALTER TABLE public.sgc_usuario_operador OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 124989)
+-- Name: sgc_usuario_operador_idusuopr_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.sgc_usuario_operador_idusuopr_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sgc_usuario_operador_idusuopr_seq OWNER TO postgres;
+
+--
+-- TOC entry 3317 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: sgc_usuario_operador_idusuopr_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.sgc_usuario_operador_idusuopr_seq OWNED BY public.sgc_usuario_operador.idusuopr;
+
+
+--
+-- TOC entry 3036 (class 2604 OID 136060)
+-- Name: sgc_auditoria_sistema audi_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_auditoria_sistema ALTER COLUMN audi_id SET DEFAULT nextval('public.sgc_auditoria_sistema_audi_id_seq'::regclass);
+
+
+--
+-- TOC entry 3027 (class 2604 OID 126584)
+-- Name: sgc_casos idcaso; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos ALTER COLUMN idcaso SET DEFAULT nextval('public.sgc_casos_idcaso_seq'::regclass);
+
+
+--
+-- TOC entry 3042 (class 2604 OID 136123)
+-- Name: sgc_casos_denuncias denu_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos_denuncias ALTER COLUMN denu_id SET DEFAULT nextval('public.sgc_casos_denuncias_denu_id_seq'::regclass);
+
+
+--
+-- TOC entry 3038 (class 2604 OID 136104)
+-- Name: sgc_casos_remitidos casos_re_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos_remitidos ALTER COLUMN casos_re_id SET DEFAULT nextval('public.sgc_casos_remitidos_casos_re_id_seq'::regclass);
+
+
+--
+-- TOC entry 3051 (class 2604 OID 136234)
+-- Name: sgc_direcciones_administrativas id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_direcciones_administrativas ALTER COLUMN id SET DEFAULT nextval('public.sgc_direcciones_administrativas_id_seq'::regclass);
+
+
+--
+-- TOC entry 3048 (class 2604 OID 136172)
+-- Name: sgc_documentos_casos docu_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_documentos_casos ALTER COLUMN docu_id SET DEFAULT nextval('public.sgc_documentos_casos_docu_id_seq'::regclass);
+
+
+--
+-- TOC entry 3049 (class 2604 OID 136183)
+-- Name: sgc_ente_asdcrito ente_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_ente_asdcrito ALTER COLUMN ente_id SET DEFAULT nextval('public.sgc_ente_asdcrito_ente_id_seq'::regclass);
+
+
+--
+-- TOC entry 3011 (class 2604 OID 124993)
+-- Name: sgc_estados estadoid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estados ALTER COLUMN estadoid SET DEFAULT nextval('public.sgc_estados_estadoid_seq'::regclass);
+
+
+--
+-- TOC entry 3013 (class 2604 OID 124994)
+-- Name: sgc_estatus idest; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estatus ALTER COLUMN idest SET DEFAULT nextval('public.sgc_estatus_idest_seq'::regclass);
+
+
+--
+-- TOC entry 3014 (class 2604 OID 124995)
+-- Name: sgc_estatus_llamadas idestllam; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estatus_llamadas ALTER COLUMN idestllam SET DEFAULT nextval('public.sgc_estatus_llamadas_idestllam_seq'::regclass);
+
+
+--
+-- TOC entry 3015 (class 2604 OID 124996)
+-- Name: sgc_migrations id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_migrations ALTER COLUMN id SET DEFAULT nextval('public.sgc_migrations_id_seq'::regclass);
+
+
+--
+-- TOC entry 3016 (class 2604 OID 124997)
+-- Name: sgc_municipio municipioid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_municipio ALTER COLUMN municipioid SET DEFAULT nextval('public.sgc_municipio_municipioid_seq'::regclass);
+
+
+--
+-- TOC entry 3017 (class 2604 OID 124998)
+-- Name: sgc_oficinas idofi; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_oficinas ALTER COLUMN idofi SET DEFAULT nextval('public.sgc_oficinas_idofi_seq'::regclass);
+
+
+--
+-- TOC entry 3018 (class 2604 OID 124999)
+-- Name: sgc_paises paisid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_paises ALTER COLUMN paisid SET DEFAULT nextval('public.sgc_paises_paisid_seq'::regclass);
+
+
+--
+-- TOC entry 3019 (class 2604 OID 125000)
+-- Name: sgc_parroquias parroquiaid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_parroquias ALTER COLUMN parroquiaid SET DEFAULT nextval('public.sgc_parroquias_parroquiaid_seq'::regclass);
+
+
+--
+-- TOC entry 3020 (class 2604 OID 125001)
+-- Name: sgc_red_social red_s_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_red_social ALTER COLUMN red_s_id SET DEFAULT nextval('public.sgc_red_social_idrrss_seq'::regclass);
+
+
+--
+-- TOC entry 3040 (class 2604 OID 136114)
+-- Name: sgc_registro_cgr id_cgr; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_registro_cgr ALTER COLUMN id_cgr SET DEFAULT nextval('public.sgc_registro_cgr_id_cgr_seq'::regclass);
+
+
+--
+-- TOC entry 3022 (class 2604 OID 125002)
+-- Name: sgc_roles idrol; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_roles ALTER COLUMN idrol SET DEFAULT nextval('public.sgc_roles_idrol_seq'::regclass);
+
+
+--
+-- TOC entry 3031 (class 2604 OID 126625)
+-- Name: sgc_seguimiento_caso idsegcas; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_seguimiento_caso ALTER COLUMN idsegcas SET DEFAULT nextval('public.sgc_seguimiento_caso_idsegcas_seq'::regclass);
+
+
+--
+-- TOC entry 3035 (class 2604 OID 136042)
+-- Name: sgc_tipo_prop_caso idtipopropcaso; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_caso ALTER COLUMN idtipopropcaso SET DEFAULT nextval('public.sgc_tipo_prop_caso_idtipopropcaso_seq'::regclass);
+
+
+--
+-- TOC entry 3023 (class 2604 OID 125005)
+-- Name: sgc_tipo_prop_intelec tipo_prop_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_intelec ALTER COLUMN tipo_prop_id SET DEFAULT nextval('public.sgc_tipo_prop_intelec_idtippropint_seq'::regclass);
+
+
+--
+-- TOC entry 3033 (class 2604 OID 134873)
+-- Name: sgc_tipoatencion_usu tipo_aten_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipoatencion_usu ALTER COLUMN tipo_aten_id SET DEFAULT nextval('public.sgc_tipoatencion_usu_tipo_anten_id_seq'::regclass);
+
+
+--
+-- TOC entry 3025 (class 2604 OID 125010)
+-- Name: sgc_usuario_operador idusuopr; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_usuario_operador ALTER COLUMN idusuopr SET DEFAULT nextval('public.sgc_usuario_operador_idusuopr_seq'::regclass);
+
+
+--
+-- TOC entry 3277 (class 0 OID 136057)
+-- Dependencies: 233
+-- Data for Name: sgc_auditoria_sistema; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_auditoria_sistema (audi_id, audi_user_id, audi_accion, audi_fecha, audi_hora) VALUES (408, 2, 'MODIFICO LOS DATOS PERSONALES DE      ADMIN ADMIN', '2023-10-23', '12:33:56 PM');
+INSERT INTO public.sgc_auditoria_sistema (audi_id, audi_user_id, audi_accion, audi_fecha, audi_hora) VALUES (412, 2, 'INGRESO UN NUEVO CASO Nª186', '2023-10-23', '15:07:19 PM');
+INSERT INTO public.sgc_auditoria_sistema (audi_id, audi_user_id, audi_accion, audi_fecha, audi_hora) VALUES (409, 2, 'INGRESO UN NUEVO CASO Nª184', '2023-10-23', '12:41:22 PM');
+INSERT INTO public.sgc_auditoria_sistema (audi_id, audi_user_id, audi_accion, audi_fecha, audi_hora) VALUES (410, 2, 'LOS SIGUIENTES CAMPOS  DE EL CASO Nº184 FUERON MODIFICADOS  : El campo: TipoBeneficiario = Usuario fue modificado a: Emprendedor', '2023-10-23', '12:41:48 PM');
+INSERT INTO public.sgc_auditoria_sistema (audi_id, audi_user_id, audi_accion, audi_fecha, audi_hora) VALUES (411, 2, 'INGRESO UN NUEVO CASO Nª185', '2023-10-23', '13:14:09 PM');
+
+
+--
+-- TOC entry 3269 (class 0 OID 126581)
+-- Dependencies: 225
+-- Data for Name: sgc_casos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3283 (class 0 OID 136120)
+-- Dependencies: 239
+-- Data for Name: sgc_casos_denuncias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3279 (class 0 OID 136101)
+-- Dependencies: 235
+-- Data for Name: sgc_casos_remitidos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3289 (class 0 OID 136231)
+-- Dependencies: 245
+-- Data for Name: sgc_direcciones_administrativas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (1, 'PATENTE', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (2, 'REGIONES', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (3, 'INDICACIONES GEOGRAFICAS', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (4, 'DERECHO DE AUTOR', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (5, 'REGISTRO DE LA PROPIEDAD INDUSTRIAL', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (6, 'MARCAS Y OTROS SIGNOS DISTINTIVOS', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (7, 'DIRECCION GENERAL', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (8, 'GESTION HUMANA', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (9, 'ASESORIA JURIDICA', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (11, 'DIRECCION DE TECNOLOGIA Y SISTEMAS DE INFORMACION', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (12, 'PLANIFICACION Y PRESUPUESTO', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (13, 'RELACIONES INTERNACIONALES', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (14, 'DIFUSION Y COOPERACION', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (15, 'ATENCION AL CUIDADANO', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (16, 'ADMINISTRACION', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (17, 'POLITICAS PUBLICAS', false);
+INSERT INTO public.sgc_direcciones_administrativas (id, descripcion, borrado) VALUES (20, 'PRUEBA 2', true);
+
+
+--
+-- TOC entry 3285 (class 0 OID 136169)
+-- Dependencies: 241
+-- Data for Name: sgc_documentos_casos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3287 (class 0 OID 136180)
+-- Dependencies: 243
+-- Data for Name: sgc_ente_asdcrito; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_ente_asdcrito (ente_id, ente_nombre, borrado) VALUES (1, 'COMERCIO', false);
+INSERT INTO public.sgc_ente_asdcrito (ente_id, ente_nombre, borrado) VALUES (2, 'ALMACENAMIENTO CARACAS', false);
+
+
+--
+-- TOC entry 3244 (class 0 OID 124898)
+-- Dependencies: 200
+-- Data for Name: sgc_estados; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (1, 'Amazonas', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (2, 'Anzoátegui', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (3, 'Apure', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (4, 'Aragua', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (5, 'Barinas', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (6, 'Bolívar', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (7, 'Carabobo', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (8, 'Cojedes', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (9, 'Delta Amacuro', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (10, 'Falcón', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (11, 'Guárico', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (12, 'Lara', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (13, 'Mérida', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (14, 'Miranda', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (15, 'Monagas', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (16, 'Nueva Esparta', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (17, 'Portuguesa', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (18, 'Sucre', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (19, 'Táchira', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (20, 'Trujillo', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (21, 'La Guaira', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (22, 'Yaracuy', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (23, 'Zulia', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (24, 'Distrito Capital', 1, false);
+INSERT INTO public.sgc_estados (estadoid, estadonom, paisid, borrado) VALUES (25, 'Dependencias Federales', 1, false);
+
+
+--
+-- TOC entry 3246 (class 0 OID 124903)
+-- Dependencies: 202
+-- Data for Name: sgc_estatus; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_estatus (idest, estnom) VALUES (1, 'Abierto');
+INSERT INTO public.sgc_estatus (idest, estnom) VALUES (2, 'Cerrado');
+
+
+--
+-- TOC entry 3248 (class 0 OID 124908)
+-- Dependencies: 204
+-- Data for Name: sgc_estatus_llamadas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_estatus_llamadas (idestllam, estllamnom) VALUES (1, 'Por Llamar');
+INSERT INTO public.sgc_estatus_llamadas (idestllam, estllamnom) VALUES (2, 'Atendido');
+INSERT INTO public.sgc_estatus_llamadas (idestllam, estllamnom) VALUES (3, 'No Contesta');
+
+
+--
+-- TOC entry 3250 (class 0 OID 124913)
+-- Dependencies: 206
+-- Data for Name: sgc_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (1, '2022-06-01-181158', 'App\Database\Migrations\TipoRequerimiento', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (2, '2022-06-01-182126', 'App\Database\Migrations\RedSocial', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (3, '2022-06-01-182332', 'App\Database\Migrations\EstatusLlamadas', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (4, '2022-06-01-182650', 'App\Database\Migrations\Paises', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (5, '2022-06-01-183401', 'App\Database\Migrations\Roles', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (6, '2022-06-01-184314', 'App\Database\Migrations\DireccionCorrespondiente', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (7, '2022-06-01-184552', 'App\Database\Migrations\Estatus', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (8, '2022-06-01-184938', 'App\Database\Migrations\TipoPropIntelec', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (9, '2022-06-01-185211', 'App\Database\Migrations\Estados', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (10, '2022-06-01-185450', 'App\Database\Migrations\Municipio', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (11, '2022-06-01-185804', 'App\Database\Migrations\Parroquias', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (12, '2022-06-01-190326', 'App\Database\Migrations\UsuarioOperador', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (13, '2022-06-01-190856', 'App\Database\Migrations\Casos', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (14, '2022-06-02-134416', 'App\Database\Migrations\SeguimientoCaso', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (15, '2022-06-02-140622', 'App\Database\Migrations\TipoPropCaso', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (16, '2022-06-20-195739', 'App\Database\Migrations\TipoRequerimientoUsuario', 'default', 'App', 1678123675, 1);
+INSERT INTO public.sgc_migrations (id, version, class, "group", namespace, "time", batch) VALUES (17, '2022-10-29-131039', 'App\Database\Migrations\Oficinas', 'default', 'App', 1678123676, 1);
+
+
+--
+-- TOC entry 3252 (class 0 OID 124921)
+-- Dependencies: 208
+-- Data for Name: sgc_municipio; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (1, 'Libertador', 24);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (2, 'Anaco', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (3, 'Aragua', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (4, 'Bolivar', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (5, 'Bruzual', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (6, 'Cajigal', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (7, 'Freites', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (8, 'Independencia', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (9, 'Libertad', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (10, 'Miranda', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (11, 'Monagas', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (12, 'Peñalver', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (13, 'Simon Rodriguez', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (14, 'Sotillo', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (15, 'Guanipa', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (16, 'Guanta', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (17, 'Piritu', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (18, 'M.L/Diego Bautista U', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (19, 'Carvajal', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (20, 'Santa Ana', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (21, 'Mc Gregor', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (22, 'S Juan Capistrano', 2);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (23, 'Achaguas', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (24, 'Muñoz', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (25, 'Paez', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (26, 'Pedro Camejo', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (27, 'Romulo Gallegos', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (28, 'San Fernando', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (29, 'Biruaca', 3);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (30, 'Girardot', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (31, 'Santiago Mariño', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (32, 'Jose Felix Rivas', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (33, 'San Casimiro', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (34, 'San Sebastian', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (35, 'Sucre', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (36, 'Urdaneta', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (37, 'Zamora', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (38, 'Libertador', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (39, 'Jose Angel Lamas', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (40, 'Bolivar', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (41, 'Santos Michelena', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (42, 'Mario B Iragorry', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (43, 'Tovar', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (44, 'Camatagua', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (45, 'Jose R Revenga', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (46, 'Francisco Linares A.', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (47, 'M.Ocumare D La Costa', 4);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (48, 'Arismendi', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (49, 'Barinas', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (50, 'Bolivar', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (51, 'Ezequiel Zamora', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (52, 'Obispos', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (53, 'Pedraza', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (54, 'Rojas', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (55, 'Sosa', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (56, 'Alberto Arvelo T', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (57, 'A Jose De Sucre', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (58, 'Cruz Paredes', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (59, 'Andres E. Blanco', 5);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (60, 'Caroni', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (61, 'Cedeño', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (62, 'Heres', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (63, 'Piar', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (64, 'Roscio', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (65, 'Sucre', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (66, 'Sifontes', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (67, 'Raul Leoni', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (68, 'Gran Sabana', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (69, 'El Callao', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (70, 'Padre Pedro Chien', 6);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (71, 'Bejuma', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (72, 'Carlos Arvelo', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (73, 'Diego Ibarra', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (74, 'Guacara', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (75, 'Montalban', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (76, 'Juan Jose Mora', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (77, 'Puerto Cabello', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (78, 'San Joaquin', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (79, 'Valencia', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (80, 'Miranda', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (81, 'Los Guayos', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (82, 'Naguanagua', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (83, 'San Diego', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (84, 'Libertador', 7);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (85, 'Anzoategui', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (86, 'Falcon', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (87, 'Girardot', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (88, 'Mp Pao Sn J Bautista', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (89, 'Ricaurte', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (90, 'San Carlos', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (91, 'Tinaco', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (92, 'Lima Blanco', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (93, 'Romulo Gallegos', 8);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (94, 'Acosta', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (95, 'Bolivar', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (96, 'Buchivacoa', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (97, 'Carirubana', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (98, 'Colina', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (99, 'Democracia', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (100, 'Falcon', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (101, 'Federacion', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (102, 'Mauroa', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (103, 'Miranda', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (104, 'Petit', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (105, 'Silva', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (106, 'Zamora', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (107, 'Dabajuro', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (108, 'Mons. Iturriza', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (109, 'Los Taques', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (110, 'Piritu', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (111, 'Union', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (112, 'San Francisco', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (113, 'Jacura', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (114, 'Cacique Manaure', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (115, 'Palma Sola', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (116, 'Sucre', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (117, 'Urumaco', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (118, 'Tocopero', 10);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (119, 'Infante', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (120, 'Mellado', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (121, 'Miranda', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (122, 'Monagas', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (123, 'Ribas', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (124, 'Roscio', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (125, 'Zaraza', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (126, 'Camaguan', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (127, 'S Jose De Guaribe', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (128, 'Las Mercedes', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (129, 'El Socorro', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (130, 'Ortiz', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (131, 'S Maria De Ipire', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (132, 'Chaguaramas', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (133, 'San Geronimo De G', 11);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (134, 'Crespo', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (135, 'Iribarren', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (136, 'Jimenez', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (137, 'Moran', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (138, 'Palavecino', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (139, 'Torres', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (140, 'Urdaneta', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (141, 'Andres E Blanco', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (142, 'Simon Planas', 12);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (143, 'Alberto Adriani', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (144, 'Andres Bello', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (145, 'Arzobispo Chacon', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (146, 'Campo Elias', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (147, 'Guaraque', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (148, 'Julio Cesar Salas', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (149, 'Justo Briceño', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (150, 'Libertador', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (151, 'Santos Marquina', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (152, 'Miranda', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (153, 'Antonio Pinto S.', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (154, 'Ob. Ramos De Lora', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (155, 'Caracciolo Parra', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (156, 'Cardenal Quintero', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (157, 'Pueblo Llano', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (158, 'Rangel', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (159, 'Rivas Davila', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (160, 'Sucre', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (161, 'Tovar', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (162, 'Tulio F Cordero', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (163, 'Padre Noguera', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (164, 'Aricagua', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (165, 'Zea', 13);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (166, 'Acevedo', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (167, 'Brion', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (168, 'Guaicaipuro', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (169, 'Independencia', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (170, 'Lander', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (171, 'Paez', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (172, 'Paz Castillo', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (173, 'Plaza', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (174, 'Sucre', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (175, 'Urdaneta', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (176, 'Zamora', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (177, 'Cristobal Rojas', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (178, 'Los Salias', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (179, 'Andres Bello', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (180, 'Simon Bolivar', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (181, 'Baruta', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (182, 'Carrizal', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (183, 'Chacao', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (184, 'El Hatillo', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (185, 'Buroz', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (186, 'Pedro Gual', 14);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (187, 'Acosta', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (188, 'Bolivar', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (189, 'Caripe', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (190, 'Cedeño', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (191, 'Ezequiel Zamora', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (192, 'Libertador', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (193, 'Maturin', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (194, 'Piar', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (195, 'Punceres', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (196, 'Sotillo', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (197, 'Aguasay', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (198, 'Santa Barbara', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (199, 'Uracoa', 15);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (200, 'Arismendi', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (201, 'Diaz', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (202, 'Gomez', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (203, 'Maneiro', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (204, 'Marcano', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (205, 'Mariño', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (206, 'Penin. De Macanao', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (207, 'Villalba(I.Coche)', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (208, 'Tubores', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (209, 'Antolin Del Campo', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (210, 'Garcia', 16);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (211, 'Araure', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (212, 'Esteller', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (213, 'Guanare', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (214, 'Guanarito', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (215, 'Ospino', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (216, 'Paez', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (217, 'Sucre', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (218, 'Turen', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (219, 'M.Jose V De Unda', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (220, 'Agua Blanca', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (221, 'Papelon', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (222, 'Genaro Boconoito', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (223, 'S Rafael De Onoto', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (224, 'Santa Rosalia', 17);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (225, 'Arismendi', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (226, 'Benitez', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (227, 'Bermudez', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (228, 'Cajigal', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (229, 'Mariño', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (230, 'Mejia', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (231, 'Montes', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (232, 'Ribero', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (233, 'Sucre', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (234, 'Valdez', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (235, 'Andres E Blanco', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (236, 'Libertador', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (237, 'Andres Mata', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (238, 'Bolivar', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (239, 'Cruz S Acosta', 18);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (240, 'Ayacucho', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (241, 'Bolivar', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (242, 'Independencia', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (243, 'Cardenas', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (244, 'Jauregui', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (245, 'Junin', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (246, 'Lobatera', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (247, 'San Cristobal', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (248, 'Uribante', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (249, 'Cordoba', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (250, 'Garcia De Hevia', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (251, 'Guasimos', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (252, 'Michelena', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (253, 'Libertador', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (254, 'Panamericano', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (255, 'Pedro Maria Ureña', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (256, 'Sucre', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (257, 'Andres Bello', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (258, 'Fernandez Feo', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (259, 'Libertad', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (260, 'Samuel Maldonado', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (261, 'Seboruco', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (262, 'Antonio Romulo C', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (263, 'Fco De Miranda', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (264, 'Jose Maria Vargas', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (265, 'Rafael Urdaneta', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (266, 'Simon Rodriguez', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (267, 'Torbes', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (268, 'San Judas Tadeo', 19);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (269, 'Rafael Rangel', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (270, 'Bocono', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (271, 'Carache', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (272, 'Escuque', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (273, 'Trujillo', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (274, 'Urdaneta', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (275, 'Valera', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (276, 'Candelaria', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (277, 'Miranda', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (278, 'Monte Carmelo', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (279, 'Motatan', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (280, 'Pampan', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (281, 'S Rafael Carvajal', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (282, 'Sucre', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (283, 'Andres Bello', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (284, 'Bolivar', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (285, 'Jose F M Cañizal', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (286, 'Juan V Campo Eli', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (287, 'La Ceiba', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (288, 'Pampanito', 20);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (289, 'Bolivar', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (290, 'Bruzual', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (291, 'Nirgua', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (292, 'San Felipe', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (293, 'Sucre', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (294, 'Urachiche', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (295, 'Peña', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (296, 'Jose Antonio Paez', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (297, 'La Trinidad', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (298, 'Cocorote', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (299, 'Independencia', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (300, 'Aristides Bastid', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (301, 'Manuel Monge', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (302, 'Veroes', 22);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (303, 'Baralt', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (304, 'Santa Rita', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (305, 'Colon', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (306, 'Mara', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (307, 'Maracaibo', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (308, 'Miranda', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (309, 'Paez', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (310, 'Machiques De P', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (311, 'Sucre', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (312, 'La Cañada De U.', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (313, 'Lagunillas', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (314, 'Catatumbo', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (315, 'M/Rosario De Perija', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (316, 'Cabimas', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (317, 'Valmore Rodriguez', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (318, 'Jesus E Lossada', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (319, 'Almirante P', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (320, 'San Francisco', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (321, 'Jesus M Semprun', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (322, 'Francisco J Pulg', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (323, 'Simon Bolivar', 23);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (324, 'Atures', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (325, 'Atabapo', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (326, 'Maroa', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (327, 'Rio Negro', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (328, 'Autana', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (329, 'Manapiare', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (330, 'Alto Orinoco', 1);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (331, 'Tucupita', 9);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (332, 'Pedernales', 9);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (333, 'Antonio Diaz', 9);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (334, 'Casacoima', 9);
+INSERT INTO public.sgc_municipio (municipioid, municipionom, estadoid) VALUES (335, 'Vargas', 21);
+
+
+--
+-- TOC entry 3254 (class 0 OID 124926)
+-- Dependencies: 210
+-- Data for Name: sgc_oficinas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_oficinas (idofi, ofinom) VALUES (1, 'Sala Situacional');
+INSERT INTO public.sgc_oficinas (idofi, ofinom) VALUES (2, 'Coordinacion Regional');
+
+
+--
+-- TOC entry 3256 (class 0 OID 124931)
+-- Dependencies: 212
+-- Data for Name: sgc_paises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_paises (paisid, paisnom) VALUES (1, 'Venezuela');
+
+
+--
+-- TOC entry 3258 (class 0 OID 124936)
+-- Dependencies: 214
+-- Data for Name: sgc_parroquias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1, 'Altagracia', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (2, 'Candelaria', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (3, 'Catedral', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (4, 'La Pastora', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (5, 'San Agustin', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (6, 'San Jose', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (7, 'San Juan', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (8, 'Santa Rosalia', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (9, 'Santa Teresa', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (10, 'Sucre', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (11, '23 De Enero', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (12, 'Antimano', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (13, 'El Recreo', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (14, 'El Valle', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (15, 'La Vega', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (16, 'Macarao', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (17, 'Caricuao', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (18, 'El Junquito', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (19, 'Coche', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (20, 'San Pedro', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (21, 'San Bernardino', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (22, 'El Paraiso', 1);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (23, 'Anaco', 2);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (24, 'San Joaquin', 2);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (25, 'Cm. Aragua De Barcelona', 3);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (26, 'Cachipo', 3);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (27, 'El Carmen', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (28, 'San Cristobal', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (29, 'Bergantin', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (30, 'Caigua', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (31, 'El Pilar', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (32, 'Naricual', 4);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (33, 'Cm. Clarines', 5);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (34, 'Guanape', 5);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (35, 'Sabana De Uchire', 5);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (36, 'Cm. Onoto', 6);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (37, 'San Pablo', 6);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (38, 'Cm. Cantaura', 7);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (39, 'Libertador', 7);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (40, 'Santa Rosa', 7);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (41, 'Urica', 7);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (42, 'Cm. Soledad', 8);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (43, 'Mamo', 8);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (44, 'Cm. San Mateo', 9);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (45, 'El Carito', 9);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (46, 'Santa Ines', 9);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (47, 'Cm. Pariaguan', 10);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (48, 'Atapirire', 10);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (49, 'Boca Del Pao', 10);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (50, 'El Pao', 10);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (51, 'Cm. Mapire', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (52, 'Piar', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (53, 'Sn Diego De Cabrutica', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (54, 'Santa Clara', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (55, 'Uverito', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (56, 'Zuata', 11);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (57, 'Cm. Puerto Piritu', 12);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (58, 'San Miguel', 12);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (59, 'Sucre', 12);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (60, 'Cm. El Tigre', 13);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (61, 'Pozuelos', 14);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (62, 'Cm Pto. La Cruz', 14);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (63, 'Cm. San Jose De Guanipa', 15);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (64, 'Guanta', 16);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (65, 'Chorreron', 16);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (66, 'Piritu', 17);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (67, 'San Francisco', 17);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (68, 'Lecherias', 18);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (69, 'El Morro', 18);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (70, 'Valle Guanape', 19);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (71, 'Santa Barbara', 19);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (72, 'Santa Ana', 20);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (73, 'Pueblo Nuevo', 20);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (74, 'El Chaparro', 21);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (75, 'Tomas Alfaro Calatrava', 21);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (76, 'Boca Uchire', 22);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (77, 'Boca De Chavez', 22);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (78, 'Achaguas', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (79, 'Apurito', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (80, 'El Yagual', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (81, 'Guachara', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (82, 'Mucuritas', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (83, 'Queseras Del Medio', 23);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (84, 'Bruzual', 24);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (85, 'Mantecal', 24);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (86, 'Quintero', 24);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (87, 'San Vicente', 24);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (88, 'Rincon Hondo', 24);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (89, 'Guasdualito', 25);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (90, 'Aramendi', 25);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (91, 'El Amparo', 25);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (92, 'San Camilo', 25);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (93, 'Urdaneta', 25);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (94, 'San Juan De Payara', 26);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (95, 'Codazzi', 26);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (96, 'Cunaviche', 26);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (97, 'Elorza', 27);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (98, 'La Trinidad', 27);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (99, 'San Fernando', 28);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (100, 'Peñalver', 28);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (101, 'El Recreo', 28);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (102, 'Sn Rafael De Atamaica', 28);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (103, 'Biruaca', 29);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (104, 'Cm. Las Delicias', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (105, 'Choroni', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (106, 'Madre Ma De San Jose', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (107, 'Joaquin Crespo', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (108, 'Pedro Jose Ovalles', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (109, 'Jose Casanova Godoy', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (110, 'Andres Eloy Blanco', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (111, 'Los Tacariguas', 30);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (112, 'Cm. Turmero', 31);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (113, 'Saman De Guere', 31);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (114, 'Alfredo Pacheco M', 31);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (115, 'Chuao', 31);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (116, 'Arevalo Aponte', 31);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (117, 'Cm. La Victoria', 32);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (118, 'Zuata', 32);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (119, 'Pao De Zarate', 32);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (120, 'Castor Nieves Rios', 32);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (121, 'Las Guacamayas', 32);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (122, 'Cm. San Casimiro', 33);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (123, 'Valle Morin', 33);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (124, 'Guiripa', 33);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (125, 'Ollas De Caramacate', 33);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (126, 'Cm. San Sebastian', 34);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (127, 'Cm. Cagua', 35);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (128, 'Bella Vista', 35);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (129, 'Cm. Barbacoas', 36);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (130, 'San Francisco De Cara', 36);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (131, 'Taguay', 36);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (132, 'Las Peñitas', 36);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (133, 'Cm. Villa De Cura', 37);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (134, 'Magdaleno', 37);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (135, 'San Francisco De Asis', 37);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (136, 'Valles De Tucutunemo', 37);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (137, 'Pq Augusto Mijares', 37);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (138, 'Cm. Palo Negro', 38);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (139, 'San Martin De Porres', 38);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (140, 'Cm. Santa Cruz', 39);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (141, 'Cm. San Mateo', 40);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (142, 'Cm. Las Tejerias', 41);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (143, 'Tiara', 41);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (144, 'Cm. El Limon', 42);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (145, 'Ca A De Azucar', 42);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (146, 'Cm. Colonia Tovar', 43);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (147, 'Cm. Camatagua', 44);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (148, 'Carmen De Cura', 44);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (149, 'Cm. El Consejo', 45);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (150, 'Cm. Santa Rita', 46);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (151, 'Francisco De Miranda', 46);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (152, 'Mons Feliciano G', 46);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (153, 'Ocumare De La Costa', 47);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (154, 'Arismendi', 48);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (155, 'Guadarrama', 48);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (156, 'La Union', 48);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (157, 'San Antonio', 48);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (158, 'Alfredo A Larriva', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (159, 'Barinas', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (160, 'San Silvestre', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (161, 'Santa Ines', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (162, 'Santa Lucia', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (163, 'Torunos', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (164, 'El Carmen', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (165, 'Romulo Betancourt', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (166, 'Corazon De Jesus', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (167, 'Ramon I Mendez', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (168, 'Alto Barinas', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (169, 'Manuel P Fajardo', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (170, 'Juan A Rodriguez D', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (171, 'Dominga Ortiz P', 49);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (172, 'Altamira', 50);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (173, 'Barinitas', 50);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (174, 'Calderas', 50);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (175, 'Santa Barbara', 51);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (176, 'Jose Ignacio Del Pumar', 51);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (177, 'Ramon Ignacio Mendez', 51);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (178, 'Pedro Briceño Mendez', 51);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (179, 'El Real', 52);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (180, 'La Luz', 52);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (181, 'Obispos', 52);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (182, 'Los Guasimitos', 52);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (183, 'Ciudad Bolivia', 53);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (184, 'Ignacio Briceño', 53);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (185, 'Paez', 53);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (186, 'Jose Felix Ribas', 53);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (187, 'Dolores', 54);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (188, 'Libertad', 54);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (189, 'Palacio Fajardo', 54);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (190, 'Santa Rosa', 54);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (191, 'Ciudad De Nutrias', 55);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (192, 'El Regalo', 55);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (193, 'Puerto De Nutrias', 55);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (194, 'Santa Catalina', 55);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (195, 'Rodriguez Dominguez', 56);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (196, 'Sabaneta', 56);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (197, 'Ticoporo', 57);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (198, 'Nicolas Pulido', 57);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (199, 'Andres Bello', 57);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (200, 'Barrancas', 58);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (201, 'El Socorro', 58);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (202, 'Masparrito', 58);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (203, 'El Canton', 59);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (204, 'Santa Cruz De Guacas', 59);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (205, 'Puerto Vivas', 59);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (206, 'Simon Bolivar', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (207, 'Once De Abril', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (208, 'Vista Al Sol', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (209, 'Chirica', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (210, 'Dalla Costa', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (211, 'Cachamay', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (212, 'Universidad', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (213, 'Unare', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (214, 'Yocoima', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (215, 'Pozo Verde', 60);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (216, 'Cm. Caicara Del Orinoco', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (217, 'Ascension Farreras', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (218, 'Altagracia', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (219, 'La Urbana', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (220, 'Guaniamo', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (221, 'Pijiguaos', 61);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (222, 'Catedral', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (223, 'Agua Salada', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (224, 'La Sabanita', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (225, 'Vista Hermosa', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (226, 'Marhuanta', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (227, 'Jose Antonio Paez', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (228, 'Orinoco', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (229, 'Panapana', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (230, 'Zea', 62);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (231, 'Cm. Upata', 63);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (232, 'Andres Eloy Blanco', 63);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (233, 'Pedro Cova', 63);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (234, 'Cm. Guasipati', 64);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (235, 'Salom', 64);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (236, 'Cm. Maripa', 65);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (237, 'Aripao', 65);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (238, 'Las Majadas', 65);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (239, 'Moitaco', 65);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (240, 'Guarataro', 65);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (241, 'Cm. Tumeremo', 66);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (242, 'Dalla Costa', 66);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (243, 'San Isidro', 66);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (244, 'Cm. Ciudad Piar', 67);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (245, 'San Francisco', 67);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (246, 'Barceloneta', 67);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (247, 'Santa Barbara', 67);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (248, 'Cm. Santa Elena De Uairen', 68);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (249, 'Ikabaru', 68);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (250, 'Cm. El Callao', 69);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (251, 'Cm. El Palmar', 70);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (252, 'Bejuma', 71);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (253, 'Canoabo', 71);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (254, 'Simon Bolivar', 71);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (255, 'Guigue', 72);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (256, 'Belen', 72);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (257, 'Tacarigua', 72);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (258, 'Mariara', 73);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (259, 'Aguas Calientes', 73);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (260, 'Guacara', 74);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (261, 'Ciudad Alianza', 74);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (262, 'Yagua', 74);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (263, 'Montalban', 75);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (264, 'Moron', 76);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (265, 'Urama', 76);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (266, 'Democracia', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (267, 'Fraternidad', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (268, 'Goaigoaza', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (269, 'Juan Jose Flores', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (270, 'Bartolome Salom', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (271, 'Union', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (272, 'Borburata', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (273, 'Patanemo', 77);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (274, 'San Joaquin', 78);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (275, 'Candelaria', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (276, 'Catedral', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (277, 'El Socorro', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (278, 'Miguel Peña', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (279, 'San Blas', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (280, 'San Jose', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (281, 'Santa Rosa', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (282, 'Rafael Urdaneta', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (283, 'Negro Primero', 79);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (284, 'Miranda', 80);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (285, 'U Los Guayos', 81);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (286, 'Naguanagua', 82);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (287, 'Urb San Diego', 83);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (288, 'U Tocuyito', 84);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (289, 'U Independencia', 84);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (290, 'Cojedes', 85);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (291, 'Juan De Mata Suarez', 85);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (292, 'Tinaquillo', 86);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (293, 'El Baul', 87);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (294, 'Sucre', 87);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (295, 'El Pao', 88);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (296, 'Libertad De Cojedes', 89);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (297, 'El Amparo', 89);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (298, 'San Carlos De Austria', 90);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (299, 'Juan Angel Bravo', 90);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (300, 'Manuel Manrique', 90);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (301, 'Grl/Jefe Jose L Silva', 91);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (302, 'Macapo', 92);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (303, 'La Aguadita', 92);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (304, 'Romulo Gallegos', 93);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (305, 'San Juan De Los Cayos', 94);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (306, 'Capadare', 94);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (307, 'La Pastora', 94);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (308, 'Libertador', 94);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (309, 'San Luis', 95);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (310, 'Aracua', 95);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (311, 'La Peña', 95);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (312, 'Capatarida', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (313, 'Borojo', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (314, 'Seque', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (315, 'Zazarida', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (316, 'Bariro', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (317, 'Guajiro', 96);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (318, 'Norte', 97);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (319, 'Carirubana', 97);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (320, 'Punta Cardon', 97);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (321, 'Santa Ana', 97);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (322, 'La Vela De Coro', 98);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (323, 'Acurigua', 98);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (324, 'Guaibacoa', 98);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (325, 'Macoruca', 98);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (326, 'Las Calderas', 98);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (327, 'Pedregal', 99);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (328, 'Agua Clara', 99);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (329, 'Avaria', 99);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (330, 'Piedra Grande', 99);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (331, 'Purureche', 99);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (332, 'Pueblo Nuevo', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (333, 'Adicora', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (334, 'Baraived', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (335, 'Buena Vista', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (336, 'Jadacaquiva', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (337, 'Moruy', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (338, 'El Vinculo', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (339, 'El Hato', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (340, 'Adaure', 100);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (341, 'Churuguara', 101);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (342, 'Agua Larga', 101);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (343, 'Independencia', 101);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (344, 'Maparari', 101);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (345, 'El Pauji', 101);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (346, 'Mene De Mauroa', 102);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (347, 'Casigua', 102);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (348, 'San Felix', 102);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (349, 'San Antonio', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (350, 'San Gabriel', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (351, 'Santa Ana', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (352, 'Guzman Guillermo', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (353, 'Mitare', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (354, 'Sabaneta', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (355, 'Rio Seco', 103);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (356, 'Cabure', 104);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (357, 'Curimagua', 104);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (358, 'Colina', 104);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (359, 'Tucacas', 105);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (360, 'Boca De Aroa', 105);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (361, 'Puerto Cumarebo', 106);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (362, 'La Cienaga', 106);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (363, 'La Soledad', 106);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (364, 'Pueblo Cumarebo', 106);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (365, 'Zazarida', 106);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (366, 'Cm. Dabajuro', 107);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (367, 'Chichiriviche', 108);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (368, 'Boca De Tocuyo', 108);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (369, 'Tocuyo De La Costa', 108);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (370, 'Los Taques', 109);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (371, 'Judibana', 109);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (372, 'Piritu', 110);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (373, 'San Jose De La Costa', 110);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (374, 'Sta.Cruz De Bucaral', 111);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (375, 'El Charal', 111);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (376, 'Las Vegas Del Tuy', 111);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (377, 'Cm. Mirimire', 112);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (378, 'Jacura', 113);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (379, 'Agua Linda', 113);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (380, 'Araurima', 113);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (381, 'Cm. Yaracal', 114);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (382, 'Cm. Palma Sola', 115);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (383, 'Sucre', 116);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (384, 'Pecaya', 116);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (385, 'Urumaco', 117);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (386, 'Bruzual', 117);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (387, 'Cm. Tocopero', 118);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (388, 'Valle De La Pascua', 119);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (389, 'Espino', 119);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (390, 'El Sombrero', 120);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (391, 'Sosa', 120);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (392, 'Calabozo', 121);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (393, 'El Calvario', 121);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (394, 'El Rastro', 121);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (395, 'Guardatinajas', 121);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (396, 'Altagracia De Orituco', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (397, 'Lezama', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (398, 'Libertad De Orituco', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (399, 'San Fco De Macaira', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (400, 'San Rafael De Orituco', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (401, 'Soublette', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (402, 'Paso Real De Macaira', 122);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (403, 'Tucupido', 123);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (404, 'San Rafael De Laya', 123);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (405, 'San Juan De Los Morros', 124);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (406, 'Parapara', 124);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (407, 'Cantagallo', 124);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (408, 'Zaraza', 125);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (409, 'San Jose De Unare', 125);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (410, 'Camaguan', 126);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (411, 'Puerto Miranda', 126);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (412, 'Uverito', 126);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (413, 'San Jose De Guaribe', 127);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (414, 'Las Mercedes', 128);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (415, 'Sta Rita De Manapire', 128);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (416, 'Cabruta', 128);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (417, 'El Socorro', 129);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (418, 'Ortiz', 130);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (419, 'San Fco. De Tiznados', 130);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (420, 'San Jose De Tiznados', 130);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (421, 'S Lorenzo De Tiznados', 130);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (422, 'Santa Maria De Ipire', 131);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (423, 'Altamira', 131);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (424, 'Chaguaramas', 132);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (425, 'Guayabal', 133);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (426, 'Cazorla', 133);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (427, 'Freitez', 134);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (428, 'Jose Maria Blanco', 134);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (429, 'Catedral', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (430, 'La Concepcion', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (431, 'Santa Rosa', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (432, 'Union', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (433, 'El Cuji', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (434, 'Tamaca', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (435, 'Juan De Villegas', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (436, 'Aguedo F. Alvarado', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (437, 'Buena Vista', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (438, 'Juarez', 135);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (439, 'Juan B Rodriguez', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (440, 'Diego De Lozada', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (441, 'San Miguel', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (442, 'Cuara', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (443, 'Paraiso De San Jose', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (444, 'Tintorero', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (445, 'Jose Bernardo Dorante', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (446, 'Crnel. Mariano Peraza', 136);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (447, 'Bolivar', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (448, 'Anzoategui', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (449, 'Guarico', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (450, 'Humocaro Alto', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (451, 'Humocaro Bajo', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (452, 'Moran', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (453, 'Hilario Luna Y Luna', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (454, 'La Candelaria', 137);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (455, 'Cabudare', 138);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (456, 'Jose G. Bastidas', 138);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (457, 'Agua Viva', 138);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (458, 'Trinidad Samuel', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (459, 'Antonio Diaz', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (460, 'Camacaro', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (461, 'Castañeda', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (462, 'Chiquinquira', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (463, 'Espinoza Los Monteros', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (464, 'Lara', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (465, 'Manuel Morillo', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (466, 'Montes De Oca', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (467, 'Torres', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (468, 'El Blanco', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (469, 'Monta A Verde', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (470, 'Heriberto Arroyo', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (471, 'Las Mercedes', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (472, 'Cecilio Zubillaga', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (473, 'Reyes Vargas', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (474, 'Altagracia', 139);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (475, 'Siquisique', 140);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (476, 'San Miguel', 140);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (477, 'Xaguas', 140);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (478, 'Moroturo', 140);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (479, 'Pio Tamayo', 141);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (480, 'Yacambu', 141);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (481, 'Qbda. Honda De Guache', 141);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (482, 'Sarare', 142);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (483, 'Gustavo Vegas Leon', 142);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (484, 'Buria', 142);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (485, 'Gabriel Picon G.', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (486, 'Hector Amable Mora', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (487, 'Jose Nucete Sardi', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (488, 'Pulido Mendez', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (489, 'Pte. Romulo Gallegos', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (490, 'Presidente Betancourt', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (491, 'Presidente Paez', 143);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (492, 'Cm. La Azulita', 144);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (493, 'Cm. Canagua', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (494, 'Capuri', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (495, 'Chacanta', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (496, 'El Molino', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (497, 'Guaimaral', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (498, 'Mucutuy', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (499, 'Mucuchachi', 145);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (500, 'Acequias', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (501, 'Jaji', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (502, 'La Mesa', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (503, 'San Jose', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (504, 'Montalban', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (505, 'Matriz', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (506, 'Fernandez Peña', 146);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (507, 'Cm. Guaraque', 147);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (508, 'Mesa De Quintero', 147);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (509, 'Rio Negro', 147);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (510, 'Cm. Arapuey', 148);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (511, 'Palmira', 148);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (512, 'Cm. Torondoy', 149);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (513, 'San Cristobal De T', 149);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (514, 'Arias', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (515, 'Sagrario', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (516, 'Milla', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (517, 'El Llano', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (518, 'Juan Rodriguez Suarez', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (519, 'Jacinto Plaza', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (520, 'Domingo Peña', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (521, 'Gonzalo Picon Febres', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (522, 'Osuna Rodriguez', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (523, 'Lasso De La Vega', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (524, 'Caracciolo Parra P', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (525, 'Mariano Picon Salas', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (526, 'Antonio Spinetti Dini', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (527, 'El Morro', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (528, 'Los Nevados', 150);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (529, 'Cm. Tabay', 151);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (530, 'Cm. Timotes', 152);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (531, 'Andres Eloy Blanco', 152);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (532, 'Piñango', 152);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (533, 'La Venta', 152);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (534, 'Cm. Sta Cruz De Mora', 153);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (535, 'Mesa Bolivar', 153);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (536, 'Mesa De Las Palmas', 153);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (537, 'Cm. Sta Elena De Arenales', 154);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (538, 'Eloy Paredes', 154);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (539, 'Pq R De Alcazar', 154);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (540, 'Cm. Tucani', 155);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (541, 'Florencio Ramirez', 155);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (542, 'Cm. Santo Domingo', 156);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (543, 'Las Piedras', 156);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (544, 'Cm. Pueblo Llano', 157);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (545, 'Cm. Mucuchies', 158);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (546, 'Mucuruba', 158);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (547, 'San Rafael', 158);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (548, 'Cacute', 158);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (549, 'La Toma', 158);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (550, 'Cm. Bailadores', 159);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (551, 'Geronimo Maldonado', 159);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (552, 'Cm. Lagunillas', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (553, 'Chiguara', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (554, 'Estanques', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (555, 'San Juan', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (556, 'Pueblo Nuevo Del Sur', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (557, 'La Trampa', 160);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (558, 'El Llano', 161);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (559, 'Tovar', 161);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (560, 'El Amparo', 161);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (561, 'San Francisco', 161);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (562, 'Cm. Nueva Bolivia', 162);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (563, 'Independencia', 162);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (564, 'Maria C Palacios', 162);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (565, 'Santa Apolonia', 162);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (566, 'Cm. Sta Maria De Caparo', 163);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (567, 'Cm. Aricagua', 164);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (568, 'San Antonio', 164);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (569, 'Cm. Zea', 165);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (570, 'Caño El Tigre', 165);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (571, 'Caucagua', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (572, 'Araguita', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (573, 'Arevalo Gonzalez', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (574, 'Capaya', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (575, 'Panaquire', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (576, 'Ribas', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (577, 'El Cafe', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (578, 'Marizapa', 166);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (579, 'Higuerote', 167);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (580, 'Curiepe', 167);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (581, 'Tacarigua', 167);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (582, 'Los Teques', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (583, 'Cecilio Acosta', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (584, 'Paracotos', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (585, 'San Pedro', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (586, 'Tacata', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (587, 'El Jarillo', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (588, 'Altagracia De La M', 168);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (589, 'Sta Teresa Del Tuy', 169);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (590, 'El Cartanal', 169);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (591, 'Ocumare Del Tuy', 170);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (592, 'La Democracia', 170);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (593, 'Santa Barbara', 170);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (594, 'Rio Chico', 171);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (595, 'El Guapo', 171);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (596, 'Tacarigua De La Laguna', 171);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (597, 'Paparo', 171);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (598, 'Sn Fernando Del Guapo', 171);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (599, 'Santa Lucia', 172);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (600, 'Guarenas', 173);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (601, 'Petare', 174);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (602, 'Leoncio Martinez', 174);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (603, 'Caucaguita', 174);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (604, 'Filas De Mariches', 174);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (605, 'La Dolorita', 174);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (606, 'Cua', 175);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (607, 'Nueva Cua', 175);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (608, 'Guatire', 176);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (609, 'Bolivar', 176);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (610, 'Charallave', 177);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (611, 'Las Brisas', 177);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (612, 'San Antonio Los Altos', 178);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (613, 'San Jose De Barlovento', 179);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (614, 'Cumbo', 179);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (615, 'San Fco De Yare', 180);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (616, 'S Antonio De Yare', 180);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (617, 'Baruta', 181);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (618, 'El Cafetal', 181);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (619, 'Las Minas De Baruta', 181);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (620, 'Carrizal', 182);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (621, 'Chacao', 183);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (622, 'El Hatillo', 184);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (623, 'Mamporal', 185);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (624, 'Cupira', 186);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (625, 'Machurucuto', 186);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (626, 'Cm. San Antonio', 187);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (627, 'San Francisco', 187);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (628, 'Cm. Caripito', 188);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (629, 'Cm. Caripe', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (630, 'Teresen', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (631, 'El Guacharo', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (632, 'San Agustin', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (633, 'La Guanota', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (634, 'Sabana De Piedra', 189);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (635, 'Cm. Caicara', 190);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (636, 'Areo', 190);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (637, 'San Felix', 190);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (638, 'Viento Fresco', 190);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (639, 'Cm. Punta De Mata', 191);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (640, 'El Tejero', 191);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (641, 'Cm. Temblador', 192);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (642, 'Tabasca', 192);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (643, 'Las Alhuacas', 192);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (644, 'Chaguaramas', 192);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (645, 'El Furrial', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (646, 'Jusepin', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (647, 'El Corozo', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (648, 'San Vicente', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (649, 'La Pica', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (650, 'Alto De Los Godos', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (651, 'Boqueron', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (652, 'Las Cocuizas', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (653, 'Santa Cruz', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (654, 'San Simon', 193);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (655, 'Cm. Aragua', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (656, 'Chaguaramal', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (657, 'Guanaguana', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (658, 'Aparicio', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (659, 'Taguaya', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (660, 'El Pinto', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (661, 'La Toscana', 194);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (662, 'Cm. Quiriquire', 195);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (663, 'Cachipo', 195);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (664, 'Cm. Barrancas', 196);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (665, 'Los Barrancos De Fajardo', 196);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (666, 'Cm. Aguasay', 197);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (667, 'Cm. Santa Barbara', 198);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (668, 'Cm. Uracoa', 199);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (669, 'Cm. La Asuncion', 200);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (670, 'Cm. San Juan Bautista', 201);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (671, 'Zabala', 201);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (672, 'Cm. Santa Ana', 202);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (673, 'Guevara', 202);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (674, 'Matasiete', 202);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (675, 'Bolivar', 202);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (676, 'Sucre', 202);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (677, 'Cm. Pampatar', 203);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (678, 'Aguirre', 203);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (679, 'Cm. Juan Griego', 204);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (680, 'Adrian', 204);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (681, 'Cm. Porlamar', 205);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (682, 'Cm. Boca Del Rio', 206);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (683, 'San Francisco', 206);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (684, 'Cm. San Pedro De Coche', 207);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (685, 'Vicente Fuentes', 207);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (686, 'Cm. Punta De Piedras', 208);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (687, 'Los Barales', 208);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (688, 'Cm.La Plaza De Paraguachi', 209);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (689, 'Cm. Valle Esp Santo', 210);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (690, 'Francisco Fajardo', 210);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (691, 'Cm. Araure', 211);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (692, 'Rio Acarigua', 211);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (693, 'Cm. Piritu', 212);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (694, 'Uveral', 212);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (695, 'Cm. Guanare', 213);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (696, 'Cordoba', 213);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (697, 'San Juan Guanaguanare', 213);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (698, 'Virgen De La Coromoto', 213);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (699, 'San Jose De La Montaña', 213);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (700, 'Cm. Guanarito', 214);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (701, 'Trinidad De La Capilla', 214);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (702, 'Divina Pastora', 214);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (703, 'Cm. Ospino', 215);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (704, 'Aparicion', 215);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (705, 'La Estacion', 215);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (706, 'Cm. Acarigua', 216);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (707, 'Payara', 216);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (708, 'Pimpinela', 216);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (709, 'Ramon Peraza', 216);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (710, 'Cm. Biscucuy', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (711, 'Concepcion', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (712, 'San Rafael Palo Alzado', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (713, 'Uvencio A Velasquez', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (714, 'San Jose De Saguaz', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (715, 'Villa Rosa', 217);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (716, 'Cm. Villa Bruzual', 218);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (717, 'Canelones', 218);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (718, 'Santa Cruz', 218);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (719, 'San Isidro Labrador', 218);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (720, 'Cm. Chabasquen', 219);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (721, 'Peña Blanca', 219);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (722, 'Cm. Agua Blanca', 220);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (723, 'Cm. Papelon', 221);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (724, 'Caño Delgadito', 221);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (725, 'Cm. Boconoito', 222);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (726, 'Antolin Tovar Aquino', 222);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (727, 'Cm. San Rafael De Onoto', 223);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (728, 'Santa Fe', 223);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (729, 'Thermo Morles', 223);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (730, 'Cm. El Playon', 224);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (731, 'Florida', 224);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (732, 'Rio Caribe', 225);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (733, 'San Juan Galdonas', 225);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (734, 'Puerto Santo', 225);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (735, 'El Morro De Pto Santo', 225);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (736, 'Antonio Jose De Sucre', 225);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (737, 'El Pilar', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (738, 'El Rincon', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (739, 'Guaraunos', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (740, 'Tunapuicito', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (741, 'Union', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (742, 'Gral Fco. A Vasquez', 226);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (743, 'Santa Catalina', 227);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (744, 'Santa Rosa', 227);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (745, 'Santa Teresa', 227);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (746, 'Bolivar', 227);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (747, 'Macarapana', 227);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (748, 'Yaguaraparo', 228);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (749, 'Libertad', 228);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (750, 'Paujil', 228);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (751, 'Irapa', 229);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (752, 'Campo Claro', 229);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (753, 'Soro', 229);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (754, 'San Antonio De Irapa', 229);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (755, 'Marabal', 229);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (756, 'Cm. San Ant Del Golfo', 230);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (757, 'Cumanacoa', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (758, 'Arenas', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (759, 'Aricagua', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (760, 'Cocollar', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (761, 'San Fernando', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (762, 'San Lorenzo', 231);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (763, 'Cariaco', 232);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (764, 'Catuaro', 232);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (765, 'Rendon', 232);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (766, 'Santa Cruz', 232);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (767, 'Santa Maria', 232);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (768, 'Altagracia', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (769, 'Ayacucho', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (770, 'Santa Ines', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (771, 'Valentin Valiente', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (772, 'San Juan', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (773, 'Gran Mariscal', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (774, 'Raul Leoni', 233);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (775, 'Guiria', 234);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (776, 'Cristobal Colon', 234);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (777, 'Punta De Piedra', 234);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (778, 'Bideau', 234);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (779, 'Mariño', 235);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (780, 'Romulo Gallegos', 235);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (781, 'Tunapuy', 236);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (782, 'Campo Elias', 236);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (783, 'San Jose De Areocuar', 237);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (784, 'Tavera Acosta', 237);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (785, 'Cm. Mariguitar', 238);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (786, 'Araya', 239);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (787, 'Manicuare', 239);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (788, 'Chacopata', 239);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (789, 'Cm. Colon', 240);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (790, 'Rivas Berti', 240);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (791, 'San Pedro Del Rio', 240);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (792, 'Cm. San Ant Del Tachira', 241);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (793, 'Palotal', 241);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (794, 'Juan Vicente Gomez', 241);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (795, 'Isaias Medina Angarit', 241);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (796, 'Cm. Capacho Nuevo', 242);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (797, 'Juan German Roscio', 242);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (798, 'Roman Cardenas', 242);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (799, 'Cm. Tariba', 243);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (800, 'La Florida', 243);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (801, 'Amenodoro Rangel Lamu', 243);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (802, 'Cm. La Grita', 244);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (803, 'Emilio C. Guerrero', 244);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (804, 'Mons. Miguel A Salas', 244);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (805, 'Cm. Rubio', 245);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (806, 'Bramon', 245);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (807, 'La Petrolea', 245);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (808, 'Quinimari', 245);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (809, 'Cm. Lobatera', 246);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (810, 'Constitucion', 246);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (811, 'La Concordia', 247);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (812, 'Pedro Maria Morantes', 247);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (813, 'Sn Juan Bautista', 247);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (814, 'San Sebastian', 247);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (815, 'Dr. Fco. Romero Lobo', 247);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (816, 'Cm. Pregonero', 248);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (817, 'Cardenas', 248);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (818, 'Potosi', 248);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (819, 'Juan Pablo Peñaloza', 248);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (820, 'Cm. Sta. Ana  Del Tachira', 249);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (821, 'Cm. La Fria', 250);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (822, 'Boca De Grita', 250);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (823, 'Jose Antonio Paez', 250);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (824, 'Cm. Palmira', 251);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (825, 'Cm. Michelena', 252);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (826, 'Cm. Abejales', 253);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (827, 'San Joaquin De Navay', 253);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (828, 'Doradas', 253);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (829, 'Emeterio Ochoa', 253);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (830, 'Cm. Coloncito', 254);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (831, 'La Palmita', 254);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (832, 'Cm. Ureña', 255);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (833, 'Nueva Arcadia', 255);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (834, 'Cm. Queniquea', 256);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (835, 'San Pablo', 256);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (836, 'Eleazar Lopez Contrera', 256);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (837, 'Cm. Cordero', 257);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (838, 'Cm.San Rafael Del Pinal', 258);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (839, 'Santo Domingo', 258);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (840, 'Alberto Adriani', 258);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (841, 'Cm. Capacho Viejo', 259);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (842, 'Cipriano Castro', 259);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (843, 'Manuel Felipe Rugeles', 259);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (844, 'Cm. La Tendida', 260);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (845, 'Bocono', 260);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (846, 'Hernandez', 260);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (847, 'Cm. Seboruco', 261);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (848, 'Cm. Las Mesas', 262);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (849, 'Cm. San Jose De Bolivar', 263);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (850, 'Cm. El Cobre', 264);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (851, 'Cm. Delicias', 265);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (852, 'Cm. San Simon', 266);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (853, 'Cm. San Josecito', 267);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (854, 'Cm. Umuquena', 268);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (855, 'Betijoque', 269);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (856, 'Jose G Hernandez', 269);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (857, 'La Pueblita', 269);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (858, 'El Cedro', 269);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (859, 'Bocono', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (860, 'El Carmen', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (861, 'Mosquey', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (862, 'Ayacucho', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (863, 'Burbusay', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (864, 'General Rivas', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (865, 'Monseñor Jauregui', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (866, 'Rafael Rangel', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (867, 'San Jose', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (868, 'San Miguel', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (869, 'Guaramacal', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (870, 'La Vega De Guaramacal', 270);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (871, 'Carache', 271);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (872, 'La Concepcion', 271);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (873, 'Cuicas', 271);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (874, 'Panamericana', 271);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (875, 'Santa Cruz', 271);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (876, 'Escuque', 272);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (877, 'Sabana Libre', 272);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (878, 'La Union', 272);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (879, 'Santa Rita', 272);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (880, 'Cristobal Mendoza', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (881, 'Chiquinquira', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (882, 'Matriz', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (883, 'Monseñor Carrillo', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (884, 'Cruz Carrillo', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (885, 'Andres Linares', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (886, 'Tres Esquinas', 273);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (887, 'La Quebrada', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (888, 'Jajo', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (889, 'La Mesa', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (890, 'Santiago', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (891, 'Cabimbu', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (892, 'Tuñame', 274);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (893, 'Mercedes Diaz', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (894, 'Juan Ignacio Montilla', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (895, 'La Beatriz', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (896, 'Mendoza', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (897, 'La Puerta', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (898, 'San Luis', 275);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (899, 'Chejende', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (900, 'Carrillo', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (901, 'Cegarra', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (902, 'Bolivia', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (903, 'Manuel Salvador Ulloa', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (904, 'San Jose', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (905, 'Arnoldo Gabaldon', 276);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (906, 'El Dividive', 277);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (907, 'Agua Caliente', 277);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (908, 'El Cenizo', 277);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (909, 'Agua Santa', 277);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (910, 'Valerita', 277);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (911, 'Monte Carmelo', 278);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (912, 'Buena Vista', 278);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (913, 'Sta Maria Del Horcon', 278);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (914, 'Motatan', 279);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (915, 'El Baño', 279);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (916, 'Jalisco', 279);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (917, 'Pampan', 280);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (918, 'Santa Ana', 280);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (919, 'La Paz', 280);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (920, 'Flor De Patria', 280);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (921, 'Carvajal', 281);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (922, 'Antonio N Briceño', 281);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (923, 'Campo Alegre', 281);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (924, 'Jose Leonardo Suarez', 281);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (925, 'Sabana De Mendoza', 282);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (926, 'Junin', 282);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (927, 'Valmore Rodriguez', 282);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (928, 'El Paraiso', 282);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (929, 'Santa Isabel', 283);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (930, 'Araguaney', 283);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (931, 'El Jaguito', 283);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (932, 'La Esperanza', 283);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (933, 'Sabana Grande', 284);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (934, 'Cheregue', 284);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (935, 'Granados', 284);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (936, 'El Socorro', 285);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (937, 'Los Caprichos', 285);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (938, 'Antonio Jose De Sucre', 285);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (939, 'Campo Elias', 286);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (940, 'Arnoldo Gabaldon', 286);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (941, 'Santa Apolonia', 287);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (942, 'La Ceiba', 287);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (943, 'El Progreso', 287);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (944, 'Tres De Febrero', 287);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (945, 'Pampanito', 288);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (946, 'Pampanito Ii', 288);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (947, 'La Concepcion', 288);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (948, 'Cm. Aroa', 289);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (949, 'Cm. Chivacoa', 290);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (950, 'Campo Elias', 290);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (951, 'Cm. Nirgua', 291);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (952, 'Salom', 291);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (953, 'Temerla', 291);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (954, 'Cm. San Felipe', 292);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (955, 'Albarico', 292);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (956, 'San Javier', 292);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (957, 'Cm. Guama', 293);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (958, 'Cm. Urachiche', 294);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (959, 'Cm. Yaritagua', 295);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (960, 'San Andres', 295);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (961, 'Cm. Sabana De Parra', 296);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (962, 'Cm. Boraure', 297);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (963, 'Cm. Cocorote', 298);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (964, 'Cm. Independencia', 299);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (965, 'Cm. San Pablo', 300);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (966, 'Cm. Yumare', 301);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (967, 'Cm. Farriar', 302);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (968, 'El Guayabo', 302);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (969, 'General Urdaneta', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (970, 'Libertador', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (971, 'Manuel Guanipa Matos', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (972, 'Marcelino Briceño', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (973, 'San Timoteo', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (974, 'Pueblo Nuevo', 303);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (975, 'Pedro Lucas Urribarri', 304);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (976, 'Santa Rita', 304);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (977, 'Jose Cenovio Urribarr', 304);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (978, 'El Mene', 304);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (979, 'Santa Cruz Del Zulia', 305);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (980, 'Urribarri', 305);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (981, 'Moralito', 305);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (982, 'San Carlos Del Zulia', 305);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (983, 'Santa Barbara', 305);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (984, 'Luis De Vicente', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (985, 'Ricaurte', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (986, 'Mons.Marcos Sergio G', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (987, 'San Rafael', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (988, 'Las Parcelas', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (989, 'Tamare', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (990, 'La Sierrita', 306);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (991, 'Bolivar', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (992, 'Coquivacoa', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (993, 'Cristo De Aranza', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (994, 'Chiquinquira', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (995, 'Santa Lucia', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (996, 'Olegario Villalobos', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (997, 'Juana De Avila', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (998, 'Caracciolo Parra Perez', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (999, 'Idelfonzo Vasquez', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1000, 'Cacique Mara', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1001, 'Cecilio Acosta', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1002, 'Raul Leoni', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1003, 'Francisco Eugenio B', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1004, 'Manuel Dagnino', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1005, 'Luis Hurtado Higuera', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1006, 'Venancio Pulgar', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1007, 'Antonio Borjas Romero', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1008, 'San Isidro', 307);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1009, 'Faria', 308);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1010, 'San Antonio', 308);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1011, 'Ana Maria Campos', 308);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1012, 'San Jose', 308);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1013, 'Altagracia', 308);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1014, 'Goajira', 309);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1015, 'Elias Sanchez Rubio', 309);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1016, 'Sinamaica', 309);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1017, 'Alta Guajira', 309);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1018, 'San Jose De Perija', 310);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1019, 'Bartolome De Las Casas', 310);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1020, 'Libertad', 310);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1021, 'Rio Negro', 310);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1022, 'Gibraltar', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1023, 'Heras', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1024, 'M.Arturo Celestino A', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1025, 'Romulo Gallegos', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1026, 'Bobures', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1027, 'El Batey', 311);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1028, 'Andres Bello (KM 48)', 312);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1029, 'Potreritos', 312);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1030, 'El Carmelo', 312);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1031, 'Chiquinquira', 312);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1032, 'Concepcion', 312);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1033, 'Eleazar Lopez C', 313);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1034, 'Alonso De Ojeda', 313);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1035, 'Venezuela', 313);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1036, 'Campo Lara', 313);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1037, 'Libertad', 313);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1038, 'Udon Perez', 314);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1039, 'Encontrados', 314);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1040, 'Donaldo Garcia', 315);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1041, 'Sixto Zambrano', 315);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1042, 'El Rosario', 315);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1043, 'Ambrosio', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1044, 'German Rios Linares', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1045, 'Jorge Hernandez', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1046, 'La Rosa', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1047, 'Punta Gorda', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1048, 'Carmen Herrera', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1049, 'San Benito', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1050, 'Romulo Betancourt', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1051, 'Aristides Calvani', 316);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1052, 'Raul Cuenca', 317);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1053, 'La Victoria', 317);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1054, 'Rafael Urdaneta', 317);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1055, 'Jose Ramon Yepez', 318);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1056, 'La Concepcion', 318);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1057, 'San Jose', 318);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1058, 'Mariano Parra Leon', 318);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1059, 'Monagas', 319);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1060, 'Isla De Toas', 319);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1061, 'Marcial Hernandez', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1062, 'Francisco Ochoa', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1063, 'San Francisco', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1064, 'El Bajo', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1065, 'Domitila Flores', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1066, 'Los Cortijos', 320);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1067, 'Bari', 321);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1068, 'Jesus M Semprun', 321);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1069, 'Simon Rodriguez', 322);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1070, 'Carlos Quevedo', 322);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1071, 'Francisco J Pulgar', 322);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1072, 'Rafael Maria Baralt', 323);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1073, 'Manuel Manrique', 323);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1074, 'Rafael Urdaneta', 323);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1075, 'Fernando Giron Tovar', 324);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1076, 'Luis Alberto Gomez', 324);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1077, 'Parhueña', 324);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1078, 'Platanillal', 324);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1079, 'Cm. San Fernando De Ataba', 325);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1080, 'Ucata', 325);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1081, 'Yapacana', 325);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1082, 'Caname', 325);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1083, 'Cm. Maroa', 326);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1084, 'Victorino', 326);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1085, 'Comunidad', 326);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1086, 'Cm. San Carlos De Rio Neg', 327);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1087, 'Solano', 327);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1088, 'Cocuy', 327);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1089, 'Cm. Isla De Raton', 328);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1090, 'Samariapo', 328);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1091, 'Sipapo', 328);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1092, 'Munduapo', 328);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1093, 'Guayapo', 328);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1094, 'Cm. San Juan De Manapiare', 329);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1095, 'Alto Ventuari', 329);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1096, 'Medio Ventuari', 329);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1097, 'Bajo Ventuari', 329);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1098, 'Cm. La Esmeralda', 330);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1099, 'Huachamacare', 330);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1100, 'Marawaka', 330);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1101, 'Mavaca', 330);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1102, 'Sierra Parima', 330);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1103, 'San Jose', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1104, 'Virgen Del Valle', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1105, 'San Rafael', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1106, 'Jose Vidal Marcano', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1107, 'Leonardo Ruiz Pineda', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1108, 'Mons. Argimiro Garcia', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1109, 'Mcl.Antonio J De Sucre', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1110, 'Juan Millan', 331);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1111, 'Pedernales', 332);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1112, 'Luis B Prieto Figuero', 332);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1113, 'Curiapo', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1114, 'Santos De Abelgas', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1115, 'Manuel Renaud', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1116, 'Padre Barral', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1117, 'Aniceto Lugo', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1118, 'Almirante Luis Brion', 333);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1119, 'Imataca', 334);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1120, 'Romulo Gallegos', 334);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1121, 'Juan Bautista Arismen', 334);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1122, 'Manuel Piar', 334);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1123, '5 De Julio', 334);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1124, 'Caraballeda', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1125, 'Carayaca', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1126, 'Caruao', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1127, 'Catia La Mar', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1128, 'La Guaira', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1129, 'Macuto', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1130, 'Maiquetia', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1131, 'Naiguata', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1132, 'El Junko', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1133, 'Pq Raul Leoni', 335);
+INSERT INTO public.sgc_parroquias (parroquiaid, parroquianom, municipioid) VALUES (1134, 'Pq Carlos Soublette', 335);
+
+
+--
+-- TOC entry 3260 (class 0 OID 124941)
+-- Dependencies: 216
+-- Data for Name: sgc_red_social; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_red_social (red_s_id, red_s_nom, red_s_borrado) VALUES (4, 'Correo Electronico', false);
+INSERT INTO public.sgc_red_social (red_s_id, red_s_nom, red_s_borrado) VALUES (6, 'Llamada telefonica', false);
+INSERT INTO public.sgc_red_social (red_s_id, red_s_nom, red_s_borrado) VALUES (1, 'Whatsapp', false);
+INSERT INTO public.sgc_red_social (red_s_id, red_s_nom, red_s_borrado) VALUES (2, 'Personal', false);
+
+
+--
+-- TOC entry 3281 (class 0 OID 136111)
+-- Dependencies: 237
+-- Data for Name: sgc_registro_cgr; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (21, 1, 1, false, 170);
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (18, 2, 1, false, 176);
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (17, 1, 1, false, 177);
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (20, 1, 2, true, 181);
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (22, 1, 2, true, 183);
+INSERT INTO public.sgc_registro_cgr (id_cgr, competencia_cgr, asume_cgr, borrado_cgr, id_caso) VALUES (19, 2, 1, false, 178);
+
+
+--
+-- TOC entry 3262 (class 0 OID 124946)
+-- Dependencies: 218
+-- Data for Name: sgc_roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_roles (idrol, rolnom) VALUES (1, 'Administrador');
+INSERT INTO public.sgc_roles (idrol, rolnom) VALUES (2, 'Analista');
+
+
+--
+-- TOC entry 3271 (class 0 OID 126622)
+-- Dependencies: 227
+-- Data for Name: sgc_seguimiento_caso; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3275 (class 0 OID 136039)
+-- Dependencies: 231
+-- Data for Name: sgc_tipo_prop_caso; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3264 (class 0 OID 124964)
+-- Dependencies: 220
+-- Data for Name: sgc_tipo_prop_intelec; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_tipo_prop_intelec (tipo_prop_id, tipo_prop_nombre, tipo_prop_borrado) VALUES (1, 'Marcas', false);
+INSERT INTO public.sgc_tipo_prop_intelec (tipo_prop_id, tipo_prop_nombre, tipo_prop_borrado) VALUES (2, 'Patentes', false);
+INSERT INTO public.sgc_tipo_prop_intelec (tipo_prop_id, tipo_prop_nombre, tipo_prop_borrado) VALUES (3, 'Derecho de Autor', false);
+INSERT INTO public.sgc_tipo_prop_intelec (tipo_prop_id, tipo_prop_nombre, tipo_prop_borrado) VALUES (4, 'Indicaciones Geograficas', false);
+
+
+--
+-- TOC entry 3273 (class 0 OID 134870)
+-- Dependencies: 229
+-- Data for Name: sgc_tipoatencion_usu; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (1, 'ASESORIA', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (2, 'SUGERENCIA', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (3, 'QUEJA', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (4, 'RECLAMO', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (6, 'PETICION', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (5, 'DENUNCIA', false);
+INSERT INTO public.sgc_tipoatencion_usu (tipo_aten_id, tipo_aten_nombre, tipo_aten_borrado) VALUES (21, 'PRUEBA 2', true);
+
+
+--
+-- TOC entry 3266 (class 0 OID 124986)
+-- Dependencies: 222
+-- Data for Name: sgc_usuario_operador; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.sgc_usuario_operador (idusuopr, usuopnom, usuopape, usuoppass, usuopemail, idrol, usuopborrado, usercargo) VALUES (2, 'ADMIN', 'ADMIN', '$2y$10$DM0tv/U.5EnvvcgDZFASbuGI6yCOngaCzzWpHKTgBvim7W550CMVK', 'freddy.torres@sapi.gob.ve', 1, false, 'SUPERVISOR');
+
+
+--
+-- TOC entry 3318 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: sgc_auditoria_sistema_audi_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_auditoria_sistema_audi_id_seq', 412, true);
+
+
+--
+-- TOC entry 3319 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: sgc_casos_denuncias_denu_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_casos_denuncias_denu_id_seq', 10, true);
+
+
+--
+-- TOC entry 3320 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: sgc_casos_idcaso_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_casos_idcaso_seq', 186, true);
+
+
+--
+-- TOC entry 3321 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: sgc_casos_remitidos_casos_re_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_casos_remitidos_casos_re_id_seq', 19, true);
+
+
+--
+-- TOC entry 3322 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: sgc_direcciones_administrativas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_direcciones_administrativas_id_seq', 20, true);
+
+
+--
+-- TOC entry 3323 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: sgc_documentos_casos_docu_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_documentos_casos_docu_id_seq', 74, true);
+
+
+--
+-- TOC entry 3324 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: sgc_ente_asdcrito_ente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_ente_asdcrito_ente_id_seq', 2, true);
+
+
+--
+-- TOC entry 3325 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: sgc_estados_estadoid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_estados_estadoid_seq', 1, false);
+
+
+--
+-- TOC entry 3326 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: sgc_estatus_idest_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_estatus_idest_seq', 1, false);
+
+
+--
+-- TOC entry 3327 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: sgc_estatus_llamadas_idestllam_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_estatus_llamadas_idestllam_seq', 1, false);
+
+
+--
+-- TOC entry 3328 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: sgc_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_migrations_id_seq', 17, true);
+
+
+--
+-- TOC entry 3329 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: sgc_municipio_municipioid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_municipio_municipioid_seq', 1, false);
+
+
+--
+-- TOC entry 3330 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: sgc_oficinas_idofi_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_oficinas_idofi_seq', 1, false);
+
+
+--
+-- TOC entry 3331 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: sgc_paises_paisid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_paises_paisid_seq', 1, false);
+
+
+--
+-- TOC entry 3332 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: sgc_parroquias_parroquiaid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_parroquias_parroquiaid_seq', 1, false);
+
+
+--
+-- TOC entry 3333 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: sgc_red_social_idrrss_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_red_social_idrrss_seq', 2, true);
+
+
+--
+-- TOC entry 3334 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: sgc_registro_cgr_id_cgr_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_registro_cgr_id_cgr_seq', 22, true);
+
+
+--
+-- TOC entry 3335 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: sgc_roles_idrol_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_roles_idrol_seq', 1, false);
+
+
+--
+-- TOC entry 3336 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: sgc_seguimiento_caso_idsegcas_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_seguimiento_caso_idsegcas_seq', 35, true);
+
+
+--
+-- TOC entry 3337 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: sgc_tipo_prop_caso_idtipopropcaso_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_tipo_prop_caso_idtipopropcaso_seq', 79, true);
+
+
+--
+-- TOC entry 3338 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: sgc_tipo_prop_intelec_idtippropint_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_tipo_prop_intelec_idtippropint_seq', 1, false);
+
+
+--
+-- TOC entry 3339 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: sgc_tipoatencion_usu_tipo_anten_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_tipoatencion_usu_tipo_anten_id_seq', 21, true);
+
+
+--
+-- TOC entry 3340 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: sgc_usuario_operador_idusuopr_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.sgc_usuario_operador_idusuopr_seq', 14, true);
+
+
+--
+-- TOC entry 3086 (class 2606 OID 136066)
+-- Name: sgc_auditoria_sistema auditoria_de_sistema_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_auditoria_sistema
+    ADD CONSTRAINT auditoria_de_sistema_pkey PRIMARY KEY (audi_id);
+
+
+--
+-- TOC entry 3078 (class 2606 OID 126589)
+-- Name: sgc_casos pk_sgc_casos; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT pk_sgc_casos PRIMARY KEY (idcaso);
+
+
+--
+-- TOC entry 3054 (class 2606 OID 125016)
+-- Name: sgc_estados pk_sgc_estados; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estados
+    ADD CONSTRAINT pk_sgc_estados PRIMARY KEY (estadoid);
+
+
+--
+-- TOC entry 3056 (class 2606 OID 125018)
+-- Name: sgc_estatus pk_sgc_estatus; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estatus
+    ADD CONSTRAINT pk_sgc_estatus PRIMARY KEY (idest);
+
+
+--
+-- TOC entry 3058 (class 2606 OID 125020)
+-- Name: sgc_estatus_llamadas pk_sgc_estatus_llamadas; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estatus_llamadas
+    ADD CONSTRAINT pk_sgc_estatus_llamadas PRIMARY KEY (idestllam);
+
+
+--
+-- TOC entry 3060 (class 2606 OID 125022)
+-- Name: sgc_migrations pk_sgc_migrations; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_migrations
+    ADD CONSTRAINT pk_sgc_migrations PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3062 (class 2606 OID 125024)
+-- Name: sgc_municipio pk_sgc_municipio; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_municipio
+    ADD CONSTRAINT pk_sgc_municipio PRIMARY KEY (municipioid);
+
+
+--
+-- TOC entry 3064 (class 2606 OID 125026)
+-- Name: sgc_oficinas pk_sgc_oficinas; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_oficinas
+    ADD CONSTRAINT pk_sgc_oficinas PRIMARY KEY (idofi);
+
+
+--
+-- TOC entry 3066 (class 2606 OID 125028)
+-- Name: sgc_paises pk_sgc_paises; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_paises
+    ADD CONSTRAINT pk_sgc_paises PRIMARY KEY (paisid);
+
+
+--
+-- TOC entry 3068 (class 2606 OID 125030)
+-- Name: sgc_parroquias pk_sgc_parroquias; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_parroquias
+    ADD CONSTRAINT pk_sgc_parroquias PRIMARY KEY (parroquiaid);
+
+
+--
+-- TOC entry 3070 (class 2606 OID 125032)
+-- Name: sgc_red_social pk_sgc_red_social; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_red_social
+    ADD CONSTRAINT pk_sgc_red_social PRIMARY KEY (red_s_id);
+
+
+--
+-- TOC entry 3072 (class 2606 OID 125034)
+-- Name: sgc_roles pk_sgc_roles; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_roles
+    ADD CONSTRAINT pk_sgc_roles PRIMARY KEY (idrol);
+
+
+--
+-- TOC entry 3080 (class 2606 OID 126630)
+-- Name: sgc_seguimiento_caso pk_sgc_seguimiento_caso; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_seguimiento_caso
+    ADD CONSTRAINT pk_sgc_seguimiento_caso PRIMARY KEY (idsegcas);
+
+
+--
+-- TOC entry 3084 (class 2606 OID 136044)
+-- Name: sgc_tipo_prop_caso pk_sgc_tipo_prop_caso; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_caso
+    ADD CONSTRAINT pk_sgc_tipo_prop_caso PRIMARY KEY (idtipopropcaso);
+
+
+--
+-- TOC entry 3074 (class 2606 OID 125040)
+-- Name: sgc_tipo_prop_intelec pk_sgc_tipo_prop_intelec; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_intelec
+    ADD CONSTRAINT pk_sgc_tipo_prop_intelec PRIMARY KEY (tipo_prop_id);
+
+
+--
+-- TOC entry 3076 (class 2606 OID 125046)
+-- Name: sgc_usuario_operador pk_sgc_usuario_operador; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_usuario_operador
+    ADD CONSTRAINT pk_sgc_usuario_operador PRIMARY KEY (idusuopr);
+
+
+--
+-- TOC entry 3092 (class 2606 OID 136132)
+-- Name: sgc_casos_denuncias sgc_casos_denuncias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos_denuncias
+    ADD CONSTRAINT sgc_casos_denuncias_pkey PRIMARY KEY (denu_id);
+
+
+--
+-- TOC entry 3088 (class 2606 OID 136107)
+-- Name: sgc_casos_remitidos sgc_casos_remitidos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos_remitidos
+    ADD CONSTRAINT sgc_casos_remitidos_pkey PRIMARY KEY (casos_re_id);
+
+
+--
+-- TOC entry 3094 (class 2606 OID 136177)
+-- Name: sgc_documentos_casos sgc_documentos_casos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_documentos_casos
+    ADD CONSTRAINT sgc_documentos_casos_pkey PRIMARY KEY (docu_id);
+
+
+--
+-- TOC entry 3096 (class 2606 OID 136189)
+-- Name: sgc_ente_asdcrito sgc_ente_asdcrito_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_ente_asdcrito
+    ADD CONSTRAINT sgc_ente_asdcrito_pkey PRIMARY KEY (ente_id);
+
+
+--
+-- TOC entry 3090 (class 2606 OID 136117)
+-- Name: sgc_registro_cgr sgc_registro_cgr_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_registro_cgr
+    ADD CONSTRAINT sgc_registro_cgr_pkey PRIMARY KEY (id_cgr);
+
+
+--
+-- TOC entry 3082 (class 2606 OID 134879)
+-- Name: sgc_tipoatencion_usu sgc_tipoatencion_usu_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipoatencion_usu
+    ADD CONSTRAINT sgc_tipoatencion_usu_pkey PRIMARY KEY (tipo_aten_id);
+
+
+--
+-- TOC entry 3098 (class 2606 OID 136240)
+-- Name: sgc_direcciones_administrativas ubicacion_administrativa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_direcciones_administrativas
+    ADD CONSTRAINT ubicacion_administrativa_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3103 (class 2606 OID 126590)
+-- Name: sgc_casos sgc_casos_estadoid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_estadoid_foreign FOREIGN KEY (estadoid) REFERENCES public.sgc_estados(estadoid);
+
+
+--
+-- TOC entry 3104 (class 2606 OID 126595)
+-- Name: sgc_casos sgc_casos_idest_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_idest_foreign FOREIGN KEY (idest) REFERENCES public.sgc_estatus(idest);
+
+
+--
+-- TOC entry 3105 (class 2606 OID 126600)
+-- Name: sgc_casos sgc_casos_idrrss_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_idrrss_foreign FOREIGN KEY (idrrss) REFERENCES public.sgc_red_social(red_s_id);
+
+
+--
+-- TOC entry 3106 (class 2606 OID 126605)
+-- Name: sgc_casos sgc_casos_idusuopr_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_idusuopr_foreign FOREIGN KEY (idusuopr) REFERENCES public.sgc_usuario_operador(idusuopr);
+
+
+--
+-- TOC entry 3107 (class 2606 OID 126610)
+-- Name: sgc_casos sgc_casos_municipioid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_municipioid_foreign FOREIGN KEY (municipioid) REFERENCES public.sgc_municipio(municipioid);
+
+
+--
+-- TOC entry 3108 (class 2606 OID 126615)
+-- Name: sgc_casos sgc_casos_parroquiaid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_casos
+    ADD CONSTRAINT sgc_casos_parroquiaid_foreign FOREIGN KEY (parroquiaid) REFERENCES public.sgc_parroquias(parroquiaid);
+
+
+--
+-- TOC entry 3099 (class 2606 OID 125077)
+-- Name: sgc_estados sgc_estados_paisid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_estados
+    ADD CONSTRAINT sgc_estados_paisid_foreign FOREIGN KEY (paisid) REFERENCES public.sgc_paises(paisid);
+
+
+--
+-- TOC entry 3100 (class 2606 OID 125082)
+-- Name: sgc_municipio sgc_municipio_estadoid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_municipio
+    ADD CONSTRAINT sgc_municipio_estadoid_foreign FOREIGN KEY (estadoid) REFERENCES public.sgc_estados(estadoid);
+
+
+--
+-- TOC entry 3101 (class 2606 OID 125087)
+-- Name: sgc_parroquias sgc_parroquias_municipioid_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_parroquias
+    ADD CONSTRAINT sgc_parroquias_municipioid_foreign FOREIGN KEY (municipioid) REFERENCES public.sgc_municipio(municipioid);
+
+
+--
+-- TOC entry 3109 (class 2606 OID 126631)
+-- Name: sgc_seguimiento_caso sgc_seguimiento_caso_idcaso_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_seguimiento_caso
+    ADD CONSTRAINT sgc_seguimiento_caso_idcaso_foreign FOREIGN KEY (idcaso) REFERENCES public.sgc_casos(idcaso);
+
+
+--
+-- TOC entry 3110 (class 2606 OID 126636)
+-- Name: sgc_seguimiento_caso sgc_seguimiento_caso_idestllam_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_seguimiento_caso
+    ADD CONSTRAINT sgc_seguimiento_caso_idestllam_foreign FOREIGN KEY (idestllam) REFERENCES public.sgc_estatus_llamadas(idestllam);
+
+
+--
+-- TOC entry 3111 (class 2606 OID 126641)
+-- Name: sgc_seguimiento_caso sgc_seguimiento_caso_idusuopr_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_seguimiento_caso
+    ADD CONSTRAINT sgc_seguimiento_caso_idusuopr_foreign FOREIGN KEY (idusuopr) REFERENCES public.sgc_usuario_operador(idusuopr);
+
+
+--
+-- TOC entry 3112 (class 2606 OID 136045)
+-- Name: sgc_tipo_prop_caso sgc_tipo_prop_caso_idcaso_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_caso
+    ADD CONSTRAINT sgc_tipo_prop_caso_idcaso_foreign FOREIGN KEY (idcaso) REFERENCES public.sgc_casos(idcaso);
+
+
+--
+-- TOC entry 3113 (class 2606 OID 136050)
+-- Name: sgc_tipo_prop_caso sgc_tipo_prop_caso_idtippropint_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_tipo_prop_caso
+    ADD CONSTRAINT sgc_tipo_prop_caso_idtippropint_foreign FOREIGN KEY (idtippropint) REFERENCES public.sgc_tipo_prop_intelec(tipo_prop_id);
+
+
+--
+-- TOC entry 3102 (class 2606 OID 125117)
+-- Name: sgc_usuario_operador sgc_usuario_operador_idrol_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sgc_usuario_operador
+    ADD CONSTRAINT sgc_usuario_operador_idrol_foreign FOREIGN KEY (idrol) REFERENCES public.sgc_roles(idrol);
+
+
+-- Completed on 2023-10-23 15:18:30 -04
+
+--
+-- PostgreSQL database dump complete
+--
+
