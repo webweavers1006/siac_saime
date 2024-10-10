@@ -199,6 +199,7 @@
 <section class="section_card">
   <!-- Tarjeta Lateral -->
   <div class="col-lg-3  card_lateral">
+    <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
     <div class="row">
     <div class="col-12">
     <?php
@@ -209,14 +210,14 @@
               <label class="form-check-label text-left" for="pdf"><b>Agendar cita </b></label>
               <input id="fecha_cita"  class="form-control w-100"   type="text" placeholder="Seleccione una fecha y hora">
               <div class="select w-100">
-                  <label for="id_formato_cita">Formato de cita</label>
-                  <select name="id_formato_cita" class="w-100">
+                  <label for="">Formato de cita</label>
+                  <select name="id_formato_cita" id="id_formato_cita" class="w-100">
                       <option value="0">---Seleccione un Formato---</option>
                       <option value="1">Presencial</option>
                       <option value="2">Virtual</option>
                   </select>
               </div>
-              <br><button class="btn btn-primary btn-block w-100 agendar">Agendar</button> 
+              <br><br><button class="btn btn-primary btn-block w-100 agendar">Agendar</button> 
           </div>
       </div>
     <?php
@@ -225,14 +226,14 @@
     <div class="actualizar_citas" >
     <div class="card citas">
     <div class="card-body" style="padding-left: 10px;">
-        <label class="form-check-label text-left" for="pdf"><b><?php echo $cita['estado']; ?> </b></label>
+    <label class="form-check-label text-left" for="pdf"><b><?php echo $cita['estado']; ?> </b></label>
         <br><label for="id_formato_cita">Fecha :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'd-m-Y'); ?>
         <br><label for="id_formato_cita">Formato :</label> <?php echo $cita['formato_cita']; ?>
         <br><label for="id_formato_cita">Hora :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'g:i a'); ?>
         <br>
-        <a href="/actualizar_citas/<?php echo $datos2['id']; ?>">
+        <a href="/actualizar_citas/<?php echo $cita['id']; ?>">
           <div class="box is-pointer has-background-blue helper-button ">
-          <button class="btn btn-primary btn-block w-100 actualizar">Actualizar</button> 
+          <button class="btn btn-primary btn-block w-100 actualizar">Editar</button> 
           </div>
         </a>
         
@@ -255,6 +256,8 @@
             <p style="text-align: left;" class="has-text-bold" style="color: inherit;">Responsable</p>
             <p style="text-align: center;" class="has-text-bold" style="color: inherit;">
             <?php if (!empty($solicitud)) { ?>
+
+             
             <h3 style="text-align: center;"><?php echo $solicitud['trabajador']; ?></h3>
             <?php } ?>
             </p>
@@ -269,6 +272,7 @@
   </div>
 
 </section>
+<br>
   <!-- Estatus de la Audiencia -->
 <div class="row">
 <div class="col-3">
@@ -292,7 +296,7 @@
 <div class="col-6">
 </div>
 
-<div class="botones">
+
   <div class="is-fixed bottom-5 ">
   <a href="/agregar_solicitudes/<?php echo $datos2['id'];?>">
       <div class="box is-pointer has-background-blue helper-button ">
@@ -377,45 +381,7 @@
 <script src="<?php echo base_url(); ?>/custom/js/calendario/flatpickr.min.js"></script>
 
 
-<script>
-  // Configuración del calendario
-  flatpickr("#fecha_cita", {
-    enableTime: true, // Habilitar selector de hora
-    size: "compact", // Tamaño grande
-    showMonths: 1, // Mostrar un mes
-    showWeekNumbers: true, // Mostrar números de semana
-    todayButton: "Hoy", // Texto del botón de hoy
-    locale: {
-      firstDayOfWeek: 1, // Lunes como primer día de la semana
-      weekdays: {
-        shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-        longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
-      },
-      months: {
-        shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-        longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-      }
-    },
-    onChange: function(selectedDates, dateStr, instance) {
-      // Actualizar valor del input con la fecha y hora seleccionadas
-      const fechaHora = instance.formatDate(selectedDates[0], "d-m-Y h:i K");
-      document.getElementById("fecha_cita").value = fechaHora;
-    },
-    onClose: function(selectedDates, dateStr, instance) {
-      // Actualizar valor del input con la fecha seleccionada al cerrar el calendario
-      const fechaHora = instance.formatDate(selectedDates[0], "d-m-Y");
-      document.getElementById("fecha_cita").value = fechaHora;
-    }
-  });
 
-  // Evento click en el botón "Agendar"
-  $('.agendar').on('click', function() {
-    // Obtener la fecha y hora seleccionadas y mostrarlas en la consola
-    const fechaHora = flatpickr("#fecha_cita").formatDate(flatpickr("#fecha_cita").selectedDates[0], "d-m-Y h:i K");
-    console.log("Fecha y hora seleccionadas:", fechaHora);
-    document.getElementById("fecha_cita").value = fechaHora;
-  });
-</script>
 
 
 

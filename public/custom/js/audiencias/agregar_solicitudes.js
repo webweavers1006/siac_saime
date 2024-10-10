@@ -4,6 +4,8 @@ let solicitudes = [];
 // EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
 $(document).on('submit', "#buscar", function(e) {
   e.preventDefault();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   let ano = $("#ano").val().trim();
   let sol = $("#sol").val().trim();
   let id_area = $("#id_area").val();
@@ -19,7 +21,13 @@ $(document).on('submit', "#buscar", function(e) {
     $.ajax({
       url: url,
       method: "get",
-      dataType: "JSON",   
+      dataType: "JSON",  
+      dataType: "json",
+      headers: {
+
+        'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+      },   
       beforeSend: function() {    
        
       },   

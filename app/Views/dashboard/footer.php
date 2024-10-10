@@ -9,6 +9,12 @@
     $("#fecha-recibido").val(today);
   });
 </script>
+
+<script>
+var $token = "<?= base_url('session/getSesionData') ?>";
+</script>
+
+
 </body>
 
 </html>

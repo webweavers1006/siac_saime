@@ -40,56 +40,79 @@ class Audiencias_Controler extends BaseController
 	public function detalles_requerimientos($idcaso)
 	{
 		if ($this->session->get('logged')) {
-		 // Realiza la solicitud a la API para obtener los datos
-		// $datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/".$idcaso), true);
-		 //$otrosdatos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$idcaso), true);
-		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
-		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
+			$session = session();
+			$token = $session->get('token');
+		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
+		// Realiza la solicitud y decodifica la respuesta JSON
+		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas", false, $contexto), true);
 		
 		
         // ******************************DATOS***************************
+		// $ch = curl_init("http://172.16.0.46:70/solicitudes/".$idcaso);
+		// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		// curl_setopt($ch, CURLOPT_HEADER, 0);
+		// curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		// $response = curl_exec($ch);
+		// curl_close($ch);
+		// $datos = json_decode($response, true);
+
 		$ch = curl_init("http://172.16.0.46:70/solicitudes/".$idcaso);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Authorization: Bearer ' . $token
+		));
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$datos = json_decode($response, true);
+
 		//********************************************************************
 
   		// ******************************OTROS DATOS***************************
 		  $ch = curl_init("http://172.16.0.46:70/solicitudes/unicas/".$idcaso);
-		  curl_setopt_array($ch, array(
-			  CURLOPT_RETURNTRANSFER => true,
-		  ));
-		  $response = curl_exec($ch);
-		  if (curl_errno($ch)) {
-			  $error_message = curl_error($ch);
-			  $otrosdatos = array(
-				  'error' => true,
-				  'mensaje' => $error_message
-			  );
-		  } else {
-			  $response = json_decode($response, true);
-			  if (isset($response['error'])) {
-				  $otrosdatos = array(
-					  'error' => true,
-					  'mensaje' => $response['error']['message']
-				  );
-			  } elseif (!empty($response)) {
-				  $otrosdatos = array(
-					  'error' => false,
-					  'mensaje' => '',
-					  'informacion' => $response
-				  );
-			  } else {
-				  $otrosdatos = array(
-					  'error' => true,
-					  'mensaje' => 'No hay datos disponibles'
-				  );
-			  }
-		  }
-		  curl_close($ch);
+			curl_setopt_array($ch, array(
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_HTTPHEADER => array(
+					'Content-Type: application/json',
+					'Authorization: Bearer ' . $token
+				)
+			));
+			$response = curl_exec($ch);
+			if (curl_errno($ch)) {
+				$error_message = curl_error($ch);
+				$otrosdatos = array(
+					'error' => true,
+					'mensaje' => $error_message
+				);
+			} else {
+				$response = json_decode($response, true);
+				if (isset($response['error'])) {
+					$otrosdatos = array(
+						'error' => true,
+						'mensaje' => $response['error']['message']
+					);
+				} elseif (!empty($response)) {
+					$otrosdatos = array(
+						'error' => false,
+						'mensaje' => '',
+						'informacion' => $response
+					);
+				} else {
+					$otrosdatos = array(
+						'error' => true,
+						'mensaje' => 'No hay datos disponibles'
+					);
+				}
+			}
+			curl_close($ch);
 		//********************************************************************
 
 
@@ -97,20 +120,23 @@ class Audiencias_Controler extends BaseController
 		// Procesar los datos
 
 
-
-
 		// ******************************CITAS***************************
 		$url = "http://172.16.0.46:70/citas/ByRequerimiento/".$idcaso;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Authorization: Bearer ' . $token
+		));
 		$response = curl_exec($ch);
-		$error = curl_error($ch);
+		$error_number = curl_errno($ch);
+		$error_message = curl_error($ch);
 		curl_close($ch);
-		if ($error) {
-			echo "Error: $error";
-			
+		if ($error_number) {
+			echo "Error: $error_message";
 		} else {
 			$cita = json_decode($response, true);
+
 		}
 		
 		 // Pasa los datos a la vista
@@ -134,10 +160,21 @@ class Audiencias_Controler extends BaseController
 	public function actualizar_audiencia($idcaso)
 	{
 		if ($this->session->get('logged')) {
+
+			$session = session();
+			$token = $session->get('token');
+		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
+
 		 // Realiza la solicitud a la API para obtener los datos
-		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
-		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
-		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
+		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises", false, $contexto), true);
+		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises", false, $contexto), true);
 		 // Pasa los datos a la vista
 		 $data['estados'] = $estados;
 		 $data['pais'] = $pais;
@@ -158,12 +195,22 @@ class Audiencias_Controler extends BaseController
 	public function actualizar_solicitud($idcaso)
 	{
 		if ($this->session->get('logged')) {
+
+			$session = session();
+			$token = $session->get('token');
+		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
 		 // Realiza la solicitud a la API para obtener los datos
-		 $responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
-		 $datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$idcaso), true);
-		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
-		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
-		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
+		 $responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas", false, $contexto), true);
+		 $datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$idcaso, false, $contexto), true);
+		 $datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises", false, $contexto), true);
+		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises", false, $contexto), true);
 		 // Pasa los datos a la vista
 		 $data['responsable'] = $responsable;
 		 $data['datos'] = $datos;
@@ -190,48 +237,52 @@ class Audiencias_Controler extends BaseController
 		if ($this->session->get('logged'))
 	{
 		// Realiza la solicitud a la API para obtener los datos
-		$datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$id), true);
-		$mensajes = json_decode(file_get_contents("http://172.16.0.46:70/mensajes/$id/1/100"), true);
+		$session = session();
+		$token = $session->get('token');
+		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
 
-	
+
+		$datos = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/unicas/".$id, false, $contexto), true);
+		$mensajes = json_decode(file_get_contents("http://172.16.0.46:70/mensajes/$id/1/100", false, $contexto), true);
 		if ($datos['id_area']==1) {
 		
-			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/M/info"), true);
+			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/M/info", false, $contexto), true);
 		}else if ($datos['id_area']==2)
 		{
-			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/P/info"), true);
+			$info_empresa_y_titulares = json_decode(file_get_contents("http://172.16.0.46:70/solicitudes/consulta/".$datos['num_solicitud']."/P/info", false, $contexto), true);
 		}
 
 
-
+		////CRONOLOGIA
 		$url = "http://172.16.0.46:70/solicitudes/crono/".$id;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Authorization: Bearer ' . $token
+		));
 		$response = curl_exec($ch);
 		$error = curl_error($ch);
 		curl_close($ch);
 
 		if ($error) {
 			echo "Error: $error";
-			
 		} else {
 			$cronologia = json_decode($response, true);
 
 			if (isset($cronologia['error'])) {
 				$cronologia['solicitudes']=array();
 			}
-			
 			// ...
 		}
 
-
-
-
-
-
-
-		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas"), true);
-
+		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas", false, $contexto), true);
+		
 		// Pasa los datos a la vista
 		$data['datos'] = $datos;
 		$data['info_empresa_y_titulares'] = $info_empresa_y_titulares;
@@ -241,7 +292,8 @@ class Audiencias_Controler extends BaseController
 		echo view('template/header');
 		echo view('template/nav_bar');
 		echo view('audiencias/detalles_solicitudes.php', $data);
-		echo view('template/footer');
+	//	echo view('template/footer');
+		echo view('audiencias/footer_detalles_solicitudes.php', $data);
 			
 		} else {
 			return redirect()->to('/');
@@ -253,8 +305,20 @@ public function citas()
 {
 	if ($this->session->get('logged')) {
 
+		$session = session();
+		$token = $session->get('token');
+	// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+	$contexto = stream_context_create([
+		'http' => [
+			'method'  => 'GET',
+			'header'  => "Authorization: Bearer $token\r\n"
+		]
+	]);
+
+
+
 	// Realiza la solicitud a la API para obtener los datos
-	$datos = json_decode(file_get_contents("http://172.16.0.46:70/citas/1/100000000000"), true);
+	$datos = json_decode(file_get_contents("http://172.16.0.46:70/citas/1/100000000000", false, $contexto), true);
 	// Pasa los datos a la vista
 	$data['datos'] = $datos;
 		echo view('template/header');
@@ -270,9 +334,18 @@ public function citas()
 public function actualizar_citas($idcaso)
 	{
 		if ($this->session->get('logged')) {
+
+		$session = session();
+		$token = $session->get('token');
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
 		// Realiza la solicitud a la API para obtener los datos
-	 	$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
-		$cita = json_decode(file_get_contents("http://172.16.0.46:70/citas/".$idcaso), true);
+		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+		$cita = json_decode(file_get_contents("http://172.16.0.46:70/citas/".$idcaso, false, $contexto), true);
 
 	 	// Pasa los datos a la vista
 	 	$data['datos2'] = $datos2;
@@ -280,7 +353,7 @@ public function actualizar_citas($idcaso)
 		echo view('template/header');
 		echo view('template/nav_bar');
 		echo view('audiencias/actualizar_citas.php',$data);
-		
+		echo view('template/footer');
 		echo view('audiencias/footer_actualizar_citas.php');
 	} else {
 		return redirect()->to('/');
@@ -291,10 +364,20 @@ public function actualizar_citas($idcaso)
 	public function vista_agregar_requerimientos()
 	{
 		if ($this->session->get('logged')) {
+			$session = session();
+			$token = $session->get('token');
+			$contexto = stream_context_create([
+				'http' => [
+					'method'  => 'GET',
+					'header'  => "Authorization: Bearer $token\r\n"
+				]
+			]);
+
+
 		// Realiza la solicitud a la API para obtener los datos
-		$pais = json_decode(file_get_contents("http://172.16.0.46:70/paises"), true);
-		$estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises"), true);
-		$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias"), true);
+		$pais = json_decode(file_get_contents("http://172.16.0.46:70/paises", false, $contexto), true);
+		$estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises", false, $contexto), true);
+		$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias", false, $contexto), true);
 		// Pasa los datos a la vista
 		$data['estados'] = $estados;
 		$data['pais'] = $pais;
@@ -315,9 +398,18 @@ public function actualizar_citas($idcaso)
 public function agregar_solicitudes($idcaso)
 {
 	if ($this->session->get('logged')) {
+
+		$session = session();
+			$token = $session->get('token');
+			$contexto = stream_context_create([
+				'http' => [
+					'method'  => 'GET',
+					'header'  => "Authorization: Bearer $token\r\n"
+				]
+			]);
 	// Realiza la solicitud a la API para obtener los datos
-	$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso), true);
-	$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias"), true);
+	$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+	$categorias = json_decode(file_get_contents("http://172.16.0.46:70/categorias", false, $contexto), true);
 	$data['categorias'] = $categorias;
 	$data['datos2'] = $datos2;
 	echo view('template/header');
@@ -334,8 +426,17 @@ public function agregar_solicitudes($idcaso)
 public function citas_otorgadas()
 {
 	if ($this->session->get('logged')) {
+
+		$session = session();
+			$token = $session->get('token');
+			$contexto = stream_context_create([
+				'http' => [
+					'method'  => 'GET',
+					'header'  => "Authorization: Bearer $token\r\n"
+				]
+			]);
 	// Realiza la solicitud a la API para obtener los datos
-	$citas = json_decode(file_get_contents("http://172.16.0.46:70/citas/byMeses/2023"), true);
+	$citas = json_decode(file_get_contents("http://172.16.0.46:70/citas/byMeses/2023", false, $contexto), true);
 	$data['citas'] = $citas;
 	echo view('template/header');
 	echo view('template/nav_bar');

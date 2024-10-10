@@ -18,6 +18,7 @@
                 <p class="mb-0"><?php echo $datos['num_solicitud']; ?></p>
               </div>
             </div>
+            <input type="hidden" id="id_solicitud" value="<?php echo $datos['id']; ?>">
             <div class="row mb-0">
               <div class="col-sm-8">
                 <label  class="has-text-weight-semibold">Categoria-</label>
@@ -31,6 +32,7 @@
             <div class="row">
             <div class="col-10">
               </div>
+            
               <div class="is-fixed bottom-1 ">
                 <a href="/actualizar_solicitud/<?php echo $datos['id'];?>">
                   <div class="box is-pointer has-background-blue helper-button  edicion">
@@ -118,6 +120,13 @@
                   <div class="card card_table audiencia" style="max-width: 1350px; margin: 20px auto;">                         
                   <div class="box">
                   <br>
+
+                  <style>
+                    .card_lateral
+                    {
+                      display: none;
+                    }
+                  </style>
                     <div class="ant-result ant-result-success css-2i2tap">
                       <div class="ant-result-icon">
                         <span role="img" aria-label="check-circle" class="anticon anticon-check-circle">
@@ -358,15 +367,15 @@ foreach ($cronologia["solicitudes"] as $dato) {
                     <div class="field">
                       <label class="label">Responsable</label>
                       <div class="control">
-                    
+                                       
 
                         <div class="select">
-                        <select name="id_trabajador">
+                        <select name="id_trabajador" id="id_trabajador">
                           <option value="0">---Seleccione un responsable---</option>
 
                           <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
                               <?php if ($usuarioarea['id_area'] == $datos['id_area']) { ?>
-                                  <option value="<?php echo $usuarioarea['id']; ?>" <?php echo ($usuarioarea['id_usuario'] == $datos['id_trabajador']) ? 'selected' : ''; ?>>
+                                  <option value="<?php echo $usuarioarea['id_usuario']; ?>" <?php echo ($usuarioarea['id_usuario'] == $datos['id_trabajador']) ? 'selected' : ''; ?>>
                                       <?php echo $usuarioarea['nombre']; ?>
                                   </option>
                               <?php } ?>
@@ -377,7 +386,7 @@ foreach ($cronologia["solicitudes"] as $dato) {
                     </div>
                     <div class="field" style="margin-top: 20px;">
                       <div class="control">
-                        <button type="button" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth">
+                        <button type="button" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth" id="responsable">
                           <span>Asignar responsable</span>
                         </button>
                       </div>
@@ -391,9 +400,9 @@ foreach ($cronologia["solicitudes"] as $dato) {
                 <div class="card-body">
                   <div class="column is-12">
                     <p  class="has-text-weight-semibold mb-2">Cierre solicitud</p>
-                    <textarea class="textarea" name="respuesta" style="margin-top: 0;"></textarea>
+                    <textarea class="textarea" id="respuesta" name="respuesta" style="margin-top: 0;"></textarea>
                     <div class="control" style="margin-top: 20px;">
-                      <button type="button" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth">
+                      <button type="button" id="cierre_solicitud" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth">
                         <span>Cerrar solicitud</span>
                       </button>
                     </div>
@@ -409,13 +418,13 @@ foreach ($cronologia["solicitudes"] as $dato) {
                       <div class="field">
                         <div class="control">
                           <p  class="has-text-weight-semibold">Observaciones</p>
-                          <textarea class="textarea" name="mensaje"></textarea>
+                          <textarea class="textarea" id="mensaje_observacion" name="mensaje"></textarea>
                         </div>
                       </div>
                       <div class="field" style="margin-top: 20px;">
                         <div class="control">
                           <div class="select">
-                            <select name="id_opcion">
+                            <select name="id_opcion" id="id_opcion">
                               <option value="0">---Seleccione un tipo de mensaje---</option>
                               <option value="1">SOLICITUD DE CITA</option>
                               <option value="3">OBSERVACION INTERNA</option>
@@ -425,7 +434,7 @@ foreach ($cronologia["solicitudes"] as $dato) {
                       </div>
                       <div class="field" style="margin-top: 20px;">
                         <div class="control">
-                          <button class="button is-primary is-fullwidth">Enviar Mensaje</button>
+                          <button class="button is-primary is-fullwidth " id="observaciones" >Enviar Mensaje</button>
                         </div>
                       </div>
                     </div>
@@ -437,11 +446,9 @@ foreach ($cronologia["solicitudes"] as $dato) {
         </div>
       </section>
  <!-- *********************************************************************************** --> 
+  <br><br><br><br> <br><br><br><br> <br><br><br><br> 
+ 
 </mail>
-</div>
-</div>
-
-
 
 
 

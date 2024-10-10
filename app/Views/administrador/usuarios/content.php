@@ -209,7 +209,7 @@
             <input type="checkbox" class="cambiar-clave" id="cambiar-clave" name="cambiar-clave" value='false'>
           <div class="form-group" id="modulo-claves" style="display: none;">
             <label for="user-pass">Contraseña</label>
-            <input type="password" name="edit-user-pass" id="edit-user-pass" class="form-control">
+            <input type="password" name="edit-user-pass" id="edit-user-pass" class="form-control" >
             <label for="user-pass" style="display: none;">Confirmar Contraseña</label>
             <input type="password" style="display: none;" name="edit-user-confirm-pass" id="edit-user-confirm-pass" class="form-control">
           </div>

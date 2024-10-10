@@ -412,7 +412,7 @@ div {
 @media (min-width: 1200px) {
   .calendario {
     position: absolute;
-    top: -30%;
+    top: 0%;
     width: 200%;
     height: 70vh;
     margin: 60px;

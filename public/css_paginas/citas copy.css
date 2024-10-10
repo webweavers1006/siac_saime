@@ -1,0 +1,459 @@
+:root {
+    --primary-color: rgb(11, 78, 179); /* Define el color principal de la aplicación */
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box; /* Resetea el valor de box-sizing para todos los elementos */
+  }
+.progressbar {
+  position: relative; /* Establece la posición del contenedor de la barra de progreso */
+  display: flex; /* Establece el display del contenedor de la barra de progreso */
+  justify-content: space-between; /* Distribuye los pasos de la barra de progreso de manera uniforme */
+  counter-reset: step; /* Resetea el contador de pasos */
+  margin: 2rem 0 4rem; /* Establece el margen del contenedor de la barra de progreso */
+  z-index: 10; /* Establece la capa de la barra de progreso */
+}
+  
+  .progressbar::before,
+  .progress {
+    content: ""; /* Establece el contenido del pseudo-elemento */
+    position: absolute; /* Establece la posición del pseudo-elemento */
+    top: 50%; /* Establece la posición vertical del pseudo-elemento */
+    transform: translateY(-50%); /* Establece la posición vertical del pseudo-elemento */
+    height: 4px; /* Establece el alto del pseudo-elemento */
+    width: 0%; /* Establece el ancho del pseudo-elemento (inicialmente vacío) */
+    background-color: var(--primary-color); /* Establece el color de fondo del pseudo-elemento */
+    z-index: -1; /* Establece el índice z del pseudo-elemento */
+    transition: 0.3s; /* Establece la transición del pseudo-elemento */
+  }
+  
+  .progress-step {
+    width: 2.1875rem; /* Establece el ancho del paso */
+    height: 2.1875rem; /* Establece el alto del paso */
+    background-color: #dcdcdc; /* Establece el color de fondo del paso */
+    border-radius: 50%; /* Establece el borde del paso */
+    display: flex; /* Establece el display del paso */
+    justify-content: center; /* Establece la justificación del contenido del paso */
+    align-items: center; /* Establece la alineación del contenido del paso */
+  }
+  
+  .progress-step::before {
+    counter-increment: step; /* Incrementa el contador de pasos */
+    content: counter(step); /* Establece el contenido del pseudo-elemento */
+  }
+
+  
+  /* Establece el contenido del pseudo-elemento */
+  .progress-step::after {
+    content: attr(data-title); 
+    position: absolute; 
+    top: calc(100% + 0.5rem); 
+    font-size: 0.85rem; 
+    color: #666; 
+  }
+  
+  /* Establece el color de fondo del paso activo */
+  .progress-step-active {
+    background-color: var(--primary-color); 
+    
+  }
+  
+  /* Establece el color del texto del pseudo-elemento del paso activo */
+  .progress-step-active::before {
+    color: #f3f3f3; 
+  }
+
+ 
+  .progress-step-active {
+    background-color: #003985; /* rojo */
+    color: #FFFFFF; /* texto blanco */
+  }
+
+ 
+  .content{
+    background-color: rgb(175, 177, 175);
+    width: 100%;
+    height: 100%;
+  }
+
+  :root {
+    --primary-color: rgb(11, 78, 179); /* Define el color principal de la aplicación */
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box; /* Resetea el valor de box-sizing para todos los elementos */
+  }
+
+  .progressbar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    counter-reset: step;
+    margin: 2rem 0 4rem;
+    z-index: 10;
+  }
+  
+  /* Color de la línea de progreso inactiva */
+  .progressbar::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    width: 100%; /* Cambia a 100% para que la línea se muestre completa */
+    background-color: #dcdcdc; /* Gris */
+    z-index: -1;
+    transition: 0.3s;
+  }
+  
+  /* Color de la línea de progreso activa */
+  .progress {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    width: 0%;
+    background-color: var(--primary-color); /* Azul */
+    z-index: -1;
+    transition: 0.3s;
+  }
+  
+  /* Color del fondo de los números del paso */
+  .progress-step {
+    width: 2.1875rem;
+    height: 2.1875rem;
+    background-color: #dcdcdc;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .progress-step::before {
+    counter-increment: step; /* Incrementa el contador de pasos */
+    content: counter(step); /* Establece el contenido del pseudo-elemento */
+  }
+  
+  /* Color de las letras del paso */
+  .progress-step::after {
+    content: attr(data-title);
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .progress {
+    width: calc(var(--progress) * 100%); /* donde --progress es un valor entre 0 y 1 */
+  }
+  
+  /* Establece el color del texto del pseudo-elemento del paso activo */
+  .progress-step-active {
+    background-color: #003985; /* Azul */
+    color: #FFFFFF; /* Blanco */
+  }
+
+  
+
+  .form{
+    background-color: #fff;
+    border-radius: 20px;
+   
+  }
+ 
+
+  .container{
+    height: 20%  ; 
+    align-items: center;
+  }
+ 
+
+  main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background-color: #dadadac5;
+  }
+
+  
+
+
+
+
+
+
+/***************************** seciones card *************************/
+/* Extra small screens (xs) */
+@media (min-width: 767px)  {
+  .section {
+    position: relative;
+    left: 0%;
+    width: 90%;
+    height: 100%;
+    margin: 20px;
+  }
+}
+
+/* Extra small screens (xs) */
+@media (min-width: 900px)  {
+  .section {
+    position: relative;
+    left: 10%;
+    width: 90%;
+    height: auto;
+    margin: 20px;
+  }
+}
+  .text-center {
+    margin-bottom: 10px; /* Reduce the margin bottom to 10px */
+  }
+  
+  .progressbar {
+    margin-top: 10px; /* Add a margin top to 10px */
+    margin-bottom: 20px; /* Keep the margin bottom to 20px */
+  }
+
+/* card */
+
+html {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background-color: #f2f2f2;
+    font-size: 13px;
+    min-width: 300px;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+}
+html {
+    line-height: 1.15;
+}
+.card-content {
+    background-color: initial;
+    padding: 1.5rem;
+}
+
+div {
+    display: block;
+    unicode-bidi: isolate;
+}
+.card {
+    background-color: #fff;
+    border-radius: 20px;
+  
+    color: #454545;
+    max-width: 100%;
+    position: relative;
+}
+
+.columns.is-multiline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra las columnas horizontalmente */
+    flex-basis: 50%;
+  }
+  
+  .column.is-3 {
+    flex-basis: 20%;
+    flex-grow: 1;
+    margin: 10px;
+  }
+  
+  /* Media query para pantallas pequeñas (menos de 768px) */
+  @media (max-width: 767px) {
+    .columns.is-multiline {
+      flex-basis: 100%; /* Ocupa toda la anchura disponible */
+    }
+    .column.is-3 {
+      flex-basis: 40%; /* Ajusta el ancho de las columnas */
+      margin: 5px; /* Ajusta el margen */
+    }
+  }
+  
+  /* Media query para pantallas medianas (entre 768px y 1024px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .columns.is-multiline {
+      flex-basis: 80%; /* Ocupa la mayoría de la anchura disponible */
+    }
+    .column.is-3 {
+      flex-basis: 30%; /* Ajusta el ancho de las columnas */
+      margin: 10px; /* Ajusta el margen */
+    }
+  }
+  
+  /* Media query para pantallas grandes (más de 1024px) */
+  @media (min-width: 1024px) {
+    .columns.is-multiline {
+      flex-basis: 60%; /* Ocupa la mayoría de la anchura disponible */
+    }
+    .column.is-3 {
+      flex-basis: 25%; /* Ajusta el ancho de las columnas */
+      margin: 15px; /* Ajusta el margen */
+    }
+  }
+
+
+
+
+  /* Formulario */
+
+  .form {
+    position: relative; 
+    left: 3%; 
+    padding: 1.5rem; 
+    max-width: 600px; 
+    height:70% ;
+    margin: 0 auto; 
+ 
+  }
+ 
+  
+  .form-step {
+    opacity: 0;
+    transform-origin: left;
+    animation: animate 0.5s;
+    transition: 0.3s;
+  }
+  
+  .form-step-active {
+    opacity: 1;
+  }
+  .form {
+    position: relative;
+    max-width: 90%; /* ancho máximo */
+    margin: 20px auto; /* centrado horizontalmente */
+    padding: 20px; /* espacio interior */
+    box-sizing: border-box; 
+    height: 83%; /* incluye padding en el ancho */
+  }
+  
+  /* Ajustes para pantallas pequeñas */
+  @media (min-width: 400px) and (max-width: 767px) {
+    .form {
+      width: 90%; /* ancho completo en pantallas pequeñas */
+      margin: 13px;
+      right: 2%; 
+      height: 83%; /* margen reducido en pantallas pequeñas */
+    }
+  }
+  
+  
+  /* Ajustes para pantallas medianas y grandes */
+  @media (min-width: 768px) {
+    .form {
+      width: 50%; /* ancho relativo en pantallas medianas y grandes */
+      margin: 20px auto;
+      height: 83%; 
+      left: 12%;/* centrado horizontalmente */
+    }
+  }
+  
+  /* Ajustes para pantallas muy grandes */
+  @media (min-width: 1400px) {
+    .form {
+      width: 70%; /* ancho relativo en pantallas muy grandes */
+      margin: 30px auto; 
+      height: 83%; /* centrado horizontalmente */
+    }
+  }
+/* 
+**************CALENDARIO***************** */
+
+
+
+
+.calendario {
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Pantallas pequeñas (menos de 500px) */
+@media (max-width: 499px) {
+  .calendario {
+    position: absolute;
+    top: 2%;
+    width: 80%;
+    height: 83vh;
+    margin: 13px;
+  }
+}
+
+/* Pantallas medianas (entre 500px y 800px) */
+@media (min-width: 500px) and (max-width: 799px) {
+  .calendario {
+    position: absolute;
+    top: 2%;
+    width: 70%;
+    height: 70vh;
+    margin: 20px;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 1199px) {
+  .calendario {
+    position: absolute;
+    top: 2%;
+    width: 800px; /* o un ancho fijo que se ajuste al contenedor */
+    height: 550px; /* o un alto fijo que se ajuste al contenedor */
+   padding-bottom: 20px;
+  }
+}
+
+/* Pantallas extra grandes (más de 1200px) */
+@media (min-width: 1200px) {
+  .calendario {
+    position: absolute;
+    top: -30%;
+    width: 200%;
+    height: 70vh;
+    margin: 60px;
+    left: 13%;
+    transform: translateX(-20%);
+  }
+}
+.calendario {
+  box-sizing: border-box;
+}
+
+
+/* Pantallas extra grandes (más de 1200px) */
+@media (min-width: 1200px) {
+  #calendar {
+    height: 90%; 
+  }
+}
+
+@media (min-width: 800px) and (max-width: 1199px) {
+  #calendar {
+    height: 80%; 
+    
+  }
+}
+
+@media (min-width: 500px) and (max-width: 799px) {
+  #calendar {
+    height: 80%; 
+  }
+}
+
+
+body {
+  margin: 40px 10px;
+  padding: 0;
+  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.card-link:hover {
+  background-color: #b90f0f; /* or any other color you desire */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* or any other shadow effect you desire */
+}

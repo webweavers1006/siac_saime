@@ -2,6 +2,8 @@
 
 
 $(function() {
+
+ 
     listado_Audiencias();
 });
 
@@ -10,11 +12,18 @@ $(function() {
  */
 function listado_Audiencias() {
     let ruta_imagen = rootpath;
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     var encabezado = '';
     $.ajax({
       url: "http://172.16.0.46:70/requerimientos/1/100/",
       method: "GET",
-      dataType: "json"
+      dataType: "json",
+       dataType: "json",
+        headers: {
+
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+        },
     })
     .then((response) => {
       $('#table_audiencia').DataTable({

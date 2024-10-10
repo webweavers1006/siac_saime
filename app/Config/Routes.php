@@ -34,6 +34,7 @@ $routes->setAutoRoute(false);
 
      $routes->get('/', 'Home::login');
      $routes->get('/inicio', "Home::dashboard");
+     $routes->post('/inicio', "Home::dashboard");
      $routes->get('/pantalla_bienvenida', "Home::pantalla_bienvenida");
      $routes->get('/pantalla1', "Home::pantalla1");
      $routes->get('/pantalla2', "Home::pantalla2");

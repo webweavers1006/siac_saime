@@ -7,5 +7,9 @@
 <!-- AdminLTE App -->
 <script src="<?php echo base_url(); ?>/js_paginas/adminlte.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/login/login.js"></script>
+<script>
 
+  var baseURL = '<?php echo base_url(); ?>';
+
+</script>
 </html>

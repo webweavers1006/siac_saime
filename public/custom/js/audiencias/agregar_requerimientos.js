@@ -4,6 +4,8 @@ let solicitudes = [];
 // EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
 $(document).on('submit', "#buscar", function(e) {
   e.preventDefault();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   let ano = $("#ano").val().trim();
   let sol = $("#sol").val().trim();
   let id_area = $("#id_area").val();
@@ -19,7 +21,13 @@ $(document).on('submit', "#buscar", function(e) {
     $.ajax({
       url: url,
       method: "get",
-      dataType: "JSON",   
+      dataType: "JSON", 
+      dataType: "json",
+              headers: {
+
+                'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+              },  
       beforeSend: function() {    
        
       },   
@@ -45,89 +53,175 @@ $(document).on('submit', "#buscar", function(e) {
   }
 });
 
+
+
+
+
 $('#agregar_caso').on('click', function() {
-  let descripcion =  $('#descripcion').val().trim();
-  let id_categoria =  $('#id_categoria').val().trim();
+  let descripcion = $('#descripcion').val().trim();
+  let id_categoria = $('#id_categoria').val().trim();
+  let id_formato_cita = $('#id_formato_cita').val().trim();
+  let id_pais = $('#pais-select').val().trim();
+  let id_area = $('#id_area').val().trim();
+  let nombre_marca= $('#nombre_marca').val().trim();
+  let nombre_titular = $('#nombre_titular').val().trim();
   let categoria_seleccionada = $('#id_categoria option:selected').text();
-
-  if (id_categoria=='0'||id_categoria==0) 
-  {
-    alert("Por favor seleccione la Categoria"); 
+  if (id_area === '0' || id_area === 0) {
+    // Mostrar mensaje de error
+    mostrarMensajeError('Por favor seleccione el tipo de Audiencia');
+  }else if (id_formato_cita === '0' || id_formato_cita === 0) {
+  // Mostrar mensaje de error
+  mostrarMensajeError('Por favor  seleccione el formato de la Cita ');
+  }else if (id_pais === '0' || id_pais === 0) {
+    // Mostrar mensaje de error
+    mostrarMensajeError('Por favor  seleccione el Pais ');
+  }else if (nombre_marca === '' && nombre_titular === null) {
+  // Mostrar mensaje de error
+  mostrarMensajeError('Por favor Ingrese el Numero de Solicitud o Registro y presione Buscar ');
+} 
+  else if (id_categoria === '0' || id_categoria === 0) {
+    // Mostrar mensaje de error
+    mostrarMensajeError('Por favor seleccione la Categoria');
+  } else if (descripcion === '' || descripcion === null) {
+    // Mostrar mensaje de error
+    mostrarMensajeError('Por favor ingrese la descripción del Caso');
   
-  }else if (descripcion==''||descripcion==null) 
-  {
-    alert("Por favor ingrese la descripción del caso"); 
   }
+  
 
-  else
-  {
+  else {
     // Agregamos el valor de categoria_seleccionada al arreglo solicitudes
     if (solicitudes.length > 0) {
       solicitudes[solicitudes.length - 1].categoria_seleccionada = categoria_seleccionada;
+      solicitudes[solicitudes.length - 1].descripcion = descripcion;
+      solicitudes[solicitudes.length - 1].id_categoria = id_categoria;
     }
-
+  
+    
+  
     $('.image_email').hide();
     updateTable(); // Actualizamos la tabla cuando se hace clic en el botón
     // Limpiamos los campos de solicitudes
+    $('#id_area').prop('disabled', true);
     $('#descripcion').val('');
     $('#ano').val('');
-    $('#sol').val(''); 
+    $('#sol').val('');
     $('#id_categoria').val('0');
   }
 });
-  
 
 function updateTable() {
   let tbody = $('.tbody_0');
-  let row = $('<tr>'); // Creamos una nueva fila de tabla
-  row.append($('<td>').text(solicitudes[solicitudes.length - 1].nombre));
-  row.append($('<td>').text(solicitudes[solicitudes.length - 1].registro));
-  row.append($('<td>').text(solicitudes[solicitudes.length - 1].solicitud));
-  row.append($('<td>').text(solicitudes[solicitudes.length - 1].categoria));
-  row.append($('<td>').text(solicitudes[solicitudes.length - 1].categoria_seleccionada));
+  let ultimaSolicitud = solicitudes[solicitudes.length - 1];
+
+  // Creamos una nueva fila de tabla
+  let row = $('<tr>');
+  row.append($('<td>').text(ultimaSolicitud.nombre));
+  row.append($('<td>').text(ultimaSolicitud.registro));
+  row.append($('<td>').text(ultimaSolicitud.solicitud));
+  row.append($('<td>').text(ultimaSolicitud.categoria));
+  row.append($('<td>').text(ultimaSolicitud.categoria_seleccionada));
 
   tbody.append(row); // Agregamos la fila al cuerpo de la tabla
 }
 
+// Función para mostrar mensaje de error
+function mostrarMensajeError(mensaje) {
+  // Implementar la lógica para mostrar el mensaje de error
+  alert(mensaje)
+}
+
+
+
+
 $('#ingresar_audiencia').on('click', function() {
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  let datos_solicitud = {
+  
+   let id_estado_pais= $('#estado-select').val();
+   if (id_estado_pais===0||id_estado_pais==='0') 
+  {
+    id_estado_pais=26 
+  }else
+  {
+    id_estado_pais= $('#estado-select').val();
+  }
+
+  // DATOS PARA REQUERIMIENTO
+  let datos_audiencia =
+   {
     "id_formato_cita": $('#id_formato_cita').val(),
-    "id_estado_pais": $('#estado-select').val(),
+    "id_estado_pais": id_estado_pais,
     "id_pais": $('#pais-select').val(),
     "id_area": $('#id_area').val(),
     "id_usuario": user_audiencia['id'],
     "id_trabajador": $("#id_trabajador").val(),
-   // "solicitud": solicitudes.slice()
+    "id_estado": 1,
   };
 
-  
-    console.log(datos_solicitud);
-    // Aquí podrías agregar la lógica para enviar la solicitud
+    // // ENVIO LOS DATOS DEL REQUERIMIENTO
+     $.ajax({
+       type: "POST",
+       url: "http://172.16.0.46:70/requerimientos",
+       data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
+       contentType: "application/json; charset=utf-8",
+       dataType: "json",
+       dataType: "json",
+        headers: {
 
-    //  $.ajax({
-  //      type: "POST",
-  //      url: "http://172.16.0.46:70/auth/user/authentication",
-  //      data: JSON.stringify(datos_solicitud), // Convertir objeto a cadena JSON
-  //      contentType: "application/json; charset=utf-8",
-  //      dataType: "json",
-  //      success: function(response)
-  //      {
-           
-  //          localStorage.setItem('user_audiencia', JSON.stringify(response));
-  //          Toast.fire({
-  //          type: 'success',
-  //          title: "Iniciando Sesion"
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
 
-  //          });
-  //         setTimeout(function() {
-  //             window.location = "/pantalla_bienvenida";
-  //         }, 1400);
+        },
+       success: function(response)
+       {       
+          // LE QUITO EL - A LOS NUMEROS DE SOLICITUD
+          const solicitudesObject = solicitudes.slice();
+          const solicitudValues = solicitudesObject.map(obj => obj.solicitud);
+          const num_solicitudes = solicitudValues.map(str => str.replace("-", ""));
+          const num_solicitud = [...num_solicitudes]; // or num_solicitudes.join(", ");
+          const id_requerimiento = response.requerimientos_id;
+          const id_trabajador = $("#id_trabajador").val();
+          // TRANSFORMO EL OBJETO EN UN ARREGLO DE OBJETOS
+          const solicitud = num_solicitud.map((num, index) => {
+            return {
+              num_solicitud: num,
+              id_categoria: solicitudesObject[index].id_categoria,
+              descripcion: solicitudesObject[index].descripcion,
+              id_trabajador: id_trabajador,
+              id_requerimiento: id_requerimiento,
+            };
+          });
 
-  //      }
+         
 
-  //  });
+            //ENVIO LOS DATOS DE LA SOLICITUD
+            $.ajax({
+              type: "POST",
+              url: "http://172.16.0.46:70/solicitudes",
+              data: JSON.stringify(solicitud), // Convertir objeto a cadena JSON
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              dataType: "json",
+              headers: {
 
+                'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+              },
+              success: function(response)
+              {
+               
+
+              }
+            });
+
+            Swal.fire('Exito!', "REGISTRO EXITOSO", "success");
+          
+            setTimeout(function() {
+            window.location = '/vista_audiencias/';
+            }, 1500);
+
+       }
+ 
+      });
   
 });
 
@@ -135,12 +229,19 @@ $('#ingresar_audiencia').on('click', function() {
 /*Verficacion de datos en el form*/
 $(document).on('change', '#id_area', function(e) {
   let id_area = $("#id_area").val();
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   const url = `http://172.16.0.46:70/usuarios_areas/director/${id_area}`;
     // Realiza la solicitud AJAX
     $.ajax({
       url: url,
       method: "get",
-      dataType: "JSON",   
+      dataType: "JSON", 
+      dataType: "json",
+      headers: {
+
+        'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+      },  
       beforeSend: function() {    
        
       },   

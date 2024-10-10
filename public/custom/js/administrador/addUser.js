@@ -207,236 +207,237 @@ $(document).on('submit', "#new-user", function(e) {
     
     //VERIFICAR SI EL ROL ES DE AUDIENCIAS
     let user_rol = $("#user-rol").val();
-    if (user_rol ==='9')
+
+    let clave_actual = $("#user-pass").val();
+
+    if (clave_actual.length < 8) 
+        {
+                alert('LA CONTRASEÑA DEBE TENER MINIMO 8 CARACTERES');
+        }
+    else 
     {
-        let id_rol = $("#id_rol").val();
-        let identificacion = $("#cedula").val();
-        if (id_rol==0 ||id_rol==null) 
-        {
-            alert('Debe seleccionar el nivel del rol');    
-        }else if (identificacion==''||identificacion==null) 
-        {
-            alert('Debe Ingresar el numero de Identificacion');    
-        }
-        else if (id_direccion_administrativa==''||id_direccion_administrativa==null)
-        {
-            alert('DEBE SELECCIONAR LA DIRECCIÓN ADMINISTRATIVA')
-        }
-        else
-        {   
-            // DATOS PARA EL USUARIO DEL SIAC 
-            let datos = 
-            {
-                "username": $("#user-name").val(),
-                "userlastname": $("#user-lastname").val(),
-                "useremail": $("#user-email").val(),
-                "userrol": $("#user-rol").val(),
-                "userpass": $("#user-pass").val(),
-                "usercargo": $("#usercargo").val(),
-                "id_direccion_administrativa": $("#id_direccion_administrativa").val()
-            }
-            // AJAX QUE CREA EL USUARIO EN EL SIAC 
-              $.ajax({
-                url: "/addNewUser",
-                method: "POST",
-                dataType: "JSON",
-                data: {
-                    "data": btoa(JSON.stringify(datos))
-                },
-                beforeSend: function() {
-                    // $("button[type=submit]").attr('disabled', "true");
-                },
-                success: function(response)
+
+                if (user_rol ==='9')
                 {
-                  
-                    // DATOS PARA EL USUARIO EN AUDIENCIAS
-                    let datos_audience = {
-                        "nombre": $("#user-name").val(),
-                        "correo": $("#user-email").val(),
-                        "id_rol": $("#id_rol").val(),
-                        "identificacion": $("#cedula").val(),
-                        "clave": $("#user-pass").val(),
-                        "id": parseInt(response), 
-                    };
-               
-                 //Si todos los campos son válidos, enviar la solicitud
-               // AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
-                $.ajax({
-                    type: "POST",
-                    url: "http://172.16.0.46:70/auth/user/create",
-                    data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(response)
+                    let id_rol = $("#id_rol").val();
+                    let identificacion = $("#cedula").val();
+                    if (id_rol==0 ||id_rol==null) 
                     {
-                          
-                        
-
-                    // Manejar la respuesta del servidor
-                    Swal.fire({
-                        icon: "success",
-                        type: 'success',
-                        html: '<strong>Usuario Registrado Exitosamente</strong>',
-                        toast: true,
-                        position: "center",
-                        showConfirmButton: false,
-                    //timer: 3500,
-
-                    });
-                    setTimeout(function() {
-                        window.location = "/adminUsers";
-                    }, 1900);
-    
-                    },
-                    error: function(xhr, status, error) 
+                        alert('Debe seleccionar el nivel del rol');    
+                    }else if (identificacion==''||identificacion==null) 
                     {
-                        //console.log(xhr.responseJSON);
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            const errorCode = xhr.responseJSON.error.code;
-                            const errorMessage = xhr.responseJSON.error.message;
-                            switch (errorCode) {
-                            case "23000":
-                                if (errorMessage.includes("for key 'correo'")) {
-                                // Mostrar mensaje de error personalizado al usuario: correo electrónico duplicado
-                                Swal.fire({
-                                    title: "error",
-                                    type: 'error',
-                                    text: "El correo electrónico ya existe en el sistema",
-                                    icon: "error",
-                                    toast: true,
-                                    position: "center",
-                                    showConfirmButton: false,
-                                    timer: 1900,
-                                });
-                                
-
-                                } else if (errorMessage.includes("for key 'identificacion'")) {
-                                // Mostrar mensaje de error personalizado al usuario: cédula duplicada
-                                Swal.fire({
-                                    title: "error",
-                                    type: 'error',
-                                    text: "La cédula  ya existe en el sistema",
-                                    icon: "error",
-                                    toast: true,
-                                    position: "center",
-                                    showConfirmButton: false,
-                                    timer: 1900,
-                                });
-                                } 
-                                
-                                else {
-                                console.log("Error desconocido:", errorMessage);
-                                }
-                                break;
-                            default:
-                                console.log("Error desconocido:", errorMessage);
-                            }
-                        } else {
-                            console.log("Error desconocido:", xhr.responseJSON);
-                        }
+                        alert('Debe Ingresar el numero de Identificacion');    
                     }
-                });
-          
-            //   BIEN , CUANDO AGREGO ME MANDA UN TOKEN
+                    else if (id_direccion_administrativa==''||id_direccion_administrativa==null)
+                    {
+                        alert('DEBE SELECCIONAR LA DIRECCIÓN ADMINISTRATIVA')
+                    }
+                    else
+                    {   
+                        // DATOS PARA EL USUARIO DEL SIAC 
+                        let datos = 
+                        {
+                            "username": $("#user-name").val(),
+                            "userlastname": $("#user-lastname").val(),
+                            "useremail": $("#user-email").val(),
+                            "userrol": $("#user-rol").val(),
+                            "userpass": $("#user-pass").val(),
+                            "usercargo": $("#usercargo").val(),
+                            "id_direccion_administrativa": $("#id_direccion_administrativa").val()
+                        }
+                        // AJAX QUE CREA EL USUARIO EN EL SIAC 
+                        $.ajax({
+                            url: "/addNewUser",
+                            method: "POST",
+                            dataType: "JSON",
+                            data: {
+                                "data": btoa(JSON.stringify(datos))
+                            },
+                            beforeSend: function() {
+                                // $("button[type=submit]").attr('disabled', "true");
+                            },
+                            success: function(response)
+                            {
+                            
+                                // DATOS PARA EL USUARIO EN AUDIENCIAS
+                                let datos_audience = {
+                                    "nombre": $("#user-name").val(),
+                                    "correo": $("#user-email").val(),
+                                    "id_rol": $("#id_rol").val(),
+                                    "identificacion": $("#cedula").val(),
+                                    "clave": $("#user-pass").val(),
+                                    "id": parseInt(response), 
+                                };
+                        
+                            //Si todos los campos son válidos, enviar la solicitud
+                        // AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
+                            $.ajax({
+                                type: "POST",
+                                url: "http://172.16.0.46:70/auth/user/create",
+                                data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function(response)
+                                {
+                                    
+                                    
+
+                                // Manejar la respuesta del servidor
+                                Swal.fire({
+                                    icon: "success",
+                                    type: 'success',
+                                    html: '<strong>Usuario Registrado Exitosamente</strong>',
+                                    toast: true,
+                                    position: "center",
+                                    showConfirmButton: false,
+                                //timer: 3500,
+
+                                });
+                                setTimeout(function() {
+                                    window.location = "/adminUsers";
+                                }, 1900);
+                
+                                },
+                                error: function(xhr, status, error) 
+                                {
+                                    //console.log(xhr.responseJSON);
+                                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                                        const errorCode = xhr.responseJSON.error.code;
+                                        const errorMessage = xhr.responseJSON.error.message;
+                                        switch (errorCode) {
+                                        case "23000":
+                                            if (errorMessage.includes("for key 'correo'")) {
+                                            // Mostrar mensaje de error personalizado al usuario: correo electrónico duplicado
+                                            Swal.fire({
+                                                title: "error",
+                                                type: 'error',
+                                                text: "El correo electrónico ya existe en el sistema",
+                                                icon: "error",
+                                                toast: true,
+                                                position: "center",
+                                                showConfirmButton: false,
+                                                timer: 1900,
+                                            });
+                                            
+
+                                            } else if (errorMessage.includes("for key 'identificacion'")) {
+                                            // Mostrar mensaje de error personalizado al usuario: cédula duplicada
+                                            Swal.fire({
+                                                title: "error",
+                                                type: 'error',
+                                                text: "La cédula  ya existe en el sistema",
+                                                icon: "error",
+                                                toast: true,
+                                                position: "center",
+                                                showConfirmButton: false,
+                                                timer: 1900,
+                                            });
+                                            } 
+                                            
+                                            else {
+                                            console.log("Error desconocido:", errorMessage);
+                                            }
+                                            break;
+                                        default:
+                                            console.log("Error desconocido:", errorMessage);
+                                        }
+                                    } else {
+                                        console.log("Error desconocido:", xhr.responseJSON);
+                                    }
+                                }
+                            });
+                    
+                        //   BIEN , CUANDO AGREGO ME MANDA UN TOKEN
+
+                            }
+
+                
+                        });
+
+                
+
+                    }
+
+                }else
+                {
+                    let datos = 
+                    {
+                        "username": $("#user-name").val(),
+                        "userlastname": $("#user-lastname").val(),
+                        "useremail": $("#user-email").val(),
+                        "userrol": $("#user-rol").val(),
+                        "userpass": $("#user-pass").val(),
+                        "usercargo": $("#usercargo").val(),
+                        "id_direccion_administrativa": $("#id_direccion_administrativa").val()
+                    }
+                    if (id_direccion_administrativa==''||id_direccion_administrativa==null)
+                        {
+                        alert('DEBE SELECCIONAR LA DIRECCIÓN ADMINISTRATIVA')
+                    }else
+                    {
+
+                    
+                        $.ajax({
+                            url: "/addNewUser",
+                            method: "POST",
+                            dataType: "JSON",
+                            data: {
+                                "data": btoa(JSON.stringify(datos))
+                            },
+                            beforeSend: function() {
+                                // $("button[type=submit]").attr('disabled', "true");
+                            },
+                    
+                            success: function(mensaje) {
+                    
+                                if (mensaje === 0) {
+                                    Swal.fire({
+                                        icon: "error",
+                                        type: 'error',
+                                        html: '<strong>Error!! El Usuario ya Existe</strong>',
+                                        toast: true,
+                                        position: "center",
+                                        showConfirmButton: false,
+                                        //timer: 3500,
+                    
+                                    });
+                                    setTimeout(function() {
+                                        window.location = "/adminUsers";
+                                    }, 1500);
+                                } else if (mensaje === 1) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        type: 'success',
+                                        html: '<strong>Usuario Registrado Exitosamente</strong>',
+                                        toast: true,
+                                        position: "center",
+                                        showConfirmButton: false,
+                                        //timer: 1500,
+                                    });
+                                    setTimeout(function() {
+                                        window.location = "/adminUsers";
+                                    }, 1500);
+                                } else if (mensaje === 2) {
+                                    Swal.fire({
+                                        icon: "error",
+                                        type: 'error',
+                                        html: '<strong>Ocurrio un error al registrar el Usuario/strong>',
+                                        toast: true,
+                                        position: "center",
+                                        showConfirmButton: false,
+                                        //timer: 1500,
+                                    });
+                                    setTimeout(function() {
+                                        window.location = "/adminUsers";
+                                    }, 1500);
+                                }
+                            }
+                        });
+                    }
 
                 }
-
-      
-            });
-
-
-
-
-
-
-
-
-
-
-            
-
-        }
-
-    }else
-    {
-        let datos = 
-        {
-            "username": $("#user-name").val(),
-            "userlastname": $("#user-lastname").val(),
-            "useremail": $("#user-email").val(),
-            "userrol": $("#user-rol").val(),
-            "userpass": $("#user-pass").val(),
-            "usercargo": $("#usercargo").val(),
-            "id_direccion_administrativa": $("#id_direccion_administrativa").val()
-        }
-        if (id_direccion_administrativa==''||id_direccion_administrativa==null)
-            {
-               alert('DEBE SELECCIONAR LA DIRECCIÓN ADMINISTRATIVA')
-           }else
-           {
-
-         
-               $.ajax({
-                   url: "/addNewUser",
-                   method: "POST",
-                   dataType: "JSON",
-                   data: {
-                       "data": btoa(JSON.stringify(datos))
-                   },
-                   beforeSend: function() {
-                       // $("button[type=submit]").attr('disabled', "true");
-                   },
-           
-                   success: function(mensaje) {
-           
-                       if (mensaje === 0) {
-                           Swal.fire({
-                               icon: "error",
-                               type: 'error',
-                               html: '<strong>Error!! El Usuario ya Existe</strong>',
-                               toast: true,
-                               position: "center",
-                               showConfirmButton: false,
-                               //timer: 3500,
-           
-                           });
-                           setTimeout(function() {
-                               window.location = "/adminUsers";
-                           }, 1500);
-                       } else if (mensaje === 1) {
-                           Swal.fire({
-                               icon: "success",
-                               type: 'success',
-                               html: '<strong>Usuario Registrado Exitosamente</strong>',
-                               toast: true,
-                               position: "center",
-                               showConfirmButton: false,
-                               //timer: 1500,
-                           });
-                           setTimeout(function() {
-                               window.location = "/adminUsers";
-                           }, 1500);
-                       } else if (mensaje === 2) {
-                           Swal.fire({
-                               icon: "error",
-                               type: 'error',
-                               html: '<strong>Ocurrio un error al registrar el Usuario/strong>',
-                               toast: true,
-                               position: "center",
-                               showConfirmButton: false,
-                               //timer: 1500,
-                           });
-                           setTimeout(function() {
-                               window.location = "/adminUsers";
-                           }, 1500);
-                       }
-                   }
-               });
-           }
-
-    }
     
-
+            }
 
 
 
@@ -473,7 +474,7 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
                 $(".edit_id_rol_nivel").css('display', 'block');
                 $(".edit_user_cedula").css('display', 'block');
                 $("#edit_id_rol option[value='" + response.id_rol + "']").prop("selected", true);
-                $("#edit_ceula").val(response.identificacion); 
+                $("#edit_cedula").val(response.identificacion); 
                 },
             error: function(xhr, status, error) 
             {
@@ -604,112 +605,234 @@ function validarFormatoEmail(email) {
     var regex = /^[a-zA-Z0-9._%+-]+@sapi\.gob\.ve$/;
     return regex.test(email);
   }
+
+
+
 // //Evento para guardar el usuario editado
 $(document).on('submit', "#edit-user", function(e) {
     e.preventDefault();
-
+    let id_user=$("#userid").val();
     let clave_actual = $("#edit-user-pass").val();
     let clave_anterior = $("#edit-user-confirm-pass").val();
     let usercargo = $("#cargo").val();
-    if (cambiar_clave == 'true')
+    let id_rol =$('#edit-user-rol').val();
+    if (clave_actual.length < 8) 
     {
-        clave_actual = clave_actual.trim();
-        if (clave_anterior == clave_actual) {
-            $("#edit-user-pass").addClass('is-invalid');
-            alert('ERROR! LA CONTRASEÑA DEBE SER DIFERENTE A LA ANTERIOR')
-
-        } else {
-
-            $("#edit-user-pass").removeClass('is-invalid');
-            $("#edit-user-confirm-pass").removeClass('is-invalid');
-            let datos = {
-                "username": $("#edit-user-name").val(),
-                "userlastname": $("#edit-user-lastname").val(),
-                "useremail": $("#edit-user-email").val(),
-                "userrol": $("#edit-user-rol").val(),
-                "userid": $("#userid").val(),
-                "id_direccion_administrativa": $("#edit_direccion_administrativa").val(),
-                "usercargo": usercargo,
-                "usuoppass": clave_actual,
-                "usuopborrado": estatus_borrado,
-                "modulo_clave": 'true',
-            }
+            alert('LA CONTRASEÑA DEBE TENER MINIMO 8 CARACTERES');
+    }
+    else 
+    {
+        if (id_rol==9) 
+            {
         
+        
+                if (cambiar_clave == 'true')
+                    {
+                        clave_actual = clave_actual.trim();
+        
+                         if (clave_anterior == clave_actual) 
+                        {
+                            $("#edit-user-pass").addClass('is-invalid');
+                            alert('ERROR! LA CONTRASEÑA DEBE SER DIFERENTE A LA ANTERIOR')
+                        } else 
+                        {
+                            $("#edit-user-pass").removeClass('is-invalid');
+                            $("#edit-user-confirm-pass").removeClass('is-invalid');
+                            // DATOS PARA EL SIAC 
+                            let datos = 
+                            {
+                                "username": $("#edit-user-name").val(),
+                                "userlastname": $("#edit-user-lastname").val(),
+                                "useremail": $("#edit-user-email").val(),
+                                "userrol": $("#edit-user-rol").val(),
+                                "userid": $("#userid").val(),
+                                "id_direccion_administrativa": $("#edit_direccion_administrativa").val(),
+                                "usercargo": usercargo,
+                                "usuoppass": clave_actual,
+                                "usuopborrado": estatus_borrado,
+                                "modulo_clave": 'true',
+                            }
+                           // DATOS PARA EL USUARIO EN AUDIENCIAS
+                          
+                           let datos_audience =
+                            {
+                            "nombre": $("#edit-user-name").val(),
+                            "apellido": $("#edit-user-lastname").val(),
+                            "correo": $("#edit-user-email").val(),
+                            "id_rol": $("#edit_id_rol").val(),
+                            "identificacion": $("#edit_cedula").val(),
+                            "clave": $("#edit-user-pass").val(),
+                           // "id": $("#userid").val(), 
+                             };
+        
+                             
+                             
+                            // DATOS PARA ACUTALIZAR DATOS EN EL SISTEMA DE AUDIENCIAS                                     
+                            $.ajax({
+                                type: "put",
+                                url: "http://172.16.0.46:70/usuarios/"+id_user,
+                                data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function(response)
+                                {
+                                     // DATOS PARA ACUTALIZAR INFORMACION EN SIAC
+                                    $.ajax({
+                                    url: "/editUser",
+                                    method: "POST",
+                                    dataType: "JSON",
+                                    data: {
+                                        "data": btoa(JSON.stringify(datos))
+                                    },
+                                    beforeSend: function() {
+                                        $("button[type=submit]").attr('disabled', "true");
+                                    }
+                                   
+                                     }).then((response) => {
+                                        Swal.fire('Exito!', "Usuario editado exitosamente", "success");
+                                        $("#editUser").modal('hide');
+                                        $("button[type=submit]").removeAttr('disabled');
+                                        setTimeout(function() {
+                                            window.location = '/adminUsers/';
+                                        }, 1500);
+                                    }).catch((request) => {
+                                        Swal.fire("Error!", "Ha ocurrido un error", "error");
+                                        $("button[type=submit]").removeAttr('disabled');
+                                        setTimeout(function() {
+                                            window.location = '/adminUsers/';
+                                        }, 1600);
+                                    });
+                                      
+                                        
+                                }
+                            });
+           
+                        }
+                
+                    } 
+                    else 
+                    {
+                        // DATOS PARA EL USUARIO EN SIAC
+                        const userData = {
+                            username: $("#edit-user-name").val(),
+                            userlastname: $("#edit-user-lastname").val(),
+                            useremail: $("#edit-user-email").val(),
+                            userrol: $("#edit-user-rol").val(),
+                            userid: $("#userid").val(),
+                            usuopborrado: estatus_borrado,
+                            usercargo: usercargo,
+                            modulo_clave: 'false',
+                            id_direccion_administrativa: $("#edit_direccion_administrativa").val(),
+                        };
+                        
+                        // DATOS PARA EL USUARIO EN AUDIENCIAS
+                        const audienceData = {
+                            nombre: $("#edit-user-name").val(),
+                            correo: $("#edit-user-email").val(),
+                            id_rol: $("#edit_id_rol").val(),
+                            identificacion: $("#edit_cedula").val(),
+                            apellido: $("#edit-user-lastname").val(),
+                        };
+                        
+                        // ACTUALIZO LOS DATOS EN AUDIENCIA
+                        $.ajax({
+                            type: "PUT",
+                            url: `http://172.16.0.46:70/usuarios/${id_user}`,
+                            data: JSON.stringify(audienceData),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function(response) 
+                            
+                            {
+                                // ACTUALIZO LOS DATOS EN SIAC           
+                                $.ajax({
+                                    url: "/editUser",
+                                    method: "POST",
+                                    dataType: "JSON",
+                                    data: {
+                                    data: btoa(JSON.stringify(userData)),
+                                    },
+                                    beforeSend: function() {
+                                    $("button[type=submit]").attr('disabled', "true");
+                                    }
+                                })
+                                .then((response) => {
+                
+        
+                                Swal.fire('Exito!', "Usuario editado exitosamente", "success");
+                                $("#editUser").modal('hide');
+                                $("button[type=submit]").removeAttr('disabled');
+                                setTimeout(function() {
+                                window.location = '/adminUsers/';
+                                }, 1500);
+                                })
+                                .catch((request) => {
+                                    Swal.fire("Error!", "Ha ocurrido un error", "error");
+                                    $("button[type=submit]").removeAttr('disabled');
+                                    setTimeout(function() {
+                                    window.location = '/adminUsers/';
+                                    }, 1600);
+                                });
+                                
+                                }
+                                });   
+                         }
+                            
+                            
+          
+        }else
+        {
+        
+            // DATOS PARA EL USUARIO EN SIAC
+            const userData = {
+                username: $("#edit-user-name").val(),
+                userlastname: $("#edit-user-lastname").val(),
+                useremail: $("#edit-user-email").val(),
+                userrol: $("#edit-user-rol").val(),
+                userid: $("#userid").val(),
+                usuopborrado: estatus_borrado,
+                usercargo: usercargo,
+                modulo_clave: 'false',
+                id_direccion_administrativa: $("#edit_direccion_administrativa").val(),
+            };
+            // ACTUALIZO LOS DATOS EN SIAC           
             $.ajax({
                 url: "/editUser",
                 method: "POST",
                 dataType: "JSON",
                 data: {
-                    "data": btoa(JSON.stringify(datos))
+                data: btoa(JSON.stringify(userData)),
                 },
                 beforeSend: function() {
-                    $("button[type=submit]").attr('disabled', "true");
-                }
-               
-            }).then((response) => {
-
-                // DATOS PARA ACUTALIZAR DATOS EN EL SISTEMA DE AUDIENCIAS
-
-
-                Swal.fire('Exito!', "Usuario editado exitosamente", "success");
-                $("#editUser").modal('hide');
-                $("button[type=submit]").removeAttr('disabled');
-                setTimeout(function() {
-                    window.location = '/adminUsers/';
-                }, 1500);
-            }).catch((request) => {
-                Swal.fire("Error!", "Ha ocurrido un error", "error");
-                $("button[type=submit]").removeAttr('disabled');
-                setTimeout(function() {
-                    window.location = '/adminUsers/';
-                }, 1600);
-            });
-
-        }
-
-    } 
-    else 
-    {
-        let datos = {
-            "username": $("#edit-user-name").val(),
-            "userlastname": $("#edit-user-lastname").val(),
-            "useremail": $("#edit-user-email").val(),
-            "userrol": $("#edit-user-rol").val(),
-            "userid": $("#userid").val(),
-            "usuopborrado": estatus_borrado,
-            "usercargo": usercargo,
-            "modulo_clave": 'false',
-            "id_direccion_administrativa": $("#edit_direccion_administrativa").val(),
-        }
-
-
-        $.ajax({
-            url: "/editUser",
-            method: "POST",
-            dataType: "JSON",
-            data: {
-                "data": btoa(JSON.stringify(datos))
-            },
-            beforeSend: function() {
                 $("button[type=submit]").attr('disabled', "true");
-            }
-        }).then((response) => {
+                }
+            })
+            .then((response) => {
+        
+        
             Swal.fire('Exito!', "Usuario editado exitosamente", "success");
             $("#editUser").modal('hide');
             $("button[type=submit]").removeAttr('disabled');
             setTimeout(function() {
-                window.location = '/adminUsers/';
+            window.location = '/adminUsers/';
             }, 1500);
-        }).catch((request) => {
-            Swal.fire("Error!", "Ha ocurrido un error", "error");
-            $("button[type=submit]").removeAttr('disabled');
-            setTimeout(function() {
+            })
+            .catch((request) => {
+                Swal.fire("Error!", "Ha ocurrido un error", "error");
+                $("button[type=submit]").removeAttr('disabled');
+                setTimeout(function() {
                 window.location = '/adminUsers/';
-            }, 1600);
-        });
+                }, 1600);
+            });
+            
+            }
+
     }
+        
+
     
-  
+    
+ 
    
 })
 

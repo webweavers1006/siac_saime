@@ -79,12 +79,13 @@
                   <div class="column is-12">
                   <div class="columns">
                     <div class="column is-12">
+                    <input type="hidden" id="numero_cita" value="<?php echo $datos2['id']; ?>">
                       <div class="dividir"><span>Formato Cita</span></div>
                     </div>
                   </div>
                     <div class="control">
                       <div class="select">
-                      <select name="id_formato_cita">
+                      <select name="id_formato_cita" id="id_formato_cita">
                           <option value="0" <?php echo ($cita['id_formato_cita'] == 0) ? 'selected' : ''; ?>>---Seleccione un Formato---</option>
                           <option value="1" <?php echo ($cita['id_formato_cita'] == 1) ? 'selected' : ''; ?>>Presencial</option>
                           <option value="2" <?php echo ($cita['id_formato_cita'] == 2) ? 'selected' : ''; ?>>Virtual</option>
@@ -104,11 +105,11 @@
                     <label>Estatus</label>
                     <div class="control">
                       <div class="select">
-                      <select name="id_estado">
+                      <select name="id_estado" id="id_estado">
                           <option value="0" <?php echo ($cita['id_estado'] == 0) ? 'selected' : ''; ?>>---Seleccione un Estatus---</option>
-                          <option value="1" <?php echo ($cita['id_estado'] == 4) ? 'selected' : ''; ?>>CITA PAUTADA</option>
-                          <option value="2" <?php echo ($cita['id_estado'] == 5) ? 'selected' : ''; ?>>CITA CANCELADA</option>
-                          <option value="3" <?php echo ($cita['id_estado'] == 8) ? 'selected' : ''; ?>>CITA REPROGRAMADA</option>
+                          <option value="4" <?php echo ($cita['id_estado'] == 4) ? 'selected' : ''; ?>>CITA PAUTADA</option>
+                          <option value="5" <?php echo ($cita['id_estado'] == 5) ? 'selected' : ''; ?>>CITA CANCELADA</option>
+                          <option value="8" <?php echo ($cita['id_estado'] == 8) ? 'selected' : ''; ?>>CITA REPROGRAMADA</option>
                       </select>
                       </div>
                     </div>
@@ -119,7 +120,7 @@
           </div>
           <div class="column is-12">
             <br>
-            <button class="button is-primary is-fullwidth">Guardar</button>
+            <button class="button is-primary is-fullwidth actualizar">Guardar</button>
           </div>
         </div>
       </div>
@@ -190,44 +191,4 @@
 <script src="<?php echo base_url(); ?>/custom/js/calendario/jquery-3.6.0.min.js"></script>
 <script src="<?php echo base_url(); ?>/custom/js/calendario/flatpickr.min.js"></script>
 
-
-<script>
-  // Configuración del calendario
-  flatpickr("#fecha_cita", {
-    enableTime: true, // Habilitar selector de hora
-    size: "compact", // Tamaño grande
-    showMonths: 1, // Mostrar un mes
-    showWeekNumbers: true, // Mostrar números de semana
-    todayButton: "Hoy", // Texto del botón de hoy
-    locale: {
-      firstDayOfWeek: 1, // Lunes como primer día de la semana
-      weekdays: {
-        shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-        longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
-      },
-      months: {
-        shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-        longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-      }
-    },
-    onChange: function(selectedDates, dateStr, instance) {
-      // Actualizar valor del input con la fecha y hora seleccionadas
-      const fechaHora = instance.formatDate(selectedDates[0], "d-m-Y h:i K");
-      document.getElementById("fecha_cita").value = fechaHora;
-    },
-    onClose: function(selectedDates, dateStr, instance) {
-      // Actualizar valor del input con la fecha seleccionada al cerrar el calendario
-      const fechaHora = instance.formatDate(selectedDates[0], "d-m-Y");
-      document.getElementById("fecha_cita").value = fechaHora;
-    }
-  });
-
-  // Evento click en el botón "Agendar"
-  $('.agendar').on('click', function() {
-    // Obtener la fecha y hora seleccionadas y mostrarlas en la consola
-    const fechaHora = flatpickr("#fecha_cita").formatDate(flatpickr("#fecha_cita").selectedDates[0], "d-m-Y h:i K");
-    console.log("Fecha y hora seleccionadas:", fechaHora);
-    document.getElementById("fecha_cita").value = fechaHora;
-  });
-</script>
 

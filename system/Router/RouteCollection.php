@@ -277,7 +277,7 @@ class RouteCollection implements RouteCollectionInterface
 	 */
 	public function setDefaultNamespace(string $value): RouteCollectionInterface
 	{
-		$this->defaultNamespace = filter_var($value, FILTER_SANITIZE_STRING);
+		$this->defaultNamespace = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 		$this->defaultNamespace = rtrim($this->defaultNamespace, '\\') . '\\';
 
 		return $this;
@@ -295,7 +295,7 @@ class RouteCollection implements RouteCollectionInterface
 	 */
 	public function setDefaultController(string $value): RouteCollectionInterface
 	{
-		$this->defaultController = filter_var($value, FILTER_SANITIZE_STRING);
+		$this->defaultController = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 
 		return $this;
 	}
@@ -312,7 +312,7 @@ class RouteCollection implements RouteCollectionInterface
 	 */
 	public function setDefaultMethod(string $value): RouteCollectionInterface
 	{
-		$this->defaultMethod = filter_var($value, FILTER_SANITIZE_STRING);
+		$this->defaultMethod = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 
 		return $this;
 	}
@@ -1015,7 +1015,7 @@ class RouteCollection implements RouteCollectionInterface
 	 *
 	 * @return \CodeIgniter\Router\RouteCollectionInterface
 	 */
-	public function match(array $verbs = [], string $from, $to, array $options = null): RouteCollectionInterface
+	 public function match(array  $to  = [], string $from,$verbs , array $options = null): RouteCollectionInterface
 	{
 		foreach ($verbs as $verb)
 		{
@@ -1378,7 +1378,7 @@ class RouteCollection implements RouteCollectionInterface
 		$overwrite = false;
 		$prefix    = is_null($this->group) ? '' : $this->group . '/';
 
-		$from = filter_var($prefix . $from, FILTER_SANITIZE_STRING);
+		$from = htmlspecialchars($prefix . $from, ENT_QUOTES, 'UTF-8');
 
 		// While we want to add a route within a group of '/',
 		// it doesn't work with matching, so remove them...

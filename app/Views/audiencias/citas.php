@@ -10,125 +10,86 @@
         <div class="progress-step" data-title="Calendario"></div>
       </div>
     </form>
-    <br>
+   
     <section class="section">
     <div class="row">
       <div class="col-md-1"></div>
       <div class="col-md-11">
         <div class="form-steps">
-        <div class="form-step form-step-active">
-    <div class="columns is-multiline">
-        <?php foreach ($datos['citas'] as $cita) { ?>
-            <div class="column is-3">
-                <a href="/appointments/edit/<?php echo $cita['id']; ?>">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title" style="font-weight: bold;">N°<?php echo $cita['id']; ?>
-                                <span style="float: right;">
-                                <i class="nav-icon fas fa-calendar" style="color: #003985; font-size: 20px;"></i>
-                                </span>
-                            </p>
-                        </header>
-                        <div class="card-content">
-                            <p class="title is-4" style="font-weight: bold;"><?php echo date('F jº Y', strtotime($cita['fecha_cita'])); ?></p>
-                            <p class="subtitle is-6"><?php echo date('h:i A', strtotime($cita['fecha_cita'])); ?></p>
-                            <div class="content_2">
-                                <p><?php echo $cita['nombre']; ?></p>
-                                <p><?php echo $cita['formato_cita']; ?></p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        <?php } ?>
-    </div>
-</div>
-          <div class="form-step">
+          
+        <!-- ******PASO1******* -->
+        <div class="form-step form-step-active paso1" >
+              <div class="columns is-multiline">
+                  <?php foreach ($datos['citas'] as $cita) { ?>
+                    
+                      <div class="column is-3">
+                      <a href="/actualizar_citas/<?php echo $cita['id']; ?>" class="card-link" style="cursor: pointer;">
+                              <div class="card">
+                                  <header class="card-header">
+                                    
+                                      <p class="card-header-title" style="font-weight: bold;">N°<?php echo $cita['id']; ?>
+                                          <span style="float: right;">
+                                              <i class="nav-icon fas fa-calendar" style="color: #003985; font-size: 20px;"></i>
+                                          </span>
+                                      </p>
+                                  </header>
+                                  <div class="card-content">
+                                  <?php
+                                    $meses = array('enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre');
+                                    $dia = date('j', strtotime($cita['fecha_cita']));
+                                    $mes = $meses[date('n', strtotime($cita['fecha_cita'])) - 1];
+                                    $año = date('Y', strtotime($cita['fecha_cita']));
+                                    echo '<p class="title is-4" style="font-weight: bold;">' . $dia . ' - ' . $mes . ' - ' . $año . '</p>';
+                                    ?>
+                                      <p class="subtitle is-6"><?php echo date('h:i A', strtotime($cita['fecha_cita'])); ?></p>
+                                      <div class="content_2">
+                                          <p><?php echo $cita['nombre']; ?></p>
+                                          <p><?php echo $cita['formato_cita']; ?></p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </a>
+                      </div>
+                  <?php } ?>
+              </div>
+          </div>
+
+        <!-- ******PASO2******* -->
+
+          <div class="form-step paso2" >
             <!-- Contenido del paso 2 -->
+            
             <div class="card calendario">
-             
                 <div id="calendar"></div>
-                 
-                 
-              <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.js"></script>
-              <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.min.js"></script>
-                 
-                 
-<?php
-$events = array();
-$max_date = null;
-$citasById = array(); // Create an associative array for efficient lookup
+                <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.js"></script>
+                <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.min.js"></script>
+                <?php
+                $events = array();
+                $max_date = null;
+                $citasById = array(); // Create an associative array for efficient lookup
 
-foreach ($datos['citas'] as $cita) {
-    $event = array(
-        'title' => $cita['nombre'],
-        'start' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
-        'end' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
-        //'url' => '/appointments/edit/' . $cita['id'],
-        'citaId' => $cita['id'], // Add a separate attribute for citaId
-    );
-    $events[] = $event;
-    $citasById[$cita['id']] = $cita; // Store the event details in the associative array
-    if ($max_date === null || strtotime($cita['fecha_cita']) > strtotime($max_date)) {
-        $max_date = $cita['fecha_cita'];
-    }
-}
-$json_events = json_encode($events);
-?>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      locale: 'es',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'multiMonthYear,dayGridMonth,timeGridWeek'
-      },
-      themeSystem: 'bootstrap',
-      initialView: 'multiMonthYear',
-      initialDate: '<?php echo date('Y-m-d H:i:s', strtotime($max_date)); ?>', // Formateado la fecha para que sea compatible con FullCalendar
-      editable: true,
-      selectable: true,
-      dayMaxEvents: true, // permitir enlace "más" cuando hay demasiados eventos
-      // multiMonthMaxColumns: 1, // garantizar una sola columna
-      // showNonCurrentDates: true,
-      fixedWeekCount: false,
-      businessHours: true,
-      weekends: false,
-      buttonText: {
-        today: 'Hoy',
-        month: 'Mes',
-        year: 'Año',
-        week: 'Semana',
-        day: 'Día',
-        list: 'Lista'
-      },
-
-        events: <?php echo $json_events; ?>,
-
-        eventClick: function(event) {
-    var citaId = event.event.extendedProps.citaId;
-    var citaInfo = <?php echo json_encode($citasById); ?>[citaId];
-    var startDate = moment(event.event.start).format('DD MMM YYYY'); // Format the start date
-
-    alert('Evento: ' + event.event.title + '\n' +
-          'Fecha de inicio: ' + startDate + '\n' + 
-          'Formato de cita: ' + citaInfo.formato_cita);
-}
-    });
-
-    calendar.render();
-});
-</script>
-
-
-            </div>
+                foreach ($datos['citas'] as $cita) {
+                    $event = array(
+                        'title' => $cita['nombre'],
+                        'start' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
+                        'end' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
+                        //'url' => '/appointments/edit/' . $cita['id'],
+                        'citaId' => $cita['id'], // Add a separate attribute for citaId
+                    );
+                    $events[] = $event;
+                    $citasById[$cita['id']] = $cita; // Store the event details in the associative array
+                    if ($max_date === null || strtotime($cita['fecha_cita']) > strtotime($max_date)) {
+                        $max_date = $cita['fecha_cita'];
+                    }
+                }
+                $json_events = json_encode($events);
+                ?>
+                
+          </div>
           </div>
         </div>
+
+
       </div>
     </div>
     </section>
@@ -138,6 +99,68 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
 </main>
+
+
+
+<script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                      var calendarEl = document.getElementById('calendar');
+
+                      var calendar = new FullCalendar.Calendar(calendarEl, {
+                        locale: 'es',
+                        headerToolbar: {
+                          left: 'prev,next today',
+                          center: 'title',
+                          right: 'multiMonthYear,dayGridMonth,timeGridWeek'
+                        },
+                        themeSystem: 'bootstrap',
+                        initialView: 'multiMonthYear',
+                        initialDate: '<?php echo date('Y-m-d H:i:s', strtotime($max_date)); ?>', // Formateado la fecha para que sea compatible con FullCalendar
+                        editable: true,
+                        selectable: true,
+                        dayMaxEvents: true, // permitir enlace "más" cuando hay demasiados eventos
+                        // multiMonthMaxColumns: 1, // garantizar una sola columna
+                        // showNonCurrentDates: true,
+                        fixedWeekCount: false,
+                        businessHours: true,
+                        weekends: false,
+                        buttonText: {
+                          today: 'Hoy',
+                          month: 'Mes',
+                          year: 'Año',
+                          week: 'Semana',
+                          day: 'Día',
+                          list: 'Lista'
+                        },
+
+                          events: <?php echo $json_events; ?>,
+
+                          eventClick: function(event) {
+                      var citaId = event.event.extendedProps.citaId;
+                      var citaInfo = <?php echo json_encode($citasById); ?>[citaId];
+                      var startDate = moment(event.event.start).format('DD MMM YYYY'); // Format the start date
+
+                      alert('Evento: ' + event.event.title + '\n' +
+                            'Fecha de inicio: ' + startDate + '\n' + 
+                            'Formato de cita: ' + citaInfo.formato_cita);
+                  }
+                      });
+
+                      calendar.render();
+                  });
+                  </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
   const progress = document.getElementById("progress");
@@ -162,8 +185,15 @@ progressSteps.forEach((progressStep) => {
 });
 
 function updateFormSteps(idx) {
-  formSteps.forEach((formStep) => formStep.classList.remove("form-step-active"));
-  formSteps[idx].classList.add("form-step-active");
+  formSteps.forEach((formStep) => {
+    formStep.style.opacity = 0; // Agrega esta línea para ocultar el paso del formulario
+    formStep.style.pointerEvents = 'none'; // Agrega esta línea para deshabilitar los eventos de puntero
+  });
+  formSteps[idx].style.opacity = 1; // Agrega esta línea para mostrar el paso del formulario actual
+  formSteps[idx].style.pointerEvents = 'auto'; // Agrega esta línea para habilitar los eventos de puntero
+  if (idx === 1) { // Si estamos en el paso 2
+    document.querySelector('.paso2 .card.calendario').style.display = 'block'; // Muestra el contenido del paso 2
+  }
   currentIdx = idx;
 }
 
@@ -179,6 +209,8 @@ function validateFormStep(idx) {
   // Si la validación es exitosa, permitir que el usuario avance al siguiente paso
 }
 </script>
+
+
 <script src="<?php echo base_url(); ?>/theme/plugins/jquery/jquery.js"></script>
 <script src="<?php echo base_url(); ?>/js_paginas/adminlte.js"></script>
 
