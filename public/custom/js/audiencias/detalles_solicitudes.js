@@ -6,6 +6,7 @@ const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
 
 
 $('#observaciones').on('click', function() {
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   // Obtener la fecha y hora seleccionadas
   let mensaje = document.getElementById("mensaje_observacion").value;
   let id_solicitud = document.getElementById("id_solicitud").value;
@@ -29,20 +30,29 @@ $.ajax({
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
-  success: function(response) 
-  
-  {
+  dataType: "json",
+  headers: {
+    'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+  },
+    success: function(response) 
     
-      Swal.fire('Exito!', "REGISTRO EXITOSO", "success");
-      $("#editUser").modal('hide');
-      $("button[type=submit]").removeAttr('disabled');
-      setTimeout(function() {
+    {
+      Swal.fire({
+        icon: "success",
+        type: 'success',
+        html: '<strong>REGISTRO EXITOSO!!!'+ '</strong>',
+        toast: true,
+        position: "center",
+        showConfirmButton: false,
+        //timer: 3500,
+    });
+    setTimeout(function() {
       window.location = '/detalles_solicitudes/'+id_solicitud;
-      }, 1500);
-      
-      
-    }
-      });   
+    }, 1500);
+    
+        
+      }
+    });   
 
 
 });
@@ -51,6 +61,7 @@ $.ajax({
 
 $('#responsable').on('click', function() {
   // Obtener la fecha y hora seleccionadas
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
  
   let id_solicitud = document.getElementById("id_solicitud").value;
   
@@ -69,17 +80,30 @@ $.ajax({
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
+  dataType: "json",
+  headers: {
+    'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+  },
   success: function(response) 
   
   {
+
+    Swal.fire({
+      icon: "success",
+      type: 'success',
+      html: '<strong>REGISTRO ACTUAIZADO!!!'+ '</strong>',
+      toast: true,
+      position: "center",
+      showConfirmButton: false,
+      //timer: 3500,
+  });
+  setTimeout(function() {
+    window.location = '/detalles_solicitudes/'+id_solicitud;
+  }, 1500);
+  
+     
     
-      Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
-      $("#editUser").modal('hide');
-      $("button[type=submit]").removeAttr('disabled');
-      setTimeout(function() {
-      window.location = '/detalles_solicitudes/'+id_solicitud;
-      }, 1500);
-      
+
       
     }
       });   
@@ -91,7 +115,7 @@ $.ajax({
 
 $('#cierre_solicitud').on('click', function() {
   // Obtener la fecha y hora seleccionadas
- 
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   let respuesta = document.getElementById("respuesta").value;
   let id_solicitud = document.getElementById("id_solicitud").value;
   let id_estado =7
@@ -110,19 +134,34 @@ $.ajax({
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
+  dataType: "json",
+  headers: {
+    'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+  },
   success: function(response) 
   
   {
     
-      Swal.fire('Exito!', "REGISTRO EXITOSO", "success");
-      $("#editUser").modal('hide');
-      $("button[type=submit]").removeAttr('disabled');
-      setTimeout(function() {
-      window.location = '/detalles_solicitudes/'+id_solicitud;
-      }, 1500);
-      
+    Swal.fire({
+      icon: "success",
+      type: 'success',
+      html: '<strong>REGISTRO EXITOSO!!!'+ '</strong>',
+      toast: true,
+      position: "center",
+      showConfirmButton: false,
+      //timer: 3500,
+  });
+  setTimeout(function() {
+    window.location = '/detalles_solicitudes/'+id_solicitud;
+  }, 1500);
+  
       
     }
+
+
+       
+      
+    
       });   
 
 

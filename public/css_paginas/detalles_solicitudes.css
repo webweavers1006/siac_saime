@@ -159,7 +159,7 @@ border-radius: 20px;
   .section {
     position: relative;
     left: 5%;
-    width: 100%;
+    width: 90%;
     margin: 20px;
   }
 }
@@ -170,9 +170,9 @@ border-radius: 20px;
 @media (min-width: 1920px) {
   .card_lateral {
     top: 0%;
-    left: 62%;
+    left: 60%;
     border-radius: 20px;
-    width: 19%;
+    width: 30%;
   }
 }
 
@@ -181,7 +181,7 @@ border-radius: 20px;
 @media (min-width: 900px) and (max-width: 1919px) {
   .card_lateral {
     top: 0%;
-    left: 69%;
+    left: 63%;
     border-radius: 20px;
     width: 100%;
   }
@@ -1913,7 +1913,7 @@ html {
   width: 2px;
   background-color: #4997cd;
   /* Centra la línea horizontalmente y ajusta su posición ligeramente a la izquierda */
-  left: 50%;
+  left: 48%;
   margin-left: -1.5px;
 }
 
@@ -1923,8 +1923,9 @@ html {
   height: 0;
 }
 
+/* Estilos para los badges circulares que marcan eventos en la línea de tiempo */
 #timeline .timeline-badge {
-  /* Estilos para los badges circulares que marcan eventos en la línea de tiempo */
+
   color: #fff;
   width: 25px;
   height: 25px;
@@ -1933,7 +1934,7 @@ html {
   /* Posiciona el badge en la parte superior de la línea de tiempo y lo centra horizontalmente */
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 48%;
   margin-left: -13px;
   background-color: #fff;
   z-index: 6;
@@ -1989,7 +1990,7 @@ Segundo bloque: Variaciones de badges */
   color: #1782cc;
   position: absolute;
   top: 10px;
-  left: 9px;
+  left: 5px;
 
 }
 
@@ -1998,7 +1999,7 @@ Segundo bloque: Variaciones de badges */
   color: #4997cd;
   font-size: .9em;
   top: 0;
-  left: 1px;
+  left: 10px;
   
 }
 
@@ -2019,7 +2020,7 @@ Segundo bloque: Variaciones de badges */
 
 #timeline .timeline-movement .timeline-item .timeline-panel {
   /* Estilos para el panel de información dentro del movimiento */
-  border: 1px solid #d4d4d4;
+  border: 1px solid #a7c7eb;
   border-radius: 3px;
   background-color: #FFFFFF;
   color: #666;

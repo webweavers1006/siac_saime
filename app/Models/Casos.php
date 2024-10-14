@@ -1350,7 +1350,36 @@ public function  ContarCasosPeticionEstadal($desde,$hasta)
     return $resultado; 
 }
 
-
+//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION PETICION
+public function  ContarCasosTalleresEstadal($desde,$hasta)
+{
+    $db      = \Config\Database::connect();
+    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS talleres  ";
+    $strQuery .= "FROM ";
+    $strQuery .= "(";
+    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
+    $strQuery .= " ) AS estados ";
+    $strQuery .= "LEFT JOIN";
+    $strQuery .= " (";
+    $strQuery .= " SELECT";
+    $strQuery .= " count(c.idcaso) cuenta";
+    $strQuery .= " ,t.tipo_aten_id";
+    $strQuery .= " ,c.estadoid";
+    $strQuery .= " FROM";
+    $strQuery .= " sgc_casos c";
+    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
+    $strQuery .= "WHERE t.tipo_aten_id= 7 ";
+    if ($desde != 'null' and $hasta != 'null') {
+        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
+    }
+    $strQuery .= " and c.borrado='false' ";
+    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
+    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
+    $strQuery .= "order by estados.estadonom  ";
+    $query = $db->query($strQuery);
+    $resultado = $query->getResult();
+    return $resultado; 
+}
 
 
 
@@ -1571,6 +1600,29 @@ public function reporte_atencion($desde = null, $hasta = null, $tipo_pi = null, 
    
 }
 
+
+
+
+//   //Metodo que busca los casos por municipios para el mapa
+public function Listar_Casos_Municipios()
+{
+
+   
+
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos c');
+    $builder->select('e.estadonom, m.municipionom, COUNT(c.idcaso) AS casos');
+    $builder->join('sgc_municipio m', 'c.municipioid = m.municipioid');
+    $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
+    $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
+    $builder->where('c.borrado', false); 
+    $builder->groupBy('m.municipionom, e.estadonom');
+    $builder->orderBy('m.municipionom');
+    $resultado = $builder->get()->getResult();
+    return $resultado;
+
+  
+}
 
 
 

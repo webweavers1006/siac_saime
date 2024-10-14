@@ -1104,6 +1104,17 @@ class Reporte_Atencion_Controler extends BaseController
 	}
 
 
+	public function Listar_Casos_Municipios()
+	{
+		$model = new Casos();
+		$usuarios = $model->Listar_Casos_Municipios();	
+		// foreach ($usuarios as $usuario) {
+		// 	echo "Estado: " . $usuario->estadonom . ", Municipio: " . $usuario->municipionom . ", Casos: " . $usuario->casos . "<br>";
+		// }
+		$json_usuarios = json_encode($usuarios);
+		echo $json_usuarios;
+	}
+
 
 
 	public function vista_estadisticas2()

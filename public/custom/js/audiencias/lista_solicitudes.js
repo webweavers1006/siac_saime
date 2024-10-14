@@ -1,11 +1,11 @@
 
 // Seleccionar todos los checkbox
-document.getElementById('selectAll').addEventListener('click', function() {
-    var checkboxes = document.getElementsByName('select[]');
-    for (var i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = this.checked;
-    }
-  });
+// document.getElementById('selectAll').addEventListener('click', function() {
+//     var checkboxes = document.getElementsByName('select[]');
+//     for (var i = 0; i < checkboxes.length; i++) {
+//       checkboxes[i].checked = this.checked;
+//     }
+//   });
 
 
 
@@ -15,8 +15,9 @@ document.getElementById('selectAll').addEventListener('click', function() {
 $('#table_audiencia tbody a').on('click', function(e) {
     e.preventDefault();
     var id = $(this).data('id');
+   
     window.location = '/detalles_solicitudes/' + id;
-
+    
     });
 
 
@@ -141,32 +142,22 @@ $('#remitir').on('click', function() {
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   let id_trabajador=$("#id_trabajador").val();
   let id_requerimiento=$("#id_requerimiento").val();
-  
   const selectedIds = [];
-
   $('input.checkbox-status:checked').each(function() {
-
-    var id_solicitud = $(this).closest('tr').find('td:eq(5)').text(); // Corrección: posición 5
-
-    selectedIds.push(id_solicitud);
-
-   
-
+    var id = $(this).closest('tr').find('td:eq(4)').text(); // Get the ID from the hidden TD
+    selectedIds.push(id);
   });
- 
 
-  // // DATOS PARA EL USUARIO EN AUDIENCIAS
+  // DATOS PARA EL USUARIO EN AUDIENCIAS
   const audienceData = {
     id_trabajador: id_trabajador,
   };
 
-
   // Iterate through each selected ID and make an AJAX request
-  selectedIds.forEach((id_solicitud) => {
-  
-      $.ajax({
+  selectedIds.forEach((id) => {
+    $.ajax({
       type: "PUT",
-      url: `http://172.16.0.46:70/solicitudes/${id_solicitud}`,
+      url: `http://172.16.0.46:70/solicitudes/${id}`,
       data: JSON.stringify(audienceData),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -179,6 +170,6 @@ $('#remitir').on('click', function() {
           window.location = '/detalles_requerimientos/'+id_requerimiento;
         }, 1500);
       }
-     });
+    });
   });
 });

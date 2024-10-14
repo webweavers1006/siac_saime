@@ -25,10 +25,11 @@
               <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
               <div class="ml-2">
               <p class="mb-0" style="font-size: 18px; font-weight: bold;"> Actualizar Solicitud</p>
-                <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?> - Numero solcitud  <?php echo $datos['num_solicitud']; ?></span>
+                <span style="font-size: 14px;">Nº <?php echo $datos['id']; ?> - Numero solcitud  <?php echo $datos['num_solicitud']; ?></span>
                 <br><br>
               </div>
              
+              <input type="hidden" id="id_solicitud" value="<?php echo $datos['id']; ?>">
             </div>
           </div>
         </div>
@@ -54,11 +55,11 @@
                   </div>
                   <div>
                     <label>Descripción:</label>
-                    <input type="text" value="<?php echo $datos['descripcion']; ?>" class="no-border" disabled>
+                    <input type="text" value="<?php echo $datos['descripcion']; ?>"  class="no-border" disabled>
                   </div>
                   <div>
                     <label>Responsable:</label>
-                    <input type="text" value="<?php echo $datos['responsable']; ?>" class="no-border" disabled>
+                    <input type="text" value="<?php echo $datos['responsable']; ?>"   class="no-border" disabled>
                   </div>
                   
                 </div>
@@ -70,7 +71,7 @@
                     <label>Estatus</label>
                     <div class="control">
                       <div class="select">
-                      <select name="id_estado">
+                      <select name="id_estado" id="id_estado" >
                           <option value="0" <?php echo ($datos['id_estado'] == 0) ? 'selected' : ''; ?>>---Seleccione un Estatus---</option>
                           <option value="6" <?php echo ($datos['id_estado'] == 6) ? 'selected' : ''; ?>>Por resolver</option>
                           <option value="7" <?php echo ($datos['id_estado'] == 7) ? 'selected' : ''; ?>>Resuelta</option>
@@ -83,16 +84,17 @@
                     <label>Responsable</label>
                     <div class="control">
                       <div class="select">
-                      <select name="id_trabajador">
-                    <option value="0">---Seleccione un responsable---</option>
-                    <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
-                        <?php if ($usuarioarea['id_area'] == $datos['id_area']) { ?>
-                            <option value="<?php echo $usuarioarea['id']; ?>" <?php echo ($usuarioarea['id_usuario'] == $datos['id_trabajador']) ? 'selected' : ''; ?>>
-                                <?php echo $usuarioarea['nombre']; ?>
-                            </option>
-                        <?php } ?>
-                    <?php } ?>
-                  </select>
+                      <select name="id_trabajador" id="id_trabajador">
+                          <option value="0">---Seleccione un responsable---</option>
+
+                          <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
+                              <?php if ($usuarioarea['id_area'] == $datos['id_area']) { ?>
+                                  <option value="<?php echo $usuarioarea['id_usuario']; ?>" <?php echo ($usuarioarea['id_usuario'] == $datos['id_trabajador']) ? 'selected' : ''; ?>>
+                                      <?php echo $usuarioarea['nombre']; ?>
+                                  </option>
+                              <?php } ?>
+                          <?php } ?>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -100,14 +102,14 @@
                 </div>
                 <div class="control">
                     <p class=" has-text-weight-semibold mb-5">Descripción</p>
-                    <textarea class="textarea" name="descripcion"><?php echo $datos['descripcion']; ?></textarea>
+                    <textarea class="textarea" id="descripcion" name="descripcion"><?php echo $datos['descripcion']; ?></textarea>
                   </div>
               </div>
             </div>
           </div>
           <div class="column is-12">
             <br>
-            <button class="button is-primary is-fullwidth">Guardar</button>
+            <button class="button is-primary is-fullwidth" id="actualizar_solicitud">Actualizar Solicitud</button>
           </div>
         </div>
       </div>

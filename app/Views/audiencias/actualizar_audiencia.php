@@ -26,6 +26,10 @@
               <div class="ml-2">
               <p class="mb-0" style="font-size: 18px; font-weight: bold;">Actualizar Audiencia</p>
                 <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?></span>
+                <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
+
+                <input type="hidden" id="id_condicion" value="<?php echo $datos2['id_condicion']; ?>">
+
                 <br><br>
               </div>
              
@@ -34,7 +38,7 @@
         </div>
       </div>
 
-
+      <input type="hidden"  id="id_area"value="<?php echo $datos2['id_area']; ?>">
 <!-- Sección de información -->
 <section class="section" style="margin-left: 63px;">
   <div class="card card_table " style="max-width: 1350px; margin: 20px auto;">
@@ -62,11 +66,11 @@
                   </div>
                   <div>
                     <label>Estatus:</label>
-                    <input type="text" value="<?php echo $datos2['estado']; ?>" class="no-border" disabled>
+                    <input type="text" value="<?php echo $datos2['estado']; ?>"  class="no-border" disabled>
                   </div>
                   <div>
                     <label>Responsable:</label>
-                    <input type="text" value="<?php echo $datos2['trabajador']; ?>" class="no-border" disabled>
+                    <input type="text" value="<?php echo $datos2['trabajador']; ?>" style="width: 400px;" class="no-border" disabled>
                   </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
@@ -78,7 +82,7 @@
                   </div>
                     <div class="control">
                       <div class="select">
-                      <select name="id_formato_cita">
+                      <select name="id_formato_cita" id="id_formato_cita">
                           <option value="0" <?php echo ($datos2['id_formato_cita'] == 0) ? 'selected' : ''; ?>>---Seleccione un Formato---</option>
                           <option value="1" <?php echo ($datos2['id_formato_cita'] == 1) ? 'selected' : ''; ?>>Presencial</option>
                           <option value="2" <?php echo ($datos2['id_formato_cita'] == 2) ? 'selected' : ''; ?>>Virtual</option>
@@ -151,7 +155,7 @@
                     <label>Responsable</label>
                     <div class="control">
                       <div class="select">
-                      <select name="id_trabajador">
+                      <select name="id_trabajador" id="id_trabajador">
                           <option value="0" <?php echo ($datos2['id_trabajador'] == 0) ? 'selected' : ''; ?>>---Seleccione un responsable---</option>
                           <option value="11" <?php echo ($datos2['id_trabajador'] == 11) ? 'selected' : ''; ?>>DIRECTOR PATENTES</option>
                           <option value="2" <?php echo ($datos2['id_trabajador'] == 2) ? 'selected' : ''; ?>>DIRECTOR MARCAS</option>
@@ -163,7 +167,7 @@
                     <label>Estatus</label>
                     <div class="control">
                       <div class="select">
-                      <select name="id_estado">
+                      <select name="id_estado" id="id_estado">
                           <option value="0" <?php echo ($datos2['id_estado'] == 0) ? 'selected' : ''; ?>>---Seleccione un Estatus---</option>
                           <option value="1" <?php echo ($datos2['id_estado'] == 1) ? 'selected' : ''; ?>>NUEVO</option>
                           <option value="2" <?php echo ($datos2['id_estado'] == 2) ? 'selected' : ''; ?>>EN PROCESO</option>
@@ -178,7 +182,7 @@
           </div>
           <div class="column is-12">
             <br>
-            <button class="button is-primary is-fullwidth">Guardar</button>
+            <button class="button is-primary is-fullwidth" id="actualizar_audiencias">Actualizar</button>
           </div>
         </div>
       </div>

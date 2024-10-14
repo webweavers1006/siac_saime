@@ -1,5 +1,10 @@
 <!-- Content Wrapper. Contains page content -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/audiencias.css">
+<?php
+$session = session();
+$userdata = $session->get();
+
+?>
 
 <style>
   table.dataTable thead,
@@ -20,29 +25,51 @@
                   <i class="fas fa-angle-double-right"></i>
                   Listado de Audiencias
                 </h3>
-                <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-direcciones">
-                  Agregar (+)
+                <?php
+                if (isset($userdata['permisos']['permisos']) && in_array('requerimientos.create', $userdata['permisos']['permisos'])) {
+                    // Habilitar el botón
+                    $estado_boton = 'enabled';
+                } else {
+                    // Inhabilitar el botón
+                    $estado_boton = 'disabled';
+                }
+                ?>
+
+                <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-direcciones" <?php echo $estado_boton; ?>>
+                    Agregar (+)
                 </button>
               </div>
             </div>
             <div class="card-body">
             <div class="col-lg-12 col-sm-12 col-md-12 ">
                     
-                    <table class="display table-responsive" id="table_audiencia" style="width:100%" style="margin-top: 20px">
-                    <thead>
-                      <tr>
-                        <td class="text-center ant-table-cell" style="width: 1%;" >Estatus</td>
-                        <td class="text-center" style="width: 4%;">Numero de audiencia</td>
-                        <td class="text-center" style="width: 5%;">Pais</td>
-                        <td class="text-center" style="width: 8%;">Estatus del caso</td>
-                        <td class="text-center" style="width: 3%;">Area</td>
-                        <td class="text-center" style="width: 8%;">Usuario</td>
-                        <td class="text-center" style="width: 1%;">Acciones</td>
-                      </tr>
-                    </thead>
-                    <tbody id="listar_audencias">
-                    </tbody>
+            <?php
+              if (isset($userdata['permisos']['permisos']) && in_array('requerimientos.read', $userdata['permisos']['permisos'])) {
+                  // Mostrar la tabla
+                  ?>
+                  <table class="display table-responsive" id="table_audiencia" style="width:100%" style="margin-top: 20px">
+                      <thead>
+                        <tr>
+                          <td class="text-center ant-table-cell" style="width: 1%;" >Estatus</td>
+                          <td class="text-center" style="width: 4%;">Numero de audiencia</td>
+                          <td class="text-center" style="width: 5%;">Pais</td>
+                          <td class="text-center" style="width: 8%;">Estatus del caso</td>
+                          <td class="text-center" style="width: 3%;">Area</td>
+                          <td class="text-center" style="width: 8%;">Usuario</td>
+                          <td class="text-center" style="width: 1%;">Acciones</td>
+                        </tr>
+                      </thead>
+                      <tbody id="listar_audencias">
+                      </tbody>
                   </table>
+                  <?php
+              } else {
+                  // Mostrar el mensaje de no permisos
+                  ?>
+                  <p>NO TIENE PERMISOS PARA VISUALIZAR LOS REQUERIMIENTOS</p>
+                  <?php
+              }
+              ?>
                 </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 
 let solicitudes = [];
-
+$('#agregar_solicitudes').prop('disabled', true).addClass('deshabilitado');
 // EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
 $(document).on('submit', "#buscar", function(e) {
   e.preventDefault();
@@ -12,7 +12,12 @@ $(document).on('submit', "#buscar", function(e) {
   let tipo_audiencia = id_area === '1' ? 'M' : 'P';
   if (!ano) {
     alert("Por favor ingrese el año");
-  } else {
+  }
+  else  if (id_area==0||id_area==null) {
+    alert("Por favor seleccione el Tipo de Audiencia");
+  }
+  
+  else {
     sol = sol.padStart(6, '0');
     const valorConcatenado = `${ano}${sol}`;
     const url = `http://172.16.0.46:70/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
@@ -86,9 +91,9 @@ $('#agregar_caso').on('click', function() {
     // Mostrar mensaje de error
     mostrarMensajeError('Por favor ingrese la descripción del Caso');
   
+  } else if (descripcion.length < 5) {
+    alert('La descripción debe tener al menos 5 caracteres.');
   }
-  
-
   else {
     // Agregamos el valor de categoria_seleccionada al arreglo solicitudes
     if (solicitudes.length > 0) {
@@ -111,16 +116,27 @@ $('#agregar_caso').on('click', function() {
 });
 
 function updateTable() {
+  $('#agregar_solicitudes').prop('disabled', false)
+  .removeClass('deshabilitado');
   let tbody = $('.tbody_0');
   let ultimaSolicitud = solicitudes[solicitudes.length - 1];
 
   // Creamos una nueva fila de tabla
-  let row = $('<tr>');
+  let row = $('<tr>').data('index', solicitudes.length - 1);
   row.append($('<td>').text(ultimaSolicitud.nombre));
   row.append($('<td>').text(ultimaSolicitud.registro));
   row.append($('<td>').text(ultimaSolicitud.solicitud));
   row.append($('<td>').text(ultimaSolicitud.categoria));
   row.append($('<td>').text(ultimaSolicitud.categoria_seleccionada));
+
+  // Agregamos un botón de eliminar a la fila
+  let deleteButton = $('<td>').append($('<button>').text('Eliminar')
+    .addClass('button is-primary is-light delete-button')
+    .css({
+      'background-color': '#ebf4ff',
+      'color': '#07f'
+    }));
+  row.append(deleteButton);
 
   tbody.append(row); // Agregamos la fila al cuerpo de la tabla
 }
@@ -131,7 +147,9 @@ function mostrarMensajeError(mensaje) {
   alert(mensaje)
 }
 
-
+$(document).on('click', '.delete-button', function() {
+  $(this).closest('tr').remove();
+});
 
 
 $('#ingresar_audiencia').on('click', function() {
@@ -229,6 +247,28 @@ $('#ingresar_audiencia').on('click', function() {
 /*Verficacion de datos en el form*/
 $(document).on('change', '#id_area', function(e) {
   let id_area = $("#id_area").val();
+
+if (id_area==1) 
+{
+  const areaInput1 = document.getElementById('informacion');
+  areaInput1.textContent = 'Información de la marca';
+  const areaInput2 = document.getElementById('nombre_area');
+  areaInput2.textContent = 'Nombre de la Marca:';
+ 
+ 
+
+}else
+if (id_area==2) 
+  {
+    const areaInput1 = document.getElementById('informacion');
+    areaInput1.textContent = 'Información de la Patente';
+    const areaInput2 = document.getElementById('nombre_area');
+    areaInput2.textContent = 'Titulo de la Patente ';
+   
+    
+  }
+
+
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   const url = `http://172.16.0.46:70/usuarios_areas/director/${id_area}`;
     // Realiza la solicitud AJAX

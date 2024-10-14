@@ -164,6 +164,9 @@ $routes->setAutoRoute(false);
      $routes->get('/Listar_Atencion_filtro', "Reporte_Atencion_Controler::Listar_Atencion_filtro");
 
 
+      //RUTAS PARA EL MAPA , EN EL SIAC 
+      $routes->get('/Listar_Casos_Municipios', "Reporte_Atencion_Controler::Listar_Casos_Municipios");
+
 
 /**
  * --------------------------------------------------------------------
@@ -187,9 +190,20 @@ $routes->get('/citas', 'Audiencias_Controler::citas');
 $routes->get('/actualizar_citas/(:any)', 'Audiencias_Controler::actualizar_citas/$1');
 $routes->get('/actualizar_solicitud/(:any)', 'Audiencias_Controler::actualizar_solicitud/$1');
 
+
+
+
+
+
+//RUTAS PARA SOLICITUDES
+$routes->get('/vista_solicitudes', 'Audiencias_Controler::vista_solicitudes');
+
 //RUTAS PARA AUDIENCIAS /ESTADISTICAS
 $routes->get('/citas_otorgadas', 'Audiencias_Controler::citas_otorgadas');
 $routes->get('/casos_categorias', 'Audiencias_Controler::casos_categorias');
+
+
+
 
 
 

@@ -202,7 +202,7 @@ $(document).on('keyup', "#user-confirm-pass", (e) => {
 // //EVENTO PARA AGREGAR UN USUARIO
 $(document).on('submit', "#new-user", function(e) {
     e.preventDefault();
-
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     let id_direccion_administrativa = $("#id_direccion_administrativa").val();
     
     //VERIFICAR SI EL ROL ES DE AUDIENCIAS
@@ -269,6 +269,9 @@ $(document).on('submit', "#new-user", function(e) {
                                     "id": parseInt(response), 
                                 };
                         
+                           // console.log(JSON.stringify(datos_audience));
+
+
                             //Si todos los campos son válidos, enviar la solicitud
                         // AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
                             $.ajax({
@@ -277,6 +280,11 @@ $(document).on('submit', "#new-user", function(e) {
                                 data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
+                                headers: {
+
+                                    'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+                    
+                                  },  
                                 success: function(response)
                                 {
                                     
@@ -448,6 +456,8 @@ $(document).on('submit', "#new-user", function(e) {
 
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION
 $('#listar_usuarios').on('click', '.Editar', function(e) {
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     var idusuopr = $(this).attr('idusuopr');
     var usuopnom = $(this).attr('usuopnom');
     var usuopape = $(this).attr('usuopape');
@@ -469,8 +479,15 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
             //data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            dataType: "json",
+              headers: {
+
+                'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+
+              },  
             success: function(response)
             {     
+                console.log(response);
                 $(".edit_id_rol_nivel").css('display', 'block');
                 $(".edit_user_cedula").css('display', 'block');
                 $("#edit_id_rol option[value='" + response.id_rol + "']").prop("selected", true);
@@ -545,11 +562,11 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
     estatus_borrado = false;
     if (usuopborrado == 'f') {
         $('#usuopborrado').attr('checked', 'checked');
-        $('#usuopborrado').val('false');
+        $('#usuopborrado').val(false);
     }
     if (usuopborrado == 't') {
         $('#usuopborrado').removeAttr('checked')
-        $('#usuopborrado').val('true')
+        $('#usuopborrado').val(true)
     }
 
   }
@@ -561,10 +578,10 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
 $('#usuopborrado').click(function() {
     if ($('#usuopborrado').is(':checked')) {
 
-        estatus_borrado = 'false';
+        estatus_borrado = false;
 
     } else {
-        estatus_borrado = 'true';
+        estatus_borrado = true;
 
     }
 });
@@ -611,8 +628,9 @@ function validarFormatoEmail(email) {
 // //Evento para guardar el usuario editado
 $(document).on('submit', "#edit-user", function(e) {
     e.preventDefault();
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     let id_user=$("#userid").val();
-    let clave_actual = $("#edit-user-pass").val();
+    let clave_actual = $("#edit-user-pass").val().trim();
     let clave_anterior = $("#edit-user-confirm-pass").val();
     let usercargo = $("#cargo").val();
     let id_rol =$('#edit-user-rol').val();
@@ -624,8 +642,6 @@ $(document).on('submit', "#edit-user", function(e) {
     {
         if (id_rol==9) 
             {
-        
-        
                 if (cambiar_clave == 'true')
                     {
                         clave_actual = clave_actual.trim();
@@ -638,20 +654,7 @@ $(document).on('submit', "#edit-user", function(e) {
                         {
                             $("#edit-user-pass").removeClass('is-invalid');
                             $("#edit-user-confirm-pass").removeClass('is-invalid');
-                            // DATOS PARA EL SIAC 
-                            let datos = 
-                            {
-                                "username": $("#edit-user-name").val(),
-                                "userlastname": $("#edit-user-lastname").val(),
-                                "useremail": $("#edit-user-email").val(),
-                                "userrol": $("#edit-user-rol").val(),
-                                "userid": $("#userid").val(),
-                                "id_direccion_administrativa": $("#edit_direccion_administrativa").val(),
-                                "usercargo": usercargo,
-                                "usuoppass": clave_actual,
-                                "usuopborrado": estatus_borrado,
-                                "modulo_clave": 'true',
-                            }
+                            
                            // DATOS PARA EL USUARIO EN AUDIENCIAS
                           
                            let datos_audience =
@@ -661,11 +664,11 @@ $(document).on('submit', "#edit-user", function(e) {
                             "correo": $("#edit-user-email").val(),
                             "id_rol": $("#edit_id_rol").val(),
                             "identificacion": $("#edit_cedula").val(),
-                            "clave": $("#edit-user-pass").val(),
+                            "clave": $("#edit-user-pass").val().trim(),
                            // "id": $("#userid").val(), 
                              };
         
-                             
+                  
                              
                             // DATOS PARA ACUTALIZAR DATOS EN EL SISTEMA DE AUDIENCIAS                                     
                             $.ajax({
@@ -674,8 +677,29 @@ $(document).on('submit', "#edit-user", function(e) {
                                 data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
+                                dataType: "json",
+                                headers: {
+                  
+                                  'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+                  
+                                },  
                                 success: function(response)
                                 {
+                                    // DATOS PARA EL SIAC 
+                                    let datos = 
+                                    {
+                                        "username": $("#edit-user-name").val(),
+                                        "userlastname": $("#edit-user-lastname").val(),
+                                        "useremail": $("#edit-user-email").val(),
+                                        "userrol": $("#edit-user-rol").val(),
+                                        "userid": $("#userid").val(),
+                                        "id_direccion_administrativa": $("#edit_direccion_administrativa").val(),
+                                        "usercargo": usercargo,
+                                        "usuoppass": clave_actual,
+                                        "usuopborrado": estatus_borrado,
+                                        "modulo_clave": 'true',
+                                    }
+
                                      // DATOS PARA ACUTALIZAR INFORMACION EN SIAC
                                     $.ajax({
                                     url: "/editUser",
@@ -741,6 +765,12 @@ $(document).on('submit', "#edit-user", function(e) {
                             data: JSON.stringify(audienceData),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
+                            dataType: "json",
+                            headers: {
+              
+                              'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+              
+                            },  
                             success: function(response) 
                             
                             {
@@ -783,6 +813,7 @@ $(document).on('submit', "#edit-user", function(e) {
         }else
         {
         
+         
             // DATOS PARA EL USUARIO EN SIAC
             const userData = {
                 username: $("#edit-user-name").val(),
@@ -825,7 +856,7 @@ $(document).on('submit', "#edit-user", function(e) {
                 }, 1600);
             });
             
-            }
+        }
 
     }
         

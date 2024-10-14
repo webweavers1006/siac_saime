@@ -107,10 +107,10 @@ class Administrador extends BaseController
 					)
 				);
 
-			if ($datos["userrol"]=='9')
+			if ($datos["userrol"]=='9'or $datos["userrol"]==9)
 			{
 				$ultimo_id_insertado = $model_buscarusuario->ultimo_id_insertado();
-				$last_value = $ultimo_id_insertado[0]->last_value;
+				$last_value = $ultimo_id_insertado;
 				if (isset($query)) {
 					$mensaje = 1;
 					$mensaje = $last_value;
@@ -264,6 +264,8 @@ class Administrador extends BaseController
                 "idrol"      => $datos["userrol"],
             );
         }
+
+
         if ($model->actualizarUsuario($datos_a_actualizar)) {
             // Registro en auditoria la edición del usuario
             $auditoria['audi_user_id']   = session('iduser');

@@ -66,7 +66,17 @@ $(document).on('submit', "#login-user", function(e) {
 
                                         });
                                        setTimeout(function() {
-                                           window.location = "/pantalla_bienvenida";
+
+                                        const userData = localStorage.getItem('user_audiencia');
+                                        const userDataJson = JSON.parse(userData);
+                                        const token = userDataJson.token;
+                                        const nivel_rol = userDataJson.id_rol;
+                                     
+                                        document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+                                        document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+                                
+                                       window.location.href = '/pantalla_bienvenida';
+                                         
                                        }, 1400);
 
                                     }

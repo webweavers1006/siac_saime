@@ -125,7 +125,7 @@ height: auto;
         }
         }  
       ?> 
- <!-- total casos de reclamo por denuncia  -->
+ <!-- total casos peticion  -->
  <?php  
  
         $array_totalcasos_peticion = null;
@@ -135,6 +135,21 @@ height: auto;
         $array_totalcasos_peticion = "'".$count."'";
         }else {
         $array_totalcasos_peticion = $array_totalcasos_peticion.",'".$count."'";
+        }
+        }  
+      ?> 
+
+
+ <!-- total casos talleres  -->
+ <?php  
+ 
+        $array_totalcasos_talleres = null;
+        for ($e=0; $e <count($estadisticas_talleres) ; $e++) { 
+        $count=$estadisticas_talleres[$e]->talleres;
+        if ($array_totalcasos_talleres === null) {
+        $array_totalcasos_talleres = "'".$count."'";
+        }else {
+        $array_totalcasos_talleres = $array_totalcasos_talleres.",'".$count."'";
         }
         }  
       ?> 
@@ -261,6 +276,13 @@ const data = {
             label: 'Petición',
             data: [<?php echo $array_totalcasos_peticion; ?>],
             backgroundColor: 'rgba( 99, 82, 186,30)'
+            // Color de fondo de las barras para el segundo conjunto de datos
+          },
+           // CASOS DENUCIA
+           {
+            label: 'Talleres',
+            data: [<?php echo $array_totalcasos_talleres; ?>],
+            backgroundColor: 'rgba(255, 215, 0, 0.3)'
             // Color de fondo de las barras para el segundo conjunto de datos
           }
           

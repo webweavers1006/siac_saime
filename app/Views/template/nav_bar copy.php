@@ -254,17 +254,9 @@ $userdata = $session->get();
               } elseif ($userdata["nivel_rol"] == "3")
               {
                 echo '<li class="nav-item">
-                <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
+                <a href="' . base_url() . '/vista_audiencias" class="nav-link">
                   <i class="nav-icon fas fa-users" style="font-size:20px"></i>
                   <p>Listado de solicitudes</p>
-                </a>
-              </li>';
-
-
-              echo '<li class="nav-item">
-                <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
-                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                  <p>Registrar Audiencias</p>
                 </a>
               </li>';
               }
@@ -280,34 +272,31 @@ $userdata = $session->get();
             </li>   
           </ul>
           </li>
-          <?php 
-              if ($userdata["nivel_rol"] == "1" || $userdata["nivel_rol"] == "2") {
-              ?>
-                  <li class="nav-item">
-                      <a href="#" class="nav-link" id="">
-                          <i class="nav-icon fas fa-chart-bar"></i>
-                          <p>Estadísticas</p> 
-                          <i class="right fas fa-angle-left"></i> 
-                      </a>
-                      <ul class="nav nav-treeview">
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
-                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
-                                  <p>Citas otorgadas</p>
-                              </a>
-                          </li>   
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
-                                  <i class="nav-icon fas fa-file" style='font-size:20px'></i>
-                                  <p>Casos por categoría</p>
-                              </a>
-                          </li>   
-                      </ul>
-                  </li>
-              <?php 
-              }
-              ?>
+          
+    <li class="nav-item">
+  <a href="#" class="nav-link" id=""><i class="nav-icon  nav-icon fas fa-chart-bar"></i>
+    <p> Estadísticas</p> 
+    <i class="right fas fa-angle-left"></i> 
+  </a>
+  <ul class="nav nav-treeview">
+    <li class="nav-item">
+      <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
+        <i class="nav-icon 	fa fa-calendar" style='font-size:20px'></i>
+        <p>Citas otorgadas</p>
+      </a>
+    </li>   
+    <li class="nav-item">
+      <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
+        <i class="nav-icon 	fas  fa-file" style='font-size:20px'></i>
+        <p>Casos por categoria</p>
+      </a>
+    </li>   
+  </ul>
+</li>
+
+
           <?php } ?>
+
           <?php if ($session->get('userrol') == 10 ) { ?>
           <li class="nav-item">
          

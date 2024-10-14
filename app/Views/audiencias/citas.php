@@ -1,4 +1,12 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/citas.css">
+
+
+<?php
+$session = session();
+$userdata = $session->get();
+
+
+?>   
 <main>
   <div class="container">
     <br>
@@ -10,8 +18,16 @@
         <div class="progress-step" data-title="Calendario"></div>
       </div>
     </form>
-   
-    <section class="section">
+    
+        <?php
+    if (isset($userdata['permisos']['permisos']) && in_array('citas.read', $userdata['permisos']['permisos'])) {
+        $style = 'style="display: block;"';
+    } else {
+        $style = 'style="display: none;"';
+        echo '<p style="padding-left: 500px; font-weight: bold;">No tiene permisos para visualizar las citas.</p>';
+    }
+    ?>
+    <section class="section" <?php echo $style; ?>>
     <div class="row">
       <div class="col-md-1"></div>
       <div class="col-md-11">
@@ -23,7 +39,17 @@
                   <?php foreach ($datos['citas'] as $cita) { ?>
                     
                       <div class="column is-3">
-                      <a href="/actualizar_citas/<?php echo $cita['id']; ?>" class="card-link" style="cursor: pointer;">
+                             <?php
+                              if (isset($userdata['permisos']['permisos']) && in_array('citas.update', $userdata['permisos']['permisos'])) {
+                              ?>
+                                <a href="/actualizar_citas/<?php echo $cita['id']; ?>" class="card-link" style="cursor: pointer;">
+                              <?php
+                              } else {
+                              ?>
+                                <a href="#" class="card-link" style="cursor: not-allowed; color: #ccc;">
+                              <?php
+                              }
+                              ?>
                               <div class="card">
                                   <header class="card-header">
                                     
@@ -63,21 +89,73 @@
                 <div id="calendar"></div>
                 <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.js"></script>
                 <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.min.js"></script>
+                <style>
+           #calendar .fc-event {
+            border-color: #ccc;
+            color: white;
+            
+           }
+        </style>
+            <style>
+              #calendar .fc-event {
+                  border-color: #ccc; /* Borde básico para todos los eventos */
+              }
+
+              
+                /* Definir colores para diferentes estados */
+                .estado-5 {
+                  background-color: red; /*  rojo Citas canceladas */
+              }
+
+              .estado-4 {
+                  background-color: rgb(2, 67, 121);/*  azul Citas pautadas */
+              }
+
+              .estado-3 {
+                  background-color: rgb(241, 233, 114); /* amarilla  Citas resueltas */
+              }
+
+              .estado-default {
+                  
+                  background-color: rgb(23, 84, 87); /* verde */
+              }
+
+
+
+
+            </style>
                 <?php
                 $events = array();
                 $max_date = null;
-                $citasById = array(); // Create an associative array for efficient lookup
-
+                $citasById = array(); // Crear un array asociativo para búsqueda eficiente
                 foreach ($datos['citas'] as $cita) {
+                    // Definir la clase CSS basada en el id_estado
+                    $className = '';
+                    switch ($cita['id_estado']) {
+                        case 5:
+                            $className = 'estado-5'; // Cita cancelada
+                            break;
+                        case 4:
+                            $className = 'estado-4'; // Cita pautada
+                            break;
+                        case 3:
+                            $className = 'estado-3'; // Cita resuelta
+                            break;
+                        default:
+                            $className = 'estado-default'; // Clase por defecto si no coincide
+                            break;
+                    }
+
                     $event = array(
                         'title' => $cita['nombre'],
+                        'id_estado' => $cita['id_estado'],
                         'start' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
                         'end' => date('Y-m-d H:i:s', strtotime($cita['fecha_cita'])),
-                        //'url' => '/appointments/edit/' . $cita['id'],
-                        'citaId' => $cita['id'], // Add a separate attribute for citaId
+                        'className' => $className, // Añadir la clase CSS
+                        'citaId' => $cita['id'], // Añadir un atributo separado para citaId
                     );
                     $events[] = $event;
-                    $citasById[$cita['id']] = $cita; // Store the event details in the associative array
+                    $citasById[$cita['id']] = $cita; // Almacenar los detalles del evento en el array asociativo
                     if ($max_date === null || strtotime($cita['fecha_cita']) > strtotime($max_date)) {
                         $max_date = $cita['fecha_cita'];
                     }
@@ -113,13 +191,14 @@
                           center: 'title',
                           right: 'multiMonthYear,dayGridMonth,timeGridWeek'
                         },
+                        
                         themeSystem: 'bootstrap',
                         initialView: 'multiMonthYear',
                         initialDate: '<?php echo date('Y-m-d H:i:s', strtotime($max_date)); ?>', // Formateado la fecha para que sea compatible con FullCalendar
                         editable: true,
                         selectable: true,
                         dayMaxEvents: true, // permitir enlace "más" cuando hay demasiados eventos
-                        // multiMonthMaxColumns: 1, // garantizar una sola columna
+                        //multiMonthMaxColumns: 1, // garantizar una sola columna
                         // showNonCurrentDates: true,
                         fixedWeekCount: false,
                         businessHours: true,

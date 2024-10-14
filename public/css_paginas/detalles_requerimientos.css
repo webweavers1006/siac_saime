@@ -189,7 +189,7 @@ border-radius: 20px;
 @media (min-width: 767px) {
   .audiencia {
     position: relative;
-    left: 0%;
+    left: -1%;
     width: 88%;
     margin: 20px;
   }

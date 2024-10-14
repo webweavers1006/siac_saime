@@ -1,5 +1,8 @@
 
-          
+<?php
+$session = session();
+$userdata = $session->get();
+?>     
  <!-- Content Wrapper. Contains page content -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/detalles_requerimientos.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/flatpickr.min.css">
@@ -23,7 +26,7 @@
               <div class="ml-2">
               <p class="mb-0" style="font-size: 18px; font-weight: bold;">Audiencia</p>
                 <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?></span>
-               
+                <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
               </div>
             </div>
           
@@ -56,43 +59,86 @@
             <div class="card card_table">
               <div class="card-body p-3">
                 <h5 class="ant-descriptions-title" style="font-weight: bold;">Informacion Empresa o Bufete</h5>
-                <h5 class="ant-descriptions-title" style="font-weight: bold;">Informacion Empresa o Bufete</h5>
-                <h5 class="ant-descriptions-title" style="font-weight: bold;">Informacion Empresa o Bufete</h5>
+                <table class="my-table w-100">
+                        <tbody>
+                          <tr>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Nombre Empresa o Bufete:</strong></td>
+                            <td><?php echo $info_emp_buf['bufete'] ?? ''; ?></td>
+                          </tr>
+                          <tr>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Rif:</strong></td>
+                            <td><?php echo $info_emp_buf['rif']?? '';  ?></td>
+                          </tr>
+                          <tr>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Teléfono:</strong></td>
+                            <td><?php echo $info_emp_buf['telefono']?? '';  ?></td>
+                          </tr>
+                          <tr>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Correo:</strong></td>
+                            <td><?php echo $info_emp_buf['correo']?? '';  ?></td>
+                          </tr>
+                        </tbody>
+                      </table>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Control de Remisión -->
-        <?php if (!empty($otrosdatos) && !$otrosdatos['error']) { ?>
+
+      
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body p-3">
                             <div class="box">
-                                <button type="button" class="ant-btn css-2i2tap ant-btn-primary" id="remitir" class="ant-btn css-2i2tap ant-btn-primary" disabled>
-                                    <span>Remitir</span>
-                                </button>
-                                <div class="select"  style="display: inline-block; margin-left: 6px;">
-                                    <select name="id_trabajador" disabled>
-                                        <option value="0">---Seleccione un responsable---</option>
 
-                                        <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
-                                            <?php if ($usuarioarea['id_area'] == $otrosdatos['informacion']['id_area']) { ?>
-                                                <option value="<?php echo $usuarioarea['id']; ?>" <?php echo ($usuarioarea['id'] == $otrosdatos['informacion']['id_trabajador']) ? 'selected' : ''; ?>>
-                                                    <?php echo $usuarioarea['nombre']; ?>
-                                                </option>
-                                            <?php } ?>
-                                        <?php } ?>
-                                    </select>
-                                </div>
+                            <?php
+                            if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.update', $userdata['permisos']['permisos'])) {
+                            ?>
+                              <button class="ant-btn css-2i2tap ant-btn-primary"  id="remitir" style="cursor: pointer;" disabled>Remitir</button>
+                            <?php
+                            } else {
+                            ?>
+                              <button class="ant-btn css-2i2tap ant-btn-primary"  id="remitir" style="cursor: not-allowed; color: #ccc;" disabled>Remitir (No autorizado)</button>
+                            <?php
+                            }
+                            ?>
+
+
+                               
+                                <div class="select" style="display: inline-block; margin-left: 6px;">
+
+                                  <select name="id_trabajador" id="id_trabajador">
+                                  <option value="0" selected>---Seleccione un responsable---</option>
+
+                                  <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
+                                      <?php if ($usuarioarea['id_area'] == $datos2['id_area']) { ?>
+                                          <option value="<?php echo $usuarioarea['id_usuario']; ?>" >
+                                              <?php echo $usuarioarea['nombre']; ?>
+                                          </option>
+                                      <?php } ?>
+                                  <?php } ?>
+                              </select>
+
+                                <!-- <select name="id_trabajador" disabled id="id_trabajador">
+                                    <option value="0" selected>---Seleccione un responsable---</option>
+
+                                    <php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
+                                        <php if ($usuarioarea['id_area'] == $datos2['id_area']) { ?>
+                                            <option value="<php echo $usuarioarea['id']; ?>" >
+                                                <php echo $usuarioarea['nombre']; ?>
+                                            </option>
+                                        <php } ?>
+                                    <php } ?>
+                                </select> -->
+                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-          <?php } ?>
-
+         
               <!-- Tabla de Audiencias -->
         <div class="row">
           <div class="col-lg-8">
@@ -101,63 +147,96 @@
                 <table class="table table-striped table-bordered" id="table_audiencia" style="width:100%">
                   <thead>
                     <tr>
-                      <th class="text-center" style="width: 2%;"><input type="checkbox" id="selectAll" name="select[]" value=""></th>
+                    <th class="text-center" style="width: 2%;"><input type="checkbox" id="selectAll" name="select[]" value=""></th>
                       <th class="text-center" style="width: 15%;">Número Solicitud</th>
                       <th class="text-center" style="width: 5%;">Estatus del caso</th>
                       <th class="text-center" style="width: 10%;">Categoría</th>
+                      <th class="text-center" style="width: 1%;"></th>
                     </tr>
                   </thead>
-                <tbody>
-                <?php
-                    // Verifica si el arreglo $datos['solicitudes'] no está vacío
-                    if (!empty($datos['solicitudes'])) {
+                  <tbody>
+
+
+
+                    <?php
+                
+                      // Verifica si el arreglo $datos['solicitudes'] no está vacío
+                      if (!empty($datos['solicitudes'])) {
                         // Inicia el ciclo foreach para recorrer cada solicitud en el arreglo
                         foreach ($datos['solicitudes'] as $solicitud) {
-                            // Genera una fila en la tabla para cada solicitud
-                            ?>
-                            <tr>
-                                <td class="text-center">
-                                    <!-- Checkbox con el valor de la solicitud -->
-                                    <input type="checkbox" class="checkbox-status" name="select[]" value="<?php echo $solicitud['num_solicitud']; ?>">
-                                    <!-- Icono de estado de la solicitud -->
-                                    <span class="circle" style="background-color: <?php echo getStateColor($solicitud['estado']); ?>;"></span>
-                                </td>
-                                <td class="text-center">
-                                    <!-- Enlace con el número de solicitud y el ID de la solicitud -->
-                                    <a href="#" data-id="<?php echo $solicitud['id']; ?>" class="link-solicitud">
-                                        Nº<?php echo $solicitud['num_solicitud']; ?>
-                                    </a>
-                                </td>
-                                <td class="text-center"><?php echo $solicitud['estado']; ?></td>
-                                <td class="text-center"><?php echo $solicitud['categoria']; ?></td>
-                            </tr>
+                          // Genera una fila en la tabla para cada solicitud
+                          ?>
+                         <tr>
+
+                          <td class="text-center">
+                            <!-- Checkbox con el valor de la solicitud -->
+                            <input type="checkbox" class="checkbox-status" name="select[]" value="<?php echo $solicitud['num_solicitud']; ?>">
+                            <!-- Icono de estado de la solicitud -->
+                            <span class="circle" style="background-color: <?php echo getStateColor($solicitud['estado']); ?>;"></span>
+                          </td>
+                          <td class="text-center">
+                            <!-- Enlace con el número de solicitud y el ID de la solicitud -->
+                      
+                      <style>
+                        .link-solicitud.disabled {
+                      pointer-events: none;
+                      }
+                      </style>
+ 
                             <?php
-                        }
+                      if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.read', $userdata['permisos']['permisos'])) {
+                          // Mostrar el botón habilitado
+                          ?>
+                          <a href="#" data-id="<?php echo $solicitud['id']; ?>" class="link-solicitud">
+                              Nº<?php echo $solicitud['num_solicitud']; ?>
+                          </a>
+                      <?php } else { ?>
+                          <!-- Mostrar el botón inhabilitado -->
+                         
+                          <a href="#" data-id="<?php echo $solicitud['id']; ?>" class="link-solicitud disabled">
+                              Nº<?php echo $solicitud['num_solicitud']; ?>
+                          </a>
+                      <?php } ?>
+
+
+                          </td>
+                          <td class="text-center"><?php echo $solicitud['estado']; ?></td>
+                          <td class="text-center"><?php echo $solicitud['categoria']; ?></td>
+                          <td class="text-center">
+                            <!-- Círculo de mensajes -->
+                            <?php if ($solicitud['mensajes'] == 'cita') { ?>
+                              <span class="circle" style="background-color: <?php echo getStateColor($solicitud['mensajes']); ?>;"></span>
+                            <?php } ?>
+                          </td>
+                          <td style="display: none;"><?php echo $solicitud['id']; ?></td> <!-- ID en la posición 5 -->
+                          </tr>
+                          <?php
+                      }
                     } else {
-                        // Si el arreglo está vacío, muestra el mensaje de "No data"
-                        ?>
-                        <tbody class="tbody_0">
-                            <!-- Contenido de la tabla -->
-                            <td class="image_email" colspan="7" style="text-align: center;">
-                                <div class="css-2i2tap ant-empty ant-empty-normal">
-                                    <div style="display: block; margin: 0 auto;">
-                                        <!-- Icono SVG de "No data" -->
-                                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                                            <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
-                                                <ellipse fill="#f5f5f5" cx="32" cy="33" rx="32" ry="7"></ellipse>
-                                                <g fill-rule="nonzero" stroke="#d9d9d9">
-                                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
-                                                </g>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                    <!-- Mensaje de "No data" -->
-                                    <div class="ant-empty-description">No data</div>
-                                </div>
-                            </td>
-                        </tbody>
-                        <?php
+                      // Si el arreglo está vacío, muestra el mensaje de "No data"
+                      ?>
+                      <tbody class="tbody_0">
+                          <!-- Contenido de la tabla -->
+                          <td class="image_email" colspan="7" style="text-align: center;">
+                              <div class="css-2i2tap ant-empty ant-empty-normal">
+                                  <div style="display: block; margin: 0 auto;">
+                                      <!-- Icono SVG de "No data" -->
+                                      <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                          <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+                                              <ellipse fill="#f5f5f5" cx="32" cy="33" rx="32" ry="7"></ellipse>
+                                              <g fill-rule="nonzero" stroke="#d9d9d9">
+                                                  <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                                  <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                              </g>
+                                          </g>
+                                      </svg>
+                                  </div>
+                                  <!-- Mensaje de "No data" -->
+                                  <div class="ant-empty-description">No data</div>
+                              </div>
+                          </td>
+                      </tbody>
+                      <?php
                     }
                     ?>
                 </tbody>
@@ -196,84 +275,86 @@
 </section>
 
 
-<section class="section_card">
-  <!-- Tarjeta Lateral -->
-  <div class="col-lg-3  card_lateral">
-    <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
-    <div class="row">
-    <div class="col-12">
-    <?php
-      if (empty($cita['fecha_cita']) || is_null($cita['fecha_cita'])) {
-      ?>
-      <div class="card citas">
-          <div class="card-body" style="padding-left: 10px;">
+  <section class="section_card">
+    <!-- Tarjeta Lateral -->
+    <div class="col-lg-3  card_lateral">
+      <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
+      <div class="row">
+        <div class="col-12">
+          <?php
+          if (empty($cita['fecha_cita']) || is_null($cita['fecha_cita'])) {
+          ?>
+          <div class="card citas">
+            <div class="card-body" style="padding-left: 10px;">
               <label class="form-check-label text-left" for="pdf"><b>Agendar cita </b></label>
               <input id="fecha_cita"  class="form-control w-100"   type="text" placeholder="Seleccione una fecha y hora">
               <div class="select w-100">
-                  <label for="">Formato de cita</label>
-                  <select name="id_formato_cita" id="id_formato_cita" class="w-100">
-                      <option value="0">---Seleccione un Formato---</option>
-                      <option value="1">Presencial</option>
-                      <option value="2">Virtual</option>
-                  </select>
+                <label for="">Formato de cita</label>
+                <select name="id_formato_cita" id="id_formato_cita" class="w-100">
+                  <option value="0">---Seleccione un Formato---</option>
+                  <option value="1">Presencial</option>
+                  <option value="2">Virtual</option>
+                </select>
               </div>
-              <br><br><button class="btn btn-primary btn-block w-100 agendar">Agendar</button> 
+              <?php
+                if (isset($userdata['permisos']['permisos']) && in_array('citas.create', $userdata['permisos']['permisos'])) {
+                ?>
+                  <br><br><button class="btn btn-primary btn-block w-100 agendar" style="cursor: pointer;">Agendar</button>
+                <?php
+                } else {
+                ?>
+                  <br><br><button class="btn btn-primary btn-block w-100 agendar" style="cursor: not-allowed; color: #ccc;" disabled>Agendar (No autorizado)</button>
+                <?php
+                }
+                ?>
+            </div>
           </div>
-      </div>
-    <?php
-    } else {
-    ?>
-    <div class="actualizar_citas" >
-    <div class="card citas">
-    <div class="card-body" style="padding-left: 10px;">
-    <label class="form-check-label text-left" for="pdf"><b><?php echo $cita['estado']; ?> </b></label>
-        <br><label for="id_formato_cita">Fecha :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'd-m-Y'); ?>
-        <br><label for="id_formato_cita">Formato :</label> <?php echo $cita['formato_cita']; ?>
-        <br><label for="id_formato_cita">Hora :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'g:i a'); ?>
-        <br>
-        <a href="/actualizar_citas/<?php echo $cita['id']; ?>">
-          <div class="box is-pointer has-background-blue helper-button ">
-          <button class="btn btn-primary btn-block w-100 actualizar">Editar</button> 
+          <?php
+          } else {
+          ?>
+          <div class="actualizar_citas" >
+            <div class="card citas">
+              <div class="card-body" style="padding-left: 10px;">
+                <label class="form-check-label text-left" for="pdf"><b><?php echo $cita['estado']; ?> </b></label>
+                <br><label for="id_formato_cita">Fecha :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'd-m-Y'); ?>
+                <br><label for="id_formato_cita">Formato :</label> <?php echo $cita['formato_cita']; ?>
+                <br><label for="id_formato_cita">Hora :</label> <?php echo date_format(date_create($cita['fecha_cita']), 'g:i a'); ?>
+                <br>
+                <a href="/actualizar_citas/<?php echo $cita['id']; ?>">
+                  <div class="box is-pointer has-background-blue helper-button ">
+                  <button class="btn btn-primary btn-block w-100 actualizar">Editar</button> 
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-        </a>
-        
-        
-       
-    </div>
-</div>
-     </div>
-    <?php
-    }
-    ?>
+          <?php
+          }
+          ?>
+        </div>
 
-    </div>
-
-    
-    <div class="col-12">
-      <div class="card responsable">
-        <div class="card-body">
-          <div class="box is-primary">
-            <p style="text-align: left;" class="has-text-bold" style="color: inherit;">Responsable</p>
-            <p style="text-align: center;" class="has-text-bold" style="color: inherit;">
-            <?php if (!empty($solicitud)) { ?>
-
-             
-            <h3 style="text-align: center;"><?php echo $solicitud['trabajador']; ?></h3>
-            <?php } ?>
-            </p>
-            <p style="text-align: center;" class="has-text-bold" style="color: inherit;">Area</p>
+        <div class="col-12">
+          <div class="card responsable">
+            <div class="card-body">
+              <div class="box is-primary">
+                <p style="text-align: left;" class="has-text-bold" style="color: inherit;">Responsable</p>
+                <p style="text-align: center;" class="has-text-bold" style="color: inherit;">
+                  <?php if (!empty($solicitud)) { ?>
+                    <h3 style="text-align: center;"><?php echo $solicitud['trabajador']; ?></h3>
+                  <?php } ?>
+                </p>
+                <p style="text-align: center;" class="has-text-bold" style="color: inherit;">Area</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  
-  </div>
-
-</section>
 <br>
   <!-- Estatus de la Audiencia -->
+  <br><br>
 <div class="row">
 <div class="col-3">
   <div class="box_estatus">
@@ -297,25 +378,76 @@
 </div>
 
 
-  <div class="is-fixed bottom-5 ">
-  <a href="/agregar_solicitudes/<?php echo $datos2['id'];?>">
-      <div class="box is-pointer has-background-blue helper-button ">
-        <span class="icon is-small is-right has-text-white circle-icon">
-          <i class="fa fa-plus-square" aria-hidden="true" style='font-size:27px'></i>
-        </span>
-      </div>
-    </a>
-  </div>
+<?php
+if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.create', $userdata['permisos']['permisos'])) {
+    // Mostrar el botón habilitado
+    ?>
+    <div class="is-fixed bottom-5 ">
+      <a href="/agregar_solicitudes/<?php echo $datos2['id'];?>">
+        <div class="box is-pointer has-background-blue helper-button ">
+          <span class="icon is-small is-right has-text-white circle-icon">
+            <i class="fa fa-plus-square" aria-hidden="true" style='font-size:27px'></i>
+          </span>
+        </div>
+      </a>
+    </div>
+    <?php
+} else {
+    // Mostrar el botón inhabilitado
+    ?>
+    <div class="is-fixed bottom-5  disabled-link">
+      <a href="#" disabled>
+        <div class="box is-pointer has-background-gray helper-button ">
+          <span class="icon is-small is-right has-text-white circle-icon">
+            <i class="fa fa-plus-square" aria-hidden="true" style='font-size:27px'></i>
+          </span>
+        </div>
+      </a>
+    </div>
+    <?php
+}
+?>
 
-  <div class="is-fixed bottom-1 ">
-    <a href="/actualizar_audiencia/<?php echo $datos2['id'];?>">
-      <div class="box is-pointer has-background-blue helper-button ">
-        <span class="icon is-small is-right has-text-white circle-icon">
-          <i class="material-icons" style='font-size:27px'>create</i>
-        </span>
-      </div>
-    </a>
-  </div>
+  <?php
+if (isset($userdata['permisos']['permisos']) && in_array('requerimientos.update', $userdata['permisos']['permisos'])) {
+    // Mostrar el botón habilitado
+    ?>
+    <div class="is-fixed bottom-1 ">
+      <a href="/actualizar_audiencia/<?php echo $datos2['id'];?>">
+        <div class="box is-pointer has-background-blue helper-button ">
+          <span class="icon is-small is-right has-text-white circle-icon">
+            <i class="material-icons" style='font-size:27px'>create</i>
+          </span>
+        </div>
+      </a>
+    </div>
+    <?php
+} else {
+    // Mostrar el botón inhabilitado
+    ?>
+    <div class="is-fixed bottom-1 disabled-link">
+      <a href="#" disabled>
+        <div class="box is-pointer has-background-gray helper-button ">
+          <span class="icon is-small is-right has-text-white circle-icon">
+            <i class="material-icons" style='font-size:27px'>create</i>
+          </span>
+        </div>
+      </a>
+    </div>
+    <?php
+}
+?>
+
+<style>
+  .disabled-link {
+
+pointer-events: none;
+
+opacity: 0.5;
+
+}
+</style>
+
 </div>
 </div>
 

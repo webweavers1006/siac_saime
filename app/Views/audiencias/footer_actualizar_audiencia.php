@@ -1,4 +1,4 @@
-<script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/audiencias/detalles_requerimientos.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/audiencias/actualizar_audiencias.js"></script>
 <script>
   $(document).ready(function() {
     var now = new Date();

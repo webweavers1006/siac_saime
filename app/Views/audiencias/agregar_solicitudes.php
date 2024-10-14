@@ -22,10 +22,12 @@
             <div class="ml-2">
               <p class="mb-0" style="font-size: 18px; font-weight: bold;">Agregar solicitudes</p>
               <span style="font-size: 14px;">Audiencia N°<?php echo $datos2['id']; ?> </span> 
+              <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
             </div>
           </div>
         </div>
-
+        <input type="hidden"  id="id_trabajador">
+        <input type="hidden"  id="id_area"value="<?php echo $datos2['id_area']; ?>">
         
 
 <div class="card-body">
@@ -37,6 +39,7 @@
       <label class="label">Numero Solicitud</label>
       <div class="field-body">
         <div class="field">
+
           <div class="control" style="display: inline-block">
             <input class="input is-expanded" onkeypress="return valideKey(event);" type="text" maxlength="4" name="ano" id="ano" value="">
           </div>
@@ -252,12 +255,22 @@
       </div>
     </div>
   </div>
+  <style>
+    .deshabilitado {
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+  font-weight: bold;
+}
+  </style>
 
   <!-- Columna 2 -->
   <div class="column is-9">
     <!-- Botón Ingresar Requerimiento -->
     <div class="box">
-      <button class="button is-primary is-fullwidth">Ingresar Audiencia</button>
+    <button class="button is-primary is-fullwidth" id="agregar_solicitudes" >Agregar Solicitudes</button>
     </div>
   </div>
 </div>

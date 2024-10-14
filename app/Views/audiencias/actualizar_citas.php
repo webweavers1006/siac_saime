@@ -95,6 +95,7 @@
                   </div>
                 </div>
                 <br>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
                         <label class="form-check-label text-left" for="pdf"><b>Agendar cita </b></label>

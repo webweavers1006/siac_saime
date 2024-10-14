@@ -1,3 +1,9 @@
+
+<?php
+$session = session();
+$userdata = $session->get();
+?>  
+
 <!-- Content Wrapper. Contains page content -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/detalles_solicitudes.css">
 <!-- Contenedor principal -->
@@ -33,15 +39,27 @@
             <div class="col-10">
               </div>
             
-              <div class="is-fixed bottom-1 ">
-                <a href="/actualizar_solicitud/<?php echo $datos['id'];?>">
-                  <div class="box is-pointer has-background-blue helper-button  edicion">
-                    <span class="icon is-small is-right has-text-white circle-icon">
-                      <i class="material-icons" style='font-size:27px'>create</i>
-                    </span>
-                  </div>
-                </a>
-              </div>
+              <?php
+              if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.update', $userdata['permisos']['permisos'])) {
+              ?>
+                <div class="is-fixed bottom-1 ">
+                  <a href="/actualizar_solicitud/<?php echo $datos['id'];?>">
+                    <div class="box is-pointer has-background-blue helper-button  edicion">
+                      <span class="icon is-small is-right has-text-white circle-icon">
+                        <i class="material-icons" style='font-size:27px'>create</i>
+                      </span>
+                    </div>
+                  </a>
+                </div>
+              <?php
+              } else {
+              ?>
+                <!-- No se muestra nada -->
+              <?php
+              }
+              ?>
+
+
             </div>
           </div>
         </div>
@@ -49,18 +67,29 @@
  <!-- *********************************************************************************** -->
 
 <!-- **************************************MENSAJES************************************ -->
-<section class="mensajes" style="margin-left: 63px;">
+<style>
+
+.center {
+
+  text-align: center;
+
+}
+
+</style>
+
+
+<section  >
   <div class="row justify-content-center">
     <div class="col-lg-12 custom-col-width">
-      <div class="card card_table" style="max-width: 1350px; margin: 20px auto;">
+    <div class="card card_table audiencia" style="max-width: 1350px; margin: 20px auto;">
         <div class="row">
           <div class="col-lg-6" style="display: inline-block; width: 49%;">
             <h2>SOLICITUD DE CITA</h2>
             <table class="table table-striped ant-alert-info">
               <thead>
                 <tr>
-                  <th>Texto</th>
-                  <th>Acciones</th>
+                  <th class="center">Texto</th>
+                  <!-- <th>Acciones</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -68,11 +97,7 @@
                 <?php if ($mensaje['opcion'] == 'SOLICITUD DE CITA') { ?>
                 <tr>
                   <td><?= $mensaje['mensaje'] ?></td>
-                  <td>
-                    <button class="eliminar-btn" onclick="eliminarMensaje(<?= $mensaje['id']; ?>)">
-                      <i class="fa fa-times"></i>
-                    </button>
-                  </td>
+                 
                 </tr>
                 <?php } ?>
                 <?php } ?>
@@ -84,8 +109,8 @@
             <table class="table table-striped ant-alert-success">
               <thead>
                 <tr>
-                  <th>Texto</th>
-                  <th>Acciones</th>
+                  <th class="center">Texto</th>
+                  <!-- <th>Acciones</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -93,11 +118,7 @@
                 <?php if ($mensaje['opcion'] == 'OBSERVACION INTERNA') { ?>
                 <tr>
                   <td><?= $mensaje['mensaje'] ?></td>
-                  <td>
-                    <button class="eliminar-btn" onclick="eliminarMensaje(<?= $mensaje['id']; ?>)">
-                      <i class="fa fa-times"></i>
-                    </button>
-                  </td>
+                 
                 </tr>
                 <?php } ?>
                 <?php } ?>
@@ -180,19 +201,19 @@
                         <tbody>
                           <tr>
                             <td style="font-size: 13px; font-weight: bold;"><strong>Nombre:</strong></td>
-                            <td><?php echo $info_empresa_y_titulares['nombre']; ?></td>
+                            <td><?php echo $info_empresa_y_titulares['nombre'] ?? ''; ?></td>
                           </tr>
                           <tr>
                             <td style="font-size: 13px; font-weight: bold;"><strong>Estatus:</strong></td>
-                            <td><?php echo $info_empresa_y_titulares['nombre_categoria']; ?></td>
+                            <td><?php echo $info_empresa_y_titulares['nombre_categoria']?? '';  ?></td>
                           </tr>
                           <tr>
                             <td style="font-size: 13px; font-weight: bold;"><strong>Nro Poder:</strong></td>
-                            <td><?php echo $info_empresa_y_titulares['poder']; ?></td>
+                            <td><?php echo $info_empresa_y_titulares['poder']?? '';  ?></td>
                           </tr>
                           <tr>
                             <td style="font-size: 13px; font-weight: bold;"><strong>Nro Registro:</strong></td>
-                            <td><?php echo $info_empresa_y_titulares['registro']; ?></td>
+                            <td><?php echo $info_empresa_y_titulares['registro']?? '';  ?></td>
                           </tr>
                         </tbody>
                       </table>
@@ -221,19 +242,21 @@
                                 <tbody>
                                     <tr>
                                         <td  style="font-size: 13px; font-weight: bold;"><strong>Nombre Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares'][7]; ?></td>
+                                        <td><?php echo $info_empresa_y_titulares['titulares'][7]?? ''; ?></td>
                                     </tr>
                                     <tr>
                                         <td  style="font-size: 13px; font-weight: bold;"><strong>Identificación Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares']["identificacion"]; ?></td>
+                                        <td><?php echo $info_empresa_y_titulares['titulares']["identificacion"]?? '';  ?></td>
                                     </tr>
                                     <tr>
                                         <td  style="font-size: 13px; font-weight: bold;"><strong>Correo Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares']["email"]; ?></td>
+                                        <td><?php echo $info_empresa_y_titulares['titulares']["email"]?? '';  ?></td>
                                     </tr>
                                     <tr>
                                         <td  style="font-size: 13px; font-weight: bold;"><strong>Teléfono Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares']["telefono1"]; ?>&nbsp;<?php echo $info_empresa_y_titulares['titulares']["telefono2"]; ?></td>
+                                        <td>
+                                          <?php echo (isset($info_empresa_y_titulares['titulares']["telefono1"]) || isset($info_empresa_y_titulares['titulares']["telefono2"])) ? $info_empresa_y_titulares['titulares']["telefono1"] . '&nbsp;' . $info_empresa_y_titulares['titulares']["telefono2"] : ''; ?>
+                                      </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -282,83 +305,134 @@ foreach ($cronologia["solicitudes"] as $dato) {
 ?>
 
  <!-- ***********************LINEA DE TIEMPO **************************** -->
-      <section>
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="card card_table">
-                    <div class="card-body">
-                        <h2>Línea del Tiempo</h2>
-                        <div id="timeline">
-                          <?php
-                          // Recorrer los años
-                          foreach ($años as $año) {
-                              ?>
-                              <div class="row timeline-movement timeline-movement-top">
-                                  <div class="timeline-badge timeline-future-movement">
-                                      <p><?php echo $año; ?></p>
-                                  </div>
-                              </div>
+ <div class="row">
+    <div class="col-lg-7">
+        <div class="card card_table">
+ <?php
 
-                              <?php
-                              // Recorrer los eventos del año
-                              $contador = 0;
-                              foreach ($cronologia["solicitudes"] as $dato) {
-                                  if (date("Y", strtotime($dato["fecha"])) == $año) {
-                                      $contador++;
-                                      $clase = ($contador % 2 == 0) ? 'center-right' : 'center-left';
-                                      $offset = ($contador % 2 == 0) ? 'offset-sm-6' : '';
-                                      $animacion = ($contador % 2 == 0) ? 'fadeInRight' : 'fadeInLeft';
-                                      $panel_clase = ($contador % 2 == 0) ? 'debits' : 'credits';
-                                      ?>
+    if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.cronologia', $userdata['permisos']['permisos'])) {
+        $style = 'style="display: block;"';
+    } else {
+        $style = 'style="display: none;"';
+        echo '<p style="padding-left: 100px; font-weight: bold;">No tiene permisos para visualizar las Cronologias.</p>';
+    }
+    ?>
+<section class="section" <?php echo $style; ?>>
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>Línea del Tiempo</h2>
+            <div id="timeline">
+                <?php
+                $registrosPorPagina = 4; // Número de registros por página
+                $paginaActual = (isset($_GET['pagina'])) ? $_GET['pagina'] : 1; // Página actual
+                $inicio = ($paginaActual - 1) * $registrosPorPagina; // Índice de inicio para la paginación
 
-                                  <!-- Evento -->
-                                  <div class="row timeline-movement">
-                                      <div class="timeline-badge <?= $clase ?> evento-fondo"></div>
-                                      <div class="<?= $offset ?> col-sm-6 timeline-item">
-                                          <div class="row">
-                                              <div class="col-sm-11">
-                                                  <div class="timeline-panel <?= $panel_clase ?> anim animate <?= $animacion ?>">
-                                                      <ul class="timeline-panel-ul">
-                                                          <li>
-                                                              <p class="fecha">
-                                                                  <i class="glyphicon glyphicon-time" aria-label="Fecha"></i> 
-                                                                  <b><?= date("d-m-Y", strtotime($dato["fecha"])) ?></b>
-                                                              </p>
-                                                          </li>
-
-                                                          <li>
-                                                              <span class="crono"><?= $dato["crono"] ?></span>
-                                                          </li>
-                                                          <li>
-                                                              <span class="causale nombre"><?= $dato["nombre"] ?></span>
-                                                          </li>
-                                                          <li>
-                                                              <span class="causale trabajador"><?= $dato["trabajador"] ?></span>
-                                                          </li>
-                                                      </ul>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-
-                                      <?php
-                                  }
-                              }
-                          }
-                          ?>
+                // Recorrer los años
+                foreach ($años as $año) {
+                    ?>
+                    <div class="row timeline-movement timeline-movement-top">
+                        <div class="timeline-badge timeline-future-movement">
+                            <p><?php echo $año; ?></p>
                         </div>
                     </div>
-                </div>
+
+                    <?php
+                    // Recorrer los eventos del año
+                    $contador = 0;
+                    foreach ($cronologia["solicitudes"] as $dato) {
+                        if (date("Y", strtotime($dato["fecha"])) == $año) {
+                            $contador++;
+                            if ($contador >= $inicio && $contador < ($inicio + $registrosPorPagina)) {
+                                $clase = ($contador % 2 == 0) ? 'center-right' : 'center-left';
+                                $offset = ($contador % 2 == 0) ? 'offset-sm-6' : '';
+                                $animacion = ($contador % 2 == 0) ? 'fadeInRight' : 'fadeInLeft';
+                                $panel_clase = ($contador % 2 == 0) ? 'debits' : 'credits';
+                                ?>
+
+                                <!-- Evento -->
+                                <div class="row timeline-movement">
+                                    <div class="timeline-badge <?= $clase ?> evento-fondo"></div>
+                                    <div class="<?= $offset ?> col-sm-6 timeline-item">
+                                        <div class="row">
+                                            <div class="col-sm-11">
+                                                <div class="timeline-panel <?= $panel_clase ?> anim animate <?= $animacion ?>">
+                                                    <ul class="timeline-panel-ul">
+                                                        <li>
+                                                            <p class="fecha">
+                                                                <i class="glyphicon glyphicon-time" aria-label="Fecha"></i> 
+                                                                <b><?= date("d-m-Y", strtotime($dato["fecha"])) ?></b>
+                                                            </p>
+                                                        </li>
+
+                                                        <li>
+                                                            <span class="crono"><?= $dato["crono"] ?></span>
+                                                        </li>
+                                                        <li>
+                                                            <span class="causale nombre"><?= $dato["nombre"] ?></span>
+                                                        </li>
+                                                        <li>
+                                                            <span class="causale trabajador"><?= $dato["trabajador"] ?></span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php
+                            }
+                        }
+                    }
+                }
+
+                $totalRegistros = count($cronologia["solicitudes"]); // Total de registros
+                $totalPaginas = ceil($totalRegistros / $registrosPorPagina); // Total de páginas
+
+                if ($totalPaginas > 1) {
+                  echo '<div class="pagination-container">';
+                  for ($i = 1; $i <= $totalPaginas; $i++) {
+                      $active = ($i == $paginaActual) ? 'active' : '';
+                      echo '<a href="?pagina=' . $i . '" class="' . $active . '">' . $i . '</a>';
+                  }
+                  echo '</div>';
+              
+              }
+                ?>
             </div>
         </div>
+    </div>
 </section>
+
+<style>
+    .pagination-container {
+    text-align: right;
+    margin-top: 20px; /* add some margin to separate the pagination from the content */
+}
+
+.pagination-container a {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px;
+    text-decoration: none;
+    color: #337ab7;
+}
+
+.pagination-container a.active {
+    background-color: #337ab7;
+    color: #fff;
+}
+</style>
+</div>
+</div>
+</div>
  <!-- *********************************************************************************** --> 
 
 <!-- ***********************************SECCION CARD RESONSABLE ****************************************** --> 
       <section class="section_card">
         <!-- Tarjeta Lateral -->
-        <div class="col-lg-3  card_lateral">
+        <div class="col-lg-4  card_lateral">
           <div class="row">
             <div class="col-12">
               <div class="card citas">
@@ -386,9 +460,23 @@ foreach ($cronologia["solicitudes"] as $dato) {
                     </div>
                     <div class="field" style="margin-top: 20px;">
                       <div class="control">
-                        <button type="button" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth" id="responsable">
-                          <span>Asignar responsable</span>
-                        </button>
+                       
+                      <?php
+                        if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.update', $userdata['permisos']['permisos'])) {
+                        ?>
+                          <div class="control">
+                            <button class="button is-primary is-fullwidth" id="responsable" style="cursor: pointer;">Asignar responsable</button>
+                          </div>
+                        <?php
+                        } else {
+                        ?>
+                          <div class="control disabled-link">
+                            <button class="button is-primary is-fullwidth" id="responsable" style="cursor: not-allowed; color: #ccc;" disabled>Asignar responsable(No autorizado)</button>
+                          </div>
+                        <?php
+                        }
+                        ?>
+
                       </div>
                     </div>
                   </div>
@@ -402,9 +490,23 @@ foreach ($cronologia["solicitudes"] as $dato) {
                     <p  class="has-text-weight-semibold mb-2">Cierre solicitud</p>
                     <textarea class="textarea" id="respuesta" name="respuesta" style="margin-top: 0;"></textarea>
                     <div class="control" style="margin-top: 20px;">
-                      <button type="button" id="cierre_solicitud" class="ant-btn css-2i2tap ant-btn-default button is-primary is-fullwidth">
-                        <span>Cerrar solicitud</span>
-                      </button>
+
+
+                    <?php
+                        if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.complete', $userdata['permisos']['permisos'])) {
+                        ?>
+                          <div class="control">
+                            <button class="button is-primary is-fullwidth" id="cierre_solicitud" style="cursor: pointer;">Cerrar solicitud</button>
+                          </div>
+                        <?php
+                        } else {
+                        ?>
+                          <div class="control disabled-link">
+                            <button class="button is-primary is-fullwidth" id="cierre_solicitud" style="cursor: not-allowed; color: #ccc;" disabled>Cerrar solicitu(No autorizado)</button>
+                          </div>
+                        <?php
+                        }
+                        ?>
                     </div>
                   </div>
                 </div>
@@ -433,9 +535,21 @@ foreach ($cronologia["solicitudes"] as $dato) {
                         </div>
                       </div>
                       <div class="field" style="margin-top: 20px;">
-                        <div class="control">
-                          <button class="button is-primary is-fullwidth " id="observaciones" >Enviar Mensaje</button>
-                        </div>
+                      <?php
+                        if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.observaciones', $userdata['permisos']['permisos'])) {
+                        ?>
+                          <div class="control">
+                            <button class="button is-primary is-fullwidth" id="observaciones" style="cursor: pointer;">Enviar Mensaje</button>
+                          </div>
+                        <?php
+                        } else {
+                        ?>
+                          <div class="control disabled-link">
+                            <button class="button is-primary is-fullwidth" id="observaciones" style="cursor: not-allowed; color: #ccc;" disabled>Enviar Mensaje (No autorizado)</button>
+                          </div>
+                        <?php
+                        }
+                        ?>
                       </div>
                     </div>
                   </div>
@@ -449,7 +563,15 @@ foreach ($cronologia["solicitudes"] as $dato) {
   <br><br><br><br> <br><br><br><br> <br><br><br><br> 
  
 </mail>
+<style>
+  .disabled-link {
 
+pointer-events: none;
+
+opacity: 0.5;
+
+}
+</style>
 
 
 <script>
@@ -505,7 +627,7 @@ $(document).ready(function(){
 
 <script>
   function eliminarMensaje(id) {
-    console.lo(id);
+    console.log(id);
     // Aquí puedes agregar la lógica para eliminar el mensaje
     // Por ejemplo, puedes hacer una petición AJAX para eliminar el mensaje
     // $.ajax({

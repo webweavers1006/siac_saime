@@ -194,26 +194,28 @@
 <div class="row">
   <!-- Columna 3 -->
   <div class="col-12">
-    <!-- Información de la marca -->
+    <!-- Información de la marca o patente -->
     <div class="ant-descriptions css-2i2tap">
       <div class="ant-descriptions-header">
         <div class="ant-descriptions-title"> 
-          <label class="label">Información de la marca</label>
+          <label class="label" id="informacion">Información de la marca</label>
         </div>
       </div>
       
 
-      <div class="row">
-  <div class="col-lg-4 col-sm-4 col-md-4">          
-    <label for="nombre_marca">Nombre de la Marca:</label>
+
+  <div class="row">
+  <div class="col-lg-4 col-sm -4 col-md-4">          
+    <label for="nombre_marca"id="nombre_area">Nombre de la Marca:</label>
   </div>
   <div class="col-lg-4 col-sm-4 col-md-4">
-    <label for="nombre_titular">Nombre Titular:</label>
+    <label for="nombre_titular" >Nombre Titular:</label>
   </div>
   <div class="col-lg-4 col-sm-4 col-md-4">
-    <label for="numero_poder">Numero Poder:</label>
+    <label for="numero_poder" >Numero Poder:</label>
   </div>
 </div>
+
 
 <div class="row">
   <div class="col-lg-4 col-sm-4 col-md-4">          
@@ -245,7 +247,7 @@
 
         <script>
         var categorias = <?php echo json_encode($categorias['categorias']); ?>;
-      document.getElementById('id_area').onchange = function() {
+         document.getElementById('id_area').onchange = function() {
         var areaId = this.value;
         var categoriaSelect = document.getElementById('id_categoria');
         
@@ -349,7 +351,16 @@
       </div>
     </div>
   </div>
-
+  <style>
+    .deshabilitado {
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+  font-weight: bold;
+}
+  </style>
   <!-- Columna 2 -->
   <div class="column is-9">
     <!-- Botón Ingresar Requerimiento -->

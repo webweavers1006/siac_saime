@@ -1152,6 +1152,39 @@ class Reporte_Controler extends BaseController
 					'estadisticas_denuncia' => $estadisticas_denuncia,
 					'estadisticas_peticion' => $estadisticas_peticion
 				];
+
+
+				//BUSCAMOS LOS CASOS ESTADALES POR TALLERES
+				$query_casos_talleres= $model->ContarCasosTalleresEstadal($desde, $hasta);
+				
+				$estadisticas_talleres= array();
+				if (!empty($query_casos_talleres)) {
+					for ($a = 0; $a < count($query_casos_talleres); $a++) {
+						if (is_array($estadisticas_talleres)) {
+							array_push($estadisticas_talleres, $query_casos_talleres[$a]);
+						} else {
+							$estadisticas_talleres["estadosnom"] = isset($estadisticas_talleres["estadosnom"]) ? $estadisticas_talleres["estadosnom"] + $query_casos_talleres[$a]->estadonom : $query_casos_talleres[$a]->estadonom;
+						}
+					}
+				}
+				$data =
+					[
+						'estadisticas' => $estadisticas,
+						'estadisticas_asesoria' => $estadisticas_asesoria,
+						'estadisticas_sugerencia' => $estadisticas_sugerencia,
+						'estadisticas_queja' => $estadisticas_queja,
+						'estadisticas_reclamo' => $estadisticas_reclamo,
+						'estadisticas_denuncia' => $estadisticas_denuncia,
+						'estadisticas_peticion' => $estadisticas_peticion,
+						'estadisticas_talleres' => $estadisticas_talleres
+					];
+
+
+
+
+
+
+
 			echo view('template/header');
 			echo view('template/nav_bar');
 			echo view('reportes/estadisticas/tipo_atencion/content.php', $data);

@@ -411,6 +411,7 @@ div {
 /* Pantallas extra grandes (más de 1200px) */
 @media (min-width: 1200px) {
   .calendario {
+    background-color: rgb(255, 255, 255);
     position: absolute;
     top: 0%;
     width: 200%;

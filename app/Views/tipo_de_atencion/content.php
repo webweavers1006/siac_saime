@@ -65,7 +65,7 @@ $session = session();
         </div>
       </div>
       <!-- /.content-wrapper -->
-      <!-- Modal para añadir usuarios-->
+      <!-- Modal -->
       <div class="modal fade" id="add-tipo-atencion">
         <div class="modal-dialog modal-dialog-centered  modal-md">
           <div class="modal-content">
@@ -79,7 +79,7 @@ $session = session();
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="text" name="name-atencion" onkeyup="mayus(this);" id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
+                  <input type="text" name="name-atencion"  id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
                 </div>
               </div>
               <div class="modal-footer ">
@@ -110,7 +110,7 @@ $session = session();
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
                   <input type="hidden" name="id-atencion" id="id-atencion" class="form-control">
-                  <input type="text" name="name-atencion" onkeyup="mayus(this);" id="editar-atencion" class="form-control" placeholder="Ej: Direccion de tecnología" autocomplete="off" required>
+                  <input type="text" name="name-atencion"  id="editar-atencion" class="form-control" placeholder="Ej: Direccion de tecnología" autocomplete="off" required>
                 </div>
 
                 &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;

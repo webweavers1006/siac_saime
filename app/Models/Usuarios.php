@@ -111,26 +111,15 @@ class Usuarios extends BaseModel
     return $query->getResult(); // Obtener los resultados de la consulta
 }
 
-	//Metodo para actualizar los usuarios
-	public function actualizarUsuario(array $datos)
+
+// Método para actualizar los usuarios
+public function actualizarUsuario(array $datos)
 {
     // Valide y sane los datos de entrada
     $datos = $this->validarDatos($datos);
     $builder = $this->dbconn('sgc_usuario_operador');
     $builder->where('idusuopr', $datos["idusuopr"]);
-
-	foreach ($datos as $key => $value) {
-		if ($key != 'idusuopr') {
-			if (is_bool($value)) {
-				$builder->set($key, $value ? 'true' : 'false');
-			} elseif ($value === '') {
-				$builder->set($key, null); // Set all empty strings to null
-			} else {
-				$builder->set($key, $value);
-			}
-		}
-	}
-
+    $builder->set($datos); // Set the values to update
     $query = $builder->update();
     return $query;
 }
@@ -138,41 +127,29 @@ class Usuarios extends BaseModel
 private function validarDatos(array $datos)
 {
     $validados = array();
-
+    
     foreach ($datos as $key => $value) {
-        // Elimina cualquier espacio en blanco innecesario
-        $value = trim($value);
-
-        // Aplica reglas de validación y saneamiento generales
-        $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-
-        // Verifica si el valor es un string
-        if (is_string($value)) {
-            // Aplica reglas de validación y saneamiento adicionales para strings
-            $value = preg_replace('/[^a-zA-Z0-9\s\.\,\-]/', '', $value);
-
-            // Verifica si el valor es un correo electrónico
-            if (preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $value) === 0) {
-                throw new InvalidArgumentException("Dirección de correo electrónico inválida");
+        if (is_bool($value)) {
+            // Si el valor es un booleano, no se aplica ninguna transformación
+            $validados[$key] = $value;
+        } else {
+            // Elimina cualquier espacio en blanco innecesario
+            $value = trim($value);
+            // Aplica reglas de validación y saneamiento generales
+            $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+            // Verifica si el valor es un string
+            if (is_string($value)) {
+                // Aplica reglas de validación y saneamiento adicionales para strings
+				$value = preg_replace('/[^a-zA-Z0-9\s\.\,\-\@\$\yZz\/]/', '', $value);
+            } elseif (is_numeric($value)) {
+                // Aplica reglas de validación y saneamiento adicionales para números
+                $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
             }
-        } elseif (is_numeric($value)) {
-            // Aplica reglas de validación y saneamiento adicionales para números
-            $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-        } elseif ($value === 'true' || $value === 'false') {
-            // Maneja los valores booleanos
-            $value = $value === 'true';
+            $validados[$key] = $value;
         }
-
-        $validados[$key] = $value;
     }
-
     return $validados;
 }
 
-// Función auxiliar para verificar si un valor es un correo electrónico
-private function is_email($value)
-{
-    return preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $value);
-}
 	
 }
