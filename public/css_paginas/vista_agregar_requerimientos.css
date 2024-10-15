@@ -223,3 +223,9 @@ table {
   transition: height 0.5s ease-in-out; /* Agrega una transición suave al cambiar el alto */
   pointer-events: none;
 }
+
+
+.no-border {
+  border: none;
+ 
+}

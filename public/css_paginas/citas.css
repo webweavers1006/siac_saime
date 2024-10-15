@@ -190,26 +190,72 @@
 
 /***************************** seciones card *************************/
 /* Extra small screens (xs) */
-@media (min-width: 767px)  {
+
+
+
+/* Ajustes para pantallas pequeñas */
+@media (min-width: 400px) and (max-width: 767px) {
   .section {
     position: relative;
     left: 0%;
-    width: 90%;
-    height: 100%;
-    margin: 20px;
-  }
-}
-
-/* Extra small screens (xs) */
-@media (min-width: 900px)  {
-  .section {
-    position: relative;
-    left: 10%;
-    width: 90%;
+    width: 93%;
     height: auto;
     margin: 20px;
   }
 }
+
+
+
+
+/* Ajustes para pantallas muy grandes */
+@media (min-width: 1400px) and (min-width: 1552px) {
+  .section {
+    position: relative;
+    left: 10%;
+    top: -7%;
+    width: 100%;
+    height: auto;
+    margin: 20px;
+  }
+}
+
+/* Ajustes para pantallas muy grandes */
+@media (min-width: 1560px) and (max-width: 2552px) {
+  .section {
+    position: relative;
+    left: 0%;
+    top: -15%;
+    width: 123%;
+    height: auto;
+    margin: 20px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   .text-center {
     margin-bottom: 10px; /* Reduce the margin bottom to 10px */
   }
@@ -430,6 +476,7 @@ div {
 @media (min-width: 1200px) {
   #calendar {
     height: 90%; 
+    width: 100%;
   }
 }
 

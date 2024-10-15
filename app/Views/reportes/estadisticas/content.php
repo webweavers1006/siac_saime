@@ -216,7 +216,8 @@ tr:nth-child(even) {
                     <tr><td>Sugerencia</td><td><?php echo $Sugerencia;?></td></tr>
                     <tr><td>Denuncia</td><td><?php echo $Denuncia;?></td></tr>
                     <tr><td>Petición</td><td><?php echo $Petición;?></td></tr>
-                    <tr><td>Total Casos</td><td><?php echo $Asesoría + $Queja + $Reclamo + $Sugerencia + $Denuncia + $Petición;?></td></tr>
+                    <tr><td>Talleres</td><td><?php echo $Talleres;?></td></tr>
+                    <tr><td>Total Casos</td><td><?php echo $Asesoría + $Queja + $Reclamo + $Sugerencia + $Denuncia + $Talleres + $Petición;?></td></tr>
                   </tbody>
                 </table>
               </div>

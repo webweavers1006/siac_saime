@@ -1473,9 +1473,8 @@ public function  ContarCasosTalleresEstadal($desde,$hasta)
 	
         $db      = \Config\Database::connect();
         $strQuery = " SELECT t.id_usuario FROM  sgc_usuario_token as t   ";
-        $strQuery .= " where t.token='$token'";
-        //return $strQuery;
-        $query = $db->query($strQuery);
+        $strQuery .= " where t.token=:token:";
+        $query = $db->query($strQuery,["token"=>$token]);
         $resultado = $query->getResult();
         
         return $resultado;

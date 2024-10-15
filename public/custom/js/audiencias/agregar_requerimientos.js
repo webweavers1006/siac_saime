@@ -20,6 +20,29 @@ $(document).on('submit', "#buscar", function(e) {
   else {
     sol = sol.padStart(6, '0');
     const valorConcatenado = `${ano}${sol}`;
+
+    if (tipo_audiencia == 'M') {
+      let url = `http://172.16.0.30/graficos/marcas/ef${ano}/${ano}${sol}.jpg`;
+      mostrarImagen(url);
+    } else if (tipo_audiencia == 'P') {
+      let url = `http://172.16.0.30/graficos/patentes/di${ano}/${ano}${sol}.jpg`;
+      mostrarImagen(url);
+    }
+    
+    function mostrarImagen(url) {
+      const img = document.getElementById('image');
+      img.src = url;
+      img.addEventListener('load', function() {
+        img.style.display = 'block';
+      });
+      img.addEventListener('error', function() {
+        img.style.display = 'none';
+      });
+    }
+
+    
+
+
     const url = `http://172.16.0.46:70/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
     // Realiza la solicitud AJAX
      

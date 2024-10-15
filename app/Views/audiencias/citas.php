@@ -29,8 +29,8 @@ $userdata = $session->get();
     ?>
     <section class="section" <?php echo $style; ?>>
     <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-11">
+     
+      <div class="col-md-12">
         <div class="form-steps">
           
         <!-- ******PASO1******* -->
@@ -86,44 +86,39 @@ $userdata = $session->get();
             <!-- Contenido del paso 2 -->
             
             <div class="card calendario">
+         
                 <div id="calendar"></div>
                 <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.js"></script>
                 <script type="text/javascript" src="<?php echo base_url(); ?>/custom/js/calendario/index.global.min.js"></script>
                 <style>
-           #calendar .fc-event {
-            border-color: #ccc;
-            color: white;
-            
-           }
-        </style>
-            <style>
-              #calendar .fc-event {
-                  border-color: #ccc; /* Borde básico para todos los eventos */
-              }
-
-              
-                /* Definir colores para diferentes estados */
-                .estado-5 {
-                  background-color: red; /*  rojo Citas canceladas */
-              }
-
-              .estado-4 {
-                  background-color: rgb(2, 67, 121);/*  azul Citas pautadas */
-              }
-
-              .estado-3 {
-                  background-color: rgb(241, 233, 114); /* amarilla  Citas resueltas */
-              }
-
-              .estado-default {
+                #calendar .fc-event {
+                  border-color: #ccc;
+                  color: white;
                   
-                  background-color: rgb(23, 84, 87); /* verde */
-              }
+                }
+                </style>
+                <style>
+                  #calendar .fc-event {
+                      border-color: #ccc; /* Borde básico para todos los eventos */
+                  }
+                    /* Definir colores para diferentes estados */
+                    .estado-5 {
+                      background-color: red; /*  rojo Citas canceladas */
+                  }
 
+                  .estado-4 {
+                      background-color: rgb(2, 67, 121);/*  azul Citas pautadas */
+                  }
 
+                  .estado-3 {
+                      background-color: rgb(241, 233, 114); /* amarilla  Citas resueltas */
+                  }
 
-
-            </style>
+                  .estado-default {
+                      
+                      background-color: rgb(23, 84, 87); /* verde */
+                  }
+                </style>
                 <?php
                 $events = array();
                 $max_date = null;
@@ -165,9 +160,10 @@ $userdata = $session->get();
                 
           </div>
           </div>
+
+          <!-- END FROND STEEP -->
         </div>
-
-
+        </div>
       </div>
     </div>
     </section>
@@ -179,55 +175,53 @@ $userdata = $session->get();
 </main>
 
 
-
 <script>
-                  document.addEventListener('DOMContentLoaded', function() {
-                      var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          locale: 'es',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'multiMonthYear,dayGridMonth,timeGridWeek'
+          },
+          
+          themeSystem: 'bootstrap',
+          initialView: 'multiMonthYear',
+          initialDate: '<?php echo date('Y-m-d H:i:s', strtotime($max_date)); ?>', // Formateado la fecha para que sea compatible con FullCalendar
+          editable: true,
+          selectable: true,
+          dayMaxEvents: true, // permitir enlace "más" cuando hay demasiados eventos
+          multiMonthMaxColumns: 2, // garantizar una sola columna
+           //showNonCurrentDates: true,
+          fixedWeekCount: false,
+          businessHours: true,
+          weekends: false,
+          buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            year: 'Año',
+            week: 'Semana',
+            day: 'Día',
+            list: 'Lista'
+          },
 
-                      var calendar = new FullCalendar.Calendar(calendarEl, {
-                        locale: 'es',
-                        headerToolbar: {
-                          left: 'prev,next today',
-                          center: 'title',
-                          right: 'multiMonthYear,dayGridMonth,timeGridWeek'
-                        },
-                        
-                        themeSystem: 'bootstrap',
-                        initialView: 'multiMonthYear',
-                        initialDate: '<?php echo date('Y-m-d H:i:s', strtotime($max_date)); ?>', // Formateado la fecha para que sea compatible con FullCalendar
-                        editable: true,
-                        selectable: true,
-                        dayMaxEvents: true, // permitir enlace "más" cuando hay demasiados eventos
-                        //multiMonthMaxColumns: 1, // garantizar una sola columna
-                        // showNonCurrentDates: true,
-                        fixedWeekCount: false,
-                        businessHours: true,
-                        weekends: false,
-                        buttonText: {
-                          today: 'Hoy',
-                          month: 'Mes',
-                          year: 'Año',
-                          week: 'Semana',
-                          day: 'Día',
-                          list: 'Lista'
-                        },
+            events: <?php echo $json_events; ?>,
 
-                          events: <?php echo $json_events; ?>,
+            eventClick: function(event) {
+        var citaId = event.event.extendedProps.citaId;
+        var citaInfo = <?php echo json_encode($citasById); ?>[citaId];
+        var startDate = moment(event.event.start).format('DD MMM YYYY'); // Format the start date
 
-                          eventClick: function(event) {
-                      var citaId = event.event.extendedProps.citaId;
-                      var citaInfo = <?php echo json_encode($citasById); ?>[citaId];
-                      var startDate = moment(event.event.start).format('DD MMM YYYY'); // Format the start date
+        alert('Evento: ' + event.event.title + '\n' +
+              'Fecha de inicio: ' + startDate + '\n' + 
+              'Formato de cita: ' + citaInfo.formato_cita);
+    }
+        });
 
-                      alert('Evento: ' + event.event.title + '\n' +
-                            'Fecha de inicio: ' + startDate + '\n' + 
-                            'Formato de cita: ' + citaInfo.formato_cita);
-                  }
-                      });
-
-                      calendar.render();
-                  });
-                  </script>
+        calendar.render();
+    });
+  </script>
 
 
 

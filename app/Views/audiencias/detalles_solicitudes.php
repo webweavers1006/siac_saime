@@ -462,7 +462,7 @@ foreach ($cronologia["solicitudes"] as $dato) {
                       <div class="control">
                        
                       <?php
-                        if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.update', $userdata['permisos']['permisos'])) {
+                        if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.trabajadores', $userdata['permisos']['permisos'])) {
                         ?>
                           <div class="control">
                             <button class="button is-primary is-fullwidth" id="responsable" style="cursor: pointer;">Asignar responsable</button>
@@ -567,7 +567,7 @@ foreach ($cronologia["solicitudes"] as $dato) {
   .disabled-link {
 
 pointer-events: none;
-
+cursor: not-allowed;
 opacity: 0.5;
 
 }

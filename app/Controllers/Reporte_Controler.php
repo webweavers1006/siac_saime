@@ -305,12 +305,14 @@ class Reporte_Controler extends BaseController
 				}
 				//BUSCAMOS LOS CASOS ATENDIDOS POR ATENCION CIUDADANO
 				$query = $model->contarCasosAtencionCiudadano();
+				
 				$estadisticas["Asesoría"] = 0;
 				$estadisticas["Sugerencia"] = 0;
 				$estadisticas["Queja"] = 0;
 				$estadisticas["Reclamo"] = 0;
 				$estadisticas["Denuncia"] = 0;
 				$estadisticas["Petición"] = 0;
+				$estadisticas["Talleres"] = 0;
 				if (empty($query)) {
 					$estadisticas = [];
 				} else {
@@ -327,6 +329,8 @@ class Reporte_Controler extends BaseController
 							$estadisticas["Denuncia"] = $query[$i]->count;
 						} else if ($query[$i]->tipo_aten_nombre === "Petición") {
 							$estadisticas["Petición"] = $query[$i]->count;
+						}else if ($query[$i]->tipo_aten_nombre === "Talleres") {
+						$estadisticas["Talleres"] = $query[$i]->count;
 						}
 					}
 				}
@@ -423,6 +427,7 @@ class Reporte_Controler extends BaseController
 				$estadisticas["Queja"] = 0;
 				$estadisticas["Reclamo"] = 0;
 				$estadisticas["Denuncia"] = 0;
+				$estadisticas["Talleres"] = 0;
 				$estadisticas["Petición"] = 0;
 				$estadisticas["Abiertos"] = 0;
 				$estadisticas["Cerrados"] = 0;
@@ -474,6 +479,7 @@ class Reporte_Controler extends BaseController
 				$estadisticas["Abiertos"] = 0;
 				$estadisticas["Cerrados"] = 0;
 				$estadisticas["Asesoría"] = 0;
+				$estadisticas["Talleres"] = 0;
 				$estadisticas["Sugerencia"] = 0;
 				$estadisticas["Queja"] = 0;
 				$estadisticas["Reclamo"] = 0;
@@ -574,6 +580,7 @@ class Reporte_Controler extends BaseController
 					$estadisticas["Reclamo"] = 0;
 					$estadisticas["Denuncia"] = 0;
 					$estadisticas["Petición"] = 0;
+					$estadisticas["Talleres"] = 0;
 					if (empty($query)) {
 						$estadisticas = [];
 					} else {

@@ -128,7 +128,7 @@
             </div>
           </div>
 
-          <div class="row">
+ <div class="row">
   <!-- Número de Solicitud -->
   <div class="column is-5">
     <div class="field col-lg-12 col-sm-12 col-md-12 ">
@@ -146,17 +146,17 @@
             <input class="input is-expanded" onkeypress="return valideKey(event);"  type="text" name="sol" id="sol" maxlength="6" value="">
           </div>
           <div class="control" style="display: inline-block">
-            <button class="button is-info" >Buscar</button>
+          &nbsp;&nbsp;<button class="button is-info" >Buscar</button>
           </div>
         </div>
       </div>
     </form>
     </div>
   </div>
-  <div class="col-1">
+  <div class="col-2">
   </div>
   <!-- Numero Registro -->
-  <div class="column is-5">
+  <!-- <div class="column is-5">
     <div class="field col-lg-12 col-sm-12 col-md-12 ">
       <label class="label">Numero Registro</label>
       <div class="field-body">
@@ -186,7 +186,16 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
+
+
+<figure class="image">
+  <img id="image" class="no-border" src="" style=" display: none; width: 204px; height: 100px;">
+</figure>
+ 
+
+
+
 </div>
 
 <br>
