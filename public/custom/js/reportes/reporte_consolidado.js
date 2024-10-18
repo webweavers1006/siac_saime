@@ -30,7 +30,7 @@ $(function() {
     llenar_Estados(Event);
 });
 
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0,atencion_cuidadano = 0,estatus=0,id_estado=0,edad_min=null,edad_max=null,nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus=null,nombre_estado=null) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0,atencion_cuidadano = 0,estatus=0,id_estado=0,id_municipio=0,edad_min=null,edad_max=null,nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus=null,nombre_estado=null) {
 
     // Convertir la fecha
     var fechaOriginal = desde;
@@ -204,7 +204,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_estado+'/'+edad_min+'/'+edad_max,
+            "url": "/reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_estado+'/'+id_municipio+'/'+edad_min+'/'+edad_max,
             "type": "GET",
             dataSrc: ''
         },
@@ -477,6 +477,33 @@ function llenar_Estados(e, id) {
         },
     });
 }
+//Evento que busca los municipios por estados
+$(document).on("change", "#estado-caso", (e) => {
+    e.preventDefault();
+
+    let datos = {
+        id_estado: $("#estado-caso").val(),
+    };
+    $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos)),
+            },
+        })
+        .then((response) => {
+            // Agregamos el valor "0" seleccionado por defecto
+            let opciones = '<option value="0" selected>Seleccione un municipio</option>';
+            opciones += response.data;
+            $("#municipio-caso").html(opciones);
+
+            let mun = $("#municipio-caso").val();
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Ocurrió un error", "error");
+        });
+});
 
 
 $(document).on('click', '.consultar', function(e) {
@@ -492,6 +519,7 @@ $(document).on('click', '.consultar', function(e) {
     let tipo_atencion_usu = $('#tipo-atencion-usu').val();
     let sexo = $('#sexo').val();
     let id_estado = $('#estado-caso').val();
+    let id_municipio = $('#municipio-caso').val();
     let nombre_propiedad = $('#tipo-pi option:selected').text();
     let nombre_atencion = $('#tipo-atencion-usu option:selected').text();
     let nombresexo = $('#sexo option:selected').text();
@@ -537,7 +565,7 @@ $(document).on('click', '.consultar', function(e) {
     }else
     {
     $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_estado,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus,nombre_estado);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_estado,id_municipio,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus,nombre_estado);
     }
 
 })

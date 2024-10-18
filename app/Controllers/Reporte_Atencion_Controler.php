@@ -1102,19 +1102,74 @@ class Reporte_Atencion_Controler extends BaseController
 			return redirect()->to('/');
 		}
 	}
-
-
 	public function Listar_Casos_Municipios()
 	{
 		$model = new Casos();
 		$usuarios = $model->Listar_Casos_Municipios();	
-		// foreach ($usuarios as $usuario) {
-		// 	echo "Estado: " . $usuario->estadonom . ", Municipio: " . $usuario->municipionom . ", Casos: " . $usuario->casos . "<br>";
-		// }
-		$json_usuarios = json_encode($usuarios);
-		echo $json_usuarios;
-	}
+		
+		// Inicializar un array para almacenar los resultados
+		$resultados = [];
+	
+		// Procesar cada caso
+		foreach ($usuarios as $caso) {
+			$municipioId = $caso->municipioid;
+			$municipio = $caso->municipionom;
+			$casos = (int)$caso->casos;
+	
+			// Inicializar el municipio si no existe en el array de resultados
+			if (!isset($resultados[$municipioId])) {
+				$resultados[$municipioId] = [
+					'ID_municipio' => $municipio,
+					'Asesoría' => 0,
+					'Sugerencia' => 0,
+					'Queja' => 0,
+					'Reclamo' => 0,
+					'Denuncia' => 0,
+					'Petición' => 0,
+					'Talleres' => 0,
+					'total_atencion' => 0,
+				];
+			}
+	
+			// Clasificar los casos en los diferentes tipos de atención
+			switch ($caso->tipo_aten_nombre) {
+				case 'Asesoría':
+					$resultados[$municipioId]['Asesoría'] += $casos;
+					break;
+				case 'Sugerencia':
+					$resultados[$municipioId]['Sugerencia'] += $casos;
+					break;
+				case 'Queja':
+					$resultados[$municipioId]['Queja'] += $casos;
+					break;
+				case 'Reclamo':
+					$resultados[$municipioId]['Reclamo'] += $casos;
+					break;
+				case 'Denuncia':
+					$resultados[$municipioId]['Denuncia'] += $casos;
+					break;
+				case 'Petición':
+					$resultados[$municipioId]['Petición'] += $casos;
+					break;
+				case 'Talleres':
+					$resultados[$municipioId]['Talleres'] += $casos;
+					break;
+			}
+	
+			// Actualizar el total de atenciones
+			$resultados[$municipioId]['total_atencion'] += $casos;
+		}
+	
+	
+	
 
+    // Retornar el array de resultados en formato JSON
+  // Retornar el array de resultados en formato JSON
+
+  header('Content-Type: application/json; charset=utf-8');
+
+  echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+}
 
 
 	public function vista_estadisticas2()

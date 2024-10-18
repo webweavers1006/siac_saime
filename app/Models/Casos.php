@@ -83,6 +83,7 @@ public function listar_Casos_Remitidos($id_direccion)
   //Metodo para obtener todos los casos por usuario
   public function obtenerCasos_filtrados_por_usuario($idusur)
   {
+    
       $db      = \Config\Database::connect();
       $strQuery = "SELECT  distinct a.idcaso,a.tipo_beneficiario,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
       $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
@@ -290,7 +291,7 @@ public function Informacion_Usuarios($casoced)
 
 
     //Metodo para obtener todos los casos para el reporte consolidado 
-    public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0,$atencion_cuidadano = 0,$estatus = 0,$id_estado=0,$edad_min=null,$edad_max=null)
+    public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0,$atencion_cuidadano = 0,$estatus = 0,$id_estado=0,$id_municipio=0,$edad_min=null,$edad_max=null)
     {
      
 
@@ -403,6 +404,17 @@ public function Informacion_Usuarios($casoced)
                 $strWhere .= " AND a.estadoid='$id_estado'";
             }
         }
+
+        if ($id_municipio != '0' && $id_municipio != 'null') {
+            if (trim($strWhere) == "") {
+                $strWhere .= " AND a.municipioid='$id_municipio'";
+            } else {
+                $strWhere .= " AND a.municipioid='$id_municipio'";
+            }
+        }
+
+
+
         $strQuery = $strQuery . $strWhere;
         //return $strQuery;
         $strQuery .= " ORDER BY a.idcaso  desc";
@@ -1473,8 +1485,9 @@ public function  ContarCasosTalleresEstadal($desde,$hasta)
 	
         $db      = \Config\Database::connect();
         $strQuery = " SELECT t.id_usuario FROM  sgc_usuario_token as t   ";
-        $strQuery .= " where t.token=:token:";
-        $query = $db->query($strQuery,["token"=>$token]);
+        $strQuery .= " where t.token='$token'";
+        //return $strQuery;
+        $query = $db->query($strQuery);
         $resultado = $query->getResult();
         
         return $resultado;
@@ -1610,12 +1623,13 @@ public function Listar_Casos_Municipios()
 
     $db = \Config\Database::connect();
     $builder = $db->table('sgc_casos c');
-    $builder->select('e.estadonom, m.municipionom, COUNT(c.idcaso) AS casos');
+    $builder->select('e.estadonom, m.municipioid, m.municipionom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
     $builder->join('sgc_municipio m', 'c.municipioid = m.municipioid');
     $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
     $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
-    $builder->where('c.borrado', false); 
-    $builder->groupBy('m.municipionom, e.estadonom');
+    $builder->where('c.borrado', false);
+    $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
+    $builder->groupBy('m.municipioid, m.municipionom, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
     $builder->orderBy('m.municipionom');
     $resultado = $builder->get()->getResult();
     return $resultado;

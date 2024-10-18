@@ -48,10 +48,10 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles
-	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$edad_min=null,$edad_max=null)
+	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$edad_min=null,$edad_max=null)
 	{
 		$model = new Casos();
-		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$edad_min,$edad_max);
+		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$id_municipio,$edad_min,$edad_max);
 
 		if (empty($query)) {
 			$casos = [];

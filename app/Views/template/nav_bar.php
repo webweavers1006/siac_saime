@@ -202,8 +202,37 @@ $userdata = $session->get();
                     <p>Contador de Visitas</p>
                   </a>
               </li>
+                      <!-- ESTADISTICAS AUDIENCIAS -->
+                      <li class="nav-item">
+                      <a href="#" class="nav-link" id="">
+                          <i class="nav-icon fas fa-chart-bar"></i>
+                          <p>Estad. Audiencias</p> 
+                          <i class="right fas fa-angle-left"></i> 
+                      </a>
+                      <ul class="nav nav-treeview">
+                          <li class="nav-item">
+                              <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
+                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
+                                  <p>Citas otorgadas</p>
+                              </a>
+                          </li>   
+                          <li class="nav-item">
+                              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
+                                  <i class="nav-icon fas fa-file" style='font-size:20px'></i>
+                                  <p>Casos por categoría</p>
+                              </a>
+                          </li>   
+                      </ul>
+                  </li>
+
+
+
             </ul>
+               
+
           </li>
+
+
           <?php } ?>
           <?php } ?>
          
@@ -232,6 +261,7 @@ $userdata = $session->get();
           <?php } ?>
           
          
+           <!-- *********************MENU ADUDIENCIAS*************** -->
           <?php if ($session->get('userrol') == 9 ) { ?>
        
           <li class="nav-item">
@@ -270,7 +300,7 @@ $userdata = $session->get();
               }
               ?>
 
-
+           
 
             <li class="nav-item">
                 <a href="<?php echo base_url(); ?>/citas" class="nav-link">
@@ -278,9 +308,12 @@ $userdata = $session->get();
                   <p>Citas</p>
                 </a>
             </li>   
+
+            
           </ul>
           </li>
           <?php 
+
               if ($userdata["nivel_rol"] == "1" || $userdata["nivel_rol"] == "2") {
               ?>
                   <li class="nav-item">
@@ -308,6 +341,38 @@ $userdata = $session->get();
               }
               ?>
           <?php } ?>
+
+          <!-- *********************MANTENIMIENTO ROLES ADUDIENCIAS*************** -->
+          <?php if ($session->get('userrol') == 9) { ?>
+            <?php 
+                  if ($userdata["nivel_rol"] == "1") { ?>
+          <li class="nav-item">
+              <a href="#" class="nav-link" id="">
+                  <i class="nav-icon fas far fa-sun"></i>
+                  <p>Mantenimiento Audiencias</p>
+                  <i class="right fas fa-angle-left"></i>
+              </a>
+              <ul class="nav nav-treeview">
+                 
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_Roles_audiencias" class="nav-link">
+                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <p>Roles</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_Permisos_audiencias" class="nav-link">
+                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <p>Permisos</p>
+                          </a>
+                      </li>
+                  
+              </ul>
+          </li>
+          <?php } ?>
+          <?php } ?>
+           <!-- ************************************************************************** -->
+
           <?php if ($session->get('userrol') == 10 ) { ?>
           <li class="nav-item">
          

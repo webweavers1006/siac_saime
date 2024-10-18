@@ -90,21 +90,29 @@
                                     <option value="2">Cerrado</option>
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                            <label for="estado-caso">Estado</label>
-                            <select id="estado-caso" name="estado-caso" class="form-control">
-                                <option value="0" disabled>Seleccione Estado</option>
-                            </select>
-                        </div>
 
-                        
-                            <div class="col-md-3">
+
+                            <div class="col-md-4">
                                 <label for="office">Dirección Administrativa:</label>
                                 <select class="form-control" id="direcciones_caso" name="direcciones_caso">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <?php echo $direcciones; ?>
                                 </select>
                             </div>
+                            <div class="col-lg-3 col-sm-3 col-md-3">
+                            <label for="estado-caso">Estado</label>
+                            <select id="estado-caso" name="estado-caso" class="form-control">
+                                <option value="0" disabled>Seleccione Estado</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label for="municipio-caso">Municipio</label>
+                            <select id="municipio-caso" name="municipio-caso" class="form-control">
+                            <option value="0" selected >Seleccione Municipio</option>
+                            </select>
+                        </div>
+                        
+                            
                    
                        
                        <div class="col-md-5">

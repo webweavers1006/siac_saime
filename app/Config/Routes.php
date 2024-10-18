@@ -140,7 +140,7 @@ $routes->setAutoRoute(false);
      $routes->get('/enviar_correo_portal/(:any)',"Estatus::enviar_correo_portal/$1");
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
-     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13");
+     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14");
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
      $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12");
@@ -175,7 +175,14 @@ $routes->setAutoRoute(false);
 */
 
 
+ //RUTAS PARA LOS ROLES DE AUDIENCIAS 
+ $routes->get('/vista_Roles_audiencias', 'Roles_Audiencias_Controler::vista_Roles_audiencias');
 
+
+  //RUTAS PARA LOS PERMISOS DE AUDIENCIAS 
+  $routes->get('/vista_Permisos_audiencias', 'Permisos_Audiencias_Controler::vista_Permisos_audiencias');
+
+ 
 
 
 
