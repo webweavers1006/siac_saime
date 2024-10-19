@@ -350,6 +350,13 @@ class Audiencias_Controler extends BaseController
 		
 		////MENSAJES
 		$mensajes = json_decode(file_get_contents("http://172.16.0.46:70/mensajes/$id/1/100", false, $contexto), true);
+		
+		
+
+		
+		
+		
+		
 		////CRONOLOGIA
 		$url = "http://172.16.0.46:70/solicitudes/crono/".$id;
 		$ch = curl_init($url);

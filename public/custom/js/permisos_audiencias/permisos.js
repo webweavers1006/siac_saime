@@ -8,7 +8,6 @@ const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
  * Función para definir datatable:
  */
 function listar_permisos_audiencias() {
-
     $('#table_permisos').DataTable({
         responsive: true,
         order: [[0, "desc"]],
@@ -31,7 +30,16 @@ function listar_permisos_audiencias() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return `<a href="javascript:;" class="btn btn-xs btn-primary Editar disabled" style="font-size:1px" data-toggle="tooltip" title="Editar" id="${row.id}"> <i class="material-icons">create</i></a>`;
+                    return `
+                        <a href="javascript:;" 
+                           class="btn btn-xs btn-primary Editar" 
+                           style="font-size: 1px" 
+                           data-toggle="tooltip" 
+                           title="Editar" 
+                           id="${row.id}" 
+                           permiso="${row.permiso}">
+                            <i class="material-icons">create</i>
+                        </a>`;
                 }
             }
         ],
@@ -58,17 +66,19 @@ function listar_permisos_audiencias() {
         }
     });
 }
-// //EVENTO PARA AGREGAR UNA DIRECCION
-$(document).on('submit', "#new-rol", function(e) {
+// //EVENTO PARA AGREGAR UN PERMISO
+$(document).on('submit', "#new-permiso", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     let datos_audiencia = {
-        "rol": $('#name-rol').val().trim(),
+        "nombre": $('#name-permiso').val().trim(),
+        "guard_name": 'web',
     };
 
+ 
     $.ajax({
         type: "POST",
-        url: "http://172.16.0.46:70/roles",
+        url: "http://172.16.0.46:70/permisos",
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -79,7 +89,7 @@ $(document).on('submit', "#new-rol", function(e) {
             Swal.fire('Exito!', "Registro exitoso", "success");
 
             setTimeout(function() {
-                window.location = '/vista_Roles_audiencias';
+                window.location = '/vista_Permisos_audiencias';
             }, 1500);
         },
         error: function(xhr, status, error) {
@@ -91,29 +101,29 @@ $(document).on('submit', "#new-rol", function(e) {
 
 
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION
-$('#listar_roles').on('click', '.Editar', function(e) {
+$('#listar_permisos').on('click', '.Editar', function(e) {
     var id = $(this).attr('id');
-    var descripcion = $(this).attr('descripcion');
+    var descripcion = $(this).attr('permiso');
     $("#editar").modal("show");
-    $('#editar').find('#editar-rol').val(descripcion);
-    $('#editar').find('#id-rol').val(id);
-
+    $('#editar').find('#editar-permiso').val(descripcion);
+    $('#editar').find('#id-permiso').val(id);
    
 });
 
 
 // Evento para guardar la direccion editada
-$(document).on('submit', "#edit-rol", function(e) {
+$(document).on('submit', "#edit-permiso", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-    let id = $("#id-rol").val();
+    let id = $("#id-permiso").val();
     let datos_audiencia = {
-        "rol": $('#editar-rol').val(),
+        "nombre": $('#editar-permiso').val(),
+        "guard_name": 'web',
     };
 
     $.ajax({
         type: "PUT",
-        url: "http://172.16.0.46:70/roles/" + id,
+        url: "http://172.16.0.46:70/permisos/" + id,
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -124,7 +134,7 @@ $(document).on('submit', "#edit-rol", function(e) {
             Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
 
             setTimeout(function() {
-                window.location = '/vista_Roles_audiencias';
+                window.location = '/vista_Permisos_audiencias';
             }, 1500);
         },
         error: function(xhr, status, error) {

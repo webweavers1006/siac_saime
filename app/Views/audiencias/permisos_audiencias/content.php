@@ -34,7 +34,7 @@ $session = session();
             <div class="card-header border-0">
               <div class="d-flex justify-content-between">
                 <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Permisos Audiencia
-                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-roles">Agregar</button>
+                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-permiso">Agregar</button>
                 </h3>
               </div>
               <div class="card-body">
@@ -66,21 +66,21 @@ $session = session();
 
      
       <!-- /.content-wrapper -->
-      <!-- Modal para añadir direciones-->
-      <div class="modal fade" id="add-roles">
+      <!-- Modal para añadir permisos-->
+      <div class="modal fade" id="add-permiso">
         <div class="modal-dialog  modal-dialog-centered  modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Roles</h4>
+              <h4 class="modal-title">Permisos</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="new-rol" method="POST" role="form">
+            <form id="new-permiso" method="POST" role="form">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="text" name="name-descripcion"  id="name-rol" class="form-control" autocomplete="off" required>
+                  <input type="text" name="name-descripcion"  id="name-permiso" class="form-control" autocomplete="off" required>
                 </div>
                 
               </div>
@@ -96,23 +96,23 @@ $session = session();
         <!-- /.modal-dialog -->
       </div>
       <!-- /.modal -->
-      <!-- Modal para editar roles-->
+      <!-- Modal para editar permisos-->
 
       <div class="modal fade" id="editar">
         <div class="modal-dialog  modal-dialog-centered modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Editar Roles</h4>
+              <h4 class="modal-title">Editar permisos</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="edit-rol" method="POST" role="form">
+            <form id="edit-permiso" method="POST" role="form">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Descripcion</label>
-                  <input type="hidden" name="id-rol" id="id-rol" class="form-control">
-                  <input type="text" name="name-rol"  id="editar-rol" class="form-control"  autocomplete="off" required>
+                  <input type="hidden" name="id-permiso" id="id-permiso" class="form-control">
+                  <input type="text" name="name-permiso"  id="editar-permiso" class="form-control"  autocomplete="off" required>
                 </div>
                 <!-- &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
                 <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'> -->

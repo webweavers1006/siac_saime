@@ -170,6 +170,7 @@ $.ajax({
             success: function(roleResponse) {
                 const rolePermisos = roleResponse.permisos; // Obtener los permisos del rol
                 $("#permisos").modal("show");
+                $('#permisos').find('#id_rol').val(id);
                 const permisos = response.permisos; // Permisos disponibles
                 const container = $('#checkbox-container');
                 container.empty(); // Limpiar el contenedor antes de agregar nuevos checkboxes
@@ -204,27 +205,97 @@ $.ajax({
 // Evento para guardar los permisos
 $(document).on('submit', "#edit-permisos", function(e) {
     e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
     // Inicializar arrays para IDs seleccionados y no seleccionados
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     const selectedIds = [];
     const unselectedIds = [];
-
     // Recorrer todos los checkboxes
     $('#checkbox-container input[type="checkbox"]').each(function() {
         const id = $(this).attr('id').split('-')[1]; // Obtener el ID del checkbox (ej. "permiso-1" -> "1")
-        
         if ($(this).is(':checked')) {
-            selectedIds.push(id); // Agregar a seleccionados si está marcado
+           // selectedIds.push(id); // Agregar a seleccionados si está marcado
+           selectedIds.push({ id_permisos: id });
+
         } else {
-            unselectedIds.push(id); // Agregar a no seleccionados si no está marcado
+            unselectedIds.push({ id_permisos: id });
+            //unselectedIds.push(id); // Agregar a no seleccionados si no está marcado
+        }
+    });
+    let id_rol=$('#id_rol').val();
+
+    let permisos_agregados = 
+    {
+        id_rol: id_rol,
+        permisos_seleccionados: selectedIds,
+        
+    };
+
+    let permisos_borrados = 
+    {
+        id_rol: id_rol,
+        permisos_no_seleccionados: unselectedIds
+        
+    };
+
+
+    console.log(permisos_agregados);
+    console.log(permisos_borrados);
+  
+    // AGREGAR PERMISOS
+    $.ajax({
+        type: "POST",
+        url: "http://172.16.0.46:70/permisos_por_rol" ,
+        data: JSON.stringify(permisos_agregados), // Convertir objeto a cadena JSON
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        headers: {
+            'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+        },
+        success: function(response) {
+            Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
+
+            setTimeout(function() {
+                window.location = '/vista_Roles_audiencias';
+            }, 1500);
+        },
+        error: function(xhr, status, error) {
+            Swal.fire('Error!', "Error al actualizar el registro", "error");
+            console.error(xhr.responseText);
         }
     });
 
-    // Mostrar en consola los IDs seleccionados y no seleccionados
-    console.log("IDs seleccionados:", selectedIds);
-    console.log("IDs no seleccionados:", unselectedIds);
+     // ELIMINAR  PERMISOS
+     $.ajax({
+        type: "DELETE",
+        url: "http://172.16.0.46:70/permisos_por_rol" ,
+        data: JSON.stringify(permisos_borrados), // Convertir objeto a cadena JSON
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        headers: {
+            'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+        },
+        success: function(response) {
+            Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
+
+            setTimeout(function() {
+                window.location = '/vista_Roles_audiencias';
+            }, 1500);
+        },
+        error: function(xhr, status, error) {
+            Swal.fire('Error!', "Error al actualizar el registro", "error");
+            console.error(xhr.responseText);
+        }
+    });
+
+  
+
+
 });
 
+
+
+    // Mostrar en consola los IDs seleccionados y no seleccionados
+ 
 
  // $("#permisos").modal("show");
 
