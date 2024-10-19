@@ -32,7 +32,9 @@ function listar_roles_audiencias() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id=' + row.id + ' descripcion="' + row.rol + '"> <i class="material-icons">create</i></a>';
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id=' + row.id + ' descripcion="' + row.rol + '"> <i class="material-icons">create</i></a>'+ ' '+
+                    '<a href="javascript:;" class="btn btn-xs btn-primary Permisos" style="font-size:1px" data-toggle="tooltip" title="Permisos"  id=' + row.id + ' descripcion="' + row.rol + '"> <i class="material-icons">visibility</i></a>'
+                    
                 }
             }
         ],
@@ -64,7 +66,7 @@ function listar_roles_audiencias() {
         }
     });
 }
-// //EVENTO PARA AGREGAR UNA DIRECCION
+// //EVENTO PARA AGREGAR UN ROL 
 $(document).on('submit', "#new-rol", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
@@ -139,6 +141,103 @@ $(document).on('submit', "#edit-rol", function(e) {
         }
     });
 });
+
+
+$('#listar_roles').on('click', '.Permisos', function(e) {
+    var id = $(this).attr('id');
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+
+   // Solicitud AJAX para obtener los permisos disponibles
+
+$.ajax({
+    type: "GET",
+    url: `http://172.16.0.46:70/permisos`, 
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    headers: {
+        'Authorization': `Bearer ${user_audiencia.token}`
+    },
+        success: function(response) {
+        // Realizar la solicitud AJAX para obtener los datos del rol
+        $.ajax({
+            type: "GET",
+            url: `http://172.16.0.46:70/roles/${id}`, 
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            headers: {
+                'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+            },
+            success: function(roleResponse) {
+                const rolePermisos = roleResponse.permisos; // Obtener los permisos del rol
+                $("#permisos").modal("show");
+                const permisos = response.permisos; // Permisos disponibles
+                const container = $('#checkbox-container');
+                container.empty(); // Limpiar el contenedor antes de agregar nuevos checkboxes
+                // Crear checkboxes para cada permiso
+                permisos.forEach(permiso => {
+                    const checkbox = $('<input>', {
+                        type: 'checkbox',
+                        id: `permiso-${permiso.id}`, // Asegúrate de usar el valor correcto
+                        value: permiso.permiso,
+                        checked: rolePermisos.includes(permiso.permiso) // Marcar como checked si está en rolePermisos
+                    });
+                    const label = $('<label>', {
+                        for: `permiso-${permiso.id}`,
+                        text: permiso.permiso
+                    });
+                    container.append(checkbox).append(label);
+                });
+            },
+            error: function(error) {
+                console.error("Error al obtener los datos del rol:", error);
+            }
+        });
+    },
+    error: function(error) {
+        console.error("Error al obtener los permisos:", error);
+    }
+});
+
+});
+
+
+// Evento para guardar los permisos
+$(document).on('submit', "#edit-permisos", function(e) {
+    e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    // Inicializar arrays para IDs seleccionados y no seleccionados
+    const selectedIds = [];
+    const unselectedIds = [];
+
+    // Recorrer todos los checkboxes
+    $('#checkbox-container input[type="checkbox"]').each(function() {
+        const id = $(this).attr('id').split('-')[1]; // Obtener el ID del checkbox (ej. "permiso-1" -> "1")
+        
+        if ($(this).is(':checked')) {
+            selectedIds.push(id); // Agregar a seleccionados si está marcado
+        } else {
+            unselectedIds.push(id); // Agregar a no seleccionados si no está marcado
+        }
+    });
+
+    // Mostrar en consola los IDs seleccionados y no seleccionados
+    console.log("IDs seleccionados:", selectedIds);
+    console.log("IDs no seleccionados:", unselectedIds);
+});
+
+
+ // $("#permisos").modal("show");
+
+
+
+   // $('#permisos').find('#editar-rol').val(descripcion);
+   // $('#permisos').find('#id-rol').val(id);
+
+
+
+
+
+
 
 $(document).on('change', '#name-correo', function(e) {
     let texto = $("#name-correo").val();

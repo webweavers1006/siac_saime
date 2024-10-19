@@ -3,7 +3,7 @@
 $session = session();
 ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/modal_permisos.css">
 <style>
   table.dataTable thead,
   table.dataTable tfoot {
@@ -128,6 +128,38 @@ $session = session();
         </div>
         <!-- /.modal-dialog -->
       </div>
+
+
+      <!-- Modal para editar permisos-->
+        <div class="modal fade" id="permisos">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Permisos por Rol</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="edit-permisos" method="POST" role="form">
+                        <div class="modal-body perm">
+                            <div class="form-group">
+                                <div id="checkbox-container"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-sm btn-primary" type="submit">Guardar</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+        </div>
+              <!-- /.modal-dialog -->
+
+        </div>
+
+
 
       <!-- ***** FUNCION PARA SOLO NUMEROS***-** -->
       <script type="text/javascript">

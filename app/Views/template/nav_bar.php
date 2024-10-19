@@ -349,7 +349,7 @@ $userdata = $session->get();
           <li class="nav-item">
               <a href="#" class="nav-link" id="">
                   <i class="nav-icon fas far fa-sun"></i>
-                  <p>Mantenimiento Audiencias</p>
+                  <p>Mantenimiento Audi</p>
                   <i class="right fas fa-angle-left"></i>
               </a>
               <ul class="nav nav-treeview">

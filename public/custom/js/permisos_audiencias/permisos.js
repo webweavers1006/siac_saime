@@ -1,67 +1,60 @@
 $(function() {
-    listar_roles_audiencias();
+    listar_permisos_audiencias();
 });
 
 const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-console.log(user_audiencia);
-
-
 
 /*
  * Función para definir datatable:
  */
-function listar_roles_audiencias() {
+function listar_permisos_audiencias() {
+
     $('#table_permisos').DataTable({
         responsive: true,
-        "order": [
-            [0, "desc"]
-        ],
-        "paging": true,
-        "info": true,
-        "filter": true,
-        "autoWidth": true,
-        //"stateSave": true,
-        "ajax": {
-            "url": "http://172.16.0.46:70/permisos/1/1000", // URL correcta
-            "type": "GET",
-            dataSrc: 'roless' // Cambiado para que apunte a la clave correcta en la respuesta JSON
+        order: [[0, "desc"]],
+        paging: true,
+        info: true,
+        filter: true,
+        autoWidth: true,
+        ajax: {
+            url: "http://172.16.0.46:70/permisos", // URL correcta
+            type: "GET",
+            headers: {
+                'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+            },
+            dataSrc: 'permisos' // Cambiado para que apunte a la clave correcta en la respuesta JSON
         },
-        "columns": [
-            { data: 'id' },
-            { data: 'rol' },
+        columns: [
+            { data: 'id', visible: false, searchable: false }, // Ocultar la columna 'id'
+            { data: 'permiso' },
             {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id=' + row.id + ' descripcion="' + row.rol + '"> <i class="material-icons">create</i></a>';
+                    return `<a href="javascript:;" class="btn btn-xs btn-primary Editar disabled" style="font-size:1px" data-toggle="tooltip" title="Editar" id="${row.id}"> <i class="material-icons">create</i></a>`;
                 }
             }
         ],
-        "language": {
-            "sProcessing": "Procesando...",
-            "sLengthMenu": "Mostrar _MENU_ registros",
-            "sZeroRecords": "No se encontraron resultados",
-            "sEmptyTable": "Ningún dato disponible en esta tabla",
-            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sSearch": "Buscar:",
-            "sLoadingRecords": "Cargando...",
-            "oPaginate": {
-                "sFirst": "Primero",
-                "sLast": "Último",
-                "sNext": "Siguiente",
-                "sPrevious": "Anterior"
+        language: {
+            sProcessing: "Procesando...",
+            sLengthMenu: "Mostrar _MENU_ registros",
+            sZeroRecords: "No se encontraron resultados",
+            sEmptyTable: "Ningún dato disponible en esta tabla",
+            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+            sSearch: "Buscar:",
+            sLoadingRecords: "Cargando...",
+            oPaginate: {
+                sFirst: "Primero",
+                sLast: "Último",
+                sNext: "Siguiente",
+                sPrevious: "Anterior"
             },
-            "oAria": {
-                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-            },
-            "columnDefs": [{
-                "targets": [0],
-                "visible": false,
-                "searchable": false
-            }],
+            oAria: {
+                sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+                sSortDescending: ": Activar para ordenar la columna de manera descendente"
+            }
         }
     });
 }

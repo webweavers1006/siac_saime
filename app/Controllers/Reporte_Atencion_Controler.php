@@ -1105,13 +1105,18 @@ class Reporte_Atencion_Controler extends BaseController
 	public function Listar_Casos_Municipios()
 	{
 		$model = new Casos();
-		$usuarios = $model->Listar_Casos_Municipios();	
+		$casos = $model->Listar_Casos_Municipios();  
 		
 		// Inicializar un array para almacenar los resultados
 		$resultados = [];
 	
 		// Procesar cada caso
-		foreach ($usuarios as $caso) {
+		foreach ($casos as $caso) {
+			// Verificar que el caso tenga las propiedades necesarias
+			if (!isset($caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
+				continue; // O manejar el error de otra manera
+			}
+			$estado = $caso->estadonom;
 			$municipioId = $caso->municipioid;
 			$municipio = $caso->municipionom;
 			$casos = (int)$caso->casos;
@@ -1119,7 +1124,10 @@ class Reporte_Atencion_Controler extends BaseController
 			// Inicializar el municipio si no existe en el array de resultados
 			if (!isset($resultados[$municipioId])) {
 				$resultados[$municipioId] = [
-					'ID_municipio' => $municipio,
+
+					'estado' => $estado,
+					'ID_municipio' => $municipioId,
+					'municipio' => $municipio,
 					'Asesoría' => 0,
 					'Sugerencia' => 0,
 					'Queja' => 0,
@@ -1160,16 +1168,12 @@ class Reporte_Atencion_Controler extends BaseController
 			$resultados[$municipioId]['total_atencion'] += $casos;
 		}
 	
-	
-	
+		// Retornar el array de resultados en formato JSON
+		header('Content-Type: application/json; charset=utf-8');
+		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
 
-    // Retornar el array de resultados en formato JSON
-  // Retornar el array de resultados en formato JSON
-
-  header('Content-Type: application/json; charset=utf-8');
-
-  echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
-}
+		
+	}
 
 
 	public function vista_estadisticas2()
