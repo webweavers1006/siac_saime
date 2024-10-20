@@ -366,6 +366,13 @@ $userdata = $session->get();
                               <p>Permisos</p>
                           </a>
                       </li>
+
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_Categorias_audiencias" class="nav-link">
+                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <p>Categorias</p>
+                          </a>
+                      </li>
                   
               </ul>
           </li>

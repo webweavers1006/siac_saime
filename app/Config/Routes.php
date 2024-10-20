@@ -182,6 +182,9 @@ $routes->setAutoRoute(false);
   //RUTAS PARA LOS PERMISOS DE AUDIENCIAS 
   $routes->get('/vista_Permisos_audiencias', 'Permisos_Audiencias_Controler::vista_Permisos_audiencias');
 
+ //RUTAS PARA LAS CATEGORIAS DE AUDIENCIAS 
+ $routes->get('/vista_Categorias_audiencias', 'Categorias_Audiencias_Controler::vista_Categorias_audiencias');
+
  
 
 
