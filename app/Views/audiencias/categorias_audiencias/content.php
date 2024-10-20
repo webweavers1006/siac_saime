@@ -2,7 +2,6 @@
 <?php
 $session = session();
 ?>
-
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/modal_permisos.css">
 <style>
   table.dataTable thead,
@@ -10,7 +9,6 @@ $session = session();
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
 </style>
-
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <div class="content-header">
@@ -24,7 +22,6 @@ $session = session();
     </div><!-- /.container-fluid -->
   </div>
   <!-- /.content-header -->
-
   <!-- Main content  fluid-->
   <div class="content">
     <div class="container">
@@ -34,7 +31,7 @@ $session = session();
             <div class="card-header border-0">
               <div class="d-flex justify-content-between">
                 <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Categorias Audiencias
-                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-roles">Agregar</button>
+                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-categorias">Agregar</button>
                 </h3>
               </div>
               <div class="card-body">
@@ -42,15 +39,16 @@ $session = session();
                   <div class="col-lg-11 col-sm-11 col-md-11 ">
                     <div class="card">
                       <div class="card-body">
-                        <table class="display table-responsive" id="table_roles" style="width:100%" style="margin-top: 20px">
+                        <table class="display table-responsive" id="table_categorias" style="width:100%" style="margin-top: 20px">
                           <thead>
                             <tr>
                               <td class="text-center" style="width: 1%;">id</td>
                               <td class="text-center" style="width: 20%;">Descripcion</td>
+                              <td class="text-center" style="width: 20%;">Departamento</td>
                               <td class="text-center" style="width: 1%;">Acciones</td>
                             </tr>
                           </thead>
-                          <tbody id="listar_roles">
+                          <tbody id="listar_categorias">
                           </tbody>
                         </table>
                       </div>
@@ -63,24 +61,31 @@ $session = session();
           </div>
         </div>
       </div>
-
-     
       <!-- /.content-wrapper -->
-      <!-- Modal para añadir direciones-->
-      <div class="modal fade" id="add-roles">
+      <!-- Modal para añadir categorias-->
+      <div class="modal fade" id="add-categorias">
         <div class="modal-dialog  modal-dialog-centered  modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Roles</h4>
+              <h4 class="modal-title">Categoria</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="new-rol" method="POST" role="form">
+            <form id="new-categoria" method="POST" role="form">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="text" name="name-descripcion"  id="name-rol" class="form-control" autocomplete="off" required>
+                  <input type="text" onkeyup="mayus(this);" name="name-descripcion"  id="name-categoria" class="form-control" autocomplete="off" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-name">Departamento</label>
+                  <select name="id_departamento" id="id_departamento">
+                          <option value="0" selected>---Seleccione un Departamento---</option>
+                          <option value="1" >Marcas</option>
+                          <option value="2" >Patentes</option>
+                      </select>
                 </div>
                 
               </div>
@@ -96,30 +101,34 @@ $session = session();
         <!-- /.modal-dialog -->
       </div>
       <!-- /.modal -->
-      <!-- Modal para editar roles-->
-
+      <!-- Modal para editar categorias-->
       <div class="modal fade" id="editar">
         <div class="modal-dialog  modal-dialog-centered modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Editar Roles</h4>
+              <h4 class="modal-title">Editar Categorias</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="edit-rol" method="POST" role="form">
+            <form id="edit-categoria" method="POST" role="form">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Descripcion</label>
-                  <input type="hidden" name="id-rol" id="id-rol" class="form-control">
-                  <input type="text" name="name-rol"  id="editar-rol" class="form-control"  autocomplete="off" required>
+                  <input type="hidden" name="id-categoria" id="id-categoria" class="form-control">
+                  <input type="text" onkeyup="mayus(this);" name="name-rol"  id="editar-categoria" class="form-control"  autocomplete="off" required>
                 </div>
-                <!-- &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
-                <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'> -->
+                <div class="form-group">
+                  <label for="user-name">Departamento</label>
+                  <select name="edit_id_departamento" id="edit_id_departamento">
+                          <option value="1" >Marcas</option>
+                          <option value="2" >Patentes</option>
+                      </select>
+                </div>
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm  btn-light" type="reset">Limpiar</button>
-                <button class="btn btn-sm  btn-primary" type="submit">Guardar</button>
+                <button class="btn btn-sm  btn-primary" type="submit">Actualizar</button>
                 <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
               </div>
             </form>
@@ -130,35 +139,7 @@ $session = session();
       </div>
 
 
-      <!-- Modal para editar permisos-->
-        <div class="modal fade" id="permisos">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Permisos por Rol</h4>
-                        <input type="hidden" id="id_rol">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form id="edit-permisos" method="POST" role="form">
-                        <div class="modal-body perm">
-                            <div class="form-group">
-                                <div id="checkbox-container"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-sm btn-primary" type="submit">Guardar</button>
-                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-        </div>
-              <!-- /.modal-dialog -->
-
-        </div>
+      
 
 
 

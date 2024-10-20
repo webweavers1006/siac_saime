@@ -164,8 +164,11 @@ $routes->setAutoRoute(false);
      $routes->get('/Listar_Atencion_filtro', "Reporte_Atencion_Controler::Listar_Atencion_filtro");
 
 
-      //RUTAS PARA EL MAPA , EN EL SIAC 
+      //RUTAS PARA EL MAPA , EN EL SIAC MUNICIPIOS
       $routes->get('/Listar_Casos_Municipios', "Reporte_Atencion_Controler::Listar_Casos_Municipios");
+
+       //RUTAS PARA EL MAPA , EN EL SIAC ESTADOS
+       $routes->get('/Listar_Casos_Estados', "Reporte_Atencion_Controler::Listar_Casos_Estados");
 
 
 /**

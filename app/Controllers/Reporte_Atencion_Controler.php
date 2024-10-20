@@ -1113,10 +1113,11 @@ class Reporte_Atencion_Controler extends BaseController
 		// Procesar cada caso
 		foreach ($casos as $caso) {
 			// Verificar que el caso tenga las propiedades necesarias
-			if (!isset($caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
+			if (!isset($caso->estadoid,$caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
 				continue; // O manejar el error de otra manera
 			}
 			$estado = $caso->estadonom;
+			$estadoid = $caso->estadoid;
 			$municipioId = $caso->municipioid;
 			$municipio = $caso->municipionom;
 			$casos = (int)$caso->casos;
@@ -1124,7 +1125,7 @@ class Reporte_Atencion_Controler extends BaseController
 			// Inicializar el municipio si no existe en el array de resultados
 			if (!isset($resultados[$municipioId])) {
 				$resultados[$municipioId] = [
-
+					'ID_estado' => $estadoid,
 					'estado' => $estado,
 					'ID_municipio' => $municipioId,
 					'municipio' => $municipio,
@@ -1166,6 +1167,77 @@ class Reporte_Atencion_Controler extends BaseController
 	
 			// Actualizar el total de atenciones
 			$resultados[$municipioId]['total_atencion'] += $casos;
+		}
+	
+		// Retornar el array de resultados en formato JSON
+		header('Content-Type: application/json; charset=utf-8');
+		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+
+		
+	}
+
+
+
+	public function Listar_Casos_Estados()
+	{
+		$model = new Casos();
+		$casos = $model->Listar_Casos_Estados();  
+		
+		// Inicializar un array para almacenar los resultados
+		$resultados = [];
+	
+		// Procesar cada caso
+		foreach ($casos as $caso) {
+			// Verificar que el caso tenga las propiedades necesarias
+			if (!isset($caso->estadoid, $caso->estadonom, $caso->casos, $caso->tipo_aten_nombre)) {
+				continue; // O manejar el error de otra manera
+			}
+			$estado = $caso->estadonom;
+			$estadoid = $caso->estadoid;
+			$casos = (int)$caso->casos;
+	
+			// Inicializar el municipio si no existe en el array de resultados
+			if (!isset($resultados[$estadoid])) {
+				$resultados[$estadoid] = [
+					'ID_estado' => $estadoid,
+					'estado' => $estado,
+					'Asesoría' => 0,
+					'Sugerencia' => 0,
+					'Queja' => 0,
+					'Reclamo' => 0,
+					'Denuncia' => 0,
+					'Petición' => 0,
+					'Talleres' => 0,
+					'total_atencion' => 0,
+				];
+			}
+			// Clasificar los casos en los diferentes tipos de atención
+			switch ($caso->tipo_aten_nombre) {
+				case 'Asesoría':
+					$resultados[$estadoid]['Asesoría'] += $casos;
+					break;
+				case 'Sugerencia':
+					$resultados[$estadoid]['Sugerencia'] += $casos;
+					break;
+				case 'Queja':
+					$resultados[$estadoid]['Queja'] += $casos;
+					break;
+				case 'Reclamo':
+					$resultados[$estadoid]['Reclamo'] += $casos;
+					break;
+				case 'Denuncia':
+					$resultados[$estadoid]['Denuncia'] += $casos;
+					break;
+				case 'Petición':
+					$resultados[$estadoid]['Petición'] += $casos;
+					break;
+				case 'Talleres':
+					$resultados[$estadoid]['Talleres'] += $casos;
+					break;
+			}
+	
+			// Actualizar el total de atenciones
+			$resultados[$estadoid]['total_atencion'] += $casos;
 		}
 	
 		// Retornar el array de resultados en formato JSON

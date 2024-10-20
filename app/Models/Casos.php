@@ -1623,14 +1623,14 @@ public function Listar_Casos_Municipios()
 
     $db = \Config\Database::connect();
     $builder = $db->table('sgc_casos c');
-    $builder->select('e.estadonom, m.municipioid, m.municipionom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
+    $builder->select('e.estadoid,e.estadonom, m.municipioid, m.municipionom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
     $builder->join('sgc_municipio m', 'c.municipioid = m.municipioid');
     $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
     $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
     $builder->where('c.borrado', false);
     $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
-    $builder->groupBy('m.municipioid, m.municipionom, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
-    $builder->orderBy('m.municipionom');
+    $builder->groupBy('e.estadoid,m.municipioid, m.municipionom, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
+    $builder->orderBy('e.estadoid,m.municipionom');
     $resultado = $builder->get()->getResult();
     return $resultado;
 
@@ -1638,5 +1638,28 @@ public function Listar_Casos_Municipios()
 }
 
 
+
+
+//   //Metodo que busca los casos por estados para el mapa
+public function Listar_Casos_Estados()
+{
+
+   
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos c');
+    $builder->select('e.estadoid, e.estadonom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
+    $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
+    $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
+    $builder->where('c.borrado', false);
+    $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
+    $builder->groupBy('e.estadoid, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
+    $builder->orderBy('e.estadoid');
+    $builder->orderBy('e.estadonom');
+    $builder->orderBy('t.tipo_aten_nombre');
+    
+    $resultado = $builder->get()->getResult();
+    return $resultado;
+  
+}
 
 }
