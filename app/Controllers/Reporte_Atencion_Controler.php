@@ -1111,6 +1111,7 @@ class Reporte_Atencion_Controler extends BaseController
 		$resultados = [];
 	
 		// Procesar cada caso
+		$index = 1;
 		foreach ($casos as $caso) {
 			// Verificar que el caso tenga las propiedades necesarias
 			if (!isset($caso->estadoid,$caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
@@ -1121,10 +1122,10 @@ class Reporte_Atencion_Controler extends BaseController
 			$municipioId = $caso->municipioid;
 			$municipio = $caso->municipionom;
 			$casos = (int)$caso->casos;
-	
+		
 			// Inicializar el municipio si no existe en el array de resultados
-			if (!isset($resultados[$municipioId])) {
-				$resultados[$municipioId] = [
+			if (!isset($resultados[$index])) {
+				$resultados[$index] = [
 					'ID_estado' => $estadoid,
 					'estado' => $estado,
 					'ID_municipio' => $municipioId,
@@ -1140,33 +1141,35 @@ class Reporte_Atencion_Controler extends BaseController
 				];
 			}
 	
+			
 			// Clasificar los casos en los diferentes tipos de atención
 			switch ($caso->tipo_aten_nombre) {
 				case 'Asesoría':
-					$resultados[$municipioId]['Asesoría'] += $casos;
+					$resultados[$index]['Asesoría'] += $casos;
 					break;
 				case 'Sugerencia':
-					$resultados[$municipioId]['Sugerencia'] += $casos;
+					$resultados[$index]['Sugerencia'] += $casos;
 					break;
 				case 'Queja':
-					$resultados[$municipioId]['Queja'] += $casos;
+					$resultados[$index]['Queja'] += $casos;
 					break;
 				case 'Reclamo':
-					$resultados[$municipioId]['Reclamo'] += $casos;
+					$resultados[$index]['Reclamo'] += $casos;
 					break;
 				case 'Denuncia':
-					$resultados[$municipioId]['Denuncia'] += $casos;
+					$resultados[$index]['Denuncia'] += $casos;
 					break;
 				case 'Petición':
-					$resultados[$municipioId]['Petición'] += $casos;
+					$resultados[$index]['Petición'] += $casos;
 					break;
 				case 'Talleres':
-					$resultados[$municipioId]['Talleres'] += $casos;
+					$resultados[$index]['Talleres'] += $casos;
 					break;
 			}
 	
 			// Actualizar el total de atenciones
-			$resultados[$municipioId]['total_atencion'] += $casos;
+			$resultados[$index]['total_atencion'] += $casos;
+			$index++;
 		}
 	
 		// Retornar el array de resultados en formato JSON
