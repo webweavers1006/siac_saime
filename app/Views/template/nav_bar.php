@@ -194,6 +194,13 @@ $userdata = $session->get();
                     <p>Tipo Atencion</p>
                   </a>
                 </li>
+
+                <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Mapa</p>
+                  </a>
+                </li>
               </ul>
               <?php if ($session->get('userrol') == 5 or $session->get('userrol') == 1 or $session->get('userrol') == 6) { ?>
               <li class="nav-item">

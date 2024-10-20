@@ -152,6 +152,10 @@ $routes->setAutoRoute(false);
      $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2");
      $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
      $routes->get('/estadisticas2', "Reporte_Controler::vista_estadisticas2");
+     
+     $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
+     
+
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");
      $routes->get('/generar_pdf/(:any)', "PdfController::generar_pdf/$1");
      //Rutas generales de la aplicacion

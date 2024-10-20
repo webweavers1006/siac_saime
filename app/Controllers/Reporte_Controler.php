@@ -1213,4 +1213,27 @@ class Reporte_Controler extends BaseController
 		echo view('template/footer');
 		echo view('reportes/estadisticas/footer.php');
 	}
+
+
+
+	public function estadisticas_mapa()
+	{
+		
+
+		if ($this->session->get('logged')) {
+		echo view('template/header');
+		echo view('template/nav_bar');
+		echo view('reportes/estadisticas_mapa/content.php');
+		echo view('template/footer');
+		echo view('reportes/estadisticas_mapa/footer.php');
+	} else {
+		return redirect()->to('/');
+	}
+
+	}
+
+
+
+
+
 }
