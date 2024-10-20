@@ -1124,8 +1124,8 @@ class Reporte_Atencion_Controler extends BaseController
 			$casos = (int)$caso->casos;
 		
 			// Inicializar el municipio si no existe en el array de resultados
-			if (!isset($resultados[$index])) {
-				$resultados[$index] = [
+			if (!isset($resultados[$municipioId.$estadoid])) {
+				$resultados[$municipioId.$estadoid] = [
 					'ID_estado' => $estadoid,
 					'estado' => $estado,
 					'ID_municipio' => $municipioId,
@@ -1145,31 +1145,30 @@ class Reporte_Atencion_Controler extends BaseController
 			// Clasificar los casos en los diferentes tipos de atención
 			switch ($caso->tipo_aten_nombre) {
 				case 'Asesoría':
-					$resultados[$index]['Asesoría'] += $casos;
+					$resultados[$municipioId.$estadoid]['Asesoría'] += $casos;
 					break;
 				case 'Sugerencia':
-					$resultados[$index]['Sugerencia'] += $casos;
+					$resultados[$municipioId.$estadoid]['Sugerencia'] += $casos;
 					break;
 				case 'Queja':
-					$resultados[$index]['Queja'] += $casos;
+					$resultados[$municipioId.$estadoid]['Queja'] += $casos;
 					break;
 				case 'Reclamo':
-					$resultados[$index]['Reclamo'] += $casos;
+					$resultados[$municipioId.$estadoid]['Reclamo'] += $casos;
 					break;
 				case 'Denuncia':
-					$resultados[$index]['Denuncia'] += $casos;
+					$resultados[$municipioId.$estadoid]['Denuncia'] += $casos;
 					break;
 				case 'Petición':
-					$resultados[$index]['Petición'] += $casos;
+					$resultados[$municipioId.$estadoid]['Petición'] += $casos;
 					break;
 				case 'Talleres':
-					$resultados[$index]['Talleres'] += $casos;
+					$resultados[$municipioId.$estadoid]['Talleres'] += $casos;
 					break;
 			}
 	
 			// Actualizar el total de atenciones
-			$resultados[$index]['total_atencion'] += $casos;
-			$index++;
+			$resultados[$municipioId.$estadoid]['total_atencion'] += $casos;
 		}
 	
 		// Retornar el array de resultados en formato JSON
