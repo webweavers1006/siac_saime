@@ -280,44 +280,47 @@ $userdata = $session->get();
           <ul class="nav nav-treeview">
                <!-- Comprobamos el nivel de rol y mostramos el HTML correspondiente -->
             
-             <?php 
-              if ($userdata["nivel_rol"] == "1" || $userdata["nivel_rol"] == "2")
-               {
-                  echo '<li class="nav-item">
-                  <a href="' . base_url() . '/vista_audiencias" class="nav-link">
-                    <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                    <p>Listado</p>
-                  </a>
-                </li>';
-              } elseif ($userdata["nivel_rol"] == "3")
-              {
-                echo '<li class="nav-item">
-                <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
-                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                  <p>Listado de solicitudes</p>
-                </a>
-              </li>';
 
 
-              echo '<li class="nav-item">
-                <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
-                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                  <p>Registrar Audiencias</p>
-                </a>
-              </li>';
-              }
-              ?>
+ 
+               <?php
+                  if (isset($userdata['permisos']['permisos']) && in_array('requerimientos.read', $userdata['permisos']['permisos'])) {
+                      echo '<li class="nav-item">
+                              <a href="' . base_url() . '/vista_audiencias" class="nav-link">
+                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                  <p>Listado</p>
+                              </a>
+                            </li>';
+                  } else {
+                      // No se muestra nada
+                  }
 
-           
+                  if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.read', $userdata['permisos']['permisos'])) {
+                      echo '<li class="nav-item">
+                              <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
+                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                  <p>Listado de solicitudes</p>
+                              </a>
+                            </li>';
 
-            <li class="nav-item">
-                <a href="<?php echo base_url(); ?>/citas" class="nav-link">
-                  <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
-                  <p>Citas</p>
-                </a>
-            </li>   
-
-            
+                      echo '<li class="nav-item">
+                              <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
+                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                  <p>Registrar Audiencias</p>
+                              </a>
+                            </li>';
+                      
+                      echo '<li class="nav-item">
+                              <a href="' . base_url() . '/citas" class="nav-link">
+                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                  <p>Citas</p>
+                              </a>
+                            </li>';
+                  } else {
+                      // No se muestra nada
+                  }
+                  ?>
+ 
           </ul>
           </li>
           <?php 
