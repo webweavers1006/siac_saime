@@ -196,11 +196,12 @@ $userdata = $session->get();
                 </li>
 
                 <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
-                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
-                    <p>Mapa</p>
-                  </a>
-                </li>
+              <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
+                  <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
+                  <p>Mapa de Venezuela</p>
+              </a>
+            </li>
+
               </ul>
               <?php if ($session->get('userrol') == 5 or $session->get('userrol') == 1 or $session->get('userrol') == 6) { ?>
               <li class="nav-item">
