@@ -43,7 +43,10 @@ $(document).on('submit', "#login-user", function(e) {
                         },
                         success: function(data)
                         {
-                            if (data[0].idrol === "9" ||data[0].idrol === "5")
+
+                           
+                          
+                            if (data[0].idrol === "9" ||data[0].idrol === "5" ||data[0].acceso_audi==="t")
                             {
                                 let datos_audience = 
                                 {
@@ -58,6 +61,7 @@ $(document).on('submit', "#login-user", function(e) {
                                     dataType: "json",
                                     success: function(response)
                                     {
+                                        
                                         
                                         localStorage.setItem('user_audiencia', JSON.stringify(response));
                                         Toast.fire({

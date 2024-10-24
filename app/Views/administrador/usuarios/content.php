@@ -108,6 +108,10 @@
           <label for="user-email">Correo Electrónico</label>
           <input type="email" name="user-email" id="user-email" class="form-control" placeholder="Ej: Juan.perez@sapi.gob.ve" autocomplete="off" required>
         </div>
+
+      
+          
+
         <div class="form-group">
           <label for="id_direccion_administrativa">Direccion Administrativa</label>
           <select class="form-control" name="id_direccion_administrativa" id="id_direccion_administrativa" style="font-size: 13px;">
@@ -132,7 +136,7 @@
       <div class="form-group">
           <label for="user-lastname">Apellido</label>
           <input type="text" name="user-lastname" id="user-lastname" autocomplete="off"class="form-control" placeholder="Ej: Perez" required>
-        </div>
+      </div>
 
 
         <div class="form-group">
@@ -163,6 +167,8 @@
           <label for="user-confirm-pass">Confirmar Contraseña</label>
           <input type="password" name="user-confirm-pass" id="user-confirm-pass"autocomplete="off" class="form-control" required>
         </div>
+           <label for="user-email">Acceso a Audiencias</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="checkbox" name="terminos" id="acceso_audi" class="form-check-input">
       </div>
     </div>
   </div>
@@ -177,6 +183,15 @@
   </div>
   <!-- /.modal-dialog -->
 </div>
+
+
+
+
+
+
+
+
+
 <!-- /.modal -->
 <!-- Modal para editar usuarios-->
 <div class="modal fade" id="editUser">
@@ -207,6 +222,7 @@
         
            <label for="user-pass">Cambiar Contraseña</label>&nbsp;&nbsp;
             <input type="checkbox" class="cambiar-clave" id="cambiar-clave" name="cambiar-clave" value='false'>
+          
           <div class="form-group" id="modulo-claves" style="display: none;">
             <label for="user-pass">Contraseña</label>
             <input type="password" name="edit-user-pass" id="edit-user-pass" class="form-control" >
@@ -249,12 +265,15 @@
            
           </div>
           &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
-            <input type="checkbox" class="usuopborrado" id="usuopborrado" name="usuopborrado" value='false'>
+            <input type="checkbox" class="usuopborrado" id="usuopborrado" name="usuopborrado" value='false'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
+            <label for="user-email">Acceso a Audiencias</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="terminos" id="edit_acceso_audi" class="form-check-input">
         </div>
         <div class="modal-footer ">
           <button class="btn  btn-sm btn-light" type="reset">Limpiar</button>
-          <button class="btn  btn-sm  btn-primary" type="submit">Guardar</button>
+          <button class="btn  btn-sm  btn-primary" type="submit" id="guardar">Guardar</button>
+          <button class="btn  btn-sm  btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar2</button>
           <button type="button" class="btn btn-sm  btn-danger" data-dismiss="modal">Cerrar</button>
         </div>
       </form>

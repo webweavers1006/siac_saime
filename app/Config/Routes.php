@@ -194,6 +194,11 @@ $routes->setAutoRoute(false);
 
  
 
+ //RUTAS PARA USUARIOS AREAS DE AUDIENCIAS 
+ $routes->get('/vista_Usuario_Areas_audiencias', 'UsuariosAreas_Audiencias_Controler::vista_Usuario_Areas_audiencias');
+
+ 
+
 
 
 //RUTAS PARA AUDIENCIAS

@@ -1035,3 +1035,22 @@ $(function() {
     }
          
 }); 
+
+
+$("#fecha-nacimiento").on('change', function() {
+    // Obtener la fecha de nacimiento seleccionada
+    var fechaNacimiento = new Date($(this).val());
+    var hoy = new Date();
+    
+    // Calcular la edad
+    var edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    var mes = hoy.getMonth() - fechaNacimiento.getMonth();
+    
+    // Ajustar la edad si no ha cumplido años este año
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
+    }
+    
+    // Asignar la edad al elemento con id='edad'
+    $("#edad").val(edad);
+});

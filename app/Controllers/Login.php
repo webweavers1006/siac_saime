@@ -32,6 +32,7 @@ class Login extends BaseController
 						$userdata["usuopborrado"] = $row->usuopborrado;
 						$userdata["usercargo"] = $row->usercargo;
 						$userdata["usuopemail"] = $row->usuopemail;
+						$userdata["acceso_audi"] = $row->acceso_audi;
 						$userdata["id_direccion_administrativa"] = $row->id_direccion_administrativa;
 						if ($userdata["usuopborrado"] == 't') {
 							$mensaje = 0;

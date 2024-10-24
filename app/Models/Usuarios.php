@@ -48,7 +48,7 @@ class Usuarios extends BaseModel
 	public function getAllUsers()
 	{
 		$builder = $this->dbconn('sgc_usuario_operador a');
-		$builder->select('a.idusuopr,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a.usuopborrado,b.rolnom,b.idrol');
+		$builder->select('a.idusuopr,a.acceso_audi,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a.usuopborrado,b.rolnom,b.idrol');
 		$builder->join("sgc_roles b", 'a.idrol = b.idrol');
 		$query = $builder->get();
 		return $query->getResult(); // También debes agregar getResult() para obtener los resultados de la consulta
@@ -104,7 +104,7 @@ class Usuarios extends BaseModel
 	public function obtenerUsuarioPorId(String $id)
 {
     $builder = $this->dbconn('sgc_usuario_operador a');
-    $builder->select('a.idusuopr, a.usuopnom, a.usuopape, a.usuopemail, a.usuoppass, b.idrol');
+    $builder->select('a.idusuopr,a.acceso_audi,a.usuopnom, a.usuopape, a.usuopemail, a.usuoppass, b.idrol');
     $builder->join('sgc_roles b', 'b.idrol = a.idrol');
     $builder->where('a.idusuopr = ?', $id); // Utilizar un parámetro para evitar inyecciones
     $query = $builder->get();

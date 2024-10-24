@@ -15,15 +15,25 @@ class Administrador extends BaseController
 	{
 		$rolModel = new Roles();
 		$idrol = (session('userrol'));
+		// Realiza la solicitud a la API para obtener los datos
+		$session = session();
+		$token = $session->get('token');
+		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
 		
 		$rows = array();
 		if ($this->session->get('userrol') == 1 or $this->session->get('userrol') == 5 ) {
 			//Preguntamos por los roles de los usuarios
 			$query = $rolModel->getRoles($idrol);
 			
-			$nivel_rol = json_decode(file_get_contents("http://172.16.0.46:70/roles"), true);
+			$nivel_rol = json_decode(file_get_contents("http://172.16.0.46:70/roles",false, $contexto), true);
 
-
+			
 			//Generamos los option para los formularios
 			$opt = '';
 			if (isset($query)) {
@@ -103,14 +113,18 @@ class Administrador extends BaseController
 						"idrol"    => $datos["userrol"],
 						"usuopemail" => $datos["useremail"],
 						"usercargo" => $datos["usercargo"],
+						"acceso_audi" => $datos["acceso_audi"],
 						"id_direccion_administrativa" => $datos["id_direccion_administrativa"]
 					)
 				);
 
-			if ($datos["userrol"]=='9'or $datos["userrol"]==9)
+				
+
+			if ($datos["userrol"]=='9'or $datos["userrol"]==9 or $datos["acceso_audi"]==true)
 			{
 				$ultimo_id_insertado = $model_buscarusuario->ultimo_id_insertado();
 				$last_value = $ultimo_id_insertado;
+			
 				if (isset($query)) {
 					$mensaje = 1;
 					$mensaje = $last_value;
@@ -249,6 +263,7 @@ class Administrador extends BaseController
                 "usuopborrado" => $datos["usuopborrado"],
                 "usercargo" => $datos["usercargo"],
                 "idrol"      => $datos["userrol"],
+				"acceso_audi"      => $datos["acceso_audi"],
                 "id_direccion_administrativa"      => $datos["id_direccion_administrativa"],
                 "usuoppass" => password_hash($datos["usuoppass"], PASSWORD_BCRYPT),
             );
@@ -261,6 +276,7 @@ class Administrador extends BaseController
                 "usercargo" => $datos["usercargo"],
                 "usuopborrado" => $datos["usuopborrado"],
                 "id_direccion_administrativa"      => $datos["id_direccion_administrativa"],
+				"acceso_audi"      => $datos["acceso_audi"],
                 "idrol"      => $datos["userrol"],
             );
         }

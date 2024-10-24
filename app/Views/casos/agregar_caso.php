@@ -285,10 +285,10 @@ to {
               <label for="cedula-persona">Nº Cédula o Rif</label>
               <input type="text" class="form-control" onkeypress="return valideKey(event);"name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
           </div>
-          <div class="col-lg-1 col-sm-1 col-md-1">
-              <label for="edad">Edad</label>
-              <input type="text" class="form-control" onkeypress="return valideKey(event);" name="edad" id="edad"  autocomplete="off" required>
-          </div>
+         <div class="col-lg-1 col-sm-1 col-md-1">
+              <!-- <label for="edad">Edad</label> -->
+              <input type="hidden" class="form-control" onkeypress="return valideKey(event);" name="edad" id="edad"  autocomplete="off" required>
+          </div> 
           
           <div class="col-lg-2 col-sm-2 col-md-2">
               <label for="fecha-nacimiento">Fecha de Nac.</label>
@@ -557,7 +557,7 @@ nextBtns.forEach((btn) => {
     let apellido_persona = $("#apellido-persona").val();
     let cedula_persona = $("#cedula-persona").val();
     let red_social = $("#red-social").val();
-    let edad = $("#edad").val();
+    //let edad = $("#edad").val();
     let fecha_nacimiento = $("#fecha-nacimiento").val();
     let profesion = $("#profesion").val();
     let correo = $("#correo").val();
@@ -609,22 +609,22 @@ nextBtns.forEach((btn) => {
     
       } 
       
-      else if (edad == '') {
-        $("#apellido-persona").removeClass('is-invalid');
-        $("#edad").addClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR LA EDAD </strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
+      // else if (edad == '') {
+      //   $("#apellido-persona").removeClass('is-invalid');
+      //   $("#edad").addClass('is-invalid');
+      //   Swal.fire({
+      //       icon: "success",
+      //       type: 'error',
+      //       html: '<strong>DEBE INGRESAR LA EDAD </strong>',
+      //       toast: true,
+      //       position: "center",
+      //       showConfirmButton: false,
+      //       timer: 3500,
+      //   });
     
-      } 
+      // } 
       else if (fecha_nacimiento == '' ||fecha_nacimiento == 'NULL'  ) {
-        $("#edad").removeClass('is-invalid');
+        //$("#edad").removeClass('is-invalid');
         $("#fecha-nacimiento").addClass('is-invalid');
         Swal.fire({
             icon: "success",

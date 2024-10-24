@@ -1,6 +1,8 @@
 <?php
 $session = session();
 $userdata = $session->get();
+
+
 ?>
 
 
@@ -268,9 +270,27 @@ $userdata = $session->get();
           </li>
           <?php } ?>
           
+          <!-- ************************************************************************** -->
+
+          <?php if ($session->get('userrol') == 10 ) { ?>
+                    <li class="nav-item">
+                  
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_casos_remitidos" class="nav-link">
+                            <i class="nav-icon fas fa-folder" style='font-size:20px'></i>
+                            <p>Casos</p>
+                          </a>
+                      </li>   
+                      
+                  
+                    </li>
+                    <?php } ?>
+
+
+
          
            <!-- *********************MENU ADUDIENCIAS*************** -->
-          <?php if ($session->get('userrol') == 9 ) { ?>
+          <?php if ($session->get('acceso_audi') == 't' ) { ?>
        
           <li class="nav-item">
           <a href="#" class="nav-link" id=""><i class="nav-icon fas far fa-sun"></i>
@@ -384,27 +404,19 @@ $userdata = $session->get();
                               <p>Categorias</p>
                           </a>
                       </li>
+
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_Usuario_Areas_audiencias" class="nav-link">
+                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <p>Usuarios Areas</p>
+                          </a>
+                      </li>
                   
               </ul>
           </li>
           <?php } ?>
           <?php } ?>
-           <!-- ************************************************************************** -->
-
-          <?php if ($session->get('userrol') == 10 ) { ?>
-          <li class="nav-item">
-         
-            <li class="nav-item">
-                <a href="<?php echo base_url(); ?>/vista_casos_remitidos" class="nav-link">
-                  <i class="nav-icon fas fa-folder" style='font-size:20px'></i>
-                  <p>Casos</p>
-                </a>
-            </li>   
-             
-        
-          </li>
-          <?php } ?>
-
+          
 
 
           <li class="nav-item">

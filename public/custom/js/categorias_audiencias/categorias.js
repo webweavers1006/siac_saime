@@ -35,7 +35,7 @@ function listar_categorias_audiencias() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id=' + row.id + ' categoria="' + row.categoria + '"  departamento="' + row.id_departamento + '"> <i class="material-icons">create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id_condicion=' + row.id_condicion + ' id=' + row.id + ' categoria="' + row.categoria + '"  departamento="' + row.id_departamento + '"> <i class="material-icons">create</i></a>'
                    
                     
                 }
@@ -123,10 +123,21 @@ $('#listar_categorias').on('click', '.Editar', function(e) {
     var id = $(this).attr('id');
     var categoria = $(this).attr('categoria');
     var departamento = $(this).attr('departamento');
+    var id_condicion = $(this).attr('id_condicion');
+
+    if (id_condicion == 1) {
+        $('#id_condicion').attr('checked', 'checked');
+        $('#id_condicion').val(false);
+    }
+    else if (id_condicion == 2) {
+        $('#id_condicion').removeAttr('checked')
+        $('#id_condicion').val(true)
+    }
+
 
     $("#editar").modal("show");
     $('#editar').find('#editar-categoria').val(categoria);
-    $('#editar').find('#id-rol').val(id);
+    $('#editar').find('#id-categoria').val(id);
     $('#editar').find('#edit_id_departamento').val(departamento);
 
    
@@ -138,10 +149,24 @@ $(document).on('submit', "#edit-categoria", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     let id = $("#id-categoria").val();
+    
+    
+    let id_condicion = $("#id_condicion").is(':checked');
+    if (id_condicion) {
+        // El checkbox está marcado
+        id_condicion = 1;
+    } else {
+        // El checkbox no está marcado
+        id_condicion = 2;
+    }
+    
 
+
+ 
     let datos_audiencia = {
         "categoria": $('#editar-categoria').val(),
         "id_departamento": $('#edit_id_departamento').val(),
+        "id_condicion": id_condicion,
     };
 
     $.ajax({

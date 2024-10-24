@@ -159,7 +159,7 @@ $session = session();
                             </div>
                             <div class="col-lg-1 col-sm-1 col-md-1">
                               <label for="edad">Edad</label>
-                              <input type="text" class="form-control" onkeyup="mayus(this);" name="edad" id="edad" onkeypress="return valideKey(event);" autocomplete="off" required>
+                              <input type="text" disabled class="form-control" onkeyup="mayus(this);" name="edad" id="edad" onkeypress="return valideKey(event);" autocomplete="off" required>
                           </div>
                           
                           <div class="col-lg-2 col-sm-2 col-md-2">
