@@ -285,15 +285,17 @@ to {
               <label for="cedula-persona">Nº Cédula o Rif</label>
               <input type="text" class="form-control" onkeypress="return valideKey(event);"name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
           </div>
-         <div class="col-lg-1 col-sm-1 col-md-1">
+         
               <!-- <label for="edad">Edad</label> -->
               <input type="hidden" class="form-control" onkeypress="return valideKey(event);" name="edad" id="edad"  autocomplete="off" required>
-          </div> 
+         
           
-          <div class="col-lg-2 col-sm-2 col-md-2">
+          <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="fecha-nacimiento">Fecha de Nac.</label>
               <input class="form-control" type="date" name="fecha-nacimiento" id="fecha-nacimiento" required>
           </div>
+          
+          
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="apellido-persona">Profesión</label>
               <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>

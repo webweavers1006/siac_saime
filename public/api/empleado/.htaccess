@@ -1,0 +1,8 @@
+Options +FollowSymLinks
+
+RewriteEngine On
+#cualquier cosa que escriba según esta regla me va a mandar
+#para elarchivo datos.php y eso que escriba va a ser un valor
+#para la variable con el nombre var
+#RewriteRule ^([a-zA-Z0-9]*)$ datos.php?var=$1
+RewriteRule ^([a-zA-Z0-9]*)$ datos.php

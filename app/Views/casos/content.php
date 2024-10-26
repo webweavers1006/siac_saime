@@ -13,6 +13,9 @@ $session = session();
   }
 </style>
 
+<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/pantalla_casos.css">
+
+
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <div class="content-header">

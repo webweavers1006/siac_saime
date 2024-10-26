@@ -355,8 +355,6 @@ class Audiencias_Controler extends BaseController
 
 		
 		
-		
-		
 		////CRONOLOGIA
 		$url = "http://172.16.0.46:70/solicitudes/crono/".$id;
 		$ch = curl_init($url);

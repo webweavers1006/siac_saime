@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-sacale=1.0">
+<title>Este es el cliente</title>
+
+<body>
+     <h1 id="mititulo"></h1>
+     <h2 id="datos"></h2>
+     <script>
+	  fetch('http://localhost/myapi/api/datos.php')
+	  .then(datos=>datos.json())
+     .then(datos=>
+	  {
+	       console.log(datos.euro)
+	       document.getElementById('mititulo').innerHTML =
+		    "Consumiendo Data"
+	       document.getElementById('datos').innerHTML =
+	       'Dolar: '+datos.dolar+' - Euro: '+datos.euro
+	  })
+     </script>
+</body>
+</html>

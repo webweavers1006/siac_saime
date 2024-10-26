@@ -1,0 +1,191 @@
+<?php
+     header('Access-Control-Allow-Origin:  http://carnet.com');
+     ///header('Access-Control-Allow-Origin : http://localhost:8080');
+     header('Access-Control-Allow-Methods: GET');
+     ///header('Access-Control-Allow-Methods : GET');
+     header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+     //header("Access-Control-Allow-Credentials : false");
+     ////header("Access-Control-Allow-Methods : GET, POST, OPTIONS");
+     ////header("Access-Control-Allow-Headers : Origin, Content-Type, Accept");
+
+     $cedula="";
+     $apikey="";
+     $filtroAnd="";
+
+     if(isset($_GET['key']))
+     {
+	  $apiKey=$_GET['key'];
+	  
+	  //módulo de conexion a la BD
+	  require('Conexion_class.php');
+
+	  //Me conecto a la BD con las credenciales que están por allá
+	  $con = new Conexion_class();
+	  $conexion=$con->conectar();
+
+	  //Verifico si me pude conectar
+	  if(!isset($conexion))
+	  {
+	       //('Problemas en la conexión, favor verificar  ...');
+	       //No se conectó;
+	       $respuesta=
+	       [
+		    "cedula"   =>'777',
+	       ];
+	  }
+	  else
+	  {
+	       //Se conectó;
+	       $sqlConsulta ="SELECT key FROM tabkey;";
+	       $Rs=$con->registros($sqlConsulta);
+	       if(!$Rs)
+	       {
+		    //No se conectó;
+		    $respuesta=
+		    [
+			 "cedula"   =>'555',
+		    ];
+	       }
+	       else
+	       {
+		    //Hay registros
+		    while($campo=$con->arrCamposAsociativos($Rs))
+		    {
+			 $respuesta=["key"   =>$campo['key']];
+		    }
+		    //Si lo que le estoy pasando es igual al contenido de la BD
+		    if($apiKey===$respuesta["key"])
+		    {
+			 //Pregunto por la CI:
+			 if(!isset($_GET['cedula']))
+			 {
+			      $filtroAnd="";
+			 }
+			 else
+			 {
+			      $cedula=$_GET['cedula'];
+			      $filtroAnd .=" AND p.cedper::int IN ($cedula)";
+			 }
+			 //Armo la Consulta:
+			 $sqlConsulta ="SELECT ";
+			 $sqlConsulta .="DISTINCT(p.nacper||'-'||trim(to_char(p.cedper::bigint,'999G999G999G999'))) as cedula_cnt ";
+			 $sqlConsulta .=",case ";
+			 $sqlConsulta .="WHEN position(' ' in p.nomper) != 0 then ";
+			 $sqlConsulta .="substring(p.nomper from 1 for position(' ' in p.nomper)+1) ";
+			 $sqlConsulta .="else ";
+			 $sqlConsulta .="p.nomper ";
+			 $sqlConsulta .="end as nombres_cnt ";
+			 $sqlConsulta .=",case ";
+			 $sqlConsulta .="WHEN position(' ' in p.apeper) != 0 then ";
+			 $sqlConsulta .="substring(p.apeper from 1 for position(' ' in p.apeper)+1) ";
+			 $sqlConsulta .="else ";
+			 $sqlConsulta .="p.apeper ";
+			 $sqlConsulta .="end as apellidos_cnt ";
+			 $sqlConsulta .=",case ";
+			 $sqlConsulta .="WHEN pn.codasicar::int=0 THEN ";
+			 $sqlConsulta .="c.descar ";
+			 $sqlConsulta .="else ";
+			 $sqlConsulta .="crac.denasicar ";
+			 $sqlConsulta .="end as cargo_cnt ";
+
+			 $sqlConsulta .=",trim( ua.desuniadm) as ubicacionadm_cnt ";
+			 $sqlConsulta .=",to_char(pn.fecingper, 'dd/mm/YYYY') as fechaingreso_cnt ";
+			 $sqlConsulta .=",CASE ";
+			 $sqlConsulta .="WHEN pn.staper::int=1 THEN ";
+			 $sqlConsulta .="'Activo' ";
+			 $sqlConsulta .="WHEN pn.staper::int=2 THEN ";
+			 $sqlConsulta .="'De Vacaciones' ";
+			 $sqlConsulta .="END AS estatus_cnt ";
+			 $sqlConsulta .=", p.codper ";
+			 $sqlConsulta .=", p.nacper as nacionalidad ";
+			 $sqlConsulta .=", p.cedper::int as cedula ";
+			 $sqlConsulta .=", p.nomper as nombres ";
+			 $sqlConsulta .=", p.apeper as apellidos ";
+			 $sqlConsulta .=", pn.fecingper as fechaingreso ";
+			 $sqlConsulta .=", ua.desuniadm ";
+			 $sqlConsulta .=", pn.staper ";
+			 $sqlConsulta .="FROM ";
+			 $sqlConsulta .="public.sno_personal AS p ";
+			 $sqlConsulta .="JOIN ";
+			 $sqlConsulta .="sno_personalnomina AS pn ON (p.codper=pn.codper) ";
+			 $sqlConsulta .="JOIN ";
+			 $sqlConsulta .="(SELECT DISTINCT codcar, codnom, descar FROM public.sno_cargo ORDER BY codcar) ";
+			 $sqlConsulta .="AS c ON pn.codcar=c.codcar AND c.codnom=pn.codnom ";
+			 $sqlConsulta .="JOIN ";
+			 $sqlConsulta .="(SELECT DISTINCT codasicar, codnom, denasicar FROM public.sno_asignacioncargo ORDER BY codasicar) ";
+			 $sqlConsulta .="AS crac ON pn.codasicar=crac.codasicar AND crac.codnom=pn.codnom ";
+			 $sqlConsulta .="JOIN ";
+			 $sqlConsulta .="(SELECT depuniadm, prouniadm, desuniadm FROM public.sno_unidadadmin order by depuniadm, prouniadm) ";
+			 $sqlConsulta .="AS ua ON pn.depuniadm = ua.depuniadm AND pn.prouniadm=ua.prouniadm ";
+			 $sqlConsulta .="WHERE ";
+			 $sqlConsulta .="pn.staper::int NOT IN (3,4) ";
+
+			 if($filtroAnd!="")
+			 {
+			      $sqlConsulta .="$filtroAnd ";
+			 }
+			 $sqlConsulta .="Order By ";
+			 $sqlConsulta .="p.cedper::int ";
+			 //die($sqlConsulta);
+
+			 //$Rs=$con->registros($conexion,$sqlConsulta);
+			 //Obtengo los registros de la consulta
+			 $Rs=$con->registros($sqlConsulta);
+
+			 //Verifico si hay registros
+			 if(!$Rs)
+			 {
+			      //No hay registros
+			      ////$respuesta=["nombres"=>"0"];
+			      //echo('No se recibió clave alguna');
+			      $respuesta=
+			      [
+				   "cedula"   =>'000',
+			      ];
+			 }
+			 else
+			 {
+			      //Hay registros
+			      //Esta es la Respuesta de la API
+			      //Aqui guardo todos los registros de la consulta
+			      //$respuesta=[];
+
+			      //while($registro=pg_fetch_assoc($Rs))
+			      //Obtengo un arreglo asociativo con los registros de la consulta 
+			      while($campo=$con->arrCamposAsociativos($Rs))
+			      {
+				   $respuesta=
+					[
+					     "cedula"   =>$campo['cedula_cnt'],
+					     "nombres"  =>$campo['nombres_cnt'] . ".", 
+					     "apellidos"=>$campo['apellidos_cnt'] . ".",
+					     "cargo"    =>$campo['cargo_cnt'],
+					     "ubicacion"=>$campo['ubicacionadm_cnt'],
+					];
+			      }
+			 }
+			 //echo json_encode($respuesta);
+		    }
+		    else
+		    {
+			 //echo('Las claves no son iguales ...<br>');
+			 $respuesta=
+			 [
+			      "cedula"   =>'888',
+			 ];
+		    }
+	       }
+	  }
+	  //echo $respuesta["key"];
+     }
+     else
+     {
+	  //echo('No se recibió clave alguna');
+	  $respuesta=
+	  [
+	       "cedula"   =>'999',
+	  ];
+     }
+     echo json_encode($respuesta);
+?>

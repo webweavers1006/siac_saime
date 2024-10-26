@@ -280,7 +280,7 @@ const data = {
           },
            // CASOS DENUCIA
            {
-            label: 'Talleres',
+            label: 'Formacíon',
             data: [<?php echo $array_totalcasos_talleres; ?>],
             backgroundColor: 'rgba(255, 215, 0, 0.3)'
             // Color de fondo de las barras para el segundo conjunto de datos

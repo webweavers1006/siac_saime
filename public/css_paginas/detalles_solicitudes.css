@@ -170,7 +170,7 @@ border-radius: 20px;
 @media (min-width: 1920px) {
   .card_lateral {
     top: 0%;
-    left: 60%;
+    left: 68%;
     border-radius: 20px;
     width: 30%;
   }
@@ -181,7 +181,7 @@ border-radius: 20px;
 @media (min-width: 900px) and (max-width: 1919px) {
   .card_lateral {
     top: 0%;
-    left: 63%;
+    left: 68%;
     border-radius: 20px;
     width: 100%;
   }
@@ -197,6 +197,8 @@ border-radius: 20px;
   }
 }
 
+
+
 /* Extra small screens (xs) */
 @media (max-width: 767px) {
   .audiencia {
@@ -211,8 +213,8 @@ border-radius: 20px;
 @media (min-width: 767px) {
   .audiencia {
     position: relative;
-    left: 0%;
-    width: 88%;
+    left: -0%;
+    width: 91%;
     margin: 20px;
   }
 }
@@ -221,8 +223,8 @@ border-radius: 20px;
 @media (min-width: 1920px)  {
   .audiencia {
     position: relative;
-    left: 0%;
-    width: 100%;
+    left: 2%;
+    width: 88%;
     margin: 20px;
   }
 }

@@ -223,29 +223,19 @@ $(document).on('submit', "#edit-permisos", function(e) {
     });
     let id_rol=$('#id_rol').val();
 
-    let permisos_agregados = 
+    let permisos = 
     {
         id_rol: id_rol,
         permisos_seleccionados: selectedIds,
-        
-    };
-
-    let permisos_borrados = 
-    {
-        id_rol: id_rol,
         permisos_no_seleccionados: unselectedIds
         
     };
 
-
-    console.log(permisos_agregados);
-    console.log(permisos_borrados);
-  
     // AGREGAR PERMISOS
     $.ajax({
         type: "POST",
         url: "http://172.16.0.46:70/permisos_por_rol" ,
-        data: JSON.stringify(permisos_agregados), // Convertir objeto a cadena JSON
+        data: JSON.stringify(permisos), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         headers: {
@@ -263,35 +253,33 @@ $(document).on('submit', "#edit-permisos", function(e) {
             console.error(xhr.responseText);
         }
     });
-
-     // ELIMINAR  PERMISOS
-     $.ajax({
-        type: "DELETE",
-        url: "http://172.16.0.46:70/permisos_por_rol" ,
-        data: JSON.stringify(permisos_borrados), // Convertir objeto a cadena JSON
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        headers: {
-            'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
-        },
-        success: function(response) {
-            Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
-
-            setTimeout(function() {
-                window.location = '/vista_Roles_audiencias';
-            }, 1500);
-        },
-        error: function(xhr, status, error) {
-            Swal.fire('Error!', "Error al actualizar el registro", "error");
-            console.error(xhr.responseText);
-        }
-    });
-
-  
 
 
 });
 
+
+//  // ELIMINAR  PERMISOS
+//  $.ajax({
+//     type: "DELETE",
+//     url: "http://172.16.0.46:70/permisos_por_rol" ,
+//     data: JSON.stringify(permisos_borrados), // Convertir objeto a cadena JSON
+//     contentType: "application/json; charset=utf-8",
+//     dataType: "json",
+//     headers: {
+//         'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+//     },
+//     success: function(response) {
+//         Swal.fire('Exito!', "REGISTRO ACTUALIZADO", "success");
+
+//         setTimeout(function() {
+//             window.location = '/vista_Roles_audiencias';
+//         }, 1500);
+//     },
+//     error: function(xhr, status, error) {
+//         Swal.fire('Error!', "Error al actualizar el registro", "error");
+//         console.error(xhr.responseText);
+//     }
+// });
 
 
     // Mostrar en consola los IDs seleccionados y no seleccionados

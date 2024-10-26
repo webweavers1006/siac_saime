@@ -16,7 +16,7 @@ $userdata = $session->get();
 <!-- **************************************CABESERA************************************ -->
       <div class="row justify-content-center">
         <div class="col-lg-12 custom-col-width">
-          <div class="card card_table audiencia" style="max-width: 1350px; margin: 20px auto;">
+          <div class="card card_table audiencia" style="max-width: 1850px; margin: 20px auto;">
             <div class="d-flex align-items-center">
               <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
               <div class="ml-2">
@@ -81,10 +81,10 @@ $userdata = $session->get();
 <section  >
   <div class="row justify-content-center">
     <div class="col-lg-12 custom-col-width">
-    <div class="card card_table audiencia" style="max-width: 1350px; margin: 20px auto;">
+    <div class="card card_table audiencia" style="max-width: 1850px; margin: 20px auto;">
         <div class="row">
           <div class="col-lg-6" style="display: inline-block; width: 49%;">
-            <h2>SOLICITUD DE CITA</h2>
+            <h4>SOLICITUD DE CITA</h4>
             <table class="table table-striped ant-alert-info">
               <thead>
                 <tr>
@@ -105,7 +105,7 @@ $userdata = $session->get();
             </table>
           </div>
           <div class="col-lg-6" style="display: inline-block; width: 49%;">
-            <h2>OBSERVACION INTERNA</h2>
+            <h4>OBSERVACION INTERNA</h4>
             <table class="table table-striped ant-alert-success">
               <thead>
                 <tr>
@@ -188,13 +188,13 @@ $userdata = $session->get();
 <!-- ***********************INFORMACION EMPRESA O BUFETE **************************** -->
       <section class="section" style="margin-left: 63px;">
         <div class="row">
-          <div class="col-lg-7">
+          <div class="col-lg-8">
             <div class="card card_table">
               <div class="card-body p-3">
                 <div class="box">
                   <div class="ant-descriptions css-2i2tap">
                     <div class="ant-descriptions-header">
-                      <div class="has-text-weight-semibold">Informacion</div>
+                     <h4><div class="has-text-weight-semibold">Informacion</div></h4> 
                     </div>
                     <div class="ant-descriptions-view">
                       <table class="my-table w-100">
@@ -215,6 +215,10 @@ $userdata = $session->get();
                             <td style="font-size: 13px; font-weight: bold;"><strong>Nro Registro:</strong></td>
                             <td><?php echo $info_empresa_y_titulares['registro']?? '';  ?></td>
                           </tr>
+                          <tr>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Tramitante:</strong></td>
+                            <td><?php echo $info_empresa_y_titulares['tramitante']?? '';  ?></td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
@@ -227,37 +231,70 @@ $userdata = $session->get();
  <!-- *********************************************************************************** --> 
 
  <!-- ***********************INFORMACION TITULARES **************************** -->
-
-    <div class="row">
-    <div class="col-lg-7">
+ <div class="row">
+    <div class="col-lg-8">
         <div class="card card_table">
             <div class="card-body p-3">
                 <div class="box">
                     <div class="ant-descriptions css-2i2tap">
                         <div class="ant-descriptions-header">
-                            <div   class="has-text-weight-semibold">Información Titulares</div>
+                            <h4><div class="has-text-weight-semibold">Información Titulares</div></h4>
                         </div>
                         <div class="ant-descriptions-view">
                             <table class="my-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 13px; font-weight: bold;">Nombre Titular</th>
+                                        <th style="font-size: 13px; font-weight: bold;">Identificación Titular</th>
+                                        <th style="font-size: 13px; font-weight: bold;">Correo Titular</th>
+                                        <th style="font-size: 13px; font-weight: bold;">Teléfono Titular</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    <tr>
-                                        <td  style="font-size: 13px; font-weight: bold;"><strong>Nombre Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares'][7]?? ''; ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td  style="font-size: 13px; font-weight: bold;"><strong>Identificación Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares']["identificacion"]?? '';  ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td  style="font-size: 13px; font-weight: bold;"><strong>Correo Titular:</strong></td>
-                                        <td><?php echo $info_empresa_y_titulares['titulares']["email"]?? '';  ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td  style="font-size: 13px; font-weight: bold;"><strong>Teléfono Titular:</strong></td>
-                                        <td>
-                                          <?php echo (isset($info_empresa_y_titulares['titulares']["telefono1"]) || isset($info_empresa_y_titulares['titulares']["telefono2"])) ? $info_empresa_y_titulares['titulares']["telefono1"] . '&nbsp;' . $info_empresa_y_titulares['titulares']["telefono2"] : ''; ?>
-                                      </td>
-                                    </tr>
+                                    <?php 
+                                    // Verifica si hay titulares en la estructura de datos
+                                    if (isset($info_empresa_y_titulares['titulares']) && !empty($info_empresa_y_titulares['titulares'])): 
+                                        // Asumimos que la información del titular está en un solo array
+                                        // Extraemos la información del primer titular
+                                        $titular = $info_empresa_y_titulares['titulares'][0]; // Acceder al primer titular
+                                    ?>
+                                        <tr>
+                                            <td style="font-weight: normal;"><?php echo htmlspecialchars($titular['nombre'] ?? ''); ?></td>
+                                            <td style="font-weight: normal;">
+                                              <?php 
+                                              // Determinar el prefijo basado en la índole
+                                              $prefijo = '';
+                                              if (isset($titular['indole'])) {
+                                                  if ($titular['indole'] === 'E') {
+                                                      $prefijo = 'Empresa extranjera: ';
+                                                  } elseif ($titular['indole'] === 'V') {
+                                                      $prefijo = 'Empresa Venezolana: ';
+                                                  }
+                                              }
+                                              // Mostrar la identificación con el prefijo
+                                              echo htmlspecialchars($prefijo . ($titular['identificacion'] ?? ''));
+                                              ?>
+                                          </td>
+                                            <td style="font-weight: normal;"><?php echo htmlspecialchars($titular['email'] ?? ''); ?></td>
+                                            <td style="font-weight: normal;">
+                                                <?php 
+                                                // Mostrar los teléfonos, si están disponibles
+                                                $telefonos = [];
+                                                if (!empty(trim($titular['telefono1'] ?? ''))) {
+                                                    $telefonos[] = htmlspecialchars(trim($titular['telefono1']));
+                                                }
+                                                if (!empty(trim($titular['telefono2'] ?? ''))) {
+                                                    $telefonos[] = htmlspecialchars(trim($titular['telefono2']));
+                                                }
+                                                echo implode('&nbsp;', $telefonos);
+                                                ?>
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="4">No hay titulares disponibles.</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -268,6 +305,54 @@ $userdata = $session->get();
     </div>
 </div>
  <!-- *********************************************************************************** --> 
+
+
+
+
+<!-- ***********************INFORMACION DE AGENTES **************************** -->
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card_table">
+            <div class="card-body p-3">
+                <div class="box">
+                    <div class="ant-descriptions css-2i2tap">
+                        <div class="ant-descriptions-header">
+                          <h4><div class="has-text-weight-semibold">Información Agentes</div></h4>  
+                        </div>
+                        <div class="ant-descriptions-view">
+                            <?php if (isset($info_empresa_y_titulares['agentes']) && is_array($info_empresa_y_titulares['agentes']) && !empty($info_empresa_y_titulares['agentes'])): ?>
+                                <table class="my-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th style="font-size: 13px;">Nombre</th>
+                                            <th style="font-size: 13px;">Número de Agente</th>
+                                            <th style="font-size: 13px;">Poder</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($info_empresa_y_titulares['agentes'] as $agente): ?>
+                                            <tr>
+                                                <td style="font-weight: normal;"><?php echo htmlspecialchars($agente['nombre'] ?? ''); ?></td>
+                                                <td style="font-weight: normal;"><?php echo htmlspecialchars($agente['agente'] ?? ''); ?></td>
+                                                <td style="font-weight: normal;"><?php echo htmlspecialchars($agente['poder'] ?? ''); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            <?php else: ?>
+                                <p>No hay agentes disponibles.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <style>
 .my-table {
@@ -306,7 +391,7 @@ foreach ($cronologia["solicitudes"] as $dato) {
 
  <!-- ***********************LINEA DE TIEMPO **************************** -->
  <div class="row">
-    <div class="col-lg-7">
+    <div class="col-lg-8">
         <div class="card card_table">
  <?php
 
