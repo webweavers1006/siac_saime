@@ -5,6 +5,7 @@ $(function() {
 
  
     listado_Audiencias();
+   
 });
 
 /*
@@ -156,9 +157,18 @@ function listado_Audiencias() {
             orderable: true,
             data: null,
             render: function(data, type, row) {
-              return '<a href="javascript:;" class="btn btn-xs  Detalles" style=" font-size:1px" data-toggle="tooltip" title="Detalles"  id=' + row.id + ' > <i class="material-icons " >search</i></a>'
+                return `
+                    <div style="display: flex; align-items: center;">
+                        <a href="javascript:;" class="btn btn-xs Detalles" style="font-size: 12px; margin-right: 5px;" data-toggle="tooltip" title="Detalles" id="${row.id}">
+                            <i class="material-icons">search</i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-xs Bufetes" style="font-size: 12px;" data-toggle="tooltip" title="Bufetes" id="${row.id}">
+                            <i class="material-icons">created</i>
+                        </a>
+                    </div>
+                `;
             }
-          },
+        }
         ],
         language: {
           sProcessing: "Procesando...",
@@ -205,6 +215,64 @@ $('#listar_audencias').on('click', '.Detalles', function(e) {
 
 
 
+// MÉTODO PARA AGREGAR BUFETE A LA AUDIENCIA
+$('#listar_audencias').on('click', '.Bufetes', function(e) {
+  e.preventDefault();
+  
+  const id_audiencia = $(this).attr('id');
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = "http://172.16.0.46:70/usuarios_bufetes";
+
+  $.ajax({
+      url: url,
+      method: "GET",
+      dataType: "JSON",
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}` 
+      },
+      beforeSend: function() {
+       
+      },
+      success: function(data) {
+          const bufetes = data.usuariosbufetes || []; 
+          let bufeteEncontrado = false;
+          let id_bufete = ''; 
+          let id_usuario_bufete = ''; 
+          $("#asignar_bufete").modal("show");
+          $('#asignar_bufete').find('#id_caso').val(id_audiencia); 
+          // Verificar si alguno de los bufetes tiene el id_audiencia correspondiente
+          bufetes.forEach(function(item) {
+              if (item.id_audiencia === id_audiencia) {
+                  bufeteEncontrado = true;
+                  id_bufete = item.id_bufete;
+                  id_usuario_bufete = item.id; // Guardar el id_bufete correspondiente
+              }
+          });
+
+          $('#asignar_bufete').find('#id_usuario_bufete').val(id_usuario_bufete);
+
+          // Mostrar/ocultar elementos según la coincidencia
+          if (bufeteEncontrado) {
+              Listar_bufetes(e, id_bufete); // Pasar solo el id_bufete encontrado
+              $("#guardar").hide(); // Ocultar el botón de guardar
+              $("#actualizar").show(); // Mostrar el botón de actualizar
+          } else {
+              Listar_bufetes(); // Llamar sin id_bufete si no se encontró
+              $("#guardar").show(); // Mostrar el botón de guardar
+              $("#actualizar").hide(); // Ocultar el botón de actualizar
+          }
+      },
+      error: function(xhr, status, errorThrown) {
+          alert(`Error ${xhr.status}: ${errorThrown}`);
+      },
+  });
+});
+
+
+
+
+
+
 // //EVENTO PARA AGREGAR UNA DIRECCION
 $(document).on('click', "#btn_agregar", function(e) {
     e.preventDefault();
@@ -212,3 +280,127 @@ $(document).on('click', "#btn_agregar", function(e) {
     window.location = '/vista_agregar_requerimientos/';
 
 })
+function Listar_bufetes(e, id_bufete) {
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = "http://172.16.0.46:70/bufetes";
+
+  $.ajax({
+      url: url,
+      method: "GET",
+      dataType: "JSON",
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}`
+      },
+      beforeSend: function() {
+          // Puedes agregar un loader o alguna acción antes de enviar la solicitud
+      },
+      success: function(data) {
+          const bufetes = data.bufetes || []; // Asegúrate de que bufetes sea un arreglo
+
+          $("#id_bufete").empty(); // Limpiar el combo antes de llenarlo
+          $("#id_bufete").append(
+              "<option value='0' selected disabled>Seleccione</option>"
+          );
+
+          if (bufetes.length > 0) {
+              $.each(bufetes, function(i, item) {
+                  // Asegúrate de que id_bufete y item.id sean del mismo tipo
+                  const selected = (id_bufete && String(item.id) === String(id_bufete)) ? " selected" : "";
+                  $("#id_bufete").append(
+                      `<option value="${item.id}"${selected}>${item.nombre_bufete}</option>`
+                  );
+              });
+          }
+      },
+      error: function(xhr, status, errorThrown) {
+          alert(`Error ${xhr.status}: ${errorThrown}`);
+      },
+  });
+}
+
+
+
+$('#guardar').on('click', function() {
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  let id_audiencia = $('#id_caso').val();
+  let id_bufete = $('#id_bufete').val(); 
+
+  if (!id_bufete || id_bufete === 'null') 
+  {
+    alert('Debe seleccionar un Bufete');
+  }
+  else
+  {
+    let datos_audiencia = {
+      "id_audiencia": id_audiencia,
+      "id_bufete": id_bufete,
+    };
+
+    $.ajax({
+      type: "POST",
+      url: `http://172.16.0.46:70/usuarios_bufetes`,
+      data: JSON.stringify(datos_audiencia),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}`
+      },
+      success: function(response) {
+          Swal.fire('Éxito!', "Registro Actualizado", "success");
+          setTimeout(function() {
+              window.location = '/vista_audiencias';
+          }, 1500);
+      },
+      error: function(xhr, status, error) {
+          Swal.fire('Error!', "Error al Insertar el registro", "error");
+          console.error(xhr.responseText);
+      }
+    });
+  }
+});
+
+$('#actualizar').on('click', function() {
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const id_audiencia = $('#id_caso').val();
+  const id_bufete = $('#id_bufete').val(); 
+  const id_usuario_bufete = $('#id_usuario_bufete').val(); 
+
+
+  if (!id_bufete || id_bufete === 'null') {
+      alert('Debe seleccionar un Bufete');
+      return;
+  }
+
+  // Preparar los datos para la actualización
+  const datos_audiencia = {
+      "id_audiencia": id_audiencia,
+      "id_bufete": id_bufete,
+  };
+
+ // console.log(JSON.stringify(datos_audiencia));
+  // Realizar la solicitud AJAX para actualizar el registro
+  $.ajax({
+      type: "PUT",
+      url: `http://172.16.0.46:70/usuarios_bufetes/${id_usuario_bufete}`,
+      data: JSON.stringify(datos_audiencia),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}`
+      },
+      success: function(response) {
+          Swal.fire('Éxito!', "Registro Actualizado", "success");
+          setTimeout(function() {
+              window.location = '/vista_audiencias';
+          }, 1500);
+      },
+      error: function(xhr, status, error) {
+          Swal.fire('Error!', "Error al actualizar el registro", "error");
+          console.error(xhr.responseText);
+      }
+   });
+});
+     
+  
+
+  

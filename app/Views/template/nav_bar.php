@@ -411,6 +411,13 @@ $userdata = $session->get();
                               <p>Usuarios Areas</p>
                           </a>
                       </li>
+
+                      <li class="nav-item">
+                          <a href="<?php echo base_url(); ?>/vista_Bufetes_audiencias" class="nav-link">
+                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <p>Bufetes</p>
+                          </a>
+                      </li>
                   
               </ul>
           </li>

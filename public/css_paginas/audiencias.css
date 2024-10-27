@@ -16,7 +16,20 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.modal {
+  position: fixed;
+  left: 50%;
+}
 
+
+
+.modal-header {
+  border: 0px;
+}
+
+.modal-footer {
+  border: 0px;
+}
 
 
 .rounded-pill {

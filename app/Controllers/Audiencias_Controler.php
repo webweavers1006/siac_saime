@@ -106,6 +106,7 @@ class Audiencias_Controler extends BaseController
 
 	public function detalles_requerimientos($idcaso)
 	{
+		
 		if ($this->session->get('logged')) {
 			$session = session();
 			$token = $session->get('token');
@@ -200,7 +201,7 @@ class Audiencias_Controler extends BaseController
 		}
 
 			// ************INFORMACION DE EMPRESA OBUFECTE***************************
-			$url = "http://172.16.0.46:70/usuarios_bufetes/3";
+			$url = "http://172.16.0.46:70/usuarios_bufetes/".$idcaso;
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(

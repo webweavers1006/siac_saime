@@ -231,6 +231,7 @@ $(document).on('submit', "#edit-permisos", function(e) {
         
     };
 
+    
     // AGREGAR PERMISOS
     $.ajax({
         type: "POST",

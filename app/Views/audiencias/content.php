@@ -56,7 +56,7 @@ $userdata = $session->get();
                           <td class="text-center" style="width: 8%;">Estatus del caso</td>
                           <td class="text-center" style="width: 3%;">Area</td>
                           <td class="text-center" style="width: 8%;">Usuario</td>
-                          <td class="text-center" style="width: 1%;">Acciones</td>
+                          <td class="text-center" style="width: 5%;">Acciones</td>
                         </tr>
                       </thead>
                       <tbody id="listar_audencias">
@@ -112,6 +112,45 @@ $userdata = $session->get();
   </div>
 </div>
 
+
+
+      
+<!-- Modal para añadir una audiencia a un bufete -->
+<div class="modal fade" id="asignar_bufete">
+        <div class="modal-dialog  modal-dialog-centered  modal-md">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Usuarios Areas</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+           
+              <div class="modal-body">
+              <input type="hidden" id="id_caso" autocomplete="off">
+              <input type="hidden" id="id_usuario_bufete" autocomplete="off">
+              
+              <div class="form-group">
+                  <label for="user-name">Bufete</label>
+                  <select name="id_bufete" id="id_bufete">
+                          <option value="0" selected>---Seleccione ---</option>
+                  </select>
+              </div>
+
+            
+              </div>
+              <div class="modal-footer ">
+                <button class="btn btn-sm  btn-light" type="reset">Limpiar</button>
+                <button class="btn btn-sm  btn-primary r" id="guardar" type="button">Guardar</button>
+                <button class="btn btn-sm  btn-primary "id="actualizar"  type="button" style="display: none;">Actualizar</button>
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
+              </div>
+         
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
 
 
 
