@@ -151,7 +151,7 @@
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div style="display: none;">
                     <label>Responsable</label>
                     <div class="control">
                       <div class="select">

@@ -61,9 +61,10 @@ $('#actualizar_audiencias').on('click', function() {
 });
 
 
-let id_area = $("#id_area").val();
+let id_area = $("#id_area").val().trim();
 const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
 const url = `http://172.16.0.46:70/usuarios_areas`;
+
 // Realiza la solicitud AJAX
 $.ajax({
     url: url,
@@ -76,14 +77,18 @@ $.ajax({
         // Puedes agregar un loader aquí si lo deseas
     },
     success: function(response) {
+        console.log(response);
         // Asumimos que la respuesta es un objeto con una propiedad 'usuariosareas'
         const usuarios = response.usuariosareas;
-        // Filtrar usuarios que son directores
-        const directores = usuarios.filter(usuario => usuario.director);
+
+        // Filtrar usuarios que son directores y que coinciden con el id_area
+        const directores = usuarios.filter(usuario => usuario.director && usuario.id_area === id_area);
+        
         // Obtener el elemento select donde se agregarán los usuarios
         const select = $('#id_trabajador');
         // Limpiar el select antes de agregar nuevas opciones
         select.empty();
+        
         // Agregar opciones al select
         directores.forEach(director => {
             select.append($('<option>', {
