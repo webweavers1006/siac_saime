@@ -387,38 +387,38 @@ $userdata = $session->get();
                  
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Roles_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <i class="nav-icon fas fa-list-alt" style="font-size:20px"></i>
                               <p>Roles</p>
                           </a>
                       </li>
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Permisos_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <i class="nav-icon fas fa-user-lock" style="font-size:20px"></i>
                               <p>Permisos</p>
                           </a>
                       </li>
 
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Categorias_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
                               <p>Categorias</p>
                           </a>
                       </li>
 
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Usuario_Areas_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <i class="nav-icon fas fa-user" style="font-size:20px"></i>
                               <p>Usuarios Areas</p>
                           </a>
                       </li>
 
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Bufetes_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                              <i class="nav-icon fas fa-briefcase" style="font-size:24px;"></i>
                               <p>Bufetes</p>
                           </a>
                       </li>
-                  
+                                        
               </ul>
           </li>
           <?php } ?>

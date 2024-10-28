@@ -6,6 +6,7 @@ $userdata = $session->get();
 
 <!-- Content Wrapper. Contains page content -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/detalles_solicitudes.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/flatpickr.min.css">
 <!-- Contenedor principal -->
 <div class="content-wrapper">
   <main class="content">

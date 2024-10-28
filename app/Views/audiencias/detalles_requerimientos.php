@@ -58,11 +58,11 @@ $userdata = $session->get();
           <div class="col-lg-8">
             <div class="card card_table">
               <div class="card-body p-3">
-                <h5 class="ant-descriptions-title" style="font-weight: bold;">Informacion Empresa o Bufete</h5>
+                <h5 class="ant-descriptions-title" style="font-weight: bold;">Informacion  Bufete</h5>
                 <table class="my-table w-100">
                         <tbody>
                           <tr>
-                            <td style="font-size: 13px; font-weight: bold;"><strong>Nombre Empresa o Bufete:</strong></td>
+                            <td style="font-size: 13px; font-weight: bold;"><strong>Nombre  Bufete:</strong></td>
                             <td><?php echo $info_emp_buf['bufete'] ?? ''; ?></td>
                           </tr>
                           <tr>

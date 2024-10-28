@@ -156,9 +156,10 @@
                     <div class="control">
                       <div class="select">
                       <select name="id_trabajador" id="id_trabajador">
-                          <option value="0" <?php echo ($datos2['id_trabajador'] == 0) ? 'selected' : ''; ?>>---Seleccione un responsable---</option>
-                          <option value="38" <?php echo ($datos2['id_trabajador'] == 38) ? 'selected' : ''; ?>>DIRECTOR PATENTES</option>
-                          <option value="35" <?php echo ($datos2['id_trabajador'] == 35) ? 'selected' : ''; ?>>DIRECTOR MARCAS</option>
+                      <option value="0" selected>---Seleccione---</option>
+                          <!-- <option value="0" <php echo ($datos2['id_trabajador'] == 0) ? 'selected' : ''; ?>>---Seleccione un responsable---</option>
+                          <option value="38" <php echo ($datos2['id_trabajador'] == 38) ? 'selected' : ''; ?>>DIRECTOR PATENTES</option>
+                          <option value="35" <php echo ($datos2['id_trabajador'] == 35) ? 'selected' : ''; ?>>DIRECTOR MARCAS</option> -->
                       </select>
                       </div>
                     </div>

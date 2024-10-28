@@ -119,6 +119,8 @@ class Audiencias_Controler extends BaseController
 			]);
 		// Realiza la solicitud y decodifica la respuesta JSON
 		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+
+
 		$responsable = json_decode(file_get_contents("http://172.16.0.46:70/usuarios_areas", false, $contexto), true);
 		
 		//********************************************************************
