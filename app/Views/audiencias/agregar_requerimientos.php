@@ -96,19 +96,19 @@
                           <option value="0">---Seleccione un estado---</option>
                         </select>
                           <script>
-                          document.getElementById('pais-select').onchange = function() {
-                            var paisId = this.value;
-                            var paisName = this.options[this.selectedIndex].text;
-                            if (paisName.toLowerCase() === 'venezuela') {
-                              <?php
-                              foreach ($estados['estados_paisess'] as $estado) {
-                                  echo "document.getElementById('estado-select').innerHTML += '<option value=\"{$estado['id']}\">{$estado['estado_pais']}</option>';";
-                              }
-                              ?>
-                            } else {
-                              document.getElementById('estado-select').innerHTML = '<option value="0">---Seleccione un estado---</option>';
-                            }
-                          };
+                              document.getElementById('pais-select').onchange = function() {
+                                var paisId = this.value;
+                                var paisName = this.options[this.selectedIndex].text;
+                                if (paisName.toLowerCase() === 'venezuela') {
+                                  <?php
+                                  foreach ($estados['estados_paisess'] as $estado) {
+                                      echo "document.getElementById('estado-select').innerHTML += '<option value=\"{$estado['id']}\">{$estado['estado_pais']}</option>';";
+                                  }
+                                  ?>
+                                } else {
+                                  document.getElementById('estado-select').innerHTML = '<option value="0">---Seleccione un estado---</option>';
+                                }
+                              };
                           </script>
 
                         </div>
@@ -116,6 +116,45 @@
                     </div>
                   </div>
                 </div>
+
+
+
+                <!-- Fila 3 -->
+                <div class="row">
+                  <div class="col-lg-5 col-sm-5 col-md-5 mx-auto">
+                    <div class="field">
+                      <label class="label float-left">Municipio</label>
+                      <div class="control w-100">
+                        <div class="select w-100">
+                        <select name="id_pais" class="w-100" id="municipio-select">
+                        <option value="0">---Seleccione---</option>
+                        
+                        </select>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-1"></div>
+                  <div class="col-lg-5 col-sm-5 col-md-5 mx-auto">
+                    <div class="field">
+                      <label class="label float-left">Parroquia</label>
+                      <div class="control w-100">
+                        <div class="select w-100"> 
+                        <select name="id_estado" class="w-100" id="parroquia-select">
+                          <option value="0">---Seleccione---</option>
+                        </select>
+                         
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
               </div>
             </div>
           </div>

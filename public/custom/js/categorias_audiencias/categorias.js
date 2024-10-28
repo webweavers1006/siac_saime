@@ -35,7 +35,7 @@ function listar_categorias_audiencias() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id_condicion=' + row.id_condicion + ' id=' + row.id + ' categoria="' + row.categoria + '"  departamento="' + row.id_departamento + '"> <i class="material-icons">create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar"  id_cierre=' + row.cierre + ' id_condicion=' + row.id_condicion + ' id=' + row.id + ' categoria="' + row.categoria + '"  departamento="' + row.id_departamento + '"> <i class="material-icons">create</i></a>'
                    
                     
                 }
@@ -73,18 +73,27 @@ function listar_categorias_audiencias() {
 $(document).on('submit', "#new-categoria", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-
-
     let id_departamento=$('#id_departamento').val();
+    let id_cierre=$('#id_cierre').val();
+
+
     if (id_departamento==0||id_departamento=='0') 
     {
         alert('Debe seleccionar el departamento ');
         
-    }else
+    }
+    else if (id_cierre==0||id_cierre=='0') 
+        {
+            alert('El campo Categoria de cierre , es requerido');
+            
+        }
+    
+    else
     {
         let datos_audiencia = {
             "categoria": $('#name-categoria').val().trim(),
-            "id_departamento":id_departamento
+            "id_departamento":id_departamento,
+            "cierre":id_cierre
         };
        
          $.ajax({
@@ -124,6 +133,7 @@ $('#listar_categorias').on('click', '.Editar', function(e) {
     var categoria = $(this).attr('categoria');
     var departamento = $(this).attr('departamento');
     var id_condicion = $(this).attr('id_condicion');
+    var id_cierre = $(this).attr('id_cierre');
 
     if (id_condicion == 1) {
         $('#id_condicion').attr('checked', 'checked');
@@ -139,6 +149,7 @@ $('#listar_categorias').on('click', '.Editar', function(e) {
     $('#editar').find('#editar-categoria').val(categoria);
     $('#editar').find('#id-categoria').val(id);
     $('#editar').find('#edit_id_departamento').val(departamento);
+    $('#editar').find('#edit_id_cierre').val(id_cierre);
 
    
 });
@@ -149,6 +160,7 @@ $(document).on('submit', "#edit-categoria", function(e) {
     e.preventDefault();
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     let id = $("#id-categoria").val();
+
     
     
     let id_condicion = $("#id_condicion").is(':checked');
@@ -167,6 +179,7 @@ $(document).on('submit', "#edit-categoria", function(e) {
         "categoria": $('#editar-categoria').val(),
         "id_departamento": $('#edit_id_departamento').val(),
         "id_condicion": id_condicion,
+        "cierre": $('#edit_id_cierre').val(),
     };
 
     $.ajax({

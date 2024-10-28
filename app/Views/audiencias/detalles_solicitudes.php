@@ -24,6 +24,8 @@ $userdata = $session->get();
                 <span style="font-size: 18px; font-weight: bold;">Solicitud</span>
                 <p class="mb-0"><?php echo $datos['num_solicitud']; ?></p>
               </div>
+              <input type="hidden" id="id_categoria_original" value="<?php echo $datos['id_categoria']; ?>">
+
             </div>
             <input type="hidden" id="id_solicitud" value="<?php echo $datos['id']; ?>">
             <div class="row mb-0">
@@ -573,8 +575,30 @@ foreach ($cronologia["solicitudes"] as $dato) {
               <div class="card cierre_solicitud">
                 <div class="card-body">
                   <div class="column is-12">
-                    <p  class="has-text-weight-semibold mb-2">Cierre solicitud</p>
+                    <p  class="has-text-weight-semibold mb-2">Cierre solicitud &nbsp;&nbsp;&nbsp; </p>
+
+                    
+                   <input type="hidden" id="id_area" value="<?php echo $datos['id_area']; ?>">
+
+               
+
                     <textarea class="textarea" id="respuesta" name="respuesta" style="margin-top: 0;"></textarea>
+                    <label for="user-email">Cambiar Categoria</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                   
+                    <input type="checkbox" name="terminos" id="id_condicion" class="form-check-input">
+                   
+                    <div class="field cierre" style="margin-top: 20px; display:none" >
+                        <div class="control">
+                          <div class="select">
+                            <select name="cierre" id="cierre">
+                              <option value="0" selected>--------------------Tipo de Cierre--------------------</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+
+
                     <div class="control" style="margin-top: 20px;">
 
 

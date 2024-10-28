@@ -85,7 +85,16 @@ $session = session();
                           <option value="0" selected>---Seleccione un Departamento---</option>
                           <option value="1" >Marcas</option>
                           <option value="2" >Patentes</option>
-                      </select>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-name">Categoria de Cierre</label>
+                  <select name="id_cierre" id="id_cierre">
+                  <option value="0" selected>---Seleccione---</option>
+                          <option value="1" >Si</option>
+                          <option value="2" >No</option>
+                  </select>
                 </div>
                 
               </div>
@@ -125,6 +134,16 @@ $session = session();
                           <option value="2" >Patentes</option>
                       </select>
                 </div>
+
+                <div class="form-group">
+                  <label for="user-name">Categoria de Cierre</label>
+                  <select name="edit_id_cierre" id="edit_id_cierre">
+                          <option value="2" >Si</option>
+                          <option value="1" >No</option>
+                  </select>
+                </div>
+
+
                 <label for="user-email">Activo</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="checkbox" name="terminos" id="id_condicion" class="form-check-input">
               </div>

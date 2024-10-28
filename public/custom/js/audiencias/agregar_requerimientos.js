@@ -1,7 +1,12 @@
 
 let solicitudes = [];
-$('#agregar_solicitudes').prop('disabled', true).addClass('deshabilitado');
-// EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
+
+
+$('#agregar_caso').prop('disabled', true).addClass('deshabilitado');
+$('#ingresar_audiencia').prop('disabled', true).addClass('deshabilitado');
+
+
+
 $(document).on('submit', "#buscar", function(e) {
   e.preventDefault();
 
@@ -18,6 +23,8 @@ $(document).on('submit', "#buscar", function(e) {
   }
   
   else {
+    $('#agregar_caso').prop('disabled', false).removeClass('deshabilitado');
+
     sol = sol.padStart(6, '0');
     const valorConcatenado = `${ano}${sol}`;
 
@@ -125,7 +132,7 @@ $('#agregar_caso').on('click', function() {
       solicitudes[solicitudes.length - 1].id_categoria = id_categoria;
     }
   
-    
+    $('#ingresar_audiencia').prop('disabled', false).removeClass('deshabilitado');
   
     $('.image_email').hide();
     updateTable(); // Actualizamos la tabla cuando se hace clic en el botón
@@ -179,6 +186,10 @@ $('#ingresar_audiencia').on('click', function() {
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
   
    let id_estado_pais= $('#estado-select').val();
+   let id_municipio= $('#municipio-select').val();
+   let id_parroquia= $('#parroquia-select').val();
+
+
    if (id_estado_pais===0||id_estado_pais==='0') 
   {
     id_estado_pais=26 
@@ -192,6 +203,8 @@ $('#ingresar_audiencia').on('click', function() {
    {
     "id_formato_cita": $('#id_formato_cita').val(),
     "id_estado_pais": id_estado_pais,
+    "id_municipio": id_municipio,
+    "id_parroquia": id_parroquia,
     "id_pais": $('#pais-select').val(),
     "id_area": $('#id_area').val(),
     "id_usuario": user_audiencia['id'],
@@ -317,4 +330,168 @@ if (id_area==2)
     
     });
   
+});
+
+// Evento para el cambio de estado
+$(document).on('change', '#estado-select', function(e) {
+  let id_estado = $("#estado-select").val();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = `http://172.16.0.46:70/municipios/byEstado/${id_estado}`;
+  
+  // Realiza la solicitud AJAX para obtener los municipios
+  $.ajax({
+      url: url,
+      method: "get",
+      dataType: "json", 
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+      },
+      beforeSend: function() {    
+          // Puedes mostrar un loader aquí si lo deseas
+      },   
+      success: function(response) {
+          // Limpiar el select de municipios antes de agregar nuevos
+          $('#municipio-select').empty();
+          $('#parroquia-select').empty(); // Limpiar parroquias al cambiar de estado
+
+          // Iterar sobre los municipios y agregarlos al select
+          response.municipioss.forEach(function(municipio) {
+              $('#municipio-select').append(
+                  $('<option>', { 
+                      value: municipio.id,
+                      text: municipio.municipio 
+                  })
+              );
+          });
+
+          // Seleccionar el primer municipio automáticamente
+          if (response.municipioss.length > 0) {
+              $('#municipio-select').val(response.municipioss[0].id).change(); // Cambia el valor y dispara el evento change
+          }
+      },
+      error: function(xhr, status, error) {   
+          console.error(xhr.responseText);   
+      }
+  });
+});
+
+// Evento para el cambio de municipio
+$(document).on('change', '#municipio-select', function(e) {
+  let municipio_id = $("#municipio-select").val();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = `http://172.16.0.46:70/parroquias/byMunicipio/${municipio_id}`;
+  
+  // Realiza la solicitud AJAX para obtener las parroquias
+  $.ajax({
+      url: url,
+      method: "get",
+      dataType: "json", 
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+      },
+      beforeSend: function() {    
+          // Puedes mostrar un loader aquí si lo deseas
+      },   
+      success: function(response) {
+          // Limpiar el select de parroquias antes de agregar nuevos
+          $('#parroquia-select').empty();
+
+          // Iterar sobre las parroquias y agregarlas al select
+          response.parroquiass.forEach(function(parroquia) {
+              $('#parroquia-select').append(
+                  $('<option>', { 
+                      value: parroquia.id,
+                      text: parroquia.parroquia // Cambia "nombre" por "parroquia" según tu estructura
+                  })
+              );
+          });
+      },
+      error: function(xhr, status, error) {   
+          console.error(xhr.responseText);   
+      }
+  });
+});
+
+// Evento para el cambio de estado
+$(document).on('change', '#estado-select', function(e) {
+  let id_estado = $("#estado-select").val();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = `http://172.16.0.46:70/municipios/byEstado/${id_estado}`;
+  
+  // Realiza la solicitud AJAX para obtener los municipios
+  $.ajax({
+      url: url,
+      method: "get",
+      dataType: "json", 
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+      },
+      beforeSend: function() {    
+          // Puedes mostrar un loader aquí si lo deseas
+      },   
+      success: function(response) {
+          // Limpiar el select de municipios antes de agregar nuevos
+          $('#municipio-select').empty();
+          $('#parroquia-select').empty(); // Limpiar parroquias al cambiar de estado
+
+          // Iterar sobre los municipios y agregarlos al select
+          response.municipioss.forEach(function(municipio) {
+              $('#municipio-select').append(
+                  $('<option>', { 
+                      value: municipio.id,
+                      text: municipio.municipio 
+                  })
+              );
+          });
+
+          // Seleccionar el primer municipio automáticamente
+          if (response.municipioss.length > 0) {
+              $('#municipio-select').val(response.municipioss[0].id).change(); // Cambia el valor y dispara el evento change
+          }
+      },
+      error: function(xhr, status, error) {   
+          console.error(xhr.responseText);   
+      }
+  });
+});
+
+// Evento para el cambio de municipio
+$(document).on('change', '#municipio-select', function(e) {
+  let municipio_id = $("#municipio-select").val();
+
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const url = `http://172.16.0.46:70/parroquias/byMunicipio/${municipio_id}`;
+  
+  // Realiza la solicitud AJAX para obtener las parroquias
+  $.ajax({
+      url: url,
+      method: "get",
+      dataType: "json", 
+      headers: {
+          'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
+      },
+      beforeSend: function() {    
+          // Puedes mostrar un loader aquí si lo deseas
+      },   
+      success: function(response) {
+          // Limpiar el select de parroquias antes de agregar nuevos
+          $('#parroquia-select').empty();
+
+          // Iterar sobre las parroquias y agregarlas al select
+          response.parroquiass.forEach(function(parroquia) {
+              $('#parroquia-select').append(
+                  $('<option>', { 
+                      value: parroquia.id,
+                      text: parroquia.parroquia // Cambia "nombre" por "parroquia" según tu estructura
+                  })
+              );
+          });
+      },
+      error: function(xhr, status, error) {   
+          console.error(xhr.responseText);   
+      }
+  });
 });
