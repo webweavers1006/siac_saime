@@ -197,6 +197,23 @@ $('#ingresar_audiencia').on('click', function() {
   {
     id_estado_pais= $('#estado-select').val();
   }
+  if (id_municipio===0||id_municipio==='0')
+  {
+    id_municipio=463
+  }else
+  {
+    id_municipio= $('#municipio-select').val();
+  }
+  if (id_parroquia===0||id_parroquia==='0')
+  {
+    id_parroquia=1139
+  }else
+  {
+    id_parroquia= $('#parroquia-select').val();
+  }
+
+
+
 
   // DATOS PARA REQUERIMIENTO
   let datos_audiencia =
