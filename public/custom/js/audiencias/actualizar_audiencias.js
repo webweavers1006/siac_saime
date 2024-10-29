@@ -1,7 +1,8 @@
 
 let id_estado=$('#edit_id_estado').val();
 let id_municipio = parseFloat($('#id_municipio').val());
-let id_parroquia=$('#id_parroquia').val();
+let id_parroquia = parseFloat($('#id_parroquia').val());
+
 
 
 
@@ -13,6 +14,7 @@ llenar_Parroquias(Event,id_municipio,id_parroquia);
 function llenar_Municipios(e, id_estado, id_municipio) {
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     const url = `http://172.16.0.46:70/municipios/byEstado/${id_estado}`;
+
 
     $.ajax({
         url: url,
@@ -49,6 +51,7 @@ function llenar_Municipios(e, id_estado, id_municipio) {
 
 
 function llenar_Parroquias(e, id_municipio, id_parroquia) {
+
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     const url = `http://172.16.0.46:70/parroquias/byMunicipio/${id_municipio}`;
 

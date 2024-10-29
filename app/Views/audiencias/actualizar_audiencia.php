@@ -52,35 +52,35 @@
               </div>
               <div class="ant-descriptions-view">
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-    <div>
-        <label>Formato de la cita:</label>
-        <input type="text" value="<?php echo $datos2['formato_cita']; ?>" class="no-border" disabled>
-    </div>
-    <div>
-        <label>País:</label>
-        <input type="text" value="<?php echo $datos2['pais']; ?>" class="no-border" disabled>
-    </div>
-    <div>
-        <label>Estado:</label>
-        <input type="text" value="<?php echo $datos2['estado_pais']; ?>" class="no-border" disabled>
-    </div>
-    <div>
-        <label>Municipio:</label>
-        <input type="text" value="<?php echo $datos2['id_municipio']; ?>" class="no-border" disabled>
-    </div>
-    <div>
-        <label>Parroquia:</label>
-        <input type="text" value="<?php echo $datos2['id_parroquia']; ?>" class="no-border" disabled>
-    </div>
-    <div>
-        <label>Estatus:</label>
-        <input type="text" value="<?php echo $datos2['estado']; ?>" class="no-border" disabled>
-    </div>
-    <div style="grid-column: span 2;">
-        <label>Responsable:</label>
-        <input type="text" value="<?php echo $datos2['trabajador']; ?>" style="width: 400px;" class="no-border" disabled>
-    </div>
-</div>
+                  <div>
+                      <label>Formato de la cita:</label>
+                      <input type="text" value="<?php echo $datos2['formato_cita']; ?>" class="no-border" disabled>
+                  </div>
+                  <div>
+                      <label>País:</label>
+                      <input type="text" value="<?php echo $datos2['pais']; ?>" class="no-border" disabled>
+                  </div>
+                  <div>
+                      <label>Estado:</label>
+                      <input type="text" value="<?php echo $datos2['estado_pais']; ?>" class="no-border" disabled>
+                  </div>
+                  <div>
+                      <label>Municipio:</label>
+                      <input type="text" value="<?php echo $datos2['municipio']; ?>" class="no-border" disabled>
+                  </div>
+                  <div>
+                      <label>Parroquia:</label>
+                      <input type="text" value="<?php echo $datos2['parroquia']; ?>" class="no-border" disabled>
+                  </div>
+                  <div>
+                      <label>Estatus:</label>
+                      <input type="text" value="<?php echo $datos2['estado']; ?>" class="no-border" disabled>
+                  </div>
+                  <div style="grid-column: span 2;">
+                      <label>Responsable:</label>
+                      <input type="text" value="<?php echo $datos2['trabajador']; ?>" style="width: 400px;" class="no-border" disabled>
+                  </div>
+              </div>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                   <div class="column is-12">
                   <div class="columns">
