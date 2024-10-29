@@ -104,7 +104,51 @@ $(document).on("click", "#subir_archivos", (e) => {
                     showConfirmButton: false,
                     timer: 1500,
                 });
+            }else if (data == 5) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Tipo de archivo no permitido.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
             }
+            else if (data == 6) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Tipo de archivo no coincide con el contenido.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 7) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Error al agregar a la base de datos.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 8) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Nombre de archivo inválido. Las extensiones dobles no están permitidas.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+
 
         },
         error: function(xhr, status, error) {
@@ -687,6 +731,10 @@ $("#tipo-atencion-usu").on('change', function() {
         $("#denuncias").hide();
     }
 });
+
+
+
+
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION DEL CASO
 $('#listar_casos').on('click', '.Imprimir', function(e) {
     e.preventDefault();
@@ -695,6 +743,8 @@ $('#listar_casos').on('click', '.Imprimir', function(e) {
     window.open('generar_pdf/' + idcaso, '_blank');
     // window.location = '/generar_pdf/' + idcaso, '_blank'
 });
+
+
 var selectElement = document.getElementById('docu-casos');
 selectElement.addEventListener('change', function() {
     var selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -702,6 +752,8 @@ selectElement.addEventListener('change', function() {
     var ruta = 'documentos_casos/' + url; // Reemplaza "
     window.open(ruta, "_blank");
 });
+
+
 //FUNCION PARA LLENAR EL COMBO DE LOS ESTADOS
 function llenar_Estados(e, estadoid) {
     e.preventDefault;

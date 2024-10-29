@@ -958,68 +958,99 @@ public function Informacion_Usuarios($casoced=null)
 		echo json_encode($ultimos_casos);
 	}
 
-
-	//Metodo para subir acrhivos
-	public function upload()
-	{
-		$model = new Casos();
-		$id_caso_pdf[0] = '';
-		$id_caso_pdf[0] = $_POST['id_caso_pdf'];
-		$archivo[] = '';
-		$archivo[0] = $_FILES['archivo'];
-		//$config['allowed_types'] = 'doc|docx|pdf|odt|png|jpg|mp4';
-		$config['allowed_types'] = 'jpg|jpeg|png|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|mp4|mp3|MPEG-4|MOV|WMV|AVI|MKV|SWF';
-		$tamañoMaximo = 10 * 1024 * 1024; // 10MB en bytes
-		if ($archivo[0]["name"] != '') {
-			$nombreArchivo = $id_caso_pdf[0] . '_' . trim($archivo[0]['name']);
-			$nombreArchivo = strtolower($nombreArchivo);
-			$archivoTemporal = $archivo[0]['tmp_name'];
-			$archivoTemporal = trim($archivoTemporal);
-			$ruta = base_url();
-			$rutaDestino = WRITEPATH . trim($nombreArchivo);
-			$targetDir = WRITEPATH; // Directorio donde se guardarán los archivos subidos
-			$targetFile = $targetDir . basename($nombreArchivo);
-			$uploadOk = 1;
-			$fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-			
-			// Verificar si el archivo ya existe
-			if (file_exists($targetFile)) {
-				//echo "El archivo ya existe.";
-				$data = 0;
-			}
-			// Verificar el tamaño del archivo (opcional)
-			else if ($archivo[0]["size"] > $tamañoMaximo) {
-				//echo "El archivo es demasiado grande.";
-				$data = 1;
-				return json_encode($data);
-			} else if (move_uploaded_file($archivoTemporal, $rutaDestino)) {
-
-				//echo "ARCHIVO CARGADO EXITOSAMENTE.";
-				$documentos_casos['docu_id_caso'] = $id_caso_pdf[0];
-				$documentos_casos['docu_ruta'] = $nombreArchivo;
-				$query_docu_casos = $model->agregar_docu_casos($documentos_casos);
-				if (isset($query_docu_casos)) {
-					$data = 2;
-					return json_encode($data);
-				} else {
-					echo ('error al enviar a la base de datos ');
-				}
-			} else {
-
-				$data = 3;
-				return json_encode($data);
-
-
-				//echo "Error al subir el archivo.";
-			}
-		} else {
-			$data = 4;
-			return json_encode($data);
-			//echo ('vacio');
-		}
-
+// Método para subir archivos
+public function upload()
+{
+    $model = new Casos();
+    $id_caso_pdf = $_POST['id_caso_pdf'] ?? '';
+    $archivo = $_FILES['archivo'] ?? null;
 	
-	}
+	//LISTA BLANCA
+    $config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|xls|xlsx|mp4|mp3|MPEG-4|MOV|WMV|AVI|MKV|SWF';
+    $tamañoMaximo = 10 * 1024 * 1024; // 10MB en bytes
+
+    // Verificar si se ha subido un archivo
+    if ($archivo && $archivo["name"] != '') {
+        $nombreArchivo = strtolower($id_caso_pdf . '_' . trim($archivo['name']));
+        $archivoTemporal = trim($archivo['tmp_name']);
+        $rutaDestino = WRITEPATH . trim($nombreArchivo);
+        $targetDir = WRITEPATH; // Directorio donde se guardarán los archivos subidos
+        $targetFile = $targetDir . basename($nombreArchivo);
+
+        // Comprobar si hay extensiones dobles
+        $partesArchivo = explode('.', $nombreArchivo);
+        if (count($partesArchivo) > 2) {
+            return json_encode(8); // Nombre de archivo inválido. Las extensiones dobles no están permitidas.
+        }
+
+        // Obtener la extensión del archivo
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        // Verificar si el archivo tiene una extensión permitida
+        if (!in_array($fileType, explode('|', $config['allowed_types']))) {
+            return json_encode(5); // Tipo de archivo no permitido
+        }
+
+        // Verificar el tamaño del archivo
+        if ($archivo["size"] > $tamañoMaximo) {
+            return json_encode(1); // Archivo demasiado grande
+        }
+
+        // Verificar el tipo MIME del archivo
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $archivoTemporal);
+        finfo_close($finfo);
+
+        // Verificar si el MIME type coincide con la extensión
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'mp4' => 'video/mp4',
+            'mp3' => 'audio/mpeg',
+            'mov' => 'video/quicktime',
+            'wmv' => 'video/x-ms-wmv',
+            'avi' => 'video/x-msvideo',
+            'mkv' => 'video/x-matroska',
+            'swf' => 'application/x-shockwave-flash',
+        ];
+
+        if (!array_key_exists($fileType, $mimeTypes) || $mimeTypes[$fileType] !== $mimeType) {
+            return json_encode(6); // Tipo de archivo no coincide con el contenido
+        }
+
+        // Verificar si el archivo ya existe
+        if (file_exists($targetFile)) {
+            return json_encode(0); // El archivo ya existe
+        }
+
+        // Mover el archivo a la ubicación deseada
+        if (move_uploaded_file($archivoTemporal, $rutaDestino)) {
+            $documentos_casos['docu_id_caso'] = $id_caso_pdf;
+            $documentos_casos['docu_ruta'] = $nombreArchivo;
+
+            // Intentar agregar la información del documento a la base de datos
+            $query_docu_casos = $model->agregar_docu_casos($documentos_casos);
+            
+            // Verificar si la consulta fue exitosa
+            if ($query_docu_casos) {
+                return json_encode(2); // Archivo subido y registrado en la base de datos
+            } else {
+                return json_encode(7); // Error al agregar a la base de datos
+            }
+        } else {
+            return json_encode(3); // Error al subir el archivo
+        }
+    } else {
+        return json_encode(4); // No se subió ningún archivo
+    }
+}
+
 
 
 public function buscar_datos_usuarios()
