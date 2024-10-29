@@ -363,7 +363,7 @@ $userdata = $session->get();
                           </li>   
 
                           <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
+                              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
                                   <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
                                   <p>Citas otorgadas</p>
                               </a>

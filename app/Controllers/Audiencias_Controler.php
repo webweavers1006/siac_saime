@@ -526,32 +526,45 @@ public function agregar_solicitudes($idcaso)
 		return redirect()->to('/');
 	}
 }
-
-
-public function citas_otorgadas()
+public function citas_otorgadas($año)
 {
-	if ($this->session->get('logged')) {
+    if ($this->session->get('logged')) {
+        $session = session();
+        $token = $session->get('token');
+        $contexto = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'header' => "Authorization: Bearer $token\r\n"
+            ]
+        ]);
 
-	$session = session();
-		$token = $session->get('token');
-		$contexto = stream_context_create([
-			'http' => [
-				'method'  => 'GET',
-				'header'  => "Authorization: Bearer $token\r\n"
-			]
-		]);
-	// Realiza la solicitud a la API para obtener los datos
-	$citas = json_decode(file_get_contents("http://172.16.0.46:70/citas/byMeses/2023", false, $contexto), true);
-	$data['citas'] = $citas;
-	echo view('template/header');
-	echo view('template/nav_bar');
-	echo view('audiencias/estadisticas/citas_otorgadas.php',$data);
-	echo view('template/footer');
-	echo view('audiencias/estadisticas/footer_citas_otorgadas.php');
-	} else {
-		return redirect()->to('/');
-	}
+        // Asignar el año actual si $año es la cadena "null"
+        if ($año === 'null') {
+            $año = date('Y');
+        }
+
+		// Convertir a número
+
+        $año = intval($año);
+       
+        
+        // Realiza la solicitud a la API para obtener los datos
+        $url = "http://172.16.0.46:70/citas/byMeses/" . $año;
+        $citas = json_decode(file_get_contents($url, false, $contexto), true);
+        
+        $data['citas'] = $citas;
+        echo view('template/header');
+        echo view('template/nav_bar');
+        echo view('audiencias/estadisticas/citas_otorgadas.php', $data);
+        echo view('template/footer');
+        echo view('audiencias/estadisticas/footer_citas_otorgadas.php');
+    } else {
+        return redirect()->to('/');
+    }
 }
+
+
+
 
 public function casos_categorias()
 {
