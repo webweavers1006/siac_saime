@@ -357,20 +357,20 @@ $userdata = $session->get();
 
                       <li class="nav-item">
                               <a href="<?php echo base_url(); ?>/estadisticas_audiencias" class="nav-link">
-                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
+                              <i class="nav-icon fa fa-user-friends" style="font-size:20px"></i>
                                   <p>Audiencias</p>
                               </a>
                           </li>   
 
                           <li class="nav-item">
                               <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
-                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
+                              <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
                                   <p>Citas otorgadas</p>
                               </a>
                           </li>   
                           <li class="nav-item">
                               <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
-                                  <i class="nav-icon fas fa-file" style='font-size:20px'></i>
+                              <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
                                   <p>Casos por categoría</p>
                               </a>
                           </li>   
