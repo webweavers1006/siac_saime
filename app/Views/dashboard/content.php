@@ -20,58 +20,66 @@ $session = session();
         
 <!-- Verificar si el rol del usuario actual es igual a 9 -->
 <?php if ($session->get('userrol') == 9) { ?>
-  <!-- Iniciar la fila de tarjetas -->
-  <div class="row">
-    <!-- Recorrer el arreglo de estatus de requerimientos -->
-    <?php foreach ($estatus['requerimientosbyEstados'] as $estado) { ?>
-      <!-- Crear una tarjeta para cada estatus -->
-      <div class="col-lg-4 col-md-6 col-sm-12 p-2">
-        <div class="box height">
-          <div class="mt-2">
-            <!-- Mostrar el título de la tarjeta según el estatus -->
-            <h2 class="has-text-weight-bold is-relative">
-              <?php 
-              switch ($estado['estado']) {
-                case 'NUEVO':
-                  echo 'Casos Recibidos';
-                  break;
-                case 'EN PROCESO':
-                  echo 'Casos Atendidos';
-                  break;
-                case 'RESUELTA':
-                  echo 'Casos Resueltos';
-                  break;
-              }
-              ?>
-              <!-- Agregar un icono según el estatus -->
-              <span class="icon mr-2 icon-dash 
-              <?php 
-              switch ($estado['estado']) {
-                case 'NUEVO':
-                  echo 'yellow';
-                  break;
-                case 'EN PROCESO':
-                  echo 'blue';
-                  break;
-                case 'RESUELTA':
-                  echo 'red';
-                  break;
-              }
-              ?>">
-                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
-              </span>
-            </h2>
-          </div>
-          <!-- Mostrar el total de requerimientos para cada estatus -->
-          <p class="mt-3 has-text-weight-semibold is-size-full has-text-centered"><?= $estado['total'] ?></p>
-        </div>
-      </div>
-    <?php } ?>
-  </div>
+    <!-- Iniciar la fila de tarjetas -->
+    <div class="row">
+        <?php
+        // Inicializar un array con todos los estados y valores predeterminados
+        $allStates = [
+            'NUEVO' => 0,
+            'EN PROCESO' => 0,
+            'RESUELTA' => 0
+        ];
+
+        // Actualizar los valores según los datos originales
+        foreach ($estatus['requerimientosbyEstados'] as $estado) {
+            if (array_key_exists($estado['estado'], $allStates)) {
+                $allStates[$estado['estado']] = $estado['total'];
+            }
+        }
+
+        // Mostrar las tarjetas para cada estado
+        foreach ($allStates as $estado => $total) { ?>
+            <div class="col-lg-4 col-md-6 col-sm-12 p-2">
+                <div class="box height">
+                    <div class="mt-2">
+                        <h2 class="has-text-weight-bold is-relative">
+                            <?php 
+                            switch ($estado) {
+                                case 'NUEVO':
+                                    echo 'Casos Recibidos';
+                                    break;
+                                case 'EN PROCESO':
+                                    echo 'Casos Atendidos';
+                                    break;
+                                case 'RESUELTA':
+                                    echo 'Casos Resueltos';
+                                    break;
+                            }
+                            ?>
+                            <span class="icon mr-2 icon-dash 
+                            <?php 
+                            switch ($estado) {
+                                case 'NUEVO':
+                                    echo 'yellow';
+                                    break;
+                                case 'EN PROCESO':
+                                    echo 'blue';
+                                    break;
+                                case 'RESUELTA':
+                                    echo 'red';
+                                    break;
+                            }
+                            ?>">
+                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                            </span>
+                        </h2>
+                    </div>
+                    <p class="mt-3 has-text-weight-semibold is-size-full has-text-centered"><?= $total ?></p>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
 <?php } ?>
-
-
-
 
 
 

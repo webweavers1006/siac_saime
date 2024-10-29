@@ -354,6 +354,14 @@ $userdata = $session->get();
                           <i class="right fas fa-angle-left"></i> 
                       </a>
                       <ul class="nav nav-treeview">
+
+                      <li class="nav-item">
+                              <a href="<?php echo base_url(); ?>/estadisticas_audiencias" class="nav-link">
+                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
+                                  <p>Audiencias</p>
+                              </a>
+                          </li>   
+
                           <li class="nav-item">
                               <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
                                   <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>

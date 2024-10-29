@@ -261,6 +261,9 @@ class Audiencias_Controler extends BaseController
 		
 		 $pais = json_decode(file_get_contents("http://172.16.0.46:70/paises", false, $contexto), true);
 		 $estados = json_decode(file_get_contents("http://172.16.0.46:70/estados_paises", false, $contexto), true);
+
+
+
 		 // Pasa los datos a la vista
 		 $data['estados'] = $estados;
 		 $data['pais'] = $pais;
@@ -579,6 +582,32 @@ public function casos_categorias()
 	}
 }
 
+
+public function estadisticas_audiencias()
+{
+	if ($this->session->get('logged')) {
+
+
+		$session = session();
+		$token = $session->get('token');
+		$contexto = stream_context_create([
+			'http' => [
+				'method'  => 'GET',
+				'header'  => "Authorization: Bearer $token\r\n"
+			]
+		]);
+
+	$estado = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/byEstados", false, $contexto), true);
+	$data['estatus'] = $estado;
+	echo view('template/header');
+	echo view('template/nav_bar');
+	echo view('audiencias/estadisticas/audiencias.php',$data);
+	echo view('template/footer');
+	echo view('audiencias/estadisticas/footer_estadisticas_audiencias.php');
+	} else {
+		return redirect()->to('/');
+	}
+}
 
 
 	

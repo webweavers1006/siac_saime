@@ -51,28 +51,36 @@
                 <div class="ant-descriptions-title">Información de Audiencia</div>
               </div>
               <div class="ant-descriptions-view">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                  <div>
-                    <label>Formato de la cita:</label>
-                    <input type="text" value="<?php echo $datos2['formato_cita']; ?>" class="no-border" disabled>
-                  </div>
-                  <div>
-                    <label>País:</label>
-                    <input type="text" value="<?php echo $datos2['pais']; ?>" class="no-border" disabled>
-                  </div>
-                  <div>
-                    <label>Estado:</label>
-                    <input type="text" value="<?php echo $datos2['estado_pais']; ?>" class="no-border" disabled>
-                  </div>
-                  <div>
-                    <label>Estatus:</label>
-                    <input type="text" value="<?php echo $datos2['estado']; ?>"  class="no-border" disabled>
-                  </div>
-                  <div>
-                    <label>Responsable:</label>
-                    <input type="text" value="<?php echo $datos2['trabajador']; ?>" style="width: 400px;" class="no-border" disabled>
-                  </div>
-                </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+    <div>
+        <label>Formato de la cita:</label>
+        <input type="text" value="<?php echo $datos2['formato_cita']; ?>" class="no-border" disabled>
+    </div>
+    <div>
+        <label>País:</label>
+        <input type="text" value="<?php echo $datos2['pais']; ?>" class="no-border" disabled>
+    </div>
+    <div>
+        <label>Estado:</label>
+        <input type="text" value="<?php echo $datos2['estado_pais']; ?>" class="no-border" disabled>
+    </div>
+    <div>
+        <label>Municipio:</label>
+        <input type="text" value="<?php echo $datos2['id_municipio']; ?>" class="no-border" disabled>
+    </div>
+    <div>
+        <label>Parroquia:</label>
+        <input type="text" value="<?php echo $datos2['id_parroquia']; ?>" class="no-border" disabled>
+    </div>
+    <div>
+        <label>Estatus:</label>
+        <input type="text" value="<?php echo $datos2['estado']; ?>" class="no-border" disabled>
+    </div>
+    <div style="grid-column: span 2;">
+        <label>Responsable:</label>
+        <input type="text" value="<?php echo $datos2['trabajador']; ?>" style="width: 400px;" class="no-border" disabled>
+    </div>
+</div>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                   <div class="column is-12">
                   <div class="columns">
@@ -109,6 +117,8 @@
                       </div>
                     </div>
                   </div>
+                  <input type="hidden" id="edit_id_estado" value="<?php echo $datos2['id_estado_pais']; ?>">
+
                   <div>
                     <label>Estado</label>
                     <div class="control">
@@ -150,6 +160,12 @@
                       </script>
                       </div>
                     </div>
+
+
+
+
+
+                    
                   </div>
                   <div style="display: none;">
                     <label>Responsable</label>
@@ -157,13 +173,42 @@
                       <div class="select">
                       <select name="id_trabajador" id="id_trabajador">
                       <option value="0" selected>---Seleccione---</option>
-                          <!-- <option value="0" <php echo ($datos2['id_trabajador'] == 0) ? 'selected' : ''; ?>>---Seleccione un responsable---</option>
-                          <option value="38" <php echo ($datos2['id_trabajador'] == 38) ? 'selected' : ''; ?>>DIRECTOR PATENTES</option>
-                          <option value="35" <php echo ($datos2['id_trabajador'] == 35) ? 'selected' : ''; ?>>DIRECTOR MARCAS</option> -->
+                         
                       </select>
                       </div>
                     </div>
                   </div>
+
+
+
+                  <input type="hidden" id="id_municipio" value="<?php echo $datos2['id_municipio']; ?>">
+                  <div class="field">
+                      <label class="label float-left">Municipio</label>
+                      <div class="control w-100">
+                        <div class="select w-100">
+                        <select name="id_pais" class="w-100" id="municipio-select">
+                        <option value="0">---Seleccione---</option>
+                        
+                        </select>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <input type="hidden" id="id_parroquia" value="<?php echo $datos2['id_parroquia']; ?>">
+                    <div class="field">
+                      <label class="label float-left">Parroquia</label>
+                      <div class="control w-100">
+                        <div class="select w-100"> 
+                        <select name="id_estado" class="w-100" id="parroquia-select">
+                          <option value="0">---Seleccione---</option>
+                        </select>
+                         
+                        </div>
+                      </div>
+                    </div>
+
+
                   <div>
                     <label>Estatus</label>
                     <div class="control">

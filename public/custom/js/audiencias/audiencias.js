@@ -163,7 +163,7 @@ function listado_Audiencias() {
                             <i class="material-icons">search</i>
                         </a>
                         <a href="javascript:;" class="btn btn-xs Bufetes" style="font-size: 12px;" data-toggle="tooltip" title="Bufetes" id="${row.id}">
-                            <i class="material-icons">created</i>
+                            <i class="material-icons">business_center</i>
                         </a>
                     </div>
                 `;

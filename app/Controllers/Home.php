@@ -40,25 +40,6 @@ class Home extends BaseController
 			$token = $session->get('token');
 			$nivel_rol = $session->get('nivel_rol');
 			
-			// // BUSCO LOS PERMISOS DEL ROL
-			// $url = "http://172.16.0.46:70/roles/".$nivel_rol;
-			// $ch = curl_init($url);
-			// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			// curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			// 	'Content-Type: application/json',
-			// 	'Authorization: Bearer ' . $token
-			// ));
-			// $response = curl_exec($ch);
-			// $error_number = curl_errno($ch);
-			// $error_message = curl_error($ch);
-			// curl_close($ch);
-			// if ($error_number) {
-			// 	echo "Error: $error_message";
-			// } else {
-			// 	$permisos = json_decode($response, true);
-
-			// }
-		
 			
 			//ESTO TIENE TOLO LO DEL USUARIO EN SESION
 			$userdata = $session->get();
@@ -74,6 +55,7 @@ class Home extends BaseController
 			
 			$estado = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/byEstados", false, $contexto), true);
 		$data['estatus'] = $estado;
+
 			echo view('template/header');
 			echo view('template/nav_bar');
 			echo view('dashboard/content',$data);

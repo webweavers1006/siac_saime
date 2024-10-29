@@ -225,7 +225,9 @@ $routes->get('/actualizar_solicitud/(:any)', 'Audiencias_Controler::actualizar_s
 //RUTAS PARA SOLICITUDES
 $routes->get('/vista_solicitudes', 'Audiencias_Controler::vista_solicitudes');
 
+
 //RUTAS PARA AUDIENCIAS /ESTADISTICAS
+$routes->get('/estadisticas_audiencias', 'Audiencias_Controler::estadisticas_audiencias');
 $routes->get('/citas_otorgadas', 'Audiencias_Controler::citas_otorgadas');
 $routes->get('/casos_categorias', 'Audiencias_Controler::casos_categorias');
 
