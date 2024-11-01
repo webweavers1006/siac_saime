@@ -25,7 +25,7 @@
               <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
               <div class="ml-2">
               <p class="mb-0" style="font-size: 18px; font-weight: bold;">Actualizar Cita</p>
-                <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?></span>
+                <span style="font-size: 14px;">Nº <?php echo $cita['id']; ?></span>
                 <br><br>
               </div>
              
@@ -79,7 +79,7 @@
                   <div class="column is-12">
                   <div class="columns">
                     <div class="column is-12">
-                    <input type="hidden" id="numero_cita" value="<?php echo $datos2['id']; ?>">
+                    <input type="hidden" id="numero_cita" value="<?php echo $cita['id']; ?>">
                       <div class="dividir"><span>Formato Cita</span></div>
                     </div>
                   </div>

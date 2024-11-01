@@ -148,6 +148,17 @@ $(document).on("click", "#subir_archivos", (e) => {
                     timer: 1500,
                 });
             }
+            else if (data == 9) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>El archivo no es una imagen válida.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
 
 
         },

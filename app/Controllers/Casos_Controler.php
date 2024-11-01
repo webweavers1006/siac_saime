@@ -964,14 +964,16 @@ public function upload()
     $model = new Casos();
     $id_caso_pdf = $_POST['id_caso_pdf'] ?? '';
     $archivo = $_FILES['archivo'] ?? null;
-	
-	//LISTA BLANCA
-    $config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|xls|xlsx|mp4|mp3|MPEG-4|MOV|WMV|AVI|MKV|SWF';
+
+    // LISTA BLANCA
+	$config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|xls|xlsx|mp4|mp3|MPEG-4|MOV|WMV|AVI|MKV|SWF|odt';
     $tamañoMaximo = 10 * 1024 * 1024; // 10MB en bytes
 
     // Verificar si se ha subido un archivo
-    if ($archivo && $archivo["name"] != '') {
-        $nombreArchivo = strtolower($id_caso_pdf . '_' . trim($archivo['name']));
+    if ($archivo && $archivo["name"] != '') 
+    {
+        // Limpiar el nombre del archivo
+        $nombreArchivo = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', strtolower($id_caso_pdf . '_' . trim($archivo['name'])));
         $archivoTemporal = trim($archivo['tmp_name']);
         $rutaDestino = WRITEPATH . trim($nombreArchivo);
         $targetDir = WRITEPATH; // Directorio donde se guardarán los archivos subidos
@@ -1002,23 +1004,24 @@ public function upload()
         finfo_close($finfo);
 
         // Verificar si el MIME type coincide con la extensión
-        $mimeTypes = [
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'pdf' => 'application/pdf',
-            'doc' => 'application/msword',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'xls' => 'application/vnd.ms-excel',
-            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'mp4' => 'video/mp4',
-            'mp3' => 'audio/mpeg',
-            'mov' => 'video/quicktime',
-            'wmv' => 'video/x-ms-wmv',
-            'avi' => 'video/x-msvideo',
-            'mkv' => 'video/x-matroska',
-            'swf' => 'application/x-shockwave-flash',
-        ];
+		$mimeTypes = [
+			'jpg' => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'png' => 'image/png',
+			'pdf' => 'application/pdf',
+			'doc' => 'application/msword',
+			'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'xls' => 'application/vnd.ms-excel',
+			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'mp4' => 'video/mp4',
+			'mp3' => 'audio/mpeg',
+			'mov' => 'video/quicktime',
+			'wmv' => 'video/x-ms-wmv',
+			'avi' => 'video/x-msvideo',
+			'mkv' => 'video/x-matroska',
+			'swf' => 'application/x-shockwave-flash',
+			'odt' => 'application/vnd.oasis.opendocument.text', 
+		];
 
         if (!array_key_exists($fileType, $mimeTypes) || $mimeTypes[$fileType] !== $mimeType) {
             return json_encode(6); // Tipo de archivo no coincide con el contenido
@@ -1029,6 +1032,14 @@ public function upload()
             return json_encode(0); // El archivo ya existe
         }
 
+        // Verificar contenido para imágenes
+        if ($fileType === 'jpg' || $fileType === 'jpeg' || $fileType === 'png') {
+            $img = @imagecreatefromstring(file_get_contents($archivoTemporal));
+            if (!$img) {
+                return json_encode(9); // El archivo no es una imagen válida
+            }
+        }
+
         // Mover el archivo a la ubicación deseada
         if (move_uploaded_file($archivoTemporal, $rutaDestino)) {
             $documentos_casos['docu_id_caso'] = $id_caso_pdf;
@@ -1037,19 +1048,19 @@ public function upload()
             // Intentar agregar la información del documento a la base de datos
             $query_docu_casos = $model->agregar_docu_casos($documentos_casos);
             
-            // Verificar si la consulta fue exitosa
-            if ($query_docu_casos) {
-                return json_encode(2); // Archivo subido y registrado en la base de datos
-            } else {
-                return json_encode(7); // Error al agregar a la base de datos
-            }
-        } else {
-            return json_encode(3); // Error al subir el archivo
-        }
-    } else {
-        return json_encode(4); // No se subió ningún archivo
-    }
-}
+                      // Verificar si la consulta fue exitosa
+					  if ($query_docu_casos) {
+						return json_encode(2); // Archivo subido y registrado en la base de datos
+					} else {
+						return json_encode(7); // Error al agregar a la base de datos
+					}
+				} else {
+					return json_encode(3); // Error al subir el archivo
+				}
+			} else {
+				return json_encode(4); // No se subió ningún archivo
+			}
+		}
 
 
 

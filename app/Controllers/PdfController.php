@@ -57,7 +57,7 @@ class PdfController extends BaseController
 					$pdf->SetXY(155, 63);
 					$pdf->Cell(20, 5, $caso_hora, 0, 0, 'C');
 					$pdf->SetXY(40, 82);
-					$pdf->Cell(60, 5, $nombre, 0, 0, 'C');
+					$pdf->Cell(60, 5, iconv("UTF-8", "CP1252", $nombre), 0, 0, 'C');
 					$pdf->SetXY(24, 99);
 					$pdf->Cell(20, -10, $cedula, 0, 0, 'C');
 					$pdf->SetXY(75, 99);
@@ -83,7 +83,7 @@ class PdfController extends BaseController
 				$pdf->SetAutoPageBreak(true, 10);
 				$pdf->Footer_Planilla();
 				$this->response->setHeader('Content-Type', 'application/pdf');
-				$pdf->Output("salidas_pdf.pdf", "I");
+				$pdf->Output("SIAC.pdf", "I");
 			}
 		} else if ($datos_tipoatencion['id_tipo_atencion'] == 5) {
 			$pdf->Header_Denuncia($datos_tipoatencion);
@@ -105,7 +105,7 @@ class PdfController extends BaseController
 				$pdf->SetXY(155, 71);
 				$pdf->Cell(20, -11, $caso_hora, 0, 0, 'C');
 				$pdf->SetXY(50, 90);
-				$pdf->Cell(60, -10, $nombre, 0, 0, 'C');
+				$pdf->Cell(60, -10, iconv("UTF-8", "CP1252", $nombre), 0, 0, 'C');
 				$pdf->SetXY(24, 99);
 				$pdf->Cell(20, -10, $cedula, 0, 0, 'C');
 				$pdf->SetXY(75, 99);
@@ -178,7 +178,7 @@ class PdfController extends BaseController
 			$pdf->SetAutoPageBreak(true, 10);
 			$pdf->Footer_Planilla();
 			$this->response->setHeader('Content-Type', 'application/pdf');
-			$pdf->Output("salidas_pdf.pdf", "I");
+			$pdf->Output("SIAC.pdf", "I");
 		} else {
 			$pdf->Header_Planilla($datos_tipoatencion);
 			foreach ($query_pdf as $query_pdf) {
@@ -199,7 +199,7 @@ class PdfController extends BaseController
 				$pdf->SetXY(155, 71);
 				$pdf->Cell(-108, -10, $caso_hora, 0, 0, 'C');
 				$pdf->SetXY(60, 82);
-				$pdf->Cell(29, 5, $nombre, 0, 0, 'C');
+				$pdf->Cell(29, 5, iconv('utf-8', 'cp1252', $nombre), 0, 0, 'C');
 				$pdf->SetXY(24, 99);
 				$pdf->Cell(20, -10, $cedula, 0, 0, 'C');
 				$pdf->SetXY(75, 99);
@@ -222,7 +222,7 @@ class PdfController extends BaseController
 			$pdf->SetAutoPageBreak(true, 10);
 			$pdf->Footer_Planilla();
 			$this->response->setHeader('Content-Type', 'application/pdf');
-			$pdf->Output("salidas_pdf.pdf", "I");
+			$pdf->Output("SIAC.pdf", "I");
 		}
 	}
 }

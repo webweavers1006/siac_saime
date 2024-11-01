@@ -369,7 +369,7 @@ class FPDF
 	function Header_Planilla($datos_tipoatencion)
 	{
 		$this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 6, 15, 210, 15, 'png');
-		$this->SetTitle("ATENCIÓN AL CIUDADANO");
+		$this->SetTitle(iconv("UTF-8", "CP1252", "ATENCIÓN AL CIUDADANO"));
 		$this->Ln(30);
 		$this->SetFillColor(255, 255, 255);
 		$this->SetFont('Arial', 'B', 10);
@@ -414,16 +414,31 @@ class FPDF
 		}
 
 		if ($datos_tipoatencion['id_tipo_atencion'] == 6) {
-			$this->Cell(20.2, 3, 'PETICION: ', 0, 0, 'L', 1);
+			$this->Cell(20.2, 3, iconv('utf-8', 'cp1252', 'PETICIÓN'));
 			$this->SetFont('ZapfDingbats', '', 8);
 			$this->Cell(3.2, 3, chr(51), 1, 0, 'L', 0);
 			$this->Cell(2.8, 3, '', 0, 0, 'L', 0);
 			$this->SetFont('Arial', 'B', 9);
-		} else {
-			$this->Cell(20.2, 3, 'PETICION: ', 0, 0, 'L', 1);
+		} 
+		else {
+			$this->Cell(20.2, 3, iconv('utf-8', 'cp1252', 'PETICIÓN'));
 			$this->Cell(3.2, 3, '', 1, 0, 'L', 0);
 			$this->Cell(2.4, 3, '', 0, 0, 'L', 0);
 		}
+		if ($datos_tipoatencion['id_tipo_atencion'] == 7) {
+			$this->Cell(24.2, 3, iconv('utf-8', 'cp1252', 'FORMACIÓN'));
+			$this->SetFont('ZapfDingbats', '', 8);
+			$this->Cell(3.2, 3, chr(51), 1, 0, 'L', 0);
+			$this->Cell(2.8, 3, '', 0, 0, 'L', 0);
+			$this->SetFont('Arial', 'B', 9);
+		} 
+		else {
+			$this->Cell(24.2, 3, iconv('utf-8', 'cp1252', 'FORMACIÓN'));
+			$this->Cell(3.2, 3, '', 1, 0, 'L', 0);
+			$this->Cell(2.4, 3, '', 0, 0, 'L', 0);
+		}
+
+
 		$this->Ln(5);
 		$this->SetFont('Arial', 'B', 9);
 		$this->Cell(34, 9, iconv('utf-8', 'cp1252', 'Nº :  ___________'), 0, 0, 'C', 1);

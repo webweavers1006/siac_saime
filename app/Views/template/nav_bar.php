@@ -220,12 +220,12 @@ $userdata = $session->get();
                           <i class="right fas fa-angle-left"></i> 
                       </a>
                       <ul class="nav nav-treeview">
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/citas_otorgadas" class="nav-link">
-                                  <i class="nav-icon fa fa-calendar" style='font-size:20px'></i>
+                      <li class="nav-item">
+                              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
+                              <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
                                   <p>Citas otorgadas</p>
                               </a>
-                          </li>   
+                          </li> 
                           <li class="nav-item">
                               <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
                                   <i class="nav-icon fas fa-file" style='font-size:20px'></i>
@@ -382,7 +382,7 @@ $userdata = $session->get();
           <?php } ?>
 
           <!-- *********************MANTENIMIENTO ROLES ADUDIENCIAS*************** -->
-          <?php if ($session->get('userrol') == 9) { ?>
+          <?php if (($session->get('userrol') == 9) && ($session->get('acceso_audi') == 't')) { ?>
             <?php 
                   if ($userdata["nivel_rol"] == "1") { ?>
           <li class="nav-item">

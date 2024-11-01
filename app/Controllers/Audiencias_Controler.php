@@ -417,8 +417,6 @@ public function citas()
 		]
 	]);
 
-
-
 	// Realiza la solicitud a la API para obtener los datos
 	$datos = json_decode(file_get_contents("http://172.16.0.46:70/citas/1/100000000000", false, $contexto), true);
 	// Pasa los datos a la vista
@@ -445,12 +443,14 @@ public function actualizar_citas($idcaso)
 				'header'  => "Authorization: Bearer $token\r\n"
 			]
 		]);
+
 		// Realiza la solicitud a la API para obtener los datos
-		$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
+		//$datos2 = json_decode(file_get_contents("http://172.16.0.46:70/requerimientos/unique/".$idcaso, false, $contexto), true);
 		$cita = json_decode(file_get_contents("http://172.16.0.46:70/citas/".$idcaso, false, $contexto), true);
+		
 	
 	 	// Pasa los datos a la vista
-	 	$data['datos2'] = $datos2;
+	 	//$data['datos2'] = $datos2;
 		$data['cita'] = $cita;
 
 		
