@@ -23,7 +23,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-12">
-                                <iframe src="http://10.100.2.89:3000/" class="map" frameborder="0"></iframe>
+                                <iframe src="http://172.16.0.59:10/" class="map" frameborder="0"></iframe>
                             </div>
                         </div>  
                     </div>
