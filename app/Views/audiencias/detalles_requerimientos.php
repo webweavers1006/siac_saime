@@ -30,22 +30,37 @@ $userdata = $session->get();
               </div>
             </div>
           
-              <div class="col-sm-4">
-                <label class="has-text-weight-semibold">Pais de solicitud</label>
-            
-                - <?php echo $datos2['pais']; ?>
-              </div>
-              <div class="col-sm-4">
-                <label class="has-text-weight-semibold">Formato de cita</label>
-                <!-- Información del formato de cita -->
-                - <?php echo $datos2['formato_cita']; ?>
-              </div>
-              <div class="col-sm-4">
-                <label class="has-text-weight-semibold">Fecha creacion</label>
-                <!-- Información de la fecha de creación -->
-                -  <?php echo date("d-m-Y H:i:s", strtotime($datos2['created'])); ?>
-              </div>
-            
+            <div class="row">
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">País de solicitud -</span> <?php echo htmlspecialchars($datos2['pais']); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Formato de cita -</span> <?php echo htmlspecialchars($datos2['formato_cita']); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Fecha de creación -</span> <?php echo date("d-m-Y H:i:s", strtotime($datos2['created'])); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Nombre -</span> <?php echo htmlspecialchars($datos2['nombre_contacto']); ?></p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Apellido -</span> <?php echo htmlspecialchars($datos2['apellido_contacto']); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Identificación -</span> <?php echo htmlspecialchars($datos2['identificacion_contacto']); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Correo -</span> <?php echo htmlspecialchars($datos2['correo_contacto']); ?></p>
+    </div>
+    <div class="col-sm-3">
+        <p><span class="has-text-weight-semibold">Teléfono -</span> <?php echo htmlspecialchars($datos2['telefono_contacto']); ?></p>
+    </div>
+</div>
+             
+              
           </div>
         </div>
       </div>
