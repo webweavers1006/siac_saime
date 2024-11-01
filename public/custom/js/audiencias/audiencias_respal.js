@@ -3,8 +3,8 @@
 
 $(function() {
 
-
-   listado_Audiencias();
+ 
+    listado_Audiencias();
    
 });
 
@@ -189,7 +189,9 @@ function listado_Audiencias() {
         },
         data: response.requerimientos // acceder a la propiedad requerimientos y pasar el array de objetos
         })
-       
+        .catch((error) => {
+          Swal.fire("Error", "No se pudo cargar la lista de audiencias", "Error");
+        });
     });
 }
 
