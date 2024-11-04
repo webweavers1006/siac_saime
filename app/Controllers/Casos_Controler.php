@@ -148,7 +148,9 @@ class Casos_Controler extends BaseController
 			} else {
 				$newCase["casonumsol"] = $datos["record-work"];
 			}
-			
+
+
+
 				$query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
 				if (isset($query_insertar_caso)) {
 					//Obtenemos el id insertado

@@ -40,16 +40,36 @@ class BaseController extends Controller
 	/**
 	 * Constructor.
 	 */
-	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-	{
-		// Do Not Edit This Line
-		parent::initController($request, $response, $logger);
-		// Preload any models, libraries, etc, here.
-		// E.g.: $this->session = \Config\Services::session();
-		$this->session = \Config\Services::session();
-		$this->cache   = \Config\Services::cache();
-	}
 
+
+		protected $whitelist = [
+			'siac_v2.com', 
+			'siac.sapi.gob.ve', 
+			'atencion.sapi.gob.ve', 
+		];
+	
+		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+		{
+			// No editar esta línea
+			parent::initController($request, $response, $logger);
+	
+			// Precargar cualquier modelo, biblioteca, etc., aquí.
+			$this->session = \Config\Services::session();
+			$this->cache   = \Config\Services::cache();
+	
+			// Verificar el origen de la solicitud
+			$this->checkOrigin();
+		}
+	
+		protected function checkOrigin()
+		{
+			$origin = $_SERVER['HTTP_HOST'] ?? '';
+		
+			// Verifica si el origen está en la whitelist
+			if (!in_array($origin, $this->whitelist)) {
+				exit('Acceso no autorizado');
+			}
+		}
 
 	/*Funcion que formatea fechas*/
 	public function formatearFecha($fecha)

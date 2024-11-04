@@ -11,6 +11,10 @@ $userdata = $session->get();
   table.dataTable tfoot {
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
+
+
+
+  
 </style>
 
 <div class="content-wrapper">
