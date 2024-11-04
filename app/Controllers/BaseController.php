@@ -46,6 +46,8 @@ class BaseController extends Controller
 			'siac_v2.com', 
 			'siac.sapi.gob.ve', 
 			'atencion.sapi.gob.ve', 
+			'http://172.16.0.39/', 
+
 		];
 	
 		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
