@@ -47,6 +47,8 @@ class BaseController extends Controller
 			'siac.sapi.gob.ve', 
 			'atencion.sapi.gob.ve', 
 			'172.16.0.39', 
+			'186.167.8.181', 
+
 
 		];
 	
