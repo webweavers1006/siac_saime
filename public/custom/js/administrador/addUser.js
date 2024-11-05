@@ -43,8 +43,8 @@ function llenar_combo_roles(e, id) {
             }
         },
         error: function(xhr, status, errorThrown) {
-            alert(xhr.status);
-            alert(errorThrown);
+            // alert(xhr.status);
+            // alert(errorThrown);
         }
     });
 }
@@ -91,8 +91,8 @@ function llenar_combo_Direcciones_normal(e,id) {
             }
         },
         error: function(xhr, status, errorThrown) {
-            alert(xhr.status);
-            alert(errorThrown);
+            // alert(xhr.status);
+            // alert(errorThrown);
         }
     });
 }
@@ -138,8 +138,8 @@ function llenar_combo_Direcciones(e,id,act_aud) {
             }
         },
         error: function(xhr, status, errorThrown) {
-            alert(xhr.status);
-            alert(errorThrown);
+            // alert(xhr.status);
+            // alert(errorThrown);
         }
     });
 }
@@ -1186,52 +1186,87 @@ $("#edit_acceso_audi").on('click', function() {
                         $("#edit_id_rol option[value='" + response.id_rol + "']").prop("selected", true);
                         $("#edit_cedula").val(response.identificacion); 
                     },
-                            error: function(xhr, status, error) 
-                            {
-                                //console.log(xhr.responseJSON);
-                                if (xhr.responseJSON && xhr.responseJSON.error) {
-                                    const errorCode = xhr.responseJSON.error.code;
-                                    const errorMessage = xhr.responseJSON.error.message;
-                                    switch (errorCode) {
-                                        case 0:
-                                            if (errorMessage.includes("Usuario not found")) {
-                                                Swal.fire({
-                                                    title: 'Error',
-                                                    text: "El usuario no existe en el sistema de Audiencias. ¿Desea registrarlo?",
-                                                    icon: 'error', // Asegúrate de que 'error' sea un valor válido
-                                                    showCancelButton: true, // Muestra el botón "No"
-                                                    confirmButtonText: 'Sí', // Botón "Sí"
-                                                    cancelButtonText: 'No' // Botón "No"
-                                                }).then((result) => {
-                                                    if (result.value==true) {
-                                                        $("#ingreso_por_update").css('display', 'block');
-                                                        $("#guardar").css('display', 'none');
-                                                        $(".edit_id_rol_nivel").css('display', 'block');
-                                                        $(".edit_user_cedula").css('display', 'block');
-                                                    // SI PRESIONA QUE NO , SE CIERRA EL SWAL FIRE***
-                                                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                                        // Si el usuario hace clic en "No"
-                                                        Swal.fire({
-                                                            title: 'Cerrando...',
-                                                            text: 'No se realizará ninguna acción.',
-                                                            icon: 'info', // Asegúrate de que 'info' sea un valor válido
-                                                            timer: 1500,
-                                                            showConfirmButton: false
-                                                        });
-                                                    }
-                                                });
-                                
-                                            } else {
-                                                console.log("Error desconocido:", errorMessage);
-                                            }
-                                            break;
-                                        default:
-                                            console.log("Error desconocido:", errorMessage);
-                                    }
+
+
+                    error: function(xhr, status, error) {
+                        console.log("XHR Response:", xhr.responseJSON); // Para ver la respuesta completa
+                        const errorMessage = xhr.responseJSON ? xhr.responseJSON.error.message : "Error desconocido"; // Manejo del mensaje de error
+                    
+                        // Verificar si el mensaje de error contiene "Usuario not found"
+                        if (errorMessage && errorMessage.includes("Usuario not found")) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: "El usuario no existe en el sistema de Audiencias. ¿Desea registrarlo?",
+                                icon: 'error',
+                                showCancelButton: true,
+                                confirmButtonText: 'Sí',
+                                cancelButtonText: 'No'
+                            }).then((result) => {
+                                if (result.value==true) {
+                                    $("#ingreso_por_update").css('display', 'block');
+                                    $("#guardar").css('display', 'none');
+                                    $(".edit_id_rol_nivel").css('display', 'block');
+                                    $(".edit_user_cedula").css('display', 'block');
                                 } else {
-                                    console.log("Error desconocido:", xhr.responseJSON);
+                                    Swal.fire({
+                                        title: 'Cerrando...',
+                                        text: 'No se realizará ninguna acción.',
+                                        icon: 'info',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
                                 }
-                            }
+                            });
+                        } else {
+                            console.log("Error desconocido:", errorMessage);
+                        }
+                    }
+                            // error: function(xhr, status, error) 
+                            // {
+                            //     //console.log(xhr.responseJSON);
+                            //     if (xhr.responseJSON && xhr.responseJSON.error) {
+                            //         const errorCode = xhr.responseJSON.error.code;
+                            //         const errorMessage = xhr.responseJSON.error.message;
+                            //         switch (errorCode) {
+                            //             case 0:
+                            //                 if (errorMessage.includes("Usuario not found")) {
+                            //                     Swal.fire({
+                            //                         title: 'Error',
+                            //                         text: "El usuario no existe en el sistema de Audiencias. ¿Desea registrarlo?",
+                            //                         icon: 'error', // Asegúrate de que 'error' sea un valor válido
+                            //                         showCancelButton: true, // Muestra el botón "No"
+                            //                         confirmButtonText: 'Sí', // Botón "Sí"
+                            //                         cancelButtonText: 'No' // Botón "No"
+                            //                     }).then((result) => {
+                            //                         if (result.value==true) {
+                            //                             $("#ingreso_por_update").css('display', 'block');
+                            //                             $("#guardar").css('display', 'none');
+                            //                             $(".edit_id_rol_nivel").css('display', 'block');
+                            //                             $(".edit_user_cedula").css('display', 'block');
+                            //                         // SI PRESIONA QUE NO , SE CIERRA EL SWAL FIRE***
+                            //                         } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            //                             // Si el usuario hace clic en "No"
+                            //                             Swal.fire({
+                            //                                 title: 'Cerrando...',
+                            //                                 text: 'No se realizará ninguna acción.',
+                            //                                 icon: 'info', // Asegúrate de que 'info' sea un valor válido
+                            //                                 timer: 1500,
+                            //                                 showConfirmButton: false
+                            //                             });
+                            //                         }
+                            //                     });
+                                
+                            //                 } else {
+                            //                     console.log("Error desconocido:", errorMessage);
+                            //                 }
+                            //                 break;
+                            //             default:
+                            //                 console.log("Error desconocido:", errorMessage);
+                            //         }
+                            //     } else {
+                            //         console.log("Error desconocido:", xhr.responseJSON);
+                            //     }
+                            // }
                 });
     } else 
     {

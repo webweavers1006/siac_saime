@@ -273,7 +273,7 @@
         <div class="modal-footer ">
           <button class="btn  btn-sm btn-light" type="reset">Limpiar</button>
           <button class="btn  btn-sm  btn-primary" type="submit" id="guardar">Guardar</button>
-          <button class="btn  btn-sm  btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar2</button>
+          <button class="btn  btn-sm  btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar</button>
           <button type="button" class="btn btn-sm  btn-danger" data-dismiss="modal">Cerrar</button>
         </div>
       </form>
