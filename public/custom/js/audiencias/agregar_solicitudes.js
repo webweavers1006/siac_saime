@@ -19,7 +19,7 @@ $(document).on('submit', "#buscar", function(e) {
   } else {
     sol = sol.padStart(6, '0');
     const valorConcatenado = `${ano}${sol}`;
-    const url = `http://172.16.0.46:70/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
+    const url = `http://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
     // Realiza la solicitud AJAX
      
     $.ajax({
@@ -176,7 +176,7 @@ $('#agregar_solicitudes').on('click', function() {
       //ENVIO LOS DATOS DE LA SOLICITUD
       $.ajax({
         type: "POST",
-        url: "http://172.16.0.46:70/solicitudes",
+        url: "http://siac.sapi.gob.ve/api/audiencia/solicitudes",
         data: JSON.stringify(solicitud), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -207,7 +207,7 @@ $('#agregar_solicitudes').on('click', function() {
 
   let id_area = $("#id_area").val();
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = `http://172.16.0.46:70/usuarios_areas/director/${id_area}`;
+  const url = `http://siac.sapi.gob.ve/api/audiencia/usuarios_areas/director/${id_area}`;
     // Realiza la solicitud AJAX
     $.ajax({
       url: url,

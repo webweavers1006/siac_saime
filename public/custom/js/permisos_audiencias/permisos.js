@@ -16,7 +16,7 @@ function listar_permisos_audiencias() {
         filter: true,
         autoWidth: true,
         ajax: {
-            url: "http://172.16.0.46:70/permisos", // URL correcta
+            url: "http://siac.sapi.gob.ve/api/audiencia/permisos", // URL correcta
             type: "GET",
             headers: {
                 'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
@@ -78,7 +78,7 @@ $(document).on('submit', "#new-permiso", function(e) {
  
     $.ajax({
         type: "POST",
-        url: "http://172.16.0.46:70/permisos",
+        url: "http://siac.sapi.gob.ve/api/audiencia/permisos",
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -123,7 +123,7 @@ $(document).on('submit', "#edit-permiso", function(e) {
 
     $.ajax({
         type: "PUT",
-        url: "http://172.16.0.46:70/permisos/" + id,
+        url: "http://siac.sapi.gob.ve/api/audiencia/permisos/" + id,
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",

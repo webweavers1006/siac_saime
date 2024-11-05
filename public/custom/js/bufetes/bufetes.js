@@ -20,7 +20,7 @@ function Listar_bufetes() {
         autoWidth: true,
         // stateSave: true,
         ajax: {
-            url: "http://172.16.0.46:70/bufetes", // URL correcta
+            url: "http://siac.sapi.gob.ve/api/audiencia/bufetes", // URL correcta
             type: "GET",
             headers: {
                 'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
@@ -88,7 +88,7 @@ $(document).on('submit', "#new-bufete", function(e) {
 
         $.ajax({
             type: "POST",
-            url: "http://172.16.0.46:70/bufetes",
+            url: "http://siac.sapi.gob.ve/api/audiencia/bufetes",
             data: JSON.stringify(datos_audiencia),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -179,7 +179,7 @@ $(document).on('submit', "#edit-bufete", function(e) {
         //console.log(JSON.stringify(datos_audiencia));
         $.ajax({
             type: "PUT",
-            url: "http://172.16.0.46:70/bufetes/"+id,
+            url: "http://siac.sapi.gob.ve/api/audiencia/bufetes/"+id,
             data: JSON.stringify(datos_audiencia),
             contentType: "application/json; charset=utf-8",
             dataType: "json",

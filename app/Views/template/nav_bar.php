@@ -119,7 +119,7 @@ $userdata = $session->get();
 
           <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 4  or $session->get('userrol') == 5 or $session->get('userrol') == 6) { ?>
           <li class="nav-item">
-            <a href="<?php echo base_url(); ?>/reposos" class="nav-link" id=""><i class="nav-icon fas fa-folder-open "></i>
+            <a href="#" class="nav-link" id=""><i class="nav-icon fas fa-folder-open "></i>
               <p> Reportes</p>
               <i class="right fas fa-angle-left"></i>
             </a>

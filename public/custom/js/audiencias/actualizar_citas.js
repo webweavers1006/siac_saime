@@ -65,7 +65,7 @@ $('.actualizar').on('click', function() {
           // // ACTUALIZO LOS DATOS EN AUDIENCIA
         $.ajax({
           type: "PUT",
-          url: `http://172.16.0.46:70/citas/`+numero_cita,
+          url: `http://siac.sapi.gob.ve/api/audiencia/citas/`+numero_cita,
           data: JSON.stringify(audienceData),
           contentType: "application/json; charset=utf-8",
           dataType: "json",

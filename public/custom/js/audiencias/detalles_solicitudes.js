@@ -26,7 +26,7 @@ $('#observaciones').on('click', function() {
 //AGREGO LOS DATOS EN AUDIENCIA
 $.ajax({
   type: "POST",
-  url: `http://172.16.0.46:70/mensajes`,
+  url: `http://siac.sapi.gob.ve/api/audiencia/mensajes`,
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
@@ -76,7 +76,7 @@ $('#responsable').on('click', function() {
 //AGREGO LOS DATOS EN AUDIENCIA
 $.ajax({
   type: "PUT",
-  url: `http://172.16.0.46:70/solicitudes/`+id_solicitud,
+  url: `http://siac.sapi.gob.ve/api/audiencia/solicitudes/`+id_solicitud,
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
@@ -171,7 +171,7 @@ if (id_condicion) {
       // Si el usuario confirma, se ejecuta el AJAX
       $.ajax({
         type: "PUT",
-        url: `http://172.16.0.46:70/solicitudes/` + id_solicitud,
+        url: `http://siac.sapi.gob.ve/api/audiencia/solicitudes/` + id_solicitud,
         data: JSON.stringify(audienceData),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -210,7 +210,7 @@ function listar_tipo_cierres() {
   let id_area = parseInt($('#id_area').val(), 10); // Convertir a número
   //console.log("ID Área:", id_area);
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = `http://172.16.0.46:70/categorias`;
+  const url = `http://siac.sapi.gob.ve/api/audiencia/categorias`;
 
   // Realiza la solicitud AJAX
   $.ajax({

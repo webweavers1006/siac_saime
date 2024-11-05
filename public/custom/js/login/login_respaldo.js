@@ -40,7 +40,7 @@ $(document).on('submit', "#login-user", function(e) {
                  
                 $.ajax({
                     type: "POST",
-                    url: "http://172.16.0.46:70/auth/user/authentication",
+                    url: "http://siac.sapi.gob.ve/api/audiencia/auth/user/authentication",
                     data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",

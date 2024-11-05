@@ -31,7 +31,7 @@ class Administrador extends BaseController
 			//Preguntamos por los roles de los usuarios
 			$query = $rolModel->getRoles($idrol);
 			
-			$nivel_rol = json_decode(file_get_contents("http://172.16.0.46:70/roles",false, $contexto), true);
+			$nivel_rol = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/roles",false, $contexto), true);
 
 			
 			//Generamos los option para los formularios
