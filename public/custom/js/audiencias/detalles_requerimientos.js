@@ -109,7 +109,7 @@ $('.agendar').on('click', function() {
 // AGREGO LOS DATOS EN AUDIENCIA
 $.ajax({
   type: "POST",
-  url: `http://siac.sapi.gob.ve/api/audiencia/citas`,
+  url: `https://siac.sapi.gob.ve/api/audiencia/citas`,
   data: JSON.stringify(audienceData),
   contentType: "application/json; charset=utf-8",
   dataType: "json",
@@ -166,7 +166,7 @@ $('#remitir').on('click', function() {
   
       $.ajax({
       type: "PUT",
-      url: `http://siac.sapi.gob.ve/api/audiencia/solicitudes/${id_solicitud}`,
+      url: `https://siac.sapi.gob.ve/api/audiencia/solicitudes/${id_solicitud}`,
       data: JSON.stringify(audienceData),
       contentType: "application/json; charset=utf-8",
       dataType: "json",

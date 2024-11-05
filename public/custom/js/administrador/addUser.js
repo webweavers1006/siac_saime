@@ -342,7 +342,7 @@ $(document).on('submit', "#new-user", function(e) {
                         // AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
                             $.ajax({
                                 type: "POST",
-                                url: "http://siac.sapi.gob.ve/api/audiencia/auth/user/create",
+                                url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/create",
                                 data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
@@ -559,7 +559,7 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
         act_aud='true';
         $.ajax({
             type: "GET",
-            url: "http://siac.sapi.gob.ve/api/audiencia/usuarios/"+idusuopr,
+            url: "https://siac.sapi.gob.ve/api/audiencia/usuarios/"+idusuopr,
             //data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -780,7 +780,7 @@ $(document).on('submit', "#edit-user", function(e) {
                            // DATOS PARA ACUTALIZAR DATOS EN EL SISTEMA DE AUDIENCIAS                                     
                             $.ajax({
                                 type: "put",
-                                url: "http://siac.sapi.gob.ve/api/audiencia/usuarios/"+id_user,
+                                url: "https://siac.sapi.gob.ve/api/audiencia/usuarios/"+id_user,
                                 data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
@@ -877,7 +877,7 @@ $(document).on('submit', "#edit-user", function(e) {
                         // ACTUALIZO LOS DATOS EN AUDIENCIA
                         $.ajax({
                             type: "PUT",
-                            url: `http://siac.sapi.gob.ve/api/audiencia/usuarios/${id_user}`,
+                            url: `https://siac.sapi.gob.ve/api/audiencia/usuarios/${id_user}`,
                             data: JSON.stringify(audienceData),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
@@ -1167,7 +1167,7 @@ $("#edit_acceso_audi").on('click', function() {
 
         $.ajax({
             type: "GET",
-            url: "http://siac.sapi.gob.ve/api/audiencia/usuarios/"+idusuopr,
+            url: "https://siac.sapi.gob.ve/api/audiencia/usuarios/"+idusuopr,
             //data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -1306,7 +1306,7 @@ $("#ingreso_por_update").on('click', function() {
                         ////AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
                         $.ajax({
                         type: "POST",
-                        url: "http://siac.sapi.gob.ve/api/audiencia/auth/user/create",
+                        url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/create",
                         data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -1404,7 +1404,7 @@ $("#ingreso_por_update").on('click', function() {
                       ////AJAX QUE CREA EL USUARIO EN EL SISTEMA DE AUDIENCIA     
                       $.ajax({
                         type: "POST",
-                        url: "http://siac.sapi.gob.ve/api/audiencia/auth/user/create",
+                        url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/create",
                         data: JSON.stringify(audienceData), // Convertir objeto a cadena JSON
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",

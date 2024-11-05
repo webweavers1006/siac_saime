@@ -55,7 +55,7 @@ $(document).on('submit', "#login-user", function(e) {
                                 };  
                                 $.ajax({
                                     type: "POST",
-                                    url: "http://siac.sapi.gob.ve/api/audiencia/auth/user/authentication",
+                                    url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/authentication",
                                     data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
                                     contentType: "application/json; charset=utf-8",
                                     dataType: "json",

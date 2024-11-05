@@ -28,7 +28,7 @@ $('#actualizar_solicitud').on('click', function() {
              // ENVIO LOS DATOS DE LA SOLICITUD
              $.ajax({
               type: "PUT",
-              url: "http://siac.sapi.gob.ve/api/audiencia/solicitudes/"+id_solicitud,
+              url: "https://siac.sapi.gob.ve/api/audiencia/solicitudes/"+id_solicitud,
               data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
               contentType: "application/json; charset=utf-8",
               dataType: "json",

@@ -54,7 +54,7 @@ class Audiencias_Controler extends BaseController
 			
 		
 		///SOLICITUDES POR TRABAJADOR
-		$ch = curl_init("http://siac.sapi.gob.ve/api/audiencia/solicitudes/workers/".$userdata["iduser"]);
+		$ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/solicitudes/workers/".$userdata["iduser"]);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -68,7 +68,7 @@ class Audiencias_Controler extends BaseController
 		if ($datos['solicitudes']) 
 		{
 			$id_requerimiento = $datos['solicitudes'][0]['id_requerimiento'];
-			$ch = curl_init("http://siac.sapi.gob.ve/api/audiencia/solicitudes/".$id_requerimiento);
+			$ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/solicitudes/".$id_requerimiento);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -118,15 +118,15 @@ class Audiencias_Controler extends BaseController
 				]
 			]);
 		// Realiza la solicitud y decodifica la respuesta JSON
-		$datos2 = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
+		$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
 
 
-		$responsable = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
+		$responsable = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
 		
 		//********************************************************************
        
 
-		$ch = curl_init("http://siac.sapi.gob.ve/api/audiencia/solicitudes/".$idcaso);
+		$ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/solicitudes/".$idcaso);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -141,7 +141,7 @@ class Audiencias_Controler extends BaseController
 		
 
   		// ******************************OTROS DATOS***************************
-		  $ch = curl_init("http://siac.sapi.gob.ve/api/audiencia/solicitudes/".$idcaso);
+		  $ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/solicitudes/".$idcaso);
 			curl_setopt_array($ch, array(
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_HTTPHEADER => array(
@@ -184,7 +184,7 @@ class Audiencias_Controler extends BaseController
 
 
 		// ******************************CITAS***************************
-		$url = "http://siac.sapi.gob.ve/api/audiencia/citas/ByRequerimiento/".$idcaso;
+		$url = "https://siac.sapi.gob.ve/api/audiencia/citas/ByRequerimiento/".$idcaso;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -203,7 +203,7 @@ class Audiencias_Controler extends BaseController
 		}
 
 			// ************INFORMACION DE EMPRESA OBUFECTE***************************
-			$url = "http://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes/".$idcaso;
+			$url = "https://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes/".$idcaso;
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -257,10 +257,10 @@ class Audiencias_Controler extends BaseController
 		]);
 
 		 // Realiza la solicitud a la API para obtener los datos
-		 $datos2 = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
+		 $datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
 		
-		 $pais = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
-		 $estados = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
+		 $pais = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
+		 $estados = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
 
 
 
@@ -296,12 +296,12 @@ class Audiencias_Controler extends BaseController
 			]
 		]);
 		 // Realiza la solicitud a la API para obtener los datos
-		 $responsable = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
-		 $datos = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/solicitudes/unicas/".$idcaso, false, $contexto), true);
+		 $responsable = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
+		 $datos = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/solicitudes/unicas/".$idcaso, false, $contexto), true);
 		
 
-		 $pais = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
-		 $estados = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
+		 $pais = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
+		 $estados = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
 		 // Pasa los datos a la vista
 		 $data['responsable'] = $responsable;
 		 $data['datos'] = $datos;
@@ -341,28 +341,28 @@ class Audiencias_Controler extends BaseController
 			]
 		]);
 
-		$datos = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/solicitudes/unicas/".$id, false, $contexto), true);
+		$datos = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/solicitudes/unicas/".$id, false, $contexto), true);
 
 	
 		$info_empresa_y_titulares = array(); // Inicializa la variable como un arreglo vacío
 
 		if ($datos['id_area']==1) {
-			$info_empresa_y_titulares = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/".$datos['num_solicitud']."/M/info", false, $contexto), true);
+			$info_empresa_y_titulares = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/".$datos['num_solicitud']."/M/info", false, $contexto), true);
 		} else if ($datos['id_area']==2) {
-			$info_empresa_y_titulares = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/".$datos['num_solicitud']."/P/info", false, $contexto), true);
+			$info_empresa_y_titulares = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/".$datos['num_solicitud']."/P/info", false, $contexto), true);
 		}
 
 		
 		
 		////MENSAJES
-		$mensajes = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/mensajes/$id/1/100", false, $contexto), true);
+		$mensajes = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/mensajes/$id/1/100", false, $contexto), true);
 		
 		
 
 		
 		
 		////CRONOLOGIA
-		$url = "http://siac.sapi.gob.ve/api/audiencia/solicitudes/crono/".$id;
+		$url = "https://siac.sapi.gob.ve/api/audiencia/solicitudes/crono/".$id;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -383,7 +383,7 @@ class Audiencias_Controler extends BaseController
 			// ...
 		}
 
-		$responsable = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
+		$responsable = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
 		
 		// Pasa los datos a la vista
 		$data['datos'] = $datos;
@@ -418,7 +418,7 @@ public function citas()
 	]);
 
 	// Realiza la solicitud a la API para obtener los datos
-	$datos = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/citas/1/100000000000", false, $contexto), true);
+	$datos = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/citas/1/100000000000", false, $contexto), true);
 	// Pasa los datos a la vista
 	$data['datos'] = $datos;
 		echo view('template/header');
@@ -445,8 +445,8 @@ public function actualizar_citas($idcaso)
 		]);
 
 		// Realiza la solicitud a la API para obtener los datos
-		//$datos2 = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
-		$cita = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/citas/".$idcaso, false, $contexto), true);
+		//$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
+		$cita = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/citas/".$idcaso, false, $contexto), true);
 		
 	
 	 	// Pasa los datos a la vista
@@ -479,9 +479,9 @@ public function actualizar_citas($idcaso)
 
 
 		// Realiza la solicitud a la API para obtener los datos
-		$pais = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
-		$estados = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
-		$categorias = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/categorias", false, $contexto), true);
+		$pais = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
+		$estados = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
+		$categorias = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/categorias", false, $contexto), true);
 		// Pasa los datos a la vista
 		$data['estados'] = $estados;
 		$data['pais'] = $pais;
@@ -512,9 +512,9 @@ public function agregar_solicitudes($idcaso)
 				]
 			]);
 	// Realiza la solicitud a la API para obtener los datos
-	$datos2 = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
+	$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
 	
-	$categorias = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/categorias", false, $contexto), true);
+	$categorias = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/categorias", false, $contexto), true);
 	$data['categorias'] = $categorias;
 	$data['datos2'] = $datos2;
 	echo view('template/header');
@@ -549,7 +549,7 @@ public function citas_otorgadas($año)
        
         
         // Realiza la solicitud a la API para obtener los datos
-        $url = "http://siac.sapi.gob.ve/api/audiencia/citas/byMeses/" . $año;
+        $url = "https://siac.sapi.gob.ve/api/audiencia/citas/byMeses/" . $año;
         $citas = json_decode(file_get_contents($url, false, $contexto), true);
         
         $data['citas'] = $citas;
@@ -582,7 +582,7 @@ public function casos_categorias()
 
 
 	// Realiza la solicitud a la API para obtener los datos
-	$casos = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/solicitudes/byCategorias", false, $contexto), true);
+	$casos = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/solicitudes/byCategorias", false, $contexto), true);
 	$data['casos'] = $casos;
 	
 	echo view('template/header');
@@ -610,7 +610,7 @@ public function estadisticas_audiencias()
 			]
 		]);
 
-	$estado = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
+	$estado = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
 	$data['estatus'] = $estado;
 	echo view('template/header');
 	echo view('template/nav_bar');

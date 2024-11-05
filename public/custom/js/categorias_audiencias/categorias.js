@@ -20,7 +20,7 @@ function listar_categorias_audiencias() {
         "autoWidth": true,
         //"stateSave": true,
         "ajax": {
-            "url": "http://siac.sapi.gob.ve/api/audiencia/categorias", // URL correcta
+            "url": "https://siac.sapi.gob.ve/api/audiencia/categorias", // URL correcta
             "type": "GET",
             headers: {
                 'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
@@ -98,7 +98,7 @@ $(document).on('submit', "#new-categoria", function(e) {
        
          $.ajax({
         type: "POST",
-        url: "http://siac.sapi.gob.ve/api/audiencia/categorias",
+        url: "https://siac.sapi.gob.ve/api/audiencia/categorias",
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -184,7 +184,7 @@ $(document).on('submit', "#edit-categoria", function(e) {
 
     $.ajax({
         type: "PUT",
-        url: "http://siac.sapi.gob.ve/api/audiencia/categorias/" + id,
+        url: "https://siac.sapi.gob.ve/api/audiencia/categorias/" + id,
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",

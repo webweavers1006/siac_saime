@@ -53,7 +53,7 @@ class Home extends BaseController
 				]
 			]);
 			
-			$estado = json_decode(file_get_contents("http://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
+			$estado = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
 		$data['estatus'] = $estado;
 
 			echo view('template/header');
@@ -84,7 +84,7 @@ class Home extends BaseController
 			$nivel_rol = $session->get('nivel_rol');
 			
 			// BUSCO LOS PERMISOS DEL ROL
-			$url = "http://siac.sapi.gob.ve/api/audiencia/roles/".$nivel_rol;
+			$url = "https://siac.sapi.gob.ve/api/audiencia/roles/".$nivel_rol;
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(

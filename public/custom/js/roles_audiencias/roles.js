@@ -21,7 +21,7 @@ function listar_roles_audiencias() {
         "autoWidth": true,
         //"stateSave": true,
         "ajax": {
-            "url": "http://siac.sapi.gob.ve/api/audiencia/roles", // URL correcta
+            "url": "https://siac.sapi.gob.ve/api/audiencia/roles", // URL correcta
             "type": "GET",
             dataSrc: 'roless' // Cambiado para que apunte a la clave correcta en la respuesta JSON
         },
@@ -76,7 +76,7 @@ $(document).on('submit', "#new-rol", function(e) {
 
     $.ajax({
         type: "POST",
-        url: "http://siac.sapi.gob.ve/api/audiencia/roles",
+        url: "https://siac.sapi.gob.ve/api/audiencia/roles",
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -121,7 +121,7 @@ $(document).on('submit', "#edit-rol", function(e) {
 
     $.ajax({
         type: "PUT",
-        url: "http://siac.sapi.gob.ve/api/audiencia/roles/" + id,
+        url: "https://siac.sapi.gob.ve/api/audiencia/roles/" + id,
         data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -151,7 +151,7 @@ $('#listar_roles').on('click', '.Permisos', function(e) {
 
 $.ajax({
     type: "GET",
-    url: `http://siac.sapi.gob.ve/api/audiencia/permisos`, 
+    url: `https://siac.sapi.gob.ve/api/audiencia/permisos`, 
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     headers: {
@@ -161,7 +161,7 @@ $.ajax({
         // Realizar la solicitud AJAX para obtener los datos del rol
         $.ajax({
             type: "GET",
-            url: `http://siac.sapi.gob.ve/api/audiencia/roles/${id}`, 
+            url: `https://siac.sapi.gob.ve/api/audiencia/roles/${id}`, 
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {
@@ -235,7 +235,7 @@ $(document).on('submit', "#edit-permisos", function(e) {
     // AGREGAR PERMISOS
     $.ajax({
         type: "POST",
-        url: "http://siac.sapi.gob.ve/api/audiencia/permisos_por_rol" ,
+        url: "https://siac.sapi.gob.ve/api/audiencia/permisos_por_rol" ,
         data: JSON.stringify(permisos), // Convertir objeto a cadena JSON
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -262,7 +262,7 @@ $(document).on('submit', "#edit-permisos", function(e) {
 //  // ELIMINAR  PERMISOS
 //  $.ajax({
 //     type: "DELETE",
-//     url: "http://siac.sapi.gob.ve/api/audiencia/permisos_por_rol" ,
+//     url: "https://siac.sapi.gob.ve/api/audiencia/permisos_por_rol" ,
 //     data: JSON.stringify(permisos_borrados), // Convertir objeto a cadena JSON
 //     contentType: "application/json; charset=utf-8",
 //     dataType: "json",

@@ -16,7 +16,7 @@ function listado_Audiencias() {
     const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
     var encabezado = '';
     $.ajax({
-      url: "http://siac.sapi.gob.ve/api/audiencia/requerimientos/1/100/",
+      url: "https://siac.sapi.gob.ve/api/audiencia/requerimientos/1/100/",
       method: "GET",
       dataType: "json",
        dataType: "json",
@@ -214,7 +214,7 @@ $('#listar_audencias').on('click', '.Bufetes', function(e) {
   
   const id_audiencia = $(this).attr('id');
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = "http://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes";
+  const url = "https://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes";
 
   $.ajax({
       url: url,
@@ -275,7 +275,7 @@ $(document).on('click', "#btn_agregar", function(e) {
 })
 function Listar_bufetes(e, id_bufete) {
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = "http://siac.sapi.gob.ve/api/audiencia/bufetes";
+  const url = "https://siac.sapi.gob.ve/api/audiencia/bufetes";
 
   $.ajax({
       url: url,
@@ -331,7 +331,7 @@ $('#guardar').on('click', function() {
 
     $.ajax({
       type: "POST",
-      url: `http://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes`,
+      url: `https://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes`,
       data: JSON.stringify(datos_audiencia),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -374,7 +374,7 @@ $('#actualizar').on('click', function() {
   // Realizar la solicitud AJAX para actualizar el registro
   $.ajax({
       type: "PUT",
-      url: `http://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes/${id_usuario_bufete}`,
+      url: `https://siac.sapi.gob.ve/api/audiencia/usuarios_bufetes/${id_usuario_bufete}`,
       data: JSON.stringify(datos_audiencia),
       contentType: "application/json; charset=utf-8",
       dataType: "json",

@@ -24,7 +24,7 @@ function listar_usuarios_areas() {
         "autoWidth": true,
         //"stateSave": true,
         "ajax": {
-            "url": "http://siac.sapi.gob.ve/api/audiencia/usuarios_areas", // URL correcta
+            "url": "https://siac.sapi.gob.ve/api/audiencia/usuarios_areas", // URL correcta
             "type": "GET",
             headers: {
                 'Authorization': `Bearer ${user_audiencia.token}` // Agregar token aquí
@@ -97,7 +97,7 @@ $(document).on('submit', "#new-usuario-area", function(e) {
 
         $.ajax({
             type: "POST",
-            url: "http://siac.sapi.gob.ve/api/audiencia/usuarios_areas",
+            url: "https://siac.sapi.gob.ve/api/audiencia/usuarios_areas",
             data: JSON.stringify(datos_audiencia),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -126,7 +126,7 @@ function llenar_usuarios(e, id_usuario) {
 
     $.ajax({
         type: "GET",
-        url: "http://siac.sapi.gob.ve/api/audiencia/usuarios/1/1000",
+        url: "https://siac.sapi.gob.ve/api/audiencia/usuarios/1/1000",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         headers: {
@@ -206,7 +206,7 @@ $(document).on('submit', "#edit-usuarios_areas", function(e) {
         //console.log(JSON.stringify(datos_audiencia));
         $.ajax({
             type: "PUT",
-            url: "http://siac.sapi.gob.ve/api/audiencia/usuarios_areas/"+id_usuario_area,
+            url: "https://siac.sapi.gob.ve/api/audiencia/usuarios_areas/"+id_usuario_area,
             data: JSON.stringify(datos_audiencia),
             contentType: "application/json; charset=utf-8",
             dataType: "json",

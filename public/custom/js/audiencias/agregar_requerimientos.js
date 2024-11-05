@@ -50,7 +50,7 @@ $(document).on('submit', "#buscar", function(e) {
     
 
 
-    const url = `http://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
+    const url = `https://siac.sapi.gob.ve/api/audiencia/solicitudes/consulta/${valorConcatenado}/${tipo_audiencia}`;
     // Realiza la solicitud AJAX
      
     $.ajax({
@@ -232,7 +232,7 @@ $('#ingresar_audiencia').on('click', function() {
     // // ENVIO LOS DATOS DEL REQUERIMIENTO
      $.ajax({
        type: "POST",
-       url: "http://siac.sapi.gob.ve/api/audiencia/requerimientos",
+       url: "https://siac.sapi.gob.ve/api/audiencia/requerimientos",
        data: JSON.stringify(datos_audiencia), // Convertir objeto a cadena JSON
        contentType: "application/json; charset=utf-8",
        dataType: "json",
@@ -267,7 +267,7 @@ $('#ingresar_audiencia').on('click', function() {
             //ENVIO LOS DATOS DE LA SOLICITUD
             $.ajax({
               type: "POST",
-              url: "http://siac.sapi.gob.ve/api/audiencia/solicitudes",
+              url: "https://siac.sapi.gob.ve/api/audiencia/solicitudes",
               data: JSON.stringify(solicitud), // Convertir objeto a cadena JSON
               contentType: "application/json; charset=utf-8",
               dataType: "json",
@@ -323,7 +323,7 @@ if (id_area==2)
 
 
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = `http://siac.sapi.gob.ve/api/audiencia/usuarios_areas/director/${id_area}`;
+  const url = `https://siac.sapi.gob.ve/api/audiencia/usuarios_areas/director/${id_area}`;
     // Realiza la solicitud AJAX
     $.ajax({
       url: url,
@@ -361,7 +361,7 @@ $(document).on('change', '#estado-select', function(e) {
   let id_estado = $("#estado-select").val();
 
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = `http://siac.sapi.gob.ve/api/audiencia/municipios/byEstado/${id_estado}`;
+  const url = `https://siac.sapi.gob.ve/api/audiencia/municipios/byEstado/${id_estado}`;
   
   // Realiza la solicitud AJAX para obtener los municipios
   $.ajax({
@@ -405,7 +405,7 @@ $(document).on('change', '#municipio-select', function(e) {
   let municipio_id = $("#municipio-select").val();
 
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  const url = `http://siac.sapi.gob.ve/api/audiencia/parroquias/byMunicipio/${municipio_id}`;
+  const url = `https://siac.sapi.gob.ve/api/audiencia/parroquias/byMunicipio/${municipio_id}`;
   
   // Realiza la solicitud AJAX para obtener las parroquias
   $.ajax({
