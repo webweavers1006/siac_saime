@@ -90,10 +90,10 @@ function llenar_combo_Direcciones_normal(e,id) {
                 }
             }
         },
-        error: function(xhr, status, errorThrown) {
-            // alert(xhr.status);
-            // alert(errorThrown);
-        }
+        // error: function(xhr, status, errorThrown) {
+        //     // alert(xhr.status);
+        //     // alert(errorThrown);
+        // }
     });
 }
 
