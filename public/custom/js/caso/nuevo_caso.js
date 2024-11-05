@@ -887,6 +887,7 @@ $(function() {
                 if (data==0) 
                 {
                    alert('La cedula no se encuentra registrada');
+                   $("#cedula-persona").val(cedula_existente);
                 }else
                 {
                      // Accede al objeto data
