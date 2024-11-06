@@ -94,7 +94,7 @@ $session = session();
               
               <div class="form-group">
                   <label for="user-name">Rif</label>
-                  <input type="text"  name="name-descripcion"  id="rif" class="form-control" autocomplete="off" required>
+                  <input type="text"  name="name-descripcion"  id="rif" class="form-control" autocomplete="off" >
               </div>
 
               <div class="form-group">
@@ -140,7 +140,7 @@ $session = session();
               
               <div class="form-group">
                   <label for="user-name">Rif</label>
-                  <input type="text"  name="name-descripcion"  id="edit_rif" class="form-control" autocomplete="off" required>
+                  <input type="text"  name="name-descripcion"  id="edit_rif" class="form-control" autocomplete="off" >
               </div>
 
               <div class="form-group">
