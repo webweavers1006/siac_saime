@@ -291,7 +291,7 @@ to {
          
           
           <div class="col-lg-3 col-sm-3 col-md-3">
-              <label for="fecha-nacimiento">Fecha de Nac.</label>
+              <label for="fecha-nacimiento">Fecha de Nac</label>
               <input class="form-control" type="date" name="fecha-nacimiento" id="fecha-nacimiento" required>
           </div>
           

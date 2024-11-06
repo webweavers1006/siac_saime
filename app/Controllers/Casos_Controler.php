@@ -102,6 +102,8 @@ class Casos_Controler extends BaseController
 		$Casos_denuncias = new Casos_denuncias_Model();
 		//Arreglo para añadir el nuevo caso
 		$newCase = array();
+
+		$casos_existentes = array();
 		//Arreglo de direccion de casos
 		$dirCaso = array();
 		//Arreglo con el tipo de propiedad intelectual
@@ -139,6 +141,10 @@ class Casos_Controler extends BaseController
 			$newCase["ente_adscrito_id"]    = $datos["ente_adscrito"];
 			$newCase["edad"]    = $datos["edad"];
 			$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
+			$casos_existentes["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
+			$casos_existentes["casoced"]     = $datos["person-id"];
+			$casos_existentes["profesion"]     = $datos["profesion"];
+			$casos_existentes["edad"]     = $datos["edad"];
 			$newCase["profesion"]    = $datos["profesion"];
 			$bandera_cgr["bandera_cgr"]    = $datos["bandera_cgr"];
 			$bandera_denuncia["bandera_denuncia"]    = $datos["bandera_denuncia"];
@@ -149,7 +155,13 @@ class Casos_Controler extends BaseController
 				$newCase["casonumsol"] = $datos["record-work"];
 			}
 
-
+			//VERIFICO SI EXISTEN CASOS ANTERIOSRES EN FUNCION DE LA CEDULA , PARA ACTUALIZAR LA FECHA DE NACIMIENTO Y LA PROFECION
+			$query_BuscarCasosExistentes= $casoModel->BuscarCasosExistentes($casos_existentes);
+			if ($query_BuscarCasosExistentes)
+			{
+				//ACTUALIZO LA FECHA DE VENCIMIENTO
+				$query_ActualizarFechaNacimiento= $casoModel->ActualizarFechaNacimiento($casos_existentes);
+			}
 
 				$query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
 				if (isset($query_insertar_caso)) {

@@ -411,6 +411,7 @@ $('#listar_casos').on('click', '.Editar', function(e) {
     let fecha_nacimiento = $(this).attr('fecha_nacimiento');
     let fecha_nacimiento_normal = $(this).attr('fecha_nacimiento_normal');
     let profesion = $(this).attr('profesion');
+
     $('#editCase').find('#fecha-nacimiento').val(fecha_nacimiento_normal);
     $('#editCase').find('#edad').val(edad);
     $('#editCase').find('#profesion').val(profesion);

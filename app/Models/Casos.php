@@ -15,7 +15,7 @@ class Casos extends BaseModel
         $strQuery = "SELECT distinct a.idcaso, a.tipo_beneficiario,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
         $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
         $strQuery .= ",a.edad,to_char(a.fecha_nacimiento,'dd/mm/yyyy') as fecha_nacimiento,a.fecha_nacimiento as fecha_nacimiento_normal";
-        $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
+        $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id,a.profesion";
         $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
         $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
         $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
@@ -87,7 +87,7 @@ public function listar_Casos_Remitidos($id_direccion)
       $db      = \Config\Database::connect();
       $strQuery = "SELECT  distinct a.idcaso,a.tipo_beneficiario,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
       $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-      $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
+      $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id,a.profesion";
       $strQuery .= ",a.edad,to_char(a.fecha_nacimiento,'dd/mm/yyyy') as fecha_nacimiento,a.fecha_nacimiento as fecha_nacimiento_normal,a.profesion";
       $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
       $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
@@ -1661,5 +1661,32 @@ public function Listar_Casos_Estados()
     return $resultado;
   
 }
+
+
+
+public function BuscarCasosExistentes($casos_existentes)
+{
+    $builder = $this->db->table('public.sgc_casos as c');
+    $builder->select("*");
+    $builder->where(['c.casoced' => $casos_existentes['casoced']]);
+    $query = $builder->get();
+    $result = $query->getResult();
+    return count($result) > 0; // Devuelve true si hay registros, false si no
+}
+
+public function ActualizarFechaNacimiento($casos_existentes)
+
+{
+    // Intentamos actualizar la fecha de nacimiento
+    $builder = $this->db->table('public.sgc_casos');
+    $builder->set('fecha_nacimiento', $casos_existentes['fecha_nacimiento']);
+    $builder->set('profesion', $casos_existentes['profesion']);
+    $builder->set('edad', $casos_existentes['edad']);
+    $builder->where('casoced', $casos_existentes['casoced']);
+    $updated = $builder->update();
+    return $updated; // Retorna true si se actualizó, false si no se actualizó
+
+}
+
 
 }

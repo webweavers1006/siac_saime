@@ -533,6 +533,7 @@ $(function() {
                       "tipo_beneficiario": $("#t-beneficiario").val(),
                       "direccion": $("#office").val(),
                       "correo": $("#correo").val(),
+                      "profesion": $("#profesion").val(),
                       "ente_adscrito": 0,
                       //"ente_adscrito": $("#ente-adscrito").val(0),
                   }
@@ -685,6 +686,7 @@ $(function() {
                          "edad": $("#edad").val(),
                          "fecha_nacimiento": $("#fecha-nacimiento").val(),
                          "profesion": $("#profesion").val(),
+                         
                      }
                      $.ajax({
                          url: "/registrarCaso",
@@ -908,19 +910,10 @@ $(function() {
                 const edad = caso.edad;
                 const profesion = caso.profesion;
 
-                // correo: "MAXIMILIANACERERO@GMAIL.COM"
-                // direccion: "1"​​
-               
+           
+             
                 
-                // idcaso: "142"
-                // idest: "1"
-                // idrrss: "1"​​
-                // idusuopr: "22"
-                // ofiid: "1"
-               
-                
-               
-
+    
                 // Asigna el nombre al valor del atributo value del input
                 const nombreInput = document.getElementById("nombre-persona");
                 nombreInput.value = nombre;
@@ -933,8 +926,29 @@ $(function() {
                 const correoInput = document.getElementById("correo");
                 correoInput.value = correo;
 
-                const edadInput = document.getElementById("edad");
-                edadInput.value = edad;
+
+                // Obtener la fecha de nacimiento seleccionada
+                var fechaNacimiento = new Date(fecha_nacimiento); // Asegúrate de que fecha_nacimiento sea una cadena válida
+                var hoy = new Date();
+
+                // Calcular la edad
+                var edad_actual = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                var mes = hoy.getMonth() - fechaNacimiento.getMonth();
+
+                // Ajustar la edad si no ha cumplido años este año
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edad_actual--;
+                }
+
+                // Asignar la edad al elemento con id='edad'
+                $("#edad").val(edad_actual);
+
+
+              
+
+
+
+
                 const fecha_nacimientoInput = document.getElementById("fecha-nacimiento");
                 fecha_nacimientoInput.value = fecha_nacimiento;
 
@@ -1046,7 +1060,6 @@ $("#fecha-nacimiento").on('change', function() {
     if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
         edad--;
     }
-    
     // Asignar la edad al elemento con id='edad'
     $("#edad").val(edad);
 });
