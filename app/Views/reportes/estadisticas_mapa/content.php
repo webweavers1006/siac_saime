@@ -23,7 +23,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-12">
-                                <!-- <iframe src="https://siac.sapi.gob.ve/mapa/atencion" class="map" frameborder="0"></iframe> -->
+                                <iframe src="https://siac.sapi.gob.ve/mapa/atencion" class="map" frameborder="0"></iframe>
                             </div>
                         </div>  
                     </div>

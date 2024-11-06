@@ -29,10 +29,10 @@ $(document).on('submit', "#buscar", function(e) {
     const valorConcatenado = `${ano}${sol}`;
 
     if (tipo_audiencia == 'M') {
-      let url = `http://172.16.0.30/graficos/marcas/ef${ano}/${ano}${sol}.jpg`;
+      let url = `https://172.16.0.30/graficos/marcas/ef${ano}/${ano}${sol}.jpg`;
       mostrarImagen(url);
     } else if (tipo_audiencia == 'P') {
-      let url = `http://172.16.0.30/graficos/patentes/di${ano}/${ano}${sol}.jpg`;
+      let url = `https://172.16.0.30/graficos/patentes/di${ano}/${ano}${sol}.jpg`;
       mostrarImagen(url);
     }
     
