@@ -22,7 +22,7 @@ $session = session();
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i> Reporte por Analistas
-                                <select class="custom-select" id="usuarios" style="width:200px;" name="usuarios">
+                                <select class="custom-select" id="usuarios" style="width:300px;" name="usuarios">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <?php echo $usuarios; ?>
                                 </select>

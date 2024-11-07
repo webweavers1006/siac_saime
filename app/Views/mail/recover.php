@@ -234,11 +234,11 @@
                                           <div class="contentEditableContainer contentImageEditable">
                                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                             <td>
-                                            <img src="https://atencion.sapi.gob.ve/logo_sapi_2020.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
+                                            <img src="https://siac.sapi.gob.ve/img/logo_sapi_2020.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
                                             
                                             </td>
                                             <td>
-                                            <img src="https://atencion.sapi.gob.ve/LogoSIAC_sapi2.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
+                                            <img src="https://siac.sapi.gob.ve/img/LogoSIAC_sapi2.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
                                             </td>
                                           </table>
                                             

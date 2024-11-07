@@ -35,24 +35,24 @@ class Usuarios extends BaseModel
 		return $resultado;
 	}
 
-	// //Metodo queo btiene usuarios registrados en el sistema
-	// public function getAllUsers()
-	// {
-	// 	$builder = $this->dbconn('sgc_usuario_operador a');
-	// 	$builder->select('a.idusuopr,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a,usuopborrado,b.rolnom,b.idrol');
-	// 	$builder->join("sgc_roles b", 'a.idrol = b.idrol');
-	// 	$query = $builder->get();
-	// 	return $query;
-	// }
-
+	//Metodo queo btiene usuarios registrados en el sistema
 	public function getAllUsers()
 	{
 		$builder = $this->dbconn('sgc_usuario_operador a');
-		$builder->select('a.idusuopr,a.acceso_audi,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a.usuopborrado,b.rolnom,b.idrol');
+		$builder->select('a.idusuopr,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a,usuopborrado,b.rolnom,b.idrol');
 		$builder->join("sgc_roles b", 'a.idrol = b.idrol');
 		$query = $builder->get();
-		return $query->getResult(); // También debes agregar getResult() para obtener los resultados de la consulta
+		return $query;
 	}
+
+	// public function getAllUsers()
+	// {
+	// 	$builder = $this->dbconn('sgc_usuario_operador a');
+	// 	$builder->select('a.idusuopr,a.acceso_audi,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a.usuopborrado,b.rolnom,b.idrol');
+	// 	$builder->join("sgc_roles b", 'a.idrol = b.idrol');
+	// 	$query = $builder->get();
+	// 	return $query->getResult(); // También debes agregar getResult() para obtener los resultados de la consulta
+	// }
 
 
 	//Metodo para registrar un nuevo usuario

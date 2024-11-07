@@ -27,7 +27,7 @@ class Reporte_Controler extends BaseController
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
 			$query = $direccionesModel->listar_Ubicacion_Administrativa();
-
+		
 			$direccionesopt = '';
 			if (isset($query)) {
 				foreach ($query->getResult() as $row) {
@@ -64,14 +64,15 @@ class Reporte_Controler extends BaseController
 	public function vista_operador()
 	{
 		if ($this->session->get('logged')) {
-			$direccionesModel = new Ubi_Admini_Model();
+
+
 			$usuariosModel = new Usuarios();
+			$direccionesModel = new Ubi_Admini_Model();
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
 			$query = $direccionesModel->listar_Ubicacion_Administrativa();
-			$query_usuarios = $usuariosModel->getAllUsers();
+
 			$direccionesopt = '';
-			$usuarios = '';
 			if (isset($query)) {
 				foreach ($query->getResult() as $row) {
 					$direccionesopt .= '<option value="' . $row->id . '">' . htmlentities($row->descripcion) . '</option>';
@@ -79,15 +80,28 @@ class Reporte_Controler extends BaseController
 			} else {
 				$direccionesopt .= '<option value="NULL">Sin estatus</option>';
 			}
-			if (isset($query_usuarios)) {
+
+
+
+
+			
+			$query_usuarios = $usuariosModel->getAllUsers();
+			$usuarios = [];
+			if (isset($query_usuarios) && $query_usuarios->getResult()) {
 				foreach ($query_usuarios->getResult() as $row) {
-					$usuarios .= '<option value="' . $row->idusuopr . '">' . ucfirst(strtolower($row->usuopnom . ' ' . $row->usuopape)) . '</option>';
+					$nombreCompleto = ucfirst(strtolower($row->usuopnom . ' ' . $row->usuopape));
+					$usuarios[] = '<option value="' . htmlspecialchars($row->idusuopr) . '">' . $nombreCompleto . '</option>';
 				}
 			} else {
-				$usuarios .= '<option value="NULL">Sin estatus</option>';
+				$usuarios[] = '<option value="NULL">Sin estatus</option>';
 			}
+
+			$data["usuarios"] = implode('', $usuarios);
+
 			$data["direcciones"] = $direccionesopt;
-			$data["usuarios"] = $usuarios;
+			
+			
+			
 			//Pasamos la tabla como parametro para la vista
 			echo view('template/header');
 			echo view('template/nav_bar');

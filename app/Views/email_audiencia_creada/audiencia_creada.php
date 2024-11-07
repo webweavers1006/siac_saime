@@ -148,6 +148,17 @@
       }
     }
   </style>
+
+<style>
+.card {
+  background: linear-gradient(to right, #fafbfc, #f3f5f7, #a9b6c2);
+  color: blueviolet;
+  border-radius: 10px;
+  padding: 20px;
+
+  text-align: center;
+}
+</style>
   <script type="colorScheme" class="swatch active">
     {
             "name":"Default",
@@ -216,6 +227,7 @@
                                       </tbody>
                                     </table>
                                   </div>
+                                  <div class="card">
                                   <div class="movableContent" style="border: 0px; padding-top: 0px; position: relative;">
                                   <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                                      
@@ -224,12 +236,13 @@
                                          <div class="contentEditableContainer contentImageEditable">
                                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                            <td>
-                                           <img src="https://atencion.sapi.gob.ve/logo_sapi_2020.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
-                                           
-                                           
-                                           </td>
-                                           <td>
-                                           <img src="https://atencion.sapi.gob.ve/LogoSIAC_sapi2.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560">
+
+                                           <img src="https://siac.sapi.gob.ve/img/logo_sapi_2020.png" width="120" height="80" alt="Logo del SAPI" style="display: block; margin: 0 auto;" data-default="placeholder" data-max-width="560">
+                                            
+                                            </td>
+                                            <td>
+                                            <img src="https://siac.sapi.gob.ve/img/LogoSIAC_sapi2.png" width="120" height="80" alt="Logo del SAPI" style="display: block; margin: 0 auto;" data-default="placeholder" data-max-width="560">
+                                            <!-- <img src="https://atencion.sapi.gob.ve/LogoSIAC_sapi2.png" width="120" height="80" alt="Logo del SAPI" data-default="placeholder" data-max-width="560"> -->
                                            </td>
                                          </table>
                                            
@@ -254,60 +267,43 @@
                                       <tr>
 
                                         <td align="left">
+                                       
                                           <div class="contentEditableContainer contentTextEditable">
                                             <div class="contentEditable" align="center">
 
-                                              <b>
-                                                <p style=" color:#222222;"><?php echo utf8_decode('¡Saludos!');?>, <?php echo $nombre; ?>
-                                              </b>
+                                            <p style="color: #222222;">
+                                            <strong><?php echo utf8_decode('¡Saludos!'); ?>, <?php echo $nombre; ?></strong>
+                                          </p>
                                               <br>
-                                              
-                                              <p style=" color:#222222;">  <?php echo utf8_decode('El caso que lleva por Nº');?> <?php echo $idcaso; ?> ha sido creado 
-                                              <?php echo utf8_decode(' de manera  satisfactoriamente.') ?> 
-                                              <?php echo utf8_decode('  Gracias por su confianza,dedicación y paciencia. ¡Hasta la próxima!') ?> 
+
+                                              <p style="color: #222222; font-size: 16px; line-height: 1.5;">
+
+                                              <?php echo utf8_decode('Reciban un cordial saludo de parte del Servicio Autónomo de la Propiedad Intelectual.') ?> 
+                                              <br><br>
+                                              <?php echo utf8_decode('Confirmamos la recepción de su solicitud de audiencia. No obstante, le informamos que esta será evaluada ') ?> 
+                                              <?php echo utf8_decode('conforme a los 6 items establecidos para este servicio de atención.') ?> 
+                                             
                                             </p>
                                               <br>
                                               
                                               
                                               <br>
-                                              <p style=" color:#222222;"> <?php echo utf8_decode('Dirección de Sistemas y Tecnologías de la Información: Soporte Tecnico del Sistema de Atención al Ciudadano(SIAC) del Servicio Autonomo de la Propiedad Intelectual')?></p>
+                                              <p style=" color:#222222; font-size: 11px;"> <?php echo utf8_decode('Dirección de  Atención al Ciudadano(SIAC) ')?></p>
 
                                                 </a>
                                                 
                                             </div>
                                           </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td height="55"></td>
-                                      </tr>
-                                      <tr>
-                                        <td height="20"></td>
-                                      </tr>
-                                    </table>
-                                  </div>
-                                  <div class="movableContent" style="border: 0px; padding-top: 0px; position: relative;">
-                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                      <tbody>
-                                        <tr>
-                                          <td height="65">
-                                        </tr>
-                                        <tr>
-                                          <td style="border-bottom:1px solid #DDDDDD;"></td>
-                                        </tr>
-                                        <tr>
-                                          <td height="25"></td>
-                                        </tr>
-                                        <tr>
-                                          <td>
-                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                          </div>
+
+                                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                               <tbody>
                                                 <tr>
                                                   <td valign="top" class="specbundle">
                                                     <div class="contentEditableContainer contentTextEditable">
                                                       <div class="contentEditable" align="center">
-                                                        <p style="text-align:left;color:#CCCCCC;font-size:12px;font-weight:normal;line-height:20px;">
-                                                          <span style="font-weight:bold;">Servicio Autonomo de la Propiedad Intelectual</span>
+                                                        <p style=" color:#222222; font-size: 11px;"> 
+                                                          <span >Servicio Autonomo de la Propiedad Intelectual</span>
                                                           <br>
                                                           Centro Sim&#243;n Bol&#237;var,
                                                           Edificio Norte, Piso 4, El Silencio, al lado de la Plaza Caracas.
@@ -326,14 +322,18 @@
                                                 </tr>
                                               </tbody>
                                             </table>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td height="88"></td>
-                                        </tr>
-                                      </tbody>
+
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td height="55"></td>
+                                      </tr>
+                                      <tr>
+                                        <td height="20"></td>
+                                      </tr>
                                     </table>
                                   </div>
+                                 
                                   <!-- =============================== footer ====================================== -->
                                 </td>
                               </tr>

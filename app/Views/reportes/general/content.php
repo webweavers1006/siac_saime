@@ -75,13 +75,7 @@
                                     <option value="0" selected disabled>seleccione</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label for="direcciones_caso">Casos Remitidos por Dirección</label>
-                                <select class="form-control " id="direcciones_caso" name="direcciones_caso" class="form-control">
-                                    <option value="0" selected disabled>seleccione</option>
-                                    <?php echo $direcciones; ?>
-                                </select>
-                            </div>
+                          
                             <div class="col-md-2">
                                 <label for="estatus">Estatus:</label>
                                 <select class="form-control" id="estatus" name="estatus">
