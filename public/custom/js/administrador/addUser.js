@@ -65,8 +65,8 @@ function llenar_combo_Direcciones_normal(e, id) {
         },
         success: function(data) {
             if (data.length >= 1) {
-                $('#id_direccion_administrativa').empty();
-                $('#id_direccion_administrativa').append('<option value="0" selected disabled>Seleccione</option>');
+               // $('#id_direccion_administrativa').empty();
+                //$('#id_direccion_administrativa').append('<option value="0" selected disabled>Seleccione</option>');
                 
                 $('#edit_direccion_administrativa').empty();
                 $('#edit_direccion_administrativa').append('<option value="0" selected disabled>Seleccione</option>');
@@ -74,14 +74,14 @@ function llenar_combo_Direcciones_normal(e, id) {
                 // Iterar sobre los datos
                 $.each(data, function(i, item) {
                     if (item.correo !== null) {
-                        $('#id_direccion_administrativa').append('<option value="' + item.id + '">' + item.descripcion + '</option>');
+                       // $('#id_direccion_administrativa').append('<option value="' + item.id + '">' + item.descripcion + '</option>');
                         $('#edit_direccion_administrativa').append('<option value="' + item.id + '">' + item.descripcion + '</option>');
                     }
                 });
                 
                 // Si se proporciona un id, selecciona la opción correspondiente
                 if (id !== undefined) {
-                    $('#id_direccion_administrativa option[value="' + id + '"]').prop('selected', true);
+                    //$('#id_direccion_administrativa option[value="' + id + '"]').prop('selected', true);
                     $('#edit_direccion_administrativa option[value="' + id + '"]').prop('selected', true);
                 }
             }

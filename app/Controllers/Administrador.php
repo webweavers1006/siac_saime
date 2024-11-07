@@ -6,6 +6,7 @@ use App\Models\Usuarios;
 use App\Models\Roles;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\Auditoria_sistema_Model;
+use App\Models\Ubi_Admini_Model;
 
 class Administrador extends BaseController
 {
@@ -41,7 +42,20 @@ class Administrador extends BaseController
 					$opt .= '<option value="' . $row->idrol . '">' . $row->rolnom . '</option>';
 				}
 			}
-
+			$direccionesModel = new Ubi_Admini_Model();
+			//Obtenemos las direcciones  para mostrarlos en el modal
+			unset($query);
+			$query = $direccionesModel->listar_Ubicacion_Administrativa();
+		
+			$direccionesopt = '';
+			if (isset($query)) {
+				foreach ($query->getResult() as $row) {
+					$direccionesopt .= '<option value="' . $row->id . '">' . htmlentities($row->descripcion) . '</option>';
+				}
+			} else {
+				$direccionesopt .= '<option value="NULL">Sin estatus</option>';
+			}
+			$data["direcciones"] = $direccionesopt;
 
 			$data["roles"] = $opt;
 			$data["nivel_rol"] = $nivel_rol;

@@ -32,9 +32,6 @@ class Ubi_Admini_Model extends BaseModel
 		$query = $builder->get();
 		return $query;
 	}
-
-
-	
 	public function listar_direcciones_administrativas()
 	{
 		$builder = $this->dbconn('public.sgc_direcciones_administrativas as direc');

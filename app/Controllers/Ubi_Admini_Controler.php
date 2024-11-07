@@ -43,16 +43,14 @@ class Ubi_Admini_Controler extends BaseController
 	{
 
 		$model = new Ubi_Admini_Model();
-$query = $model->listar_direcciones_administrativas();
+		$query = $model->listar_direcciones_administrativas();
 
-if (empty($query->getResult())) {
-    $direcciones = [];
-} else {
-    $direcciones = $query->getResultArray();
-}
-
-header('Content-Type: application/json; charset=utf-8'); // Asegúrate de establecer el encabezado correcto
-echo json_encode($direcciones, JSON_UNESCAPED_UNICODE);
+		if (empty($query->getResult())) {
+			$direcciones = [];
+		} else {
+			$direcciones = $query->getResultArray();
+		}
+		echo json_encode($direcciones);
 	}
 
 	public function listar_direcciones_user_create($act_aud=null)

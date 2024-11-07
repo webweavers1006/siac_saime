@@ -111,13 +111,24 @@
 
       
           
-
+<!-- 
         <div class="form-group">
           <label for="id_direccion_administrativa">Direccion Administrativa</label>
           <select class="form-control" name="id_direccion_administrativa" id="id_direccion_administrativa" style="font-size: 13px;">
           <option value="0" disabled>Seleccione</option>
         </select>
+        </div> -->
+
+  
+
+        <div class="form-group">
+          <label for="id_direccion_administrativa">Direccion Administrativa</label>
+          <select class="form-control" id="id_direccion_administrativa" name="direcciones_caso">
+              <option value="0" selected disabled>Seleccione</option>
+              <?php echo $direcciones; ?>
+          </select>
         </div>
+
 
 
        
