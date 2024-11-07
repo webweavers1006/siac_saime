@@ -18,14 +18,32 @@ class Email_Audiencias_Controler extends BaseController
     public function Correo_Audiencias_Create($id_caso)
     {
         
-        var_dump($id_caso);
-        die();
+        $session = session();
+			$token = $session->get('token');
+			// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+			$contexto = stream_context_create([
+				'http' => [
+					'method'  => 'GET',
+					'header'  => "Authorization: Bearer $token\r\n"
+				]
+			]);
+		// Realiza la solicitud y decodifica la respuesta JSON
+		$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$id_caso, false, $contexto), true);
+        
+                // Crear un nuevo arreglo con los campos deseados
+                $resultado = [
+                    'nombre_contacto' => $datos2['nombre_contacto'],
+                    'apellido_contacto' => $datos2['apellido_contacto'],
+                    'correo_contacto' => $datos2['correo_contacto']
+                ];
+
+      
                     //Enviamos un correo al usuario
                     $mail = new PHPMailer();
                    
                     $dataEmail = array();
-                    $dataEmail["caso"]='50';
-                    $dataEmail["nombre"]='Freddy';
+                    $dataEmail["caso"]=$id_caso;
+                    $dataEmail["nombre"]=$resultado['nombre_contacto'].' '.$resultado['apellido_contacto'];
                     $dataEmail["timestamp_generate"] = strtotime(date('Y-m-d H:i:s'));
                     $dataEmail["timestamp_expire"] = strtotime("5 minutes", $dataEmail["timestamp_generate"]);
                     //Codificamos el JSON y lo encriptamos
@@ -44,7 +62,7 @@ class Email_Audiencias_Controler extends BaseController
                             )
                         );
                        
-                        $correo='freddysubero208@gmail.com';		
+                        $correo=$resultado['correo_contacto'];		
                         $io_mail = new PHPMailer();
                         $io_mail->isSMTP();
                         $io_mail->Host = $el_servidor;
