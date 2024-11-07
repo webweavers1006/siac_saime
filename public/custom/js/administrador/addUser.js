@@ -51,52 +51,47 @@ function llenar_combo_roles(e, id) {
 
 
 
-//FUNCION PARA LLENAR EL COMBO DE DIRECCIONES
-function llenar_combo_Direcciones_normal(e,id) {
-    e.preventDefault
-    url = '/listar_direcciones_administrativas/';
+// FUNCION PARA LLENAR EL COMBO DE DIRECCIONES
+function llenar_combo_Direcciones_normal(e, id) {
+    e.preventDefault(); // Asegúrate de usar los paréntesis aquí
+    const url = '/listar_direcciones_administrativas/';
+    
     $.ajax({
         url: url,
         method: 'GET',
         dataType: 'JSON',
-        beforeSend: function(data) {},
+        beforeSend: function(data) {
+            // Aquí puedes agregar un spinner o mensaje de carga si lo deseas
+        },
         success: function(data) {
             if (data.length >= 1) {
                 $('#id_direccion_administrativa').empty();
-                $('#id_direccion_administrativa').append('<option value=0  selected disabled>Seleccione</option>');
+                $('#id_direccion_administrativa').append('<option value="0" selected disabled>Seleccione</option>');
+                
                 $('#edit_direccion_administrativa').empty();
-                $('#edit_direccion_administrativa').append('<option value=0  selected disabled>Seleccione</option>');
-                if (id === undefined) {
-                    $.each(data, function(i, item) {
-                        if (item.correo !== null) {
-                            $('#id_direccion_administrativa').append('<option value=' + item.id + '>' + item.descripcion + '</option>');
-                            $('#edit_direccion_administrativa').append('<option value=' + item.id + '>' + item.descripcion + '</option>');
-                        }
-                    });
-                } else {
-                    $.each(data, function(i, item) {
-                        if (item.descripcion !== null) {
-                            if (item.id === id) {
-                                $('#id_direccion_administrativa').append('<option value=' + item.id + ' selected>' + item.descripcion + '</option>');
-                                $('#edit_direccion_administrativa').append('<option value=' + item.id + ' selected>' + item.descripcion + '</option>');
-                                
-                            } else {
-                                $('#id_direccion_administrativa').append('<option value=' + item.id + '>' + item.descripcion + '</option>');
-                                $('#edit_direccion_administrativa').append('<option value=' + item.id + '>' + item.descripcion + '</option>');
-                                
-                            }
-                        }
-                    });
+                $('#edit_direccion_administrativa').append('<option value="0" selected disabled>Seleccione</option>');
+                
+                // Iterar sobre los datos
+                $.each(data, function(i, item) {
+                    if (item.correo !== null) {
+                        $('#id_direccion_administrativa').append('<option value="' + item.id + '">' + item.descripcion + '</option>');
+                        $('#edit_direccion_administrativa').append('<option value="' + item.id + '">' + item.descripcion + '</option>');
+                    }
+                });
+                
+                // Si se proporciona un id, selecciona la opción correspondiente
+                if (id !== undefined) {
+                    $('#id_direccion_administrativa option[value="' + id + '"]').prop('selected', true);
+                    $('#edit_direccion_administrativa option[value="' + id + '"]').prop('selected', true);
                 }
             }
         },
-        // error: function(xhr, status, errorThrown) {
-        //     // alert(xhr.status);
-        //     // alert(errorThrown);
-        // }
+        error: function(xhr, status, errorThrown) {
+            console.error("Error en la solicitud AJAX:", status, errorThrown);
+            // Aquí puedes manejar el error, tal vez mostrar un mensaje al usuario
+        }
     });
 }
-
 
 
 //FUNCION PARA LLENAR EL COMBO DE DIRECCIONES

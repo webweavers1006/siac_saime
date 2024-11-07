@@ -18,20 +18,27 @@ class Email_Audiencias_Controler extends BaseController
     public function correo_audiencias_create($id_caso)
     {
         
+        $token=$this->request->getServer('HTTP_AUTHORIZATION');
         
+        // Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+        $contexto = stream_context_create([
+            'http' => [
+                'method'  => 'GET',
+                'header'  => "Authorization: $token\r\n"
+            ]
+        ]);
 
 		// Realiza la solicitud y decodifica la respuesta JSON
-	
+		$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$id_caso, false, $contexto), true);
         
                 // Crear un nuevo arreglo con los campos deseados
                 $resultado = [
-                    'nombre_contacto' => 'freddy',
-                    'apellido_contacto' => 'torres',
-                    'correo_contacto' =>'freddysubero208@gmail.com'
+                    'nombre_contacto' => $datos2['nombre_contacto'],
+                    'apellido_contacto' => $datos2['apellido_contacto'],
+                    'correo_contacto' => $datos2['correo_contacto']
                 ];
-
-    
-                    //Enviamos un correo al usuario
+                
+                   //Enviamos un correo al usuario
                     $mail = new PHPMailer();
                    
                     $dataEmail = array();

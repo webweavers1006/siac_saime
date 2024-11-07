@@ -137,7 +137,7 @@ $routes->setAutoRoute(false);
      //Rutas para realizar el cambio de estatus en los casos
      $routes->post('/cambiarEstatus', "Estatus::cambioEstatus");
      //Rutas para enviar correo al beneficiario desde el protal web 
-     $routes->get('/enviar_correo_portal/(:any)',"Estatus::enviar_correo_portal/$1");
+     $routes->get('/enviar_correo_portal/(:any)/(:any)',"Estatus::enviar_correo_portal/$1/$2");
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
      $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14");
