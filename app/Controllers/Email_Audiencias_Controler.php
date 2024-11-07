@@ -26,9 +26,10 @@ class Email_Audiencias_Controler extends BaseController
         $contexto = stream_context_create([
             'http' => [
                 'method'  => 'GET',
-                'header'  => "Authorization: Bearer $token\r\n"
+                'header'  => "Authorization: $token\r\n"
             ]
         ]);
+
 		// Realiza la solicitud y decodifica la respuesta JSON
 		$datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$id_caso, false, $contexto), true);
         
