@@ -4,8 +4,8 @@ $(function() {
     let act_aud ='false'
    
     llenar_combo_roles(Event, id);
-    llenar_combo_Direcciones_normal(Event, id);
-   
+    llenar_combo_Direcciones_normal(Event);
+ 
    
     
 
