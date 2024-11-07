@@ -15,7 +15,7 @@ use VARIANT;
 class Email_Audiencias_Controler extends BaseController
 {
     use ResponseTrait;
-    public function Correo_Audiencias_Create($id_caso)
+    public function correo_audiencias_create($id_caso)
     {
         
         $token=$this->request->getServer('HTTP_AUTHORIZATION');
@@ -38,7 +38,8 @@ class Email_Audiencias_Controler extends BaseController
                     'correo_contacto' => $datos2['correo_contacto']
                 ];
 
-      
+      var_dump($resultado);
+      die();
                     //Enviamos un correo al usuario
                     $mail = new PHPMailer();
                    
