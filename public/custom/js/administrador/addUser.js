@@ -53,7 +53,7 @@ function llenar_combo_roles(e, id) {
 
 // FUNCION PARA LLENAR EL COMBO DE DIRECCIONES
 function llenar_combo_Direcciones_normal(e, id) {
-    e.preventDefault(); // Asegúrate de usar los paréntesis aquí
+ 
     const url = '/listar_direcciones_administrativas/';
     
     $.ajax({
