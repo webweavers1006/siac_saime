@@ -42,15 +42,14 @@ class BaseController extends Controller
 	 */
 
 
-		protected $whitelist = [
+		protected $whitelist = 
+		[
 			'siac_v2.com', 
 			'siac.sapi.gob.ve', 
 			'atencion.sapi.gob.ve', 
 			'172.16.0.39', 
 			'186.167.8.181', 
 			'172.16.0.186', 
-
-
 		];
 	
 		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

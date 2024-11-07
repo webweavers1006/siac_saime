@@ -19,8 +19,6 @@ class Email_Audiencias_Controler extends BaseController
     {
         
         $token=$this->request->getServer('HTTP_AUTHORIZATION');
-
-        $session = session();
         
         // Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
         $contexto = stream_context_create([
