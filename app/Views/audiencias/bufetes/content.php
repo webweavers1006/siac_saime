@@ -44,7 +44,7 @@ $session = session();
                         <table class="display table-responsive" id="table_bufetes" style="width:100%" style="margin-top: 20px">
                           <thead>
                             <tr>
-                              <td class="text-center" style="width: 1%;">id</td>
+                             
                               <td class="text-center" style="width: 20%;">Nombre</td>
                               <td class="text-center" style="width: 20%;">Rif</td>
                               <td class="text-center" style="width: 20%;">Correo</td>

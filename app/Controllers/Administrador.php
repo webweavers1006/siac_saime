@@ -58,7 +58,7 @@ class Administrador extends BaseController
 	// public function Get_All_Usuarios()
 	// {
 	// 	$model = new Usuarios();
-	// 	$query = $model->getAllUsers();
+	// 	$query = $model->getAllUsers_operadores();
 	// 	if (empty($query->getResult())) {
 	// 		$usuarios = [];
 	// 	} else {
@@ -70,7 +70,7 @@ class Administrador extends BaseController
 	public function Get_All_Usuarios()
 	{
 		$model = new Usuarios();
-		$usuarios = $model->getAllUsers();
+		$usuarios = $model->getAllUsers_operadores();
 		return $this->respond($usuarios, 200);
 	}
 

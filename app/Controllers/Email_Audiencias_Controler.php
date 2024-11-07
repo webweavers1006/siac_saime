@@ -15,9 +15,11 @@ use VARIANT;
 class Email_Audiencias_Controler extends BaseController
 {
     use ResponseTrait;
-    public function Correo_Audiencias_Create()
+    public function Correo_Audiencias_Create($id_caso)
     {
         
+        var_dump($id_caso);
+        die();
                     //Enviamos un correo al usuario
                     $mail = new PHPMailer();
                    

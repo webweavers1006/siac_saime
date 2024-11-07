@@ -202,11 +202,9 @@ $routes->setAutoRoute(false);
 
  
 
-  //RUTAS Enviar email de audiencias 
-  $routes->get('/Correo_Audiencias_Create', 'Email_Audiencias_Controler::Correo_Audiencias_Create');
+//RUTAS Enviar email de audiencias 
+$routes->get('/Correo_Audiencias_Create/(:num)', 'Email_Audiencias_Controler::Correo_Audiencias_Create/$1');
  
-
-
 
 //RUTAS PARA AUDIENCIAS
 $routes->get('/vista_audiencias', 'Audiencias_Controler::vista_audiencias');

@@ -141,7 +141,7 @@ $userdata = $session->get();
 
               <!-- <php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
                 <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/atencion" class="nav-link">
+                  <a href="<php echo base_url(); ?>/atencion" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
                     <p>Atencion</p>
                   </a>
@@ -151,6 +151,7 @@ $userdata = $session->get();
             </ul>
           </li>
           <?php } ?>
+          
           <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5 or $session->get('userrol') == 6) { ?>
           <li class="nav-item">
             <a href="#" class="nav-link" id=""><i class="nav-icon  nav-icon fas fa-chart-bar"></i>

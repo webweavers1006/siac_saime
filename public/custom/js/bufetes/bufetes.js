@@ -28,7 +28,7 @@ function Listar_bufetes() {
             dataSrc: 'bufetes' // Cambiado para que apunte a la clave correcta en la respuesta JSON
         },
         columns: [
-            { data: 'id' },
+           
             { data: 'nombre_bufete' },
             { data: 'rif' },
             { data: 'correo_bufete' },
