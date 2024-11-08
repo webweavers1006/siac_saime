@@ -446,10 +446,10 @@ class FPDF
 		$this->Cell(34, 9, 'Hora:    __________', 0, 0, 'C', 'L');
 		$this->Ln(10);
 		$this->Cell(24, 9, 'SOLICITANTE:', 0, 1, 'C', 'L');
-		$this->Cell(175, 9, 'Apellidos y Nombres:  _______________________________________________________________________________', 0, 1, 'C', 'L');
-		$this->Cell(43, 9, iconv('utf-8', 'cp1252', 'Cédula :________________  '), 0, 0, 'C', 1);
-		$this->Cell(30, 9, iconv('utf-8', 'cp1252', ' '), 0, 0, 'C', 1);
-		$this->Cell(34, 9, iconv('utf-8', 'cp1252', 'Dirección : _______________________________________  '), 0, 1, 'C', 'L');
+		$this->Cell(100, 9, 'Nombres y Apellidos:  ____________________________________', 0, 0, 'C', 'L');
+		$this->Cell(43, 9, iconv('utf-8', 'cp1252', 'Cédula : ________________  '), 0, 0, 'C', 1);
+		$this->Cell(30, 9, iconv('utf-8', 'cp1252', ' '), 0, 1, 'C', 1);
+	   //$this->Cell(34, 9, iconv('utf-8', 'cp1252', 'Dirección : _______________________________________  '), 0, 1, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Municipio : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Parroquia : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Teléfono : __________________  '), 0, 1, 'C', 'L');
@@ -467,7 +467,7 @@ class FPDF
 		$this->Ln(3);
 		$this->Cell(156, 5, 'Anexa documentos :     SI: ________ No ________ Original: _______ Copias: _______ Paginas: _______:', 0, 1, 'C', 'L');
 		$this->Ln(3);
-		$this->Cell(63, 9, 'Receptor: ' . '  ' . '   ' . $datos_Content_Planilla['user_name'], '  ', 0, 0, 'L', 'L');
+		$this->Cell(63, 9, iconv('utf-8', 'cp1252', 'Receptor: ' . ' ' . $datos_Content_Planilla['user_name']), 0, 0, 'L', false);
 		$this->Cell(50, 9, '  ', 0, 0, 'C', 'L');
 		$this->Cell(59, 9, 'Cargo: ' . '  ' . '   ' . $datos_Content_Planilla['usercargo'], '  ', 0, 0, 'L', 'L');
 		$this->Ln(15);
@@ -503,7 +503,7 @@ class FPDF
 	function Header_Asesoria()
 	{
 		$this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 6, 15, 210, 15, 'png');
-		$this->SetTitle("ATENCIÓN AL CIUDADANO");
+		$this->SetTitle(iconv('utf-8', 'cp1252', "ATENCIÓN AL CIUDADANO"));
 		$this->Ln(30);
 		$this->SetFillColor(255, 255, 255);
 		$this->SetFont('Arial', 'B', 10);
@@ -519,10 +519,8 @@ class FPDF
 		$this->Cell(60, 9, 'Hora:    __________', 0, 0, 'C', 'L');
 		$this->Ln(10);
 		$this->Cell(24, 9, 'SOLICITANTE:', 0, 1, 'C', 'L');
-		$this->Cell(175, 9, 'Apellidos y Nombres:  _______________________________________________________________________________', 0, 1, 'C', 'L');
-		$this->Cell(43, 9, iconv('utf-8', 'cp1252', 'Cédula :________________  '), 0, 0, 'C', 1);
-		$this->Cell(30, 9, iconv('utf-8', 'cp1252', ' '), 0, 0, 'C', 1);
-		$this->Cell(34, 9, iconv('utf-8', 'cp1252', 'Dirección : _______________________________________  '), 0, 1, 'C', 'L');
+		$this->Cell(110, 9, 'Nombres y Apellidos:  _________________________________________  ', 0, 0, 'C', 'L');
+		$this->Cell(43, 9, iconv('utf-8', 'cp1252', ' Cédula : ________________  '), 0, 1, 'C', 1);
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Municipio : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Parroquia : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Teléfono : __________________  '), 0, 1, 'C', 'L');
@@ -586,7 +584,7 @@ class FPDF
 		// 	$this->SetFont('Arial', 'B', 9);
 		// }
 		$this->Ln(4);
-		$this->Cell(63, 9, 'Receptor: ' . '  ' . '   ' . $datos_Content_Planilla['user_name'], '  ', 0, 0, 'L', 'L');
+		$this->Cell(63, 9, iconv('utf-8', 'cp1252', 'Receptor: ' . ' ' . $datos_Content_Planilla['user_name']), 0, 0, 'L', false);
 		$this->Cell(50, 9, '  ', 0, 0, 'C', 'L');
 		$this->Cell(59, 9, 'Cargo: ' . '  ' . '   ' . $datos_Content_Planilla['usercargo'], '  ', 0, 0, 'L', 'L');
 		$this->Ln(15);
@@ -603,7 +601,7 @@ class FPDF
 	function Header_Denuncia()
 	{
 		$this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 6, 15, 210, 15, 'png');
-		$this->SetTitle("ATENCIÓN AL CIUDADANO");
+		$this->SetTitle(iconv('utf-8', 'cp1252', "ATENCIÓN AL CIUDADANO"));
 		$this->Ln(30);
 		$this->SetFillColor(255, 255, 255);
 		$this->SetFont('Arial', 'B', 10);
@@ -620,10 +618,8 @@ class FPDF
 		$this->Cell(60, 9, 'Hora:    __________', 0, 0, 'C', 'L');
 		$this->Ln(10);
 		$this->Cell(24, 9, 'SOLICITANTE:', 0, 1, 'C', 'L');
-		$this->Cell(175, 9, 'Apellidos y Nombres:  _______________________________________________________________________________', 0, 1, 'C', 'L');
-		$this->Cell(43, 9, iconv('utf-8', 'cp1252', 'Cédula :________________  '), 0, 0, 'C', 1);
-		$this->Cell(30, 9, iconv('utf-8', 'cp1252', ' '), 0, 0, 'C', 1);
-		$this->Cell(34, 9, iconv('utf-8', 'cp1252', 'Dirección : _______________________________________  '), 0, 1, 'C', 'L');
+		$this->Cell(105, 9, 'Nombres y Apellidos:  _______________________________________', 0, 0, 'C', 'L');
+		$this->Cell(47, 9, iconv('utf-8', 'cp1252', ' Cédula : ________________  '), 0, 1, 'C', 1);
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Municipio : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Parroquia : __________________  '), 0, 0, 'C', 'L');
 		$this->Cell(52, 9, iconv('utf-8', 'cp1252', 'Teléfono : __________________  '), 0, 1, 'C', 'L');
