@@ -69,7 +69,7 @@ $routes->setAutoRoute(false);
      $routes->get('/editar_caso', "Casos_Controler::vista_Editar_caso");
      $routes->get('/listar_Casos_Usuarios', "Casos_Controler::listar_Casos_Usuarios");
      //RUTA PRA OBTENER INFORMACION DE LOS USUARIOS DESDE LA WEB
-     $routes->get('/Informacion_Usu/(:any)', "Casos_Controler::Informacion_Usuarios/$1");
+     $routes->get('/Informacion_Usu/(:num)', "Casos_Controler::Informacion_Usuarios/$1");
      $routes->get('/buscar_Caso_id(arios:any)', "Casos_Controler::buscar_Caso_id/$1");
      $routes->get('/listar_Ultimos_Casos', "Casos_Controler::listar_Ultimos_Casos");
      $routes->post('/buscar_datos_usuarios', "Casos_Controler::buscar_datos_usuarios");
@@ -203,7 +203,7 @@ $routes->setAutoRoute(false);
  
 
 //RUTAS Enviar email de audiencias 
-$routes->get('/correo_audiencias_create/(:any)', 'Email_Audiencias_Controler::correo_audiencias_create/$1');
+//$routes->get('/correo_audiencias_create/(:any)', 'Email_Audiencias_Controler::correo_audiencias_create/$1');
  
 
 

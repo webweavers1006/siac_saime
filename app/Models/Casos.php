@@ -128,41 +128,124 @@ public function listar_Casos_Remitidos($id_direccion)
 
 
 
+// //Metodo para obtener toda la informacion del caso para la web 
+// public function Informacion_Usuarios($casoced)
+// {
+   
+//     $db      = \Config\Database::connect();
+//     $strQuery = "SELECT a.tipo_beneficiario,a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
+//     $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
+//     $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
+//     $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
+//     $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
+//     $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
+//     $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
+//     $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
+//     $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
+//     $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
+//     $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
+//     $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
+//     $strQuery .= ",tpinte.tipo_prop_nombre ";
+//     $strQuery .= ",tpinte.tipo_prop_id ";
+//     $strQuery .= ",t_antusu.tipo_aten_nombre ";
+//     $strQuery .= "FROM sgc_casos a ";
+//     $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
+//     $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
+//     $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
+//     $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
+//     $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
+//     $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
+//     $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
+//     $strQuery .= " where a.borrado='false'  ";
+//     $strQuery .= " and a.casoced='$casoced' ";
+//     $strQuery .= " ORDER BY a.idcaso  desc";
+//     $query = $db->query($strQuery);
+//     $resultado = $query->getResult();
+//     return $resultado;
+// }
+
+
 //Metodo para obtener toda la informacion del caso para la web 
 public function Informacion_Usuarios($casoced)
 {
-   
-    $db      = \Config\Database::connect();
-    $strQuery = "SELECT a.tipo_beneficiario,a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-    $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-    $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
-    $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-    $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
-    $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
-    $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
-    $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
-    $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-    $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-    $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-    $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-    $strQuery .= ",tpinte.tipo_prop_nombre ";
-    $strQuery .= ",tpinte.tipo_prop_id ";
-    $strQuery .= ",t_antusu.tipo_aten_nombre ";
-    $strQuery .= "FROM sgc_casos a ";
-    $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-    $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-    $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-    $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-    $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-    $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
-    $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-    $strQuery .= " where a.borrado='false'  ";
-    $strQuery .= " and a.casoced='$casoced' ";
-    $strQuery .= " ORDER BY a.idcaso  desc";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
+
+// Validar que la cédula sea un número entero
+if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
+
+   die("La cédula debe ser un número entero válido.");
+
 }
+
+
+    $db = \Config\Database::connect();
+
+    // Utiliza el Query Builder
+    $builder = $db->table('sgc_casos a');
+    
+    // Selecciona las columnas
+    $builder->select([
+        'a.tipo_beneficiario',
+        'a.idcaso',
+        'a.casotel',
+        'TRIM(a.casoced) AS casoced',
+        'a.casonom',
+        'a.casoape',
+        'a.casodesc',
+        'a.caso_nacionalidad',
+        'a.idrrss',
+        'a.ofiid',
+        'a.estadoid',
+        'a.id_tipo_atencion',
+        'a.municipioid',
+        'a.parroquiaid',
+        'a.direccion',
+        'a.correo',
+        'a.ente_adscrito_id',
+        "CONCAT(a.caso_nacionalidad, a.casoced) AS cedula",
+        'cgr.competencia_cgr',
+        'cgr.asume_cgr',
+        'denu.denu_afecta_persona',
+        'denu.denu_afecta_comunidad',
+        'denu.denu_afecta_terceros',
+        'denu.denu_involucrados',
+        'denu.denu_fecha_hechos',
+        'denu.denu_instancia_popular',
+        'denu.denu_rif_instancia',
+        'denu.denu_ente_financiador',
+        'denu.denu_nombre_proyecto',
+        'denu.denu_monto_aprovado',
+        "CONCAT(a.casonom, ' ', a.casoape) AS nombre",
+        "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape) AS user_name",
+        "CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END AS sexo",
+        "TO_CHAR(a.casofec, 'dd/mm/yyyy') AS casofec",
+        'a.casofec AS casofec_normal',
+        'b.estnom',
+        'tpinte.tipo_prop_nombre',
+        'tpinte.tipo_prop_id',
+        't_antusu.tipo_aten_nombre'
+    ]);
+
+    // Realiza los joins
+    $builder->join('sgc_estatus b', 'b.idest = a.idest');
+    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+    $builder->join('sgc_tipo_prop_caso tpc', 'a.idcaso = tpc.idcaso');
+    $builder->join('sgc_tipo_prop_intelec tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+    $builder->join('sgc_tipoatencion_usu t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+    $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+    $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+
+    // Establece las condiciones
+    $builder->where('a.borrado', 'false');
+    $builder->where('a.casoced', $casoced);
+
+    // Ordena los resultados
+    $builder->orderBy('a.idcaso', 'desc');
+
+    // Ejecuta la consulta y obtiene los resultados
+    $query = $builder->get();
+    return $query->getResult();
+}
+
 
 
 

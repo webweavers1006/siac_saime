@@ -89,6 +89,40 @@ class Casos_Controler extends BaseController
 			return redirect()->to('/');
 		}
 	}
+
+
+
+//Metodo queo obtiene  la informacion de los usuarios para le web 
+public function Informacion_Usuarios($casoced=null)
+
+{
+	// $casoModel = new Casos();
+	// $token=$this->request->getServer('HTTP_AUTHORIZATION');
+	// $buscar_token = $casoModel->buscar_token($token);
+	// $query = $casoModel->Informacion_Usuarios($casoced);
+	// if (empty($query)) {
+	// 	$casos = [];
+	// } else {
+	// 	$casos = $query;
+	// }
+	// echo json_encode($casos);
+
+	$casoModel = new Casos();
+	$token=$this->request->getServer('HTTP_AUTHORIZATION');
+	$buscar_token = $casoModel->buscar_token($token);
+	$query = $casoModel->Informacion_Usuarios($casoced);
+	if (empty($query)) {
+		$casos = [];
+	} else {
+		$casos = $query;
+	}
+	echo json_encode($casos);
+		
+}
+
+
+
+
 	//Metodo para generar un nuevo caso
 	public function nuevoCaso()
 	{
@@ -920,34 +954,6 @@ class Casos_Controler extends BaseController
 
 	
 
-//Metodo queo obtiene  la informacion de los usuarios para le web 
-public function Informacion_Usuarios($casoced=null)
-
-{
-
-
-	$casoModel = new Casos();
-	$token=$this->request->getServer('HTTP_AUTHORIZATION');
-	$buscar_token = $casoModel->buscar_token($token);
-	$query = $casoModel->Informacion_Usuarios($casoced);
-	if (empty($query)) {
-		$casos = [];
-	} else {
-		$casos = $query;
-	}
-	echo json_encode($casos);
-
-	// if (count($buscar_token)>0) {	
-	
-	// echo json_encode($casos);
-		
-	// }else
-	// {
-	// 	echo('No se encontro e token , No Autorizado');
-	// }
-	
-	
-}
 
 
 
