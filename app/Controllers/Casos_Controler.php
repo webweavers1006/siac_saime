@@ -109,14 +109,36 @@ public function Informacion_Usuarios($casoced=null)
 
 	$casoModel = new Casos();
 	$token=$this->request->getServer('HTTP_AUTHORIZATION');
-	$buscar_token = $casoModel->buscar_token($token);
-	$query = $casoModel->Informacion_Usuarios($casoced);
-	if (empty($query)) {
-		$casos = [];
-	} else {
-		$casos = $query;
-	}
-	echo json_encode($casos);
+
+	// Contexto para la solicitud
+	$contexto = stream_context_create([
+		'http' => [
+			'method' => 'GET',
+			'header' => 'Authorization: Bearer ' . $token // Asumiendo que tienes un token
+		]
+	]);
+
+// Verificar el token
+$verificar = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/auth/token/verificacion", false, $contexto), true);
+
+// Comprobar si la verificación fue exitosa
+if (isset($verificar['verificacion']) && $verificar['verificacion'] === true) {
+    // El token es válido, proceder a obtener la información del usuario
+    $query = $casoModel->Informacion_Usuarios($casoced);
+    
+    if (empty($query)) {
+        $casos = [];
+    } else {
+        $casos = $query;
+    }
+    
+    // Devolver la información en formato JSON
+    echo json_encode($casos);
+} else {
+    // Token no válido, mostrar mensaje de no autorizado
+    http_response_code(401); // Establecer el código de respuesta HTTP a 401
+    echo json_encode(['mensaje' => 'No autorizado']);
+}
 		
 }
 
