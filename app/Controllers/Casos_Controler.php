@@ -140,11 +140,12 @@ public function Informacion_Usuarios($casoced=null)
 				echo json_encode($casos);
 			} else {
 				// Mostrar mensaje de no autorizado
-				echo 'No Autorizado.';
+				
+				echo json_encode('No Autorizado');
 			}
 		} else {
 			// Mostrar mensaje de error según el código de estado
-			echo 'No Autorizado.';
+			echo json_encode('No Autorizado');
 		}
 	}
 
