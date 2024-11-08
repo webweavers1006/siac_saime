@@ -114,32 +114,31 @@ public function Informacion_Usuarios($casoced=null)
 	$contexto = stream_context_create([
 		'http' => [
 			'method' => 'GET',
-			'header' => 'Authorization: ' . $token // Asumiendo que tienes un token
+			'header' => 'Authorization:  ' . $token // Asumiendo que tienes un token
 		]
 	]);
 
 // Verificar el token
 $verificar = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/auth/token/verificacion", false, $contexto), true);
-
-
-// Comprobar si la verificación fue exitosa
-if (isset($verificar['verificacion']) && $verificar['verificacion'] === true) {
-    // El token es válido, proceder a obtener la información del usuario
-    $query = $casoModel->Informacion_Usuarios($casoced);
-    
-    if (empty($query)) {
-        $casos = [];
-    } else {
-        $casos = $query;
-    }
-    
-    // Devolver la información en formato JSON
-    echo json_encode($casos);
-} else {
-    // Token no válido, mostrar mensaje de no autorizado
-    http_response_code(401); // Establecer el código de respuesta HTTP a 401
-    echo json_encode(['mensaje' => 'No autorizado']);
-}
+var_dump($verificar);
+	// Comprobar si la verificación fue exitosa
+	if (isset($verificar['verificacion']) && $verificar['verificacion'] === true) {
+		// El token es válido, proceder a obtener la información del usuario
+		$query = $casoModel->Informacion_Usuarios($casoced);
+		
+		if (empty($query)) {
+			$casos = [];
+		} else {
+			$casos = $query;
+		}
+		
+		// Devolver la información en formato JSON
+		echo json_encode($casos);
+	} else {
+		// Token no válido, mostrar mensaje de no autorizado
+		http_response_code(401); // Establecer el código de respuesta HTTP a 401
+		echo json_encode(['mensaje' => 'No autorizado', 'status' => 401]);
+	}
 		
 }
 
