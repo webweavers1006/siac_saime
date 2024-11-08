@@ -114,12 +114,13 @@ public function Informacion_Usuarios($casoced=null)
 	$contexto = stream_context_create([
 		'http' => [
 			'method' => 'GET',
-			'header' => 'Authorization: Bearer ' . $token // Asumiendo que tienes un token
+			'header' => 'Authorization: ' . $token // Asumiendo que tienes un token
 		]
 	]);
 
 // Verificar el token
 $verificar = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/auth/token/verificacion", false, $contexto), true);
+
 
 // Comprobar si la verificación fue exitosa
 if (isset($verificar['verificacion']) && $verificar['verificacion'] === true) {
