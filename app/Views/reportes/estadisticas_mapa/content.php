@@ -29,7 +29,8 @@
                                     
                                     <div id="root">
                                     </div>
-                                    <script defer="defer" src="<?php echo base_url(); ?>/static/js/main.9087a357.js"></script>
+                                    <script defer="defer" src="/static/js/main.07b9b2dc.js"></script>
+                                   
                             </div>
                         </div>  
                     </div>
