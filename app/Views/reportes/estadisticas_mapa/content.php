@@ -2,6 +2,8 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mapa.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link href="/static/css/main.ee9d7dba.css" rel="stylesheet">
   <style>
     table.dataTable thead,
     table.dataTable tfoot {
@@ -23,7 +25,11 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-12">
-                                <iframe src="https://siac.sapi.gob.ve/mapa/atencion" class="map" frameborder="0"></iframe>
+                               
+                                    
+                                    <div id="root">
+                                    </div>
+                                    <script defer="defer" src="<?php echo base_url(); ?>/static/js/main.9087a357.js"></script>
                             </div>
                         </div>  
                     </div>
