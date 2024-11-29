@@ -30,21 +30,41 @@ class Tipo_Atencion_Usu_Model extends BaseModel
     public function Listar_Tipo_Atencion_filtro()
     {
         $db      = \Config\Database::connect();
-        $strQuery = "SELECT a_usu.tipo_aten_id,a_usu.tipo_aten_nombre,case when a_usu.tipo_aten_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
+        $strQuery = "SELECT a_usu.act_pro_int,a_usu.tipo_aten_id,a_usu.tipo_aten_nombre,case when a_usu.tipo_aten_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
         $strQuery .= "FROM public.sgc_tipoatencion_usu as a_usu WHERE a_usu.tipo_aten_borrado='false' ";
         $query = $db->query($strQuery);
         $resultado = $query->getResult();
         return $resultado;
     }
 
+    public function Listar_Tipo_Atencion_Sin_Formacion()
+    {
+        $db      = \Config\Database::connect();
+        $strQuery = "SELECT a_usu.acc_participantes,a_usu.act_pro_int,a_usu.tipo_aten_id,a_usu.tipo_aten_nombre,case when a_usu.tipo_aten_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
+        $strQuery .= "FROM public.sgc_tipoatencion_usu as a_usu WHERE a_usu.tipo_aten_borrado='false' and a_usu.acc_formacion <> 'true'  ";
+        $query = $db->query($strQuery);
+        $resultado = $query->getResult();
+        return $resultado;
+    }
 
     public function Listar_Tipo_Atencion_edit()
     {
         $db      = \Config\Database::connect();
-        $strQuery = "SELECT a_usu.tipo_aten_id,a_usu.tipo_aten_nombre,case when a_usu.tipo_aten_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
+        $strQuery = "SELECT a_usu.acc_participantes,a_usu.act_pro_int, a_usu.tipo_aten_id,a_usu.tipo_aten_nombre,case when a_usu.tipo_aten_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
         $strQuery .= "FROM public.sgc_tipoatencion_usu as a_usu  ";
         $query = $db->query($strQuery);
         $resultado = $query->getResult();
         return $resultado;
     }
+
+    public function acc_participantes($data)
+    {
+        $builder = $this->dbconn("public.sgc_tipoatencion_usu")
+        ->select('*')
+        ->where(['tipo_aten_id' => $data])
+        ->get()
+        ->getResult();
+        return $builder;
+    }
+
 }

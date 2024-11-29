@@ -52,6 +52,7 @@ class Seguimientos extends BaseModel
     }
 
 
+    
 
 
 

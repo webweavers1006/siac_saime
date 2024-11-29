@@ -107,6 +107,7 @@ $session = session();
                      
                         <div class="form-group">
                           <input type="hidden" id="nombre_anterior" name="" value="">
+                          <input type="hidden" id="tipo_atend_borrado" name="" value="">
                           <input type="hidden" id="apellido_anterior" name="" value="">
                           <input type="hidden" id="tipo_persona_anterior" name="" value="">
                           <input type="hidden" id="cedula_anterior" name="" value="">
@@ -176,11 +177,12 @@ $session = session();
 
 
                             <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="t-beneficiario">Tipo de Beneficiario</label>
-                              <select class="form-control" id="t-beneficiario" name="t-beneficiario">
-                                <option value="1">Usuario</option>
-                                <option value="2">Emprendedor</option>
-                              </select>
+                         
+                                <label for="t-beneficiario">Tipo de Beneficiario</label>
+                                <select class="form-control" id="t-beneficiario" name="t-beneficiario">
+                                    <option value="0" disabled>Seleccione</option>
+                                </select>
+                            
                             </div>
                             <div class="col-lg-3 col-sm-3 col-md-3">
                               <label for="tipo-persona">Genero</label>
@@ -263,15 +265,24 @@ $session = session();
                             <option value="0" disabled>Seleccione</option>
                           </select>
                         </div>  
+                   
 
-                        <div class="col-lg-4 col-sm-4 col-md-4">
-                          <label for="tipo-pi">Tipo Propiedad Intelectual</label>
-                          <select  disabled class="form-control" id="tipo-pi" name="tipo-pi">
-                            <option value="0" disabled>Seleccione</option>
+                        <div class="col-lg-4 col-sm-4 col-md-4 prop_int oculto">
+                          <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
+                          <select disabled class="form-control " id="tipo-pi" name="tipo-pi">
+                              <option value="0" disabled>Seleccione</option>
                           </select>
-                        </div>
-                      
+                      </div>
 
+                      <div class="col-lg-4 col-sm-4 col-md-4 detalle_atencion oculto">
+                          <label for="tipo-pi">Detalle Atencion</label>
+                          <select disabled class="form-control" id="edit_detelle_atencion" name="detalles_atencion">
+                              <option value="0" disabled>Seleccione</option>
+                          </select>
+                      </div>
+
+                      
+                        <input type="hidden"  class="form-control"  id="id_hijos_detalle_atencion" >
                       </div>
                     </div>
                     <!-- FORMULARIO PARA EL CASO DE ASESORIA -->

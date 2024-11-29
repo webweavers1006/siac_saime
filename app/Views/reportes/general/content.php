@@ -42,11 +42,9 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="t-beneficiario">Tipo de Beneficiario:</label>
+                                <label for="t-beneficiario">Tipo de Beneficiario</label>
                                 <select class="form-control" id="t-beneficiario" name="t-beneficiario">
-                                    <option value="0" selected disabled>seleccione</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Emprendedor</option>
+                                    <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -55,12 +53,22 @@
                                     <option value="0" selected disabled>seleccione</option>
                                 </select>
                             </div>
+
+                           
                             <div class="col-md-2">
                                 <label for="tipo-atencion-usu">Tipo de Atención:</label>
                                 <select class="form-control" id="tipo-atencion-usu" name="tipo-atencion-usu">
                                     <option value="0" selected disabled>seleccione</option>
                                 </select>
                             </div>
+
+                            <div class="col-md-2 detalle_atencion" style="display: none;">
+                                <label for="tipo-pi">Detalle Atencion</label>
+                                <select class="form-control" id="edit_detelle_atencion" name="detalles_atencion">
+                                    <option value="0" disabled>Seleccione</option>
+                                </select>
+                            </div>
+
                         </div>
 
                        

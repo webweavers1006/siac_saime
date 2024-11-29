@@ -56,6 +56,20 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		echo json_encode($atencion);
 	}
 
+/*
+       FUNCION PARA OBTENER LOS TIPOS DE ATENCION ACTIVOS Y SIN FORMACION
+    */
+	public function Listar_Tipo_Atencion_Sin_Formacion()
+	{
+		$model = new Tipo_Atencion_Usu_Model();
+		$query = $model->Listar_Tipo_Atencion_Sin_Formacion();
+		if (empty($query)) {
+			$atencion = [];
+		} else {
+			$atencion = $query;
+		}
+		echo json_encode($atencion);
+	}
 
 
 
@@ -69,6 +83,8 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$atencion["tipo_aten_nombre"]     = $datos["descripcion"];
+			$atencion["act_pro_int"]     = $datos["act_pro_int"];
+			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			//Realizamos la insercion en la tabla
 			$query_insertar_atencion = $model->add_Atencion($atencion);
 			if (isset($query_insertar_atencion)) {
@@ -86,7 +102,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		}
 	}
 
-	//Metodo para ACTUALIZAR Direcciones
+	//Metodo para ACTUALIZAR ATENCIONES
 	public function editTipoAtencion()
 	{
 		$model = new Tipo_Atencion_Usu_Model();
@@ -98,6 +114,8 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["tipo_aten_nombre"]     = $datos["descripcion"];
 			$atencion["tipo_aten_borrado"]     = $datos["borrado"];
 			$atencion["tipo_aten_id"]     = $datos["id_atencion"];
+			$atencion["act_pro_int"]     = $datos["act_pro_int"];
+			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			//Realizamos la actualizacion en la tabla
 			$query_editar_atencion = $model->editTipoAtencion($atencion);
 			if (isset($query_editar_atencion)) {

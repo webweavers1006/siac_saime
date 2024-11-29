@@ -31,8 +31,65 @@ $(function() {
     llenar_Tipo_Atencion(Event);
     llenar_via_atencion(Event);
     llenar_Estados(Event);
+    llenar_Tipo_Beneficiarios(Event);
 });
 
+
+
+ //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
+ function llenar_Tipo_Beneficiarios(e, id) {
+    e.preventDefault;
+    url = "/Listar_Tipo_Beneficiarios_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#t-beneficiario").empty();
+                $("#t-beneficiario").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //console.log(data)
+                        $("#t-beneficiario").append(
+                            "<option value=" +
+                            item.tipo_beneficiario_id+
+                            ">" +
+                            item.tipo_beneficiario_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== ente_adscrito_id) {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                " selected>" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                ">" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
 function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,id_estado=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado=null) {
 
     // Convertir la fecha
@@ -58,11 +115,11 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     if (sexo != null) {
         encabezado = encabezado + 'Sexo:' + ' ' + nombresexo + ' ';
     }
-    if (via_atencion != null) {
+    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) {
         encabezado = encabezado + 'Via de atencion:' + ' ' + nombre_via_atencion + ' ';
     }
 
-    if (direcciones_caso != null) {
+    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) {
         encabezado = encabezado + 'Remitido a:' + ' ' + nombre_direccion_remi + ' ';
     }
 
@@ -141,8 +198,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                         fontSize: 18,
                                     },
                                     {
-                                        margin: [-600, 80, -25, 0],
-                                        text: encabezado,
+                                        margin: [-700, 80, -25, 0],
+                                        text: encabezado = insertarSaltoDeLinea(encabezado, 100),
                                     },
                                 ],
                             }
@@ -537,5 +594,29 @@ $(document).on('click', '.limpiar', function(e) {
 })
 
 
+// Función para insertar un salto de línea en la cadena
+function insertarSaltoDeLinea(texto, longitudMaxima) {
+    let textoFormateado = '';
+    let longitudActual = 0;
+    // Dividir el texto en palabras
+    const palabras = texto.split(' ');
+    // Recorrer las palabras
+    for (const palabra of palabras) {
+        // Calcular la longitud actual más la nueva palabra
+        const longitudNueva = longitudActual + palabra.length + 1; // +1 para el espacio
+        // Si la longitud supera la longitud máxima, hacer un salto de línea
+        if (longitudNueva > longitudMaxima) {
+            // Solo agregar la palabra si no queda cortada
+            if (longitudActual > 0) {
+                textoFormateado = textoFormateado.trimEnd() + '\n'; // Agregar un salto de línea
+            }
+            longitudActual = 0; // Reiniciar la longitud actual
+        }
+        // Agregar la palabra al texto formateado
+        textoFormateado += palabra + ' ';
+        longitudActual += palabra.length + 1; // Actualizar la longitud actual
+    }
+    return textoFormateado.trim(); // Retornar el texto formateado sin espacios al final
 
+}
 //

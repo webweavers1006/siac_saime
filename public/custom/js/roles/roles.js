@@ -32,7 +32,7 @@ function listar_Direcciones_Administra() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"  borrado=' + row.borrado + '    id=' + row.idrol + '    descripcion="' + row.rolnom + '"  > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"   borrado=' + row.borrado + '    id=' + row.idrol + '    descripcion="' + row.rolnom + '"  > <i class="material-icons " >create</i></a>'
     
                 }
             }
@@ -143,6 +143,7 @@ $('#listar_roles').on('click', '.Editar', function(e) {
         $('#borrado').removeAttr('checked')
         $('#borrado').val('true')
     }
+  
 });
 
 
@@ -160,6 +161,8 @@ $(document).on('submit', "#edit-rol", function(e) {
         borrado = 'true';
 
     }
+
+
     let datos = {
         "descripcion": descripcion,
         "borrado": borrado,

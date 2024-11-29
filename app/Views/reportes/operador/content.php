@@ -57,12 +57,12 @@ $session = session();
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
+                            
                                 <label for="t-beneficiario">Tipo de Beneficiario</label>
                                 <select class="form-control" id="t-beneficiario" name="t-beneficiario">
-                                    <option value="0" selected disabled>Seleccione</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Emprendedor</option>
+                                    <option value="0" disabled>Seleccione</option>
                                 </select>
+                          
                             </div>
                         </div>
                         <div class="row">

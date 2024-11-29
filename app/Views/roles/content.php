@@ -117,6 +117,8 @@ $session = session();
                 </div>
                 &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
                 <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'>
+
+               
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm  btn-light" type="reset">Limpiar</button>

@@ -4,4 +4,18 @@
         color: blueviolet;
     }
 
-    
+    .btn-xs-xs {
+    position: relative;
+    padding: 0.25rem;
+    left: 0%;
+    background-color: rgb(94, 97, 97);
+    border-radius: 5px;
+    align-items: center;
+
+}
+
+.length-container {
+    display: flex;
+    align-items: center; /* Centra verticalmente */
+    gap: 10px; /* Espacio entre el selector y los botones */
+}

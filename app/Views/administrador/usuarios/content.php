@@ -102,7 +102,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="user-name">Nombre</label>
-          <input type="text" name="user-name" id="user-name" class="form-control" placeholder="Ej: Juan" autocomplete="off" required>
+          <input type="text" name="user-name" onkeyup="mayus(this);" id="user-name" class="form-control" placeholder="Ej: Juan" autocomplete="off" required>
         </div>
         <div class="form-group">
           <label for="user-email">Correo Electrónico</label>
@@ -146,7 +146,7 @@
       <div class="col-md-6">
       <div class="form-group">
           <label for="user-lastname">Apellido</label>
-          <input type="text" name="user-lastname" id="user-lastname" autocomplete="off"class="form-control" placeholder="Ej: Perez" required>
+          <input type="text" name="user-lastname" onkeyup="mayus(this);" id="user-lastname" autocomplete="off"class="form-control" placeholder="Ej: Perez" required>
       </div>
 
 
@@ -172,7 +172,7 @@
         
         <div class="form-group">
           <label for="usercargo">Cargo</label>
-          <input type="text" name="usercargo" id="usercargo" class="form-control" placeholder="Ej: Director" required>
+          <input type="text" name="usercargo" onkeyup="mayus(this);" id="usercargo" class="form-control" placeholder="Ej: Director" required>
         </div>
         <div class="form-group">
           <label for="user-confirm-pass">Confirmar Contraseña</label>
@@ -219,13 +219,13 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="user-name">Nombre</label>
-            <input type="text" name="edit-user-name" id="edit-user-name" class="form-control" placeholder="Ej: Juan">
+            <input type="text" name="edit-user-name" onkeyup="mayus(this);" id="edit-user-name" class="form-control" placeholder="Ej: Juan">
             <label for="user-lastname">Apellido</label>
-            <input type="text" name="edit-user-lastname" id="edit-user-lastname" class="form-control" placeholder="Ej: Perez">
+            <input type="text" name="edit-user-lastname" onkeyup="mayus(this);" id="edit-user-lastname" class="form-control" placeholder="Ej: Perez">
             <label for="user-email">Correo electronico</label>
             <input type="email" name="edit-user-email" id="edit-user-email" class="form-control" placeholder="Ej: juan.perez@sapi.gob.ve">
             <label for="user-lastname">Cargo</label>
-            <input type="text" name="cargo" id="cargo" class="form-control" placeholder="Ej: Perez">
+            <input type="text" name="cargo" id="cargo"  onkeyup="mayus(this);"class="form-control" placeholder="Ej: Perez">
            
           </div>
 
@@ -293,3 +293,10 @@
   </div>
   <!-- /.modal-dialog -->
 </div>
+
+ <!-- ***** FUNCION PARA CONVERTIR EN MAYUSCULA***-** -->
+ <script>
+        function mayus(e) {
+          e.value = e.value.toUpperCase();
+        }
+      </script>

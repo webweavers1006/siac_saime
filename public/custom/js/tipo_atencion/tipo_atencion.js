@@ -31,7 +31,7 @@ function listar_Direcciones_Administra() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     tipo_aten_id=' + row.tipo_aten_id + '    tipo_aten_nombre="' + row.tipo_aten_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" taller=' + row.acc_participantes + '  act_pro_int=' + row.act_pro_int + '   tipo_aten_id=' + row.tipo_aten_id + '    tipo_aten_nombre="' + row.tipo_aten_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
 
                 }
             }
@@ -74,10 +74,14 @@ function listar_Direcciones_Administra() {
 $(document).on('submit', "#new-atencion", function(e) {
     e.preventDefault();
     let descripcion = $("#name-atencion").val();
+    let act_pro_int = $("#acceso_pro_int").is(':checked') ? "true" : "false";
     descripcion = descripcion.trim();
     let datos = {
         "descripcion": descripcion,
+        "act_pro_int": act_pro_int,
     }
+
+
     $.ajax({
         url: "/add_Tipo_Atencion",
         method: "POST",
@@ -127,10 +131,23 @@ $(document).on('submit', "#new-atencion", function(e) {
 $('#listar_tipo_atencion').on('click', '.Editar', function(e) {
     var id_atencion = $(this).attr('tipo_aten_id');
     var descripcion = $(this).attr('tipo_aten_nombre');
+    var act_pro_int = $(this).attr('act_pro_int');
     var borrado = $(this).attr('borrado');
+    var taller = $(this).attr('taller');
     $("#editar").modal("show");
     $('#editar').find('#editar-atencion').val(descripcion);
     $('#editar').find('#id-atencion').val(id_atencion);
+
+     
+    if (act_pro_int == 't') {
+        $('#edit_acceso_pro_int').attr('checked', 'checked');
+        $('#edit_acceso_pro_int').val('true');
+    }
+    if (act_pro_int == 'f') {
+        $('#edit_acceso_pro_int').removeAttr('checked')
+        $('#edit_acceso_pro_int').val('false')
+    }
+
     if (borrado == 'Activo') {
         $('#borrado').attr('checked', 'checked');
         $('#borrado').val('false');
@@ -138,6 +155,14 @@ $('#listar_tipo_atencion').on('click', '.Editar', function(e) {
     if (borrado == 'Inactivo') {
         $('#borrado').removeAttr('checked')
         $('#borrado').val('true')
+    }
+    if (taller == 't') {
+        $('#edit_participantes').attr('checked', 'checked');
+        $('#edit_participantes').val('false');
+    }
+    if (taller == 'f') {
+        $('#edit_participantes').removeAttr('checked')
+        $('#edit_participantes').val('f')
     }
 });
 
@@ -148,6 +173,7 @@ $(document).on('submit', "#edit-atencion", function(e) {
     let descripcion = $("#editar-atencion").val();
     let borrado = $("#borrado").val();
     let id_atencion = $("#id-atencion").val();
+    let acc_participantes = $("#edit_participantes").val();
     if ($('#borrado').is(':checked')) {
         borrado = 'false';
 
@@ -155,10 +181,30 @@ $(document).on('submit', "#edit-atencion", function(e) {
         borrado = 'true';
 
     }
+
+
+    if ($('#edit_acceso_pro_int').is(':checked')) {
+        act_pro_int = 'true';
+
+    } else {
+        act_pro_int = 'false';
+
+    }
+
+    if ($('#edit_participantes').is(':checked')) {
+
+        acc_participantes = 'true';
+
+    } else {
+        acc_participantes = 'false';
+    }
+
     let datos = {
         "descripcion": descripcion,
         "borrado": borrado,
         "id_atencion": id_atencion,
+        "act_pro_int": act_pro_int,
+        "acc_participantes": acc_participantes,
     }
     $.ajax({
         url: "/editTipoAtencion",

@@ -15,6 +15,117 @@ use VARIANT;
 class Estatus extends BaseController
 {
     use ResponseTrait;
+
+
+
+//Metodo que muestra la vista de los tipos de direcciones
+public function vista_tipo_Estatus()
+{
+    if ($this->session->get('logged')) {
+        echo view('template/header');
+        echo view('template/nav_bar');
+        echo view('tipo_de_estatus/content.php');
+        echo view('template/footer');
+        echo view('tipo_de_estatus/footer_estatus.php');
+    } else {
+        return redirect()->to('/');
+    }
+}
+
+/*
+   FUNCION PARA OBTENER LOS TIPOS DE ATENCION DE USUARIOS
+*/
+public function Listar_Tipo_Estatus()
+{
+    $model = new Status();
+    $query = $model->Listar_Tipo_Estatus();
+    if (empty($query)) {
+        $estatus = [];
+    } else {
+        $estatus = $query;
+    }
+    echo json_encode($estatus);
+}
+
+/*
+   FUNCION PARA OBTENER LOS TIPOS DE ATENCION ACTIVOS
+*/
+public function Listar_Tipo_Atencion_filtro()
+{
+    $model = new Status();
+    $query = $model->Listar_Tipo_Atencion_filtro();
+    if (empty($query)) {
+        $atencion = [];
+    } else {
+        $atencion = $query;
+    }
+    echo json_encode($atencion);
+}
+
+
+
+
+//Metodo para añadir tipo de atencion
+public function add_Tipo_Estatus()
+{
+    $model = new Status();
+    $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+    if ($this->session->get('logged') and $this->request->isAJAX()) {
+        //Obtenemos los datos del formulario
+        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        //llenamos los datos iniciales de las Direccion
+        $estatus["estnom"]     = $datos["descripcion"];
+        //Realizamos la insercion en la tabla
+        $query_insertar_estatus = $model->add_estatus($estatus);
+        if (isset($query_insertar_estatus)) {
+            $auditoria['audi_user_id']   = session('iduser');
+            $auditoria['audi_accion']   = 'INGRESO EL TIPO DE ESTATUS : ' . '(' . ' ' . $estatus["estnom"] . ' ' . ')';
+            $Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
+            $mensaje = 1;
+            return json_encode($mensaje);
+        } else {
+            $mensaje = 2;
+            return json_encode($mensaje);
+        }
+    } else {
+        return redirect()->to('/');
+    }
+}
+
+//Metodo para ACTUALIZAR Direcciones
+public function editTipoEstatus()
+{
+    $model = new Status();
+    $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+    if ($this->session->get('logged') and $this->request->isAJAX()) {
+        //Obtenemos los datos del formulario
+        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        //llenamos los datos iniciales de las Direccion
+        $estatus["estnom"]     = $datos["estnom"];
+        $estatus["borrado"]     = $datos["borrado"];
+        $estatus["idest"]     = $datos["idest"];
+        //Realizamos la actualizacion en la tabla
+        $query_editar_estatus = $model->editTipoEstatus($estatus);
+        if (isset($query_editar_estatus)) {
+            $auditoria['audi_user_id']   = session('iduser');
+            $auditoria['audi_accion']   = ' EL TIPO DE estatus :' . ' ' . '(' . ' ' . $estatus["estnom"] . ')' . ' ' . ' FUE ACTUALIZADO';
+            $Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
+            $mensaje = 1;
+            return json_encode($mensaje);
+        } else {
+            $mensaje = 2;
+            return json_encode($mensaje);
+        }
+    } else {
+        return redirect()->to('/');
+    }
+}
+
+
+
+
+
+
     public function cambioEstatus()
     {
         $estatusModel = new Status();

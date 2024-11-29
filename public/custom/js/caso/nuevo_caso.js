@@ -2,13 +2,69 @@ $(function() {
 
     // let tipo_atencion_usu = $("#tipo-atencion-usu").val();
  
-     llenar_Tipo_Atencion(Event);
+   
      llenar_Propiedad_Intelectual(Event);
      llenar_Estados(Event);
      llenar_Red_social(Event);
      llenar_Entes_asdcritos(Event);
+     llenar_Tipo_Beneficiarios(Event);
  });
  
+ 
+ //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
+ function llenar_Tipo_Beneficiarios(e, id) {
+    e.preventDefault;
+    url = "/Listar_Tipo_Beneficiarios_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#t-beneficiario").empty();
+                $("#t-beneficiario").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //console.log(data)
+                        $("#t-beneficiario").append(
+                            "<option value=" +
+                            item.tipo_beneficiario_id+
+                            ">" +
+                            item.tipo_beneficiario_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== ente_adscrito_id) {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                " selected>" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                ">" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
  
  //FUNCION PARA LLENAR EL COMBO ENTES ADSCRITOS
  function llenar_Entes_asdcritos(e, ente_adscrito_id) {
@@ -234,61 +290,42 @@ $(function() {
      });
  }
  
- //FUNCION PARA LLENAR EL COMBO TIPO DE ATENCION USUARIO
- function llenar_Tipo_Atencion(e, id) {
-     e.preventDefault;
-     url = "/Listar_Tipo_Atencion_filtro";
-     $.ajax({
-         url: url,
-         method: "GET",
-         dataType: "JSON",
-         beforeSend: function(data) {},
-         success: function(data) {
-             if (data.length >= 1) {
-                 $("#tipo-atencion-usu").empty();
-                 $("#tipo-atencion-usu").append(
-                     "<option value=0  selected disabled>Seleccione</option>"
-                 );
-                 if (id === undefined) {
-                     $.each(data, function(i, item) {
-                         //console.log(data)
-                         $("#tipo-atencion-usu").append(
-                             "<option value=" +
-                             item.tipo_aten_id +
-                             ">" +
-                             item.tipo_aten_nombre +
-                             "</option>"
-                         );
-                     });
-                 } else {
-                     $.each(data, function(i, item) {
-                         if (item.id === id) {
-                             $("#tipo-atencion-usu").append(
-                                 "<option value=" +
-                                 item.tipo_aten_id +
-                                 " selected>" +
-                                 item.tipo_aten_nombre +
-                                 "</option>"
-                             );
-                         } else {
-                             $("#tipo-atencion-usu").append(
-                                 "<option value=" +
-                                 item.tipo_aten_id +
-                                 ">" +
-                                 item.tipo_aten_nombre +
-                                 "</option>"
-                             );
-                         }
-                     });
-                 }
-             }
-         },
-         error: function(xhr, status, errorThrown) {
-             alert(xhr.status);
-             alert(errorThrown);
-         },
-     });
- }
+// Función para llenar el combo tipo de atención usuario con formación
+
+function llenar_Tipo_Atencion(e, id_red_social) {
+    let url = "/buscar_via_tipo_atenecion/" + id_red_social;
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function() {
+            // Puedes agregar un loader o alguna acción antes de la solicitud
+        },
+        success: function(data) {
+            let $select = $("#tipo-atencion-usu");
+            $select.empty();
+            $select.append("<option value='0' selected disabled>Seleccione</option>");
+            $.each(data, function(index, item) {
+                $select.append($('<option></option>')
+                    .val(item.tipo_atencion_id)
+                    .text(item.tipo_aten_nombre)
+                    .attr('data-act-pro-int', item.act_pro_int)
+                );
+            });
+        },
+        error: function(xhr) {
+            alert("Error: " + xhr.status + " - " + xhr.statusText);
+        },
+    });
+}
+
+
+
+
+
+
+
+
  //Evento que busca los municipios por estados
  $(document).on("click", "#estado-caso", (e) => {
      e.preventDefault();
@@ -357,6 +394,10 @@ $(function() {
  
  $("#red-social").on('change', function() {
      $("#red-social").removeClass('is-invalid');
+     id_red_social=$('#red-social').val();  
+     
+    llenar_Tipo_Atencion(Event,id_red_social);   
+  
  });
  
  $("#estado-caso").on('change', function() {
@@ -366,31 +407,106 @@ $(function() {
      $("#tipo-pi").removeClass('is-invalid');
  
  });
- $("#tipo-atencion-usu").on('change', function() {
-     $("#tipo-atencion-usu").removeClass('is-invalid');
-     let tipo_atencion_usu = $("#tipo-atencion-usu").val();
-     if (tipo_atencion_usu == 1) {
-         document.getElementById("tipo-pi").disabled = false;
-         $("#denuncias").hide();
-     } else if (tipo_atencion_usu == 5) {
-         document.getElementById("tipo-pi").disabled = true;
-         $("#cgr").hide();
-         $("#denuncias").show();
-     } else {
-         document.getElementById("tipo-pi").disabled = true;
-         $("#cgr").hide();
-         $("#denuncias").hide();
-     }
+
+
+
  
- });
+ // Evento change para el select de tipo de atención
+
+$("#tipo-atencion-usu").on('change', function(e) {
+    document.getElementById("detalles_atencion").disabled = false;
+    $("#hijos_tipoatencion").val('NO');
+    let id_tipo_atencion = $(this).val(); 
+    let selectedOption = $(this).find('option:selected');
+    let act_pro_int = selectedOption.data('act-pro-int');
+    // Muestra u oculta elementos según el tipo de atención
+    if (id_tipo_atencion == 5 || id_tipo_atencion == 1) {
+        $("#denuncias").toggle(id_tipo_atencion == 5);
+        $(".tipoproint").toggle(act_pro_int === 't');
+        document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
+    } else {
+        $("#cgr").hide();
+        $("#denuncias").hide();
+        $(".tipoproint").toggle(act_pro_int === 't');
+        document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
+    }
+    // Llama a la función para llenar detalles de atención
+    llenar_detalle_atencion(e, id_tipo_atencion);
+
+});
+
+
+function  llenar_detalle_atencion(e,id_tipo_atencion)
+{
+
+    e.preventDefault;
+    
+      url='/Listar_Detalle_Atencion_filtro';
+       $.ajax
+      ({
+           url:url,
+           method:'GET',
+          dataType:'JSON',
+          beforeSend:function(data)
+          {
+          },
+          success:function(data)
+          {
+          
+if(data.length>=1)
+{
+     $('#detalles_atencion').empty();
+     $('#detalles_atencion').append('<option value=0  selected disabled>Seleccione</option>');   
+     if(id_tipo_atencion===undefined)
+    {
+      
+      
+         $.each(data, function(i, item)
+         {
+           $(".detelle_atencion").hide();
+              //console.log(data)
+              $('#detalles_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
+
+         });
+    }
+    else
+    {
+       $(".detelle_atencion").hide();
+       data=data.filter(dato=>dato.tipo_aten_id==id_tipo_atencion);
+       //console.log(buscar);
+          $.each(data, function(i, item)
+          {
+          
+   
+           $(".detelle_atencion").show();
+           $("#hijos_tipoatencion").val('SI');
+           $('#detalles_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');    
+         });
+    }
+}      
+},
+error:function(xhr, status, errorThrown)
+{
+    alert(xhr.status);
+    alert(errorThrown);
+}
+});
+}
+
+
  $("#requerimiento-usuario").on('change', function() {
      $("#requerimiento-usuario").removeClass('is-invalid');
  });
- //Evento de envio del formulario
+
+
+
+
+ //METODO PARA GUARDAR EL CASO 
  $(document).on("click", "#guardar", function(e) {
      e.preventDefault();
      let tipo_prop_intelec = $("#tipo-pi").val();
      let tipo_atencion = $("#tipo-atencion-usu").val();
+     let tipo_atend_id = $("#detalles_atencion").val();
      let requerimiento_user = $("#requerimiento-usuario").val();
      let red_social = $("#red-social").val();
      let estado = $("#estado-caso").val();
@@ -454,7 +570,9 @@ $(function() {
          $("#tipo-pi").removeClass('is-invalid');
          $("#tipo-atencion-usu").removeClass('is-invalid');
          $("#requerimiento-usuario").removeClass('is-invalid');
+
          //VERIFICO SI LA ATENCION ES ASESORIA PARA TOMAR EL VALOR DE LOS CAMPOS CORREPONDIENTES
+
          let tipo_atencion_usu = $("#tipo-atencion-usu").val();
          //VARIABLES PARA CGR
          let competencia_crg =2;
@@ -475,7 +593,8 @@ $(function() {
          let nombre_proyecto = $('#nombre-proyecto').val();
          let monto_aprovado = $('#monto-aprovado').val();
     
-         if (tipo_atencion === '1') {
+         if (tipo_atencion === '1') 
+        {
              if (tipo_prop_intelec == null) {
                      $("#estado-caso").removeClass('is-invalid');
                      $("#tipo-pi").addClass('is-invalid');
@@ -525,6 +644,7 @@ $(function() {
                       "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
                       "sexo": $("#sexo").val(),
                       "bandera_cgr": bandera_cgr,
+                      "tipo_atend_id": tipo_atend_id,
                       "edad": $("#edad").val(),
                       "fecha_nacimiento": $("#fecha-nacimiento").val(),
                       "profesion": $("#profesion").val(),
@@ -612,149 +732,184 @@ $(function() {
                  }
  
             
-             } else if (tipo_atencion === '5') {
-             if (document.getElementById('option-personal').checked) {
-                 option_personal = true
-             } else {
-                 option_personal = false
-             }
-             if (document.getElementById('option-comunidad').checked) {
-                 option_comunidad = true
-             } else {
-                 option_comunidad = false
-             }
-             if (document.getElementById('option-terceros').checked) {
-                 option_terceros = true
-             } else {
-                 option_terceros = false
-             }
- 
-             if (option_personal == false && option_comunidad == false && option_terceros == false) {
-                 alert('Debe indicar a quien afecta el hecho');
-             } else {
-                 ente_adscrito = 0
-                 if (fecha_hechos == '') {
-                     alert('Debe selecciar la fecha en que ocurrieron los hechos');
- 
-                 } else if (denu_involucrados === '') {
-                     $("#denu-involucrados").addClass('is-invalid');
-                     alert('Este campo es requerido , por favor introduzca la informacion solicitada');
-                 } else {
-                     bandera_denuncia = true;
- 
-                     prop_intelectual = 1
-                     let cedula= $("#cedula-persona").val()
-                     if (cedula.charAt(0).match(/[a-zA-Z]/))
-                     {
-                         cedula = cedula.slice(1);
-                     }
-                     $("#denu-involucrados").removeClass('is-invalid');
-                     let datos = {
-                         "social_network": $("#red-social").val(),
-                         "date-entry": $("#fecha-recibido").val(),
-                         "person-name": $("#nombre-persona").val(),
-                         "person-lastname": $("#apellido-persona").val(),
-                         "person-id": cedula,
-                         "nacionalidad": $("#tipo-persona").val(),
-                         "telephone": $("#telefono").val(),
-                         "country": $("#pais-caso").val(),
-                         "state": $("#estado-caso").val(),
-                         "county": $("#municipio-caso").val(),
-                         "town": $("#parroquia-caso").val(),
-                         "record-work": $("#num-tramite").val(),
-                         "pi-type": prop_intelectual = 1,
-                         "user-requirement": $("#requerimiento-usuario").val(),
-                         "office": $("#office").val(),
-                         "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
-                         "sexo": $("#sexo").val(),
-                         "bandera_denuncia": bandera_denuncia,
-                         "option_personal": option_personal,
-                         "option_comunidad": option_comunidad,
-                         "option_terceros": option_terceros,
-                         "fecha_hechos": fecha_hechos,
-                         "denu_involucrados": denu_involucrados,
-                         "nombre_instancia": nombre_instancia,
-                         "rif_instancia": rif_instancia,
-                         "ente_financiador": ente_financiador,
-                         "nombre_proyecto": nombre_proyecto,
-                         "monto_aprovado": monto_aprovado,
-                         "bandera_cgr": bandera_cgr,
-                         "tipo_beneficiario": $("#t-beneficiario").val(),
-                         "direccion": $("#office").val(),
-                         "correo": $("#correo").val(),
-                         "ente_adscrito": ente_adscrito,
-                         "edad": $("#edad").val(),
-                         "fecha_nacimiento": $("#fecha-nacimiento").val(),
-                         "profesion": $("#profesion").val(),
-                         
-                     }
-                     $.ajax({
-                         url: "/registrarCaso",
-                         method: "POST",
-                         dataType: "JSON",
-                         data: {
-                             "data": btoa(JSON.stringify(datos))
-                         },
-                         beforeSend: function() {
-                             
-                         },
-                         success: function(respuesta) {
-                             $("button[type=button]").attr('disabled', 'false');
-                             if (respuesta.mensaje === 1) {
-                                 Swal.fire({
-                                     icon: "success",
-                                     type: 'success',
-                                     html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + respuesta.idcaso + '</strong>',
-                                     toast: true,
-                                     position: "center",
-                                     showConfirmButton: false,
-                                     //timer: 3500,
-                                 });
-                                 setTimeout(function() {
-                                     window.location = "/casos";
-                                 }, 1500);
-                             } else if (respuesta.mensaje === 2) {
-                                 Swal.fire({
-                                     icon: "error",
-                                     type: 'error',
-                                     html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                     toast: true,
-                                     position: "center",
-                                     showConfirmButton: false,
-                                     //timer: 3000,
-                                 });
-                                 setTimeout(function() {
-                                     window.location = "/casos";
-                                 }, 1500);
-                             }
-                             else if (respuesta.mensaje === 7) {
-                                Swal.fire({
-                                    icon: "error",
-                                    type: 'error',
-                                    html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                    toast: true,
-                                    position: "center",
-                                    showConfirmButton: false,
-                                    //timer: 3000,
-                                });
-                                setTimeout(function() {
-                                    window.location = "/casos";
-                                }, 1500);
+             } 
+             else if (tipo_atencion === '5') 
+            {
+                    if (document.getElementById('option-personal').checked) {
+                        option_personal = true
+                    } else {
+                        option_personal = false
+                    }
+                    if (document.getElementById('option-comunidad').checked) {
+                        option_comunidad = true
+                    } else {
+                        option_comunidad = false
+                    }
+                    if (document.getElementById('option-terceros').checked) {
+                        option_terceros = true
+                    } else {
+                        option_terceros = false
+                    }
+        
+                    if (option_personal == false && option_comunidad == false && option_terceros == false) {
+                        alert('Debe indicar a quien afecta el hecho');
+                    } else {
+                        ente_adscrito = 0
+                        if (fecha_hechos == '') {
+                            alert('Debe selecciar la fecha en que ocurrieron los hechos');
+        
+                        } else if (denu_involucrados === '') {
+                            $("#denu-involucrados").addClass('is-invalid');
+                            alert('Este campo es requerido , por favor introduzca la informacion solicitada');
+                        } else {
+                            bandera_denuncia = true;
+        
+                            let tipo_prop_intelec = $("#tipo-pi").val();
+
+             
+                            if (tipo_prop_intelec !=null && tipo_prop_intelec !='null') 
+                           {
+                               prop_intelectual= $("#tipo-pi").val();
+                           }
+                           else
+                           {
+                               prop_intelectual = 1
+               
+                           }
+
+                           
+                            let cedula= $("#cedula-persona").val()
+                            if (cedula.charAt(0).match(/[a-zA-Z]/))
+                            {
+                                cedula = cedula.slice(1);
                             }
-                         }
-                         
-                     });
-                 }
+                            $("#denu-involucrados").removeClass('is-invalid');
+                            let datos = {
+                                "social_network": $("#red-social").val(),
+                                "date-entry": $("#fecha-recibido").val(),
+                                "person-name": $("#nombre-persona").val(),
+                                "person-lastname": $("#apellido-persona").val(),
+                                "person-id": cedula,
+                                "nacionalidad": $("#tipo-persona").val(),
+                                "telephone": $("#telefono").val(),
+                                "country": $("#pais-caso").val(),
+                                "state": $("#estado-caso").val(),
+                                "county": $("#municipio-caso").val(),
+                                "town": $("#parroquia-caso").val(),
+                                "record-work": $("#num-tramite").val(),
+                                "pi-type": prop_intelectual = 1,
+                                "user-requirement": $("#requerimiento-usuario").val(),
+                                "office": $("#office").val(),
+                                "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
+                                "sexo": $("#sexo").val(),
+                                "tipo_atend_id": tipo_atend_id,
+                                "bandera_denuncia": bandera_denuncia,
+                                "option_personal": option_personal,
+                                "option_comunidad": option_comunidad,
+                                "option_terceros": option_terceros,
+                                "fecha_hechos": fecha_hechos,
+                                "denu_involucrados": denu_involucrados,
+                                "nombre_instancia": nombre_instancia,
+                                "rif_instancia": rif_instancia,
+                                "ente_financiador": ente_financiador,
+                                "nombre_proyecto": nombre_proyecto,
+                                "monto_aprovado": monto_aprovado,
+                                "bandera_cgr": bandera_cgr,
+                                "tipo_beneficiario": $("#t-beneficiario").val(),
+                                "direccion": $("#office").val(),
+                                "correo": $("#correo").val(),
+                                "ente_adscrito": ente_adscrito,
+                                "edad": $("#edad").val(),
+                                "fecha_nacimiento": $("#fecha-nacimiento").val(),
+                                "profesion": $("#profesion").val(),
+                                
+                            }
+                            $.ajax({
+                                url: "/registrarCaso",
+                                method: "POST",
+                                dataType: "JSON",
+                                data: {
+                                    "data": btoa(JSON.stringify(datos))
+                                },
+                                beforeSend: function() {
+                                    
+                                },
+                                success: function(respuesta) {
+                                    $("button[type=button]").attr('disabled', 'false');
+                                    if (respuesta.mensaje === 1) {
+                                        Swal.fire({
+                                            icon: "success",
+                                            type: 'success',
+                                            html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + respuesta.idcaso + '</strong>',
+                                            toast: true,
+                                            position: "center",
+                                            showConfirmButton: false,
+                                            //timer: 3500,
+                                        });
+                                        setTimeout(function() {
+                                            window.location = "/casos";
+                                        }, 1500);
+                                    } else if (respuesta.mensaje === 2) {
+                                        Swal.fire({
+                                            icon: "error",
+                                            type: 'error',
+                                            html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
+                                            toast: true,
+                                            position: "center",
+                                            showConfirmButton: false,
+                                            //timer: 3000,
+                                        });
+                                        setTimeout(function() {
+                                            window.location = "/casos";
+                                        }, 1500);
+                                    }
+                                    else if (respuesta.mensaje === 7) {
+                                        Swal.fire({
+                                            icon: "error",
+                                            type: 'error',
+                                            html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
+                                            toast: true,
+                                            position: "center",
+                                            showConfirmButton: false,
+                                            //timer: 3000,
+                                        });
+                                        setTimeout(function() {
+                                            window.location = "/casos";
+                                        }, 1500);
+                                    }
+                                }
+                                
+                            });
+                        }
+        
+                    }
  
-             }
- 
-         } else {
+         }
+         
+         else 
+         {
              bandera_cgr = false;
              bandera_denuncia = false;
              valor_competencia = '';
              ente_adscrito = 0
              valor_asume = '';
-             prop_intelectual = 1
+
+             let tipo_prop_intelec = $("#tipo-pi").val();
+
+             
+             if (tipo_prop_intelec !=null && tipo_prop_intelec !='null') 
+            {
+                prop_intelectual= $("#tipo-pi").val();
+            }
+            else
+            {
+                prop_intelectual = 1
+
+            }
+
+
+       
+       
              let cedula= $("#cedula-persona").val()
              if (cedula.charAt(0).match(/[a-zA-Z]/))
              {
@@ -766,6 +921,7 @@ $(function() {
                  "person-name": $("#nombre-persona").val(),
                  "person-lastname": $("#apellido-persona").val(),
                  "person-id": cedula,
+                 "tipo_atend_id": tipo_atend_id,
                  "nacionalidad": $("#tipo-persona").val(),
                  "telephone": $("#telefono").val(),
                  "country": $("#pais-caso").val(),
@@ -1063,3 +1219,5 @@ $("#fecha-nacimiento").on('change', function() {
     // Asignar la edad al elemento con id='edad'
     $("#edad").val(edad);
 });
+
+

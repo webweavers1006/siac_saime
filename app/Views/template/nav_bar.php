@@ -130,11 +130,21 @@ $userdata = $session->get();
                   <p>Consolidado</p>
                 </a>
               </li>
+              
+
+
               <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5 or $session->get('userrol') == 6) { ?>
                 <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/operador" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
                     <p>Analista</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/Talleres_Participantes" class="nav-link">
+                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
+                    <p>Talleres Participantes</p>
                   </a>
                 </li>
               <?php } ?>
@@ -261,12 +271,39 @@ $userdata = $session->get();
               <i class="right fas fa-angle-left"></i>
             </a>
             <ul class="nav nav-treeview">
+
+            <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_via_atencion" class="nav-link">
+                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
+                    <p>Via De Atención</p>
+                  </a>
+              </li> 
+
               <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/vista_tipo_atencion" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
                     <p>Tipo De Atención</p>
                   </a>
-              </li>   
+              </li> 
+              <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_detalle_atencion" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Detalle Atencion</p>
+                  </a>
+                </li>
+
+              <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_tipo_Beneficiarios/" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Tipo de Beneficiarios</p>
+                  </a>
+                </li>  
+                <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_tipo_Estatus/" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Tipo de Estatus</p>
+                  </a>
+                </li>
             </ul>
           </li>
           <?php } ?>

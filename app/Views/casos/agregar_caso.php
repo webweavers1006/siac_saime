@@ -301,13 +301,21 @@ to {
               <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
           </div>
 
-          <div class="col-lg-3 col-sm-3 col-md-3">
+          <!-- <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="t-beneficiario">Tipo de Beneficiario</label>
               <select class="form-control" id="t-beneficiario" name="t-beneficiario">
               <option value="1" selected>Usuario</option>
               <option value="2">Emprendedor</option>
               </select>
+          </div> -->
+          <div class="col-lg-3 col-sm-3 col-md-3">
+              <label for="t-beneficiario">Tipo de Beneficiario</label>
+              <select class="form-control" id="t-beneficiario" name="t-beneficiario">
+                <option value="0" disabled>Seleccione</option>
+              </select>
           </div>
+
+
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="tipo-persona">Género</label>
               <select class="form-control" id="sexo" name="tipo-persona">
@@ -401,13 +409,32 @@ to {
               </select>
           </div>
 
-
-          <div class="col-lg-4 col-sm-4 col-md-4">
-              <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
-              <select disabled class="form-control" id="tipo-pi" name="tipo-pi">
+          <div class="col-lg-4 col-sm-4 col-md-4 detelle_atencion  " style="display: none;" >
+              <label for="tipo-pi">Detalle Atencion</label>
+              <select  disabled class="form-control" id="detalles_atencion" name="detalles_atencion">
               <option value="0" disabled>Seleccione</option>
               </select>
           </div>
+          <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
+              <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
+              <select disabled class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
+              <option value="0" disabled>Seleccione</option>
+              </select>
+          </div>
+
+
+          
+          <!-- IMPUT QUE VALIDA SI SE SELECCIONO UN TIPO DE ATENCION CON HIJOS -->
+          <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >
+
+
+
+
+
+
+
+
+
           </div>
           <!-- FORMULARIO PARA EL CASO DE ASESORIA -->
           <div class="row" id="cgr" style="display: none;">
@@ -513,7 +540,7 @@ to {
        
          <br>
         <div class="btns-group">
-          <a href="#" class="btn btn-prev">Previous</a>
+          <a href="#" class="btn btn-prev">ANTERIOR</a>
           <button type="button" class="btn  btn-sm  btn-primary" id="guardar">Guardar</button>
         </div>
       </div>

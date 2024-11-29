@@ -10,6 +10,7 @@ $(function() {
     let direcciones_caso = $('#direcciones_caso').val();
     let tipo_beneficiario = $('#t-beneficiario').val();
     let atencion_cuidadano = $('#office').val();
+    let detalle_atencion = $('#edit_detelle_atencion').val();
     let edad_min = $('#edad_min').val();
     let edad_max = $('#edad_max').val();
     let sexo = $('#sexo').val();
@@ -23,15 +24,78 @@ $(function() {
         edad_min = 'null'
         edad_max = 'null'
     }
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,detalle_atencion);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
     llenar_via_atencion(Event);
     llenar_Estados(Event);
+    llenar_Tipo_Beneficiarios(Event);
 });
 
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0,atencion_cuidadano = 0,estatus=0,id_estado=0,id_municipio=0,edad_min=null,edad_max=null,nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus=null,nombre_estado=null) {
 
+ //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
+ function llenar_Tipo_Beneficiarios(e, id) {
+    e.preventDefault;
+    url = "/Listar_Tipo_Beneficiarios_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#t-beneficiario").empty();
+                $("#t-beneficiario").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //console.log(data)
+                        $("#t-beneficiario").append(
+                            "<option value=" +
+                            item.tipo_beneficiario_id+
+                            ">" +
+                            item.tipo_beneficiario_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== ente_adscrito_id) {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                " selected>" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#t-beneficiario").append(
+                                "<option value=" +
+                                item.tipo_beneficiario_id+
+                                ">" +
+                                item.tipo_beneficiario_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
+
+
+
+
+
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0,atencion_cuidadano = 0,estatus=0,id_estado=0,id_municipio=0,edad_min=null,edad_max=null,detalle_atencion=0,nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus=null,nombre_estado=null) {
+
+
+ 
     // Convertir la fecha
     var fechaOriginal = desde;
     var dataFormatada_desde = moment(fechaOriginal).format("DD-MM-YYYY");
@@ -60,11 +124,11 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     if (edad_min !='null'&& edad_max!='null'&& edad_min !=null&& edad_max!=null ) {
         encabezado = encabezado + 'Edad:' + ' '+'Entre'+' '+edad_min+' '+'y'+' '+edad_max+' ';
     }
-    if (via_atencion != null) {
+    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) {
         encabezado = encabezado + 'Via de atencion:' + ' ' + nombre_via_atencion + ' ';
     }
 
-    if (direcciones_caso != null) {
+    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) {
         encabezado = encabezado + 'Remitido a:' + ' ' + nombre_direccion_remi + ' ';
     }
 
@@ -122,7 +186,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                 alignment: 'center'
                             },
                             // Create a header
-                            doc.pageMargins = [10, 95, 0, 70];
+                            doc.pageMargins = [10, 115, 0, 70];
                         doc['header'] = (function(page, pages) {
                             doc.styles.title = {
                                 color: '#4c8aa0',
@@ -146,8 +210,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                         fontSize: 18,
                                     },
                                     {
-                                        margin: [-600, 80, -25, 0],
-                                        text: encabezado,
+                                        margin: [-700, 80, -25, 0],
+                                        text: encabezado = insertarSaltoDeLinea(encabezado, 100),
                                     },
                                 ],
                             }
@@ -204,7 +268,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_estado+'/'+id_municipio+'/'+edad_min+'/'+edad_max,
+            "url": "/reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_estado+'/'+id_municipio+'/'+edad_min+'/'+edad_max+'/'+detalle_atencion,
             "type": "GET",
             dataSrc: ''
         },
@@ -510,6 +574,7 @@ $(document).on('click', '.consultar', function(e) {
     e.preventDefault();
     let desde = $('#desde').val();
     let hasta = $('#hasta').val();
+    let detalle_atencion = $('#edit_detelle_atencion').val();
     let via_atencion = $('#via-atencion').val();
     let direcciones_caso = $('#direcciones_caso').val();
     let tipo_beneficiario = $('#t-beneficiario').val();
@@ -565,7 +630,7 @@ $(document).on('click', '.consultar', function(e) {
     }else
     {
     $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_estado,id_municipio,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus,nombre_estado);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_estado,id_municipio,edad_min,edad_max,detalle_atencion, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus,nombre_estado);
     }
 
 })
@@ -574,3 +639,94 @@ $(document).on('click', '.limpiar', function(e) {
     location.reload();
 
 })
+
+
+$("#tipo-atencion-usu").on('change', function(e) {
+    let id_tipo_atencion = $('#tipo-atencion-usu option:selected').val();
+  
+
+    let  hijos_detalle_atencion;
+    $.ajax({
+        url: "/buscar_hijos_detalle_atencion/"+id_tipo_atencion,
+        method: "GET",
+        dataType: "JSON",
+        success: function(data) {
+           
+            if (data.length > 0)
+            { 
+           
+             $('.detalle_atencion').show();
+             llenar_detalle_atencion(e,id_tipo_atencion)
+               
+            } else {
+                $('.detalle_atencion').hide();
+               
+            }
+        }
+    });
+});
+
+
+/// FUNCION PARA LLENAR EL COMBO DE DETALLE DE ATENCION
+function llenar_detalle_atencion(e, id_tipo_atencion) {
+    const url = '/Listar_Detalle_Atencion_filtro';
+    
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'JSON',
+        beforeSend: function(data) {
+            // Puedes agregar un spinner o un mensaje de carga aquí si lo deseas
+        },
+        success: function(data) {
+           console.log(data);
+            if (data.length >= 1) {
+                $('#edit_detelle_atencion').empty();
+                $('#edit_detelle_atencion').append('<option value="0" selected disabled>Seleccione</option>');
+
+                // Filtrar los datos según el id_tipo_atencion
+                data.forEach(function(item) {
+                   
+                  
+                    if (item.tipo_aten_id === id_tipo_atencion) {
+                        $('#edit_detelle_atencion').append(
+                            `<option value="${item.tipo_atend_id}">${item.tipo_atend_nombre}</option>`
+                        );
+                    }
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            // Manejo de errores
+            console.error("Error en la solicitud AJAX:", errorThrown);
+            // Puedes mostrar un mensaje de error al usuario si lo deseas
+        }
+    });
+}
+
+// Función para insertar un salto de línea en la cadena
+function insertarSaltoDeLinea(texto, longitudMaxima) {
+    let textoFormateado = '';
+    let longitudActual = 0;
+    // Dividir el texto en palabras
+    const palabras = texto.split(' ');
+    // Recorrer las palabras
+    for (const palabra of palabras) {
+        // Calcular la longitud actual más la nueva palabra
+        const longitudNueva = longitudActual + palabra.length + 1; // +1 para el espacio
+        // Si la longitud supera la longitud máxima, hacer un salto de línea
+        if (longitudNueva > longitudMaxima) {
+            // Solo agregar la palabra si no queda cortada
+            if (longitudActual > 0) {
+                textoFormateado = textoFormateado.trimEnd() + '\n'; // Agregar un salto de línea
+            }
+            longitudActual = 0; // Reiniciar la longitud actual
+        }
+        // Agregar la palabra al texto formateado
+        textoFormateado += palabra + ' ';
+        longitudActual += palabra.length + 1; // Actualizar la longitud actual
+    }
+    return textoFormateado.trim(); // Retornar el texto formateado sin espacios al final
+
+}
+

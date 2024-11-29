@@ -1,103 +1,21 @@
 <!-- Content Wrapper. Contains page content -->
+
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/Chart.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/jspdf.debug.js"></script>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/estadisticas.css">
 <div class="content-wrapper">
+
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Estadísticas, Propiedad Intelectual</h1>
+
+
+          <h1>Estadísticas - Propiedad Intelectual</h1>
         </div>
-      <!-- listado de estados -->
-        <?php
-      $array = null;
-      for ($i=0; $i <count($estadisticas) ; $i++) { 
-        $estado=$estadisticas[$i]->estadonom;
-        if ($array === null) {
-          $array = "'".$estado."'";
-        }else {
-          $array = $array.",'".$estado."'";
-        }
-      }  
-        ?>
-     <!-- total casos por estados -->
-      <?php
-      $array_totalcasos = null;
-      for ($a=0; $a <count($estadisticas) ; $a++) { 
-        $count=$estadisticas[$a]->total_casos;
-        if ($array_totalcasos === null) {
-          $array_totalcasos = "'".$count."'";
-        }else {
-          $array_totalcasos = $array_totalcasos.",'".$count."'";
-        }
-      }  
-        ?>
-      <!-- total casos de No aplica propiedad intelectual por estados  -->
-    <?php 
-      $array_totalcasosNo_aplica_por_estado = null;
-      for ($e=0; $e <count($estadisticas_no_aplica) ; $e++) { 
-      $count=$estadisticas_no_aplica[$e]->no_aplica;
-      if ($array_totalcasosNo_aplica_por_estado === null) {
-      $array_totalcasosNo_aplica_por_estado = "'".$count."'";
-      }else {
-      $array_totalcasosNo_aplica_por_estado = $array_totalcasosNo_aplica_por_estado.",'".$count."'";
-      }
-      }  
-    ?> 
-    <!-- total casos de derecho de auotor propiedad intelectual por derecho de autor  -->
-    <?php 
-    $array_totalcasos_derecho_autor = null;
-    for ($e=0; $e <count($estadisticas_derecho_autor) ; $e++) { 
-    $count=$estadisticas_derecho_autor[$e]->derecho_autor;
-    if ($array_totalcasos_derecho_autor === null) {
-    $array_totalcasos_derecho_autor = "'".$count."'";
-    }else {
-    $array_totalcasos_derecho_autor = $array_totalcasos_derecho_autor.",'".$count."'";
-    }
-    }  
-  ?> 
-
-        
-   <!-- total casos de patentes por estados  -->
-   <?php 
-      $array_totalcasosPatentes_por_estado = null;
-      for ($e=0; $e <count($estadisticas_patentes) ; $e++) { 
-      $count=$estadisticas_patentes[$e]->patentes;
-      if ($array_totalcasosPatentes_por_estado === null) {
-      $array_totalcasosPatentes_por_estado = "'".$count."'";
-      }else {
-      $array_totalcasosPatentes_por_estado = $array_totalcasosPatentes_por_estado.",'".$count."'";
-      }
-      }  
-    ?> 
-
-   <!-- total casos de indicaciones geograficas por estados  -->
-   <?php 
-   
-      $array_totalcasosIndicaciones_geograficas_por_estado = null;
-      for ($e=0; $e <count($estadisticas_indicaciones_geograficas) ; $e++) { 
-      $count=$estadisticas_indicaciones_geograficas[$e]->indicacione_geograficas;
-      if ($array_totalcasosIndicaciones_geograficas_por_estado === null) {
-      $array_totalcasosIndicaciones_geograficas_por_estado = "'".$count."'";
-      }else {
-      $array_totalcasosIndicaciones_geograficas_por_estado = $array_totalcasosIndicaciones_geograficas_por_estado.",'".$count."'";
-      }
-      }  
-    ?> 
-    <!-- total casos de marcas por estados  -->
-    <?php 
-      $array_totalcasosMarcas_por_estado = null;
-      for ($e=0; $e <count($estadisticas_marcas) ; $e++) { 
-      $count=$estadisticas_marcas[$e]->marcas;
-      if ($array_totalcasosMarcas_por_estado === null) {
-      $array_totalcasosMarcas_por_estado = "'".$count."'";
-      }else {
-      $array_totalcasosMarcas_por_estado = $array_totalcasosMarcas_por_estado.",'".$count."'";
-      }
-      }  
-    ?> 
+     
+      
         <div class="col-sm-6">
           &nbsp;&nbsp; <label for="min">Desde</label>&nbsp;
           <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="desde" id="desde">&nbsp;&nbsp;
@@ -110,6 +28,7 @@
     </div><!-- /.container-fluid -->
    
   </section>
+
 
   <style>
 
@@ -128,7 +47,12 @@ max-width: auto;
 height: auto;
 
 }
+
 </style>
+
+
+
+<!-- Main content -->
 <section class="content">
 <div class="card">
   <form id="anual-report" name="anual-report" method="POST" class="form-horizontal">
@@ -143,27 +67,9 @@ height: auto;
               <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
                 <i class="fas fa-times"></i></button>
             </div>
-            <canvas id="myChart" width="1430" height="600"></canvas>
-               <!-- <script>
-                function ajustarTamanhoCanvas() {
-                  const canvas = document.getElementById('myChart');
-                  const anchoMinimo = 400;
-                  const altoMinimo = 800;
-                  const anchoPantalla = window.innerWidth;
-                  const altoPantalla = window.innerHeight;
-
-                  if (anchoPantalla <= 480) {
-                    // Teléfono
-                    canvas.width = anchoMinimo;
-                    canvas.height = altoMinimo;
-                  } else {
-                    // Monitor
-                    canvas.width = 1430;
-                    canvas.height = 100;  
-                  }
-                }
-                   window.onresize = ajustarTamanhoCanvas;
-                  </script> -->
+            <canvas id="estatus" width="2000" height="600"></canvas>
+            <div id="estatus-totales"></div>
+    
           </div>
         </div>
       </div>
@@ -171,113 +77,162 @@ height: auto;
   </form>
 </div>
 </section>
+<?php
+$data = json_decode($json_data, true);
+$labels = array();
+$datasets = array();
 
+// Crear el dataset para el total de estados
+$datasets[] = array(
+    'label' => 'Total',
+    'data' => array(),
+    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+    'borderColor' => 'rgba(54, 162, 235, 1)',
+    'borderWidth' => 1
+);
+
+$estados = array();
+foreach ($data['nombres_estados'] as $key => $estado) {
+    $estados[$key] = array(
+        'estado' => $estado,
+        'count_estado' => 0,
+        'tipo_propiedad' => array()
+    );
+}
+
+
+foreach ($data['nombre_estado_propiedad'] as $key => $nombre_estado_propiedad) {
+    $estado_key = array_search(trim($nombre_estado_propiedad), array_map('trim', $data['nombres_estados']));
+    $propiedad = $data['nombre_tipo_propiedad'][$key];
+    $count_propiedad = $data['count_propiedad'][$key];
+    
+    if (isset($estados[$estado_key])) {
+        $estados[$estado_key]['tipo_propiedad'][] = array(
+            'nombre_tipo_propiedad' => $propiedad,
+            'count_propiedad' => $count_propiedad
+        );
+        $estados[$estado_key]['count_estado'] += $count_propiedad;
+    }
+}
+
+// Ordenar el arreglo por count_estado en orden descendente
+usort($estados, function($a, $b) {
+    return $b['count_estado'] - $a['count_estado'];
+});
+
+
+
+
+
+?>
+
+
+
+<style>
+ .tooltip-multiline {
+  display: flex;
+  flex-direction: column;
+}
+
+.tooltip-multiline > span:first-child {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+</style>
 
 
 <script>
-const labels = [<?php echo $array;?>];
-const data = {
-  labels: labels,
-  datasets: [
-         // datosVentas2020,
-          {
-            // CASOS ATENDIDOS
-            label: 'Casos Atendidos',
-            data: [<?php echo $array_totalcasos;?>],
-            //40, 123, 255, 50
-            backgroundColor: 'rgba(128, 128, 128, 20)' // Color de fondo de las barras para el segundo conjunto de datos
-          },
-         
-             // CASOS PATENTES
-             {
-            label: 'Patentes',
-            data: [<?php echo $array_totalcasosPatentes_por_estado; ?>],
-            
-            backgroundColor: 'rgba(45, 0, 1, 20)'
-            // Color de fondo de las barras para el segundo conjunto de datos
-          },
+const informacion = <?php echo json_encode($estados);?>;
 
+var ctx = document.getElementById('estatus').getContext('2d');
 
-           // CASOS DERECHO DE AUTOR
-         {
-            label: 'Derecho de Autor',
-            data: [<?php echo $array_totalcasos_derecho_autor; ?>],
-            backgroundColor: 'rgba(0, 180, 175, 20)'
-            // Color de fondo de las barras para el segundo conjunto de datos
-          },
-             // CASOS INDICACIONES GEOGRAFICAS
-         {
-            label: 'Indicacioes Geográficas',
-            data: [<?php echo $array_totalcasosIndicaciones_geograficas_por_estado; ?>],
-            backgroundColor: 'rgba(128, 99, 105, 20)'
-            // Color de fondo de las barras para el segundo conjunto de datos
-          },
-           // CASOS MARCAS
-          {
-            label: 'Marcas',
-            data: [<?php echo $array_totalcasosMarcas_por_estado; ?>],
-           
-            backgroundColor: 'rgba(196,64,54, 20)'
-            // Color de fondo de las barras para el segundo conjunto de datos
-          },
+// Usar un objeto para agrupar los datos por estado
+const estadoMap = {};
 
-            // CASOS NO APLICA
-          {
-            label: 'No aplica',
-            data: [<?php echo $array_totalcasosNo_aplica_por_estado; ?>],
-            backgroundColor: 'rgba(255, 99, 132, 20)'
-            // Color de fondo de las barras para el segundo conjunto de datos
-          },
+// Extraer tipos de propiedad únicos
+const tipopropiedadUnicos = Array.from(new Set(
+  informacion.flatMap(obj => obj.tipo_propiedad.map(propiedad => propiedad.nombre_tipo_propiedad))
+));
 
-          
-         
-          
-        ]
-};
+// Agrupar propiedades por estado
+informacion.forEach(obj => {
+  const estado = obj.estado;
+  const totalPropiedades = parseInt(obj.count_estado); // Asegurarse de que sea un número
 
-const config = {
+  if (!estadoMap[estado]) {
+    estadoMap[estado] = {
+      total: totalPropiedades,
+      conteos: new Array(tipopropiedadUnicos.length).fill(0) // Inicializa el conteo para cada tipo de propiedad
+    };
+  }
+
+  obj.tipo_propiedad.forEach(propiedad => {
+    const index = tipopropiedadUnicos.indexOf(propiedad.nombre_tipo_propiedad);
+    if (index !== -1) {
+      estadoMap[estado].conteos[index] += parseInt(propiedad.count_propiedad); // Asegurarse de que sea un número
+    }
+  });
+});
+
+// Convertir el mapa en un array y filtrar aquellos con total > 0
+const sortedData = Object.entries(estadoMap)
+  .map(([estado, data]) => ({ estado, total: data.total, conteos: data.conteos }))
+  .filter(item => item.total > 0) // Filtrar estados con total > 0
+  .sort((a, b) => b.total - a.total); // Ordenar por total
+
+const sortedLabels = sortedData.map(item => item.estado);
+const sortedCounts = sortedData.map(item => item.conteos);
+
+const colors = [
+  '#52baac', 
+  '#5999c1', 
+  '#09c8f2', 
+  '#ef67f3', 
+  '#42eea5', 
+  '#cbcbcb' 
+];
+
+const chart = new Chart(ctx, {
   type: 'bar',
-  data: data,
+  data: {
+    labels: sortedLabels,
+    datasets: [
+      {
+        label: 'Total',
+        data: sortedData.map(item => item.total),
+        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
+        borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+        borderWidth: 1
+      },
+      ...tipopropiedadUnicos.map((tipo, index) => ({
+        label: tipo,
+        data: sortedCounts.map(counts => counts[index]),
+        backgroundColor: colors[index % colors.length], // Colores de la paleta
+        borderColor: colors[index % colors.length], // Asignar un color del arreglo
+        borderWidth: 1
+      }))
+    ]
+  },
   options: {
-        responsive: true,
-        title: {
-          display: true,
-
+    tooltips: {
+      backgroundColor: 'rgba(0, 0, 0, 0.8)', // Color por defecto para los tooltips
+      callbacks: {
+        label: function(tooltipItem, data) {
+          const estado = sortedLabels[tooltipItem.index];
+          const tiposInfo = tipopropiedadUnicos.map((tipo, index) => {
+            const conteo = sortedCounts[tooltipItem.index][index];
+            return `${tipo}: ${conteo > 0 ? conteo : 0}`;
+          });
+          const total = sortedCounts[tooltipItem.index].reduce((a, b) => a + parseInt(b), 0); // Asegurarse de que sea un número
+          return [...tiposInfo, `Total: (${total > 0 ? total : 0})`];
         },
-        tooltips: {
-          mode: "index",
-          intersect: false
-        },
-
-        scales: {
-          xAxes: [{
-            ticks: {
-              beginAtZero: true,
-              stepSize: 2
-            }
-          }]
+        title: function(tooltipItem, data) {
+          const estado = sortedLabels[tooltipItem[0].index];
+          const total = sortedCounts[tooltipItem[0].index].reduce((a, b) => a + parseInt(b), 0); // Asegurarse de que sea un número
+          return total > 0 ? estado : `${estado} (No hay propiedades)`;
         }
       }
-};
-
-new Chart(
-  document.getElementById('myChart'),
-  config
-);
- </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
+  }
+});
+</script>

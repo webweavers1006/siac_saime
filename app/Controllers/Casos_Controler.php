@@ -15,6 +15,8 @@ use App\Models\Casos_remitidos_Model;
 use App\Models\Registro_cgr_Model;
 use App\Models\Casos_denuncias_Model;
 use App\Models\Documentos_casos_Model;
+use App\Models\Roles_Model;
+use App\Models\Tipo_Atencion_Usu_Model;
 use App\Models\NizaClasses;
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
@@ -211,6 +213,7 @@ curl_close($ch);
 			$newCase["ente_adscrito_id"]    = $datos["ente_adscrito"];
 			$newCase["edad"]    = $datos["edad"];
 			$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
+			$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
 			$casos_existentes["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
 			$casos_existentes["casoced"]     = $datos["person-id"];
 			$casos_existentes["profesion"]     = $datos["profesion"];
@@ -434,6 +437,7 @@ curl_close($ch);
 				$newCase["ente_adscrito_id"]    = $datos["ente_adscrito_id"];
 				$newCase["edad"]    = $datos["edad"];
 				$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
+				$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
 				$newCase["profesion"]    = $datos["profesion"];
 				//$newCase["campos_modificados"]    = $datos["campos_modificados"];
 				if (empty($datos["record-work"])) {
@@ -479,6 +483,7 @@ curl_close($ch);
 					$newCase["estadoid"]    = $datos["state"];
 					$newCase["municipioid"] = $datos["county"];
 					$newCase["sexo"] = $datos["sexo"];
+					$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
 					$newCase["parroquiaid"] = $datos["town"];
 					$newCase["ofiid"]       = $datos["office"];
 					$newCase["casodesc"]    = $datos["user-requirement"];
@@ -611,11 +616,12 @@ curl_close($ch);
 	//Vista de carga de un caso
 	public function vercaso($id)
 	{
-		
+		$idrol = (session('userrol'));
 		$casoModel = new Casos();
 		$segModel = new Seguimientos();
 		$estModel = new Estatus();
 		$direccionesModel = new Ubi_Admini_Model();
+		$atencion_model = new Tipo_Atencion_Usu_Model();
 		//Arreglo para los detalles del caso
 		$data = array();
 		//TimeLine para los seguimientos
@@ -625,7 +631,8 @@ curl_close($ch);
 		if ($this->session->get('logged')) {
 			//Consultamos los detalles del caso
 			$query = $casoModel->detalleCaso($id);
-			if (isset($query)) {
+			if (isset($query)) 
+			{
 				foreach ($query as $row) {
 					$data["idcaso"] = $id;
 					$data["nombre"] = ucwords(strtolower($row->casonom) . ' ' . strtolower($row->casoape));
@@ -639,6 +646,9 @@ curl_close($ch);
 					$data["unidad_administrativa"] = $row->unidad_administrativa;
 					$data["direccion"] = $row->direccion;
 					$data["correo_beneficiario"] = $row->correo;
+					$data["id_tipo_atencion"] = $row->id_tipo_atencion;	
+					$data["casodesc"] = ucfirst(strtolower($row->casodesc));	
+					
 					//$idEstatusCaso = $row->idest;
 				}
 				//Obtenemos los estatus de las llamadas para el select del seguimiento
@@ -668,6 +678,17 @@ curl_close($ch);
 				} else {
 					$estopt .= '<option value="NULL">Sin estatus</option>';
 				}
+
+			
+
+				$query_acc_participantes = $atencion_model->acc_participantes($data["id_tipo_atencion"]);
+				
+				foreach ($query_acc_participantes as $row) 
+				{
+					$data["acc_participantes"] = $row->acc_participantes;
+					
+				}
+			
 				$data["estatus_llamadas"] = $estopt;
 				echo view('template/header');
 				echo view('template/nav_bar');

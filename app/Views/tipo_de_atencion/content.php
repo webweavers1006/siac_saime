@@ -82,6 +82,12 @@ $session = session();
                   <input type="text" name="name-atencion"  id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
                 </div>
               </div>
+              &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
+              <input type="checkbox" class="borrado" id="acceso_pro_int" name="borrado" value='false'>
+              
+              &nbsp; <label for="user-pass">Acceso a participantes</label>&nbsp;&nbsp;
+              <input type="checkbox" class="participantes" id="participantes" name="participantes" value='false'>
+
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
                 <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>
@@ -115,6 +121,11 @@ $session = session();
 
                 &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
                 <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'>
+                &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
+              <input type="checkbox" class="borrado" id="edit_acceso_pro_int" name="borrado" value='false'>
+              &nbsp; <label for="user-pass"> Participantes</label>&nbsp;&nbsp;
+              <input type="checkbox" class="edit_participantes" id="edit_participantes" name="edit_participantes" value='false'>
+
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
