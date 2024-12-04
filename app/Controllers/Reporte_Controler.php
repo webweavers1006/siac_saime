@@ -53,7 +53,8 @@ class Reporte_Controler extends BaseController
 		
 		$model = new Casos();
 		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$id_municipio,$edad_min,$edad_max,$detalle_atencion);
-
+		
+		
 		if (empty($query)) {
 			$casos = [];
 		} else {
@@ -141,7 +142,7 @@ class Reporte_Controler extends BaseController
 			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO USUARIO
 			$estadisticas["usuario"] = 0;
 			$beneficiarios = $model->contarCasos_Tipo_Beneficiario($desde, $hasta,$id_estado);
-						
+					
 			$data = [
 				'beneficiarios' => $beneficiarios
 			];
@@ -155,6 +156,7 @@ class Reporte_Controler extends BaseController
 			{
 				//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
 				$query_casos_atendidos = $model->contarCasosAtendidos();
+				
 				$data = [
 					'beneficiarios' => $beneficiarios,
 					'via_atencion' => $query_casos_atendidos
@@ -209,9 +211,8 @@ class Reporte_Controler extends BaseController
 
 				//	BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION
 				$query_casos_solicitud = $model->contarCasosAtencionCiudadano();
-				
-				
-							
+
+						
 				//BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO DE SOLICITUD PARA LA GRAFICA
 				$count_solicitud = [];
 				$nombres_solicitud = [];
@@ -227,6 +228,7 @@ class Reporte_Controler extends BaseController
 
 				//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION MASCULINO
 				$query_casos_solicitud_Masculino = $model->contarCasosTipoSolicitudMasculino($desde, $hasta);
+				
 				$count_solicitud_Masculino = [];
 				// Verificamos si el resultado de la consulta no está vacío
 				if (!empty($query_casos_solicitud_Masculino)) {
@@ -271,6 +273,7 @@ class Reporte_Controler extends BaseController
 				//	BUSCAMOS LOS CASOS POR ESTATUS
 				$query_casos_EstatusCasos = $model->contarCasosEstatus();
 				
+				
 				$data = [
 					'beneficiarios' => $beneficiarios,
 					'via_atencion' => $query_casos_atendidos,
@@ -303,260 +306,7 @@ class Reporte_Controler extends BaseController
 			return redirect()->to('/');
 		}
 
-			
-		// 	if (!empty($beneficiario_usuario)) {
-		// 		for ($i = 0; $i < count($beneficiario_usuario); $i++) {
-		// 			if ($beneficiario_usuario[$i]->tipo_beneficiario == "1") {
-		// 				$estadisticas["usuario"] = $beneficiario_usuario[$i]->count;
-		// 			} else {
-		// 				$estadisticas[$beneficiario_usuario[$i]->tipo_beneficiario] = $beneficiario_usuario[$i]->count;
-		// 			}
-		// 		}
-		// 	} else {
-		// 		$estadisticas["usuario"] = 0;
-		// 	}
-		// 	//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO EMPRENDERDOR
-		// 	$beneficiario_emprendedor = $model->contarCasos_Beneficiario_Emprendedor($desde, $hasta,$id_estado);
-			
-		// 	if (!empty($beneficiario_emprendedor)) {
-		// 		for ($i = 0; $i < count($beneficiario_emprendedor); $i++) {
-		// 			if ($beneficiario_emprendedor[$i]->tipo_beneficiario == "2") {
-		// 				$estadisticas["emprendedor"] = $beneficiario_emprendedor[$i]->count;
-		// 			} else {
-		// 				$estadisticas[$beneficiario_emprendedor[$i]->tipo_beneficiario] = $beneficiario_emprendedor[$i]->count;
-		// 			}
-		// 		}
-		// 	} else {
-		// 		$estadisticas["emprendedor"] = 0;
-		// 	}
-		// 	if ($estadisticas["emprendedor"] == 0 && $estadisticas["usuario"] == 0) {
-		// 		echo view('template/header');
-		// 		echo view('template/nav_bar');
-		// 		echo view('reportes/estadisticas/error_estadisticas.php');
-		// 		echo view('template/footer');
-		// 	} else {
-		// 		//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
-		// 		$query_casos_atendidos = $model->contarCasosAtendidos();
-		// 		$estadisticas["Whatsapp"] = 0;
-		// 		$estadisticas["CorreoElectronico"] = 0;
-		// 		$estadisticas["Llamadatelefonica"] = 0;
-		// 		$estadisticas["Personal"] = 0;
-		// 		$estadisticas["No_Aplica_red_social"] = 0;
-				
-		// 		if (empty($query_casos_atendidos)) {
-		// 			$estadisticas = [];
-		// 		} else {
-		// 			for ($i = 0; $i < count($query_casos_atendidos); $i++) {
-
-		// 				if ($query_casos_atendidos[$i]->red_s_nom === "Correo Electrónico") {
-		// 					$estadisticas["CorreoElectronico"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Llamada Telefónica") {
-		// 					$estadisticas["Llamadatelefonica"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Whatsapp") {
-		// 					$estadisticas["Whatsapp"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Personal") {
-		// 					$estadisticas["Personal"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Portal web ") {
-		// 					$estadisticas["No_Aplica_red_social"] = $query_casos_atendidos[$i]->count;
-		// 				}
-		// 			}
-		// 		}
-				
-		// 		$estadisticas["Sexo_CorreoElectronico_M"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_M"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_M"] = 0;
-		// 		$estadisticas["Sexo_Personal_M"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_M"] = 0;
-		// 		$estadisticas["Sexo_CorreoElectronico_F"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_F"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_F"] = 0;
-		// 		$estadisticas["Sexo_Personal_F"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_F"] = 0;
-		// 		//BUSCAMOS LOS CASOS ATENDIDOS POR GENERO MASCULINO
-		// 		$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado);
-		// 	if (!empty($query_casos_atendidos_Masculino)) {
-		// 			for ($i = 0; $i < count($query_casos_atendidos_Masculino); $i++) {
-		// 				if ($query_casos_atendidos_Masculino[$i]->red_s_nom === "Correo Electrónico") {
-		// 					$estadisticas["Sexo_CorreoElectronico_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom === "Llamada telefonica") {
-		// 					$estadisticas["Sexo_Llamadatelefonica_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom === "Whatsapp") {
-		// 					$estadisticas["Sexo_Whatsapp_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom === "Personal") {
-		// 					$estadisticas["Sexo_Personal_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				}else if ($query_casos_atendidos_Masculino[$i]->red_s_nom === "Portal web ") {
-		// 					$estadisticas["sexo_no_Aplica_red_social_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_atendidos_Masculino[$i]->red_s_nom] = $query_casos_atendidos_Masculino[$i]->count;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		//BUSCAMOS LOS CASOS ATENDIDOS POR GENERO FEMENINO
-		// 		$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado);
-			
-		// 		if (!empty($query_casos_atendidos_Femenino)) {
-		// 			for ($i = 0; $i < count($query_casos_atendidos_Femenino); $i++) {
-		// 				if ($query_casos_atendidos_Femenino[$i]->red_s_nom === "Correo Electrónico") {
-		// 					$estadisticas["Sexo_CorreoElectronico_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom === "Llamada telefonica") {
-		// 					$estadisticas["Sexo_Llamadatelefonica_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom === "Whatsapp") {
-		// 					$estadisticas["Sexo_Whatsapp_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom === "Personal") {
-		// 					$estadisticas["Sexo_Personal_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				}else if ($query_casos_atendidos_Femenino[$i]->red_s_nom === "Portal web ") {
-		// 					$estadisticas["sexo_no_Aplica_red_social_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_atendidos_Femenino[$i]->red_s_nom] = $query_casos_atendidos_Femenino[$i]->count;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL
-		// 		$query = $model->contarCasosPorPI();
-		// 		$estadisticas["Marcas"] = 0;
-		// 		$estadisticas["Patentes"] = 0;
-		// 		$estadisticas["DerechoAutor"] = 0;
-		// 		$estadisticas["Indicaciones_Geograficas"] = 0;
-		// 		$estadisticas["No_Aplica"] = 0;
-		// 		if (empty($query)) {
-		// 			$estadisticas = [];
-		// 		} else {
-		// 			for ($i = 0; $i < count($query); $i++) {
-		// 				if ($query[$i]->tipo_prop_nombre === "Derecho de Autor") {
-		// 					$estadisticas["DerechoAutor"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_prop_nombre === "Indicación Geográfica Protegida") {
-		// 					$estadisticas["Indicaciones_Geograficas"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_prop_nombre === "Marcas") {
-		// 					$estadisticas["Marcas"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_prop_nombre === "Patentes") {
-		// 					$estadisticas["Patentes"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_prop_nombre === "No Aplica") {
-		// 					$estadisticas["No_Aplica"] = $query[$i]->count;
-		// 				}
-		// 			}
-
-
-
-
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL GENERO MASCULINO
-		// 			$query_casos_MASCULINOS = $model->contarCasos_PI_MACULINO($desde, $hasta,$id_estado);
-		// 			$estadisticas["sexo_Marcas_M"] = 0;
-		// 			$estadisticas["sexo_Patentes_M"] = 0;
-		// 			$estadisticas["sexo_DerechoAutor_M"] = 0;
-		// 			$estadisticas["sexo_Indicaciones_Geograficas_M"] = 0;
-		// 			for ($i = 0; $i < count($query_casos_MASCULINOS); $i++) {
-		// 				if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre === "Derecho de Autor") {
-		// 					$estadisticas["sexo_DerechoAutor_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre === "Indicación Geográfica Protegida") {
-		// 					$estadisticas["sexo_Indicaciones_Geograficas_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre === "Marcas") {
-		// 					$estadisticas["sexo_Marcas_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre === "Patentes") {
-		// 					$estadisticas["sexo_Patentes_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_MASCULINOS[$i]->tipo_prop_nombre] = $query_casos_MASCULINOS[$i]->count;
-		// 				}
-		// 			}
-
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL GENERO FEMENINO
-		// 			$query_casos_FEMENINOS = $model->contarCasos_PI_FEMENINO($desde, $hasta,$id_estado);
-		// 			$estadisticas["sexo_Marcas_F"] = 0;
-		// 			$estadisticas["sexo_Patentes_F"] = 0;
-		// 			$estadisticas["sexo_DerechoAutor_F"] = 0;
-		// 			$estadisticas["sexo_Indicaciones_Geograficas_F"] = 0;
-		// 			for ($i = 0; $i < count($query_casos_FEMENINOS); $i++) {
-		// 				if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre === "Derecho de Autor") {
-		// 					$estadisticas["sexo_DerechoAutor_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre === "Indicación Geográfica Protegida") {
-		// 					$estadisticas["sexo_Indicaciones_Geograficas_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre === "Marcas") {
-		// 					$estadisticas["sexo_Marcas_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre === "Patentes") {
-		// 					$estadisticas["sexo_Patentes_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_FEMENINOS[$i]->tipo_prop_nombre] = $query_casos_FEMENINOS[$i]->count;
-		// 				}
-		// 			}
-
-		// 			//var_dump($estadisticas);
-		// 		}
-		// 		//BUSCAMOS LOS CASOS ATENDIDOS POR ATENCION CIUDADANO
-		// 		$query = $model->contarCasosAtencionCiudadano();
-				
-		// 		$estadisticas["Asesoría"] = 0;
-		// 		$estadisticas["Sugerencia"] = 0;
-		// 		$estadisticas["Queja"] = 0;
-		// 		$estadisticas["Reclamo"] = 0;
-		// 		$estadisticas["Denuncia"] = 0;
-		// 		$estadisticas["Petición"] = 0;
-		// 		$estadisticas["Formación"] = 0;
-		// 		if (empty($query)) {
-		// 			$estadisticas = [];
-		// 		} else {
-		// 			for ($i = 0; $i < count($query); $i++) {
-		// 				if ($query[$i]->tipo_aten_nombre === "Asesoría") {
-		// 					$estadisticas["Asesoría"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_aten_nombre === "Sugerencia") {
-		// 					$estadisticas["Sugerencia"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_aten_nombre === "Queja") {
-		// 					$estadisticas["Queja"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_aten_nombre === "Reclamo") {
-		// 					$estadisticas["Reclamo"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_aten_nombre === "Denuncia") {
-		// 					$estadisticas["Denuncia"] = $query[$i]->count;
-		// 				} else if ($query[$i]->tipo_aten_nombre === "Petición") {
-		// 					$estadisticas["Petición"] = $query[$i]->count;
-		// 				}else if ($query[$i]->tipo_aten_nombre === "Formación") {
-		// 				$estadisticas["Formación"] = $query[$i]->count;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		//BUSCAMOS LOS CASOS ABIERTOS
-		// 		$query_CasosAbiertos = $model->contarCasosAbiertos($desde, $hasta,$id_estado);
-		// 		if (!empty($query_CasosAbiertos)) {
-		// 			for ($i = 0; $i < count($query_CasosAbiertos); $i++) {
-		// 				if ($query_CasosAbiertos[$i]->idest == "1") {
-		// 					$estadisticas["Abiertos"] = $query_CasosAbiertos[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_CasosAbiertos[$i]->idest] = $query_CasosAbiertos[$i]->count;
-		// 				}
-		// 			}
-		// 		} else {
-		// 			$estadisticas["Abiertos"] = 0;
-		// 		}
-
-		// 		//BUSCAMOS LOS CASOS Cerrados
-		// 		$query_CasosCerrados = $model->ContarCasosCerrados($desde, $hasta,$id_estado);
-				
-		// 		if (!empty($query_CasosCerrados)) {
-		// 			for ($i = 0; $i < count($query_CasosCerrados); $i++) {
-		// 				if ($query_CasosCerrados[$i]->idest == "2") {
-		// 					$estadisticas["Cerrados"] = $query_CasosCerrados[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_CasosCerrados[$i]->idest] = $query_CasosCerrados[$i]->count;
-		// 				}
-		// 			}
-		// 		} else {
-		// 			$estadisticas["Cerrados"] = 0;
-		// 		}
-
-
-		// 		$estadisticas["fecha_desde"] = '';
-		// 		$estadisticas["fecha_hasta"] ='';
-
-		// 		//Pasamos la tabla como parametro para la vista
-		// 		echo view('template/header');
-		// 		echo view('template/nav_bar');
-		// 		echo view('reportes/estadisticas/content.php', $estadisticas);
-		// 		echo view('template/footer');
-		// 		echo view('reportes/estadisticas/footer.php');
-		// 	}
-		// } else {
-		// 	return redirect()->to('/');
-		// }
+		
 	}
 	public function vista_estadisticas_filtros($desde = null, $hasta = null, $id_estado = null)
 	{
@@ -585,6 +335,7 @@ class Reporte_Controler extends BaseController
 
 			//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
 				$query_casos_atendidos = $model->contarCasosAtendidos_Fecha($desde, $hasta,$id_estado=null);
+				
 				$data = [
 					'beneficiarios' => $beneficiarios,
 					'via_atencion' => $query_casos_atendidos
@@ -723,360 +474,7 @@ class Reporte_Controler extends BaseController
 		} else {
 			return redirect()->to('/');
 		}
-		// if ($this->session->get('logged')) {
-		// 	$model = new Casos();
-		// 	//VERIFICAMOS SI HAY CASOS PARA LA FECHA INGRESADA
-		// 	$querybuscarcasos = $model->contarCasosPorFecha($desde, $hasta);
-		   
-		// 	if (empty($querybuscarcasos->getResult())) {
-				
-				
-		// 		//INICIALIZAMOS LA VARIABLES EN 0
-		// 		$estadisticas["Whatsapp"] = 0;
-		// 		$estadisticas["CorreoElectronico"] = 0;
-		// 		$estadisticas["Llamadatelefonica"] = 0;
-		// 		$estadisticas["No_Aplica_red_social"] = 0;
-		// 		$estadisticas["Personal"] = 0;
-		// 		$estadisticas["Marcas"] = 0;
-		// 		$estadisticas["Patentes"] = 0;
-		// 		$estadisticas["DerechoAutor"] = 0;
-		// 		$estadisticas["No_Aplica"] = 0;
-		// 		$estadisticas["Indicaciones_Geograficas"] = 0;
-		// 		$estadisticas["sexo_Marcas_M"] = 0;
-		// 		$estadisticas["sexo_Patentes_M"] = 0;
-		// 		$estadisticas["sexo_DerechoAutor_M"] = 0;
-		// 		$estadisticas["sexo_Indicaciones_Geograficas_M"] = 0;
-		// 		$estadisticas["sexo_Marcas_F"] = 0;
-		// 		$estadisticas["sexo_Patentes_F"] = 0;
-		// 		$estadisticas["sexo_DerechoAutor_F"] = 0;
-		// 		$estadisticas["sexo_Indicaciones_Geograficas_F"] = 0;
-		// 		$estadisticas["Sexo_CorreoElectronico_M"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_M"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_M"] = 0;
-		// 		$estadisticas["Sexo_Personal_M"] = 0;
-		// 		$estadisticas["Sexo_CorreoElectronico_F"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_F"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_M"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_F"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_F"] = 0;
-		// 		$estadisticas["Sexo_Personal_F"] = 0;
-		// 		$estadisticas["usuario"] = 0;
-		// 		$estadisticas["emprendedor"] = 0;
-		// 		$estadisticas["Asesoría"] = 0;
-		// 		$estadisticas["Sugerencia"] = 0;
-		// 		$estadisticas["Queja"] = 0;
-		// 		$estadisticas["Reclamo"] = 0;
-		// 		$estadisticas["Denuncia"] = 0;
-		// 		$estadisticas["Formación"] = 0;
-		// 		$estadisticas["Petición"] = 0;
-		// 		$estadisticas["Abiertos"] = 0;
-		// 		$estadisticas["Cerrados"] = 0;
-		// 		$estadisticas["No_Aplica_red_social"] = 0;
-		// 		$fecha_desde = $desde;
-		// 		$fecha_hasta = $hasta; // Fecha en formato YYYY-MM-DD
-		// 		// Formatear la fecha al formato dd-mm-yy
-		// 		$fecha_formateada_desde = date("d-m-Y", strtotime($fecha_desde));
-		// 		$fecha_formateada_hasta = date("d-m-Y", strtotime($fecha_hasta));
-		// 		$estadisticas["fecha_desde"] = $fecha_formateada_desde;
-		// 		$estadisticas["fecha_hasta"] = $fecha_formateada_hasta;
-		// 		//Pasamos la tabla como parametro para la vista
-		// 		echo view('template/header');
-		// 		echo view('template/nav_bar');
-		// 		echo view('reportes/estadisticas/content.php', $estadisticas);
-		// 		echo view('template/footer');
-		// 		echo view('reportes/estadisticas/footer.php');
-		// 	} else {
-			
-		// 		//INICIALIZAMOS LA VARIABLES EN 0
-		// 		$estadisticas["Whatsapp"] = 0;
-		// 		$estadisticas["CorreoElectronico"] = 0;
-		// 		$estadisticas["Llamadatelefonica"] = 0;
-		// 		$estadisticas["No_Aplica_red_social"] = 0;
-		// 		$estadisticas["Personal"] = 0;
-		// 		$estadisticas["Marcas"] = 0;
-		// 		$estadisticas["Patentes"] = 0;
-		// 		$estadisticas["DerechoAutor"] = 0;
-		// 		$estadisticas["No_Aplica"] = 0;
-		// 		$estadisticas["Indicaciones_Geograficas"] = 0;
-		// 		$estadisticas["sexo_Marcas_M"] = 0;
-		// 		$estadisticas["sexo_Patentes_M"] = 0;
-		// 		$estadisticas["sexo_DerechoAutor_M"] = 0;
-		// 		$estadisticas["sexo_Indicaciones_Geograficas_M"] = 0;
-		// 		$estadisticas["sexo_Marcas_F"] = 0;
-		// 		$estadisticas["sexo_Patentes_F"] = 0;
-		// 		$estadisticas["sexo_DerechoAutor_F"] = 0;
-		// 		$estadisticas["sexo_Indicaciones_Geograficas_F"] = 0;
-		// 		$estadisticas["Sexo_CorreoElectronico_M"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_M"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_M"] = 0;
-		// 		$estadisticas["Sexo_Personal_M"] = 0;
-		// 		$estadisticas["Sexo_CorreoElectronico_F"] = 0;
-		// 		$estadisticas["Sexo_Llamadatelefonica_F"] = 0;
-		// 		$estadisticas["Sexo_Whatsapp_F"] = 0;
-		// 		$estadisticas["Sexo_Personal_F"] = 0;
-		// 		$estadisticas["usuario"] = 0;
-		// 		$estadisticas["emprendedor"] = 0;
-		// 		$estadisticas["Abiertos"] = 0;
-		// 		$estadisticas["Cerrados"] = 0;
-		// 		$estadisticas["Asesoría"] = 0;
-		// 		$estadisticas["Formación"] = 0;
-		// 		$estadisticas["Sugerencia"] = 0;
-		// 		$estadisticas["Queja"] = 0;
-		// 		$estadisticas["Reclamo"] = 0;
-		// 		$estadisticas["Denuncia"] = 0;
-		// 		$estadisticas["Petición"] = 0;
-		// 		$estadisticas["No_Aplica_red_social"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_M"] = 0;
-		// 		$estadisticas["sexo_no_Aplica_red_social_F"] = 0;
-		// 		//BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
-		// 		$query_casos_atendidos = $model->contarCasosAtendidos_filtros($desde, $hasta,$id_estado);
-				
-
-		// 		if (!empty($query_casos_atendidos))
-		// 		{
-		// 			$fecha_desde = $desde;
-		// 		    $fecha_hasta = $hasta;
-		// 			for ($i = 0; $i < count($query_casos_atendidos); $i++) {
-		// 				if ($query_casos_atendidos[$i]->red_s_nom === "Correo Electrónico") {
-		// 					$estadisticas["CorreoElectronico"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Llamada Telefónica") {
-		// 					$estadisticas["Llamadatelefonica"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Whatsapp") {
-		// 					$estadisticas["Whatsapp"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Personal") {
-		// 					$estadisticas["Personal"] = $query_casos_atendidos[$i]->count;
-		// 				} else if ($query_casos_atendidos[$i]->red_s_nom === "Portal web ") {
-		// 					$estadisticas["No_Aplica_red_social"] = $query_casos_atendidos[$i]->count;
-		// 				}
-		// 			}
-				
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO USUARIO
-		// 			$beneficiario_usuario = $model->contarCasos_Beneficiario_Usuario($desde, $hasta,$id_estado);
-				
-		// 			if (!empty($beneficiario_usuario)) {
-		// 				for ($i = 0; $i < count($beneficiario_usuario); $i++) {
-		// 					if ($beneficiario_usuario[$i]->tipo_beneficiario == "1") {
-		// 						$estadisticas["usuario"] = $beneficiario_usuario[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$beneficiario_usuario[$i]->tipo_beneficiario] = $beneficiario_usuario[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-
-				
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO EMPRENDERDOR
-		// 			$beneficiario_emprendedor = $model->contarCasos_Beneficiario_Emprendedor($desde, $hasta,$id_estado);
-				
-		// 			if (!empty($beneficiario_emprendedor)) {
-		// 				for ($i = 0; $i < count($beneficiario_emprendedor); $i++) {
-		// 					if ($beneficiario_emprendedor[$i]->tipo_beneficiario == "2") {
-		// 						$estadisticas["emprendedor"] = $beneficiario_emprendedor[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$beneficiario_emprendedor[$i]->tipo_beneficiario] = $beneficiario_emprendedor[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-
-		// 			//BUSCAMOS LOS CASOS ABIERTOS
-		// 			$query_CasosAbiertos = $model->contarCasosAbiertos($desde, $hasta,$id_estado);
-					
-		// 			if (!empty($query_CasosAbiertos)) {
-		// 				for ($i = 0; $i < count($query_CasosAbiertos); $i++) {
-		// 					if ($query_CasosAbiertos[$i]->idest == "1") {
-		// 						$estadisticas["Abiertos"] = $query_CasosAbiertos[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$query_CasosAbiertos[$i]->idest] = $query_CasosAbiertos[$i]->count;
-		// 					}
-		// 				}
-		// 			} else {
-		// 				$estadisticas["Abiertos"] = 0;
-		// 			}
-
-					
-		// 			//BUSCAMOS LOS CASOS Cerrados
-		// 			$query_CasosCerrados = $model->ContarCasosCerrados($desde, $hasta,$id_estado);
-					
-		// 			if (!empty($query_CasosCerrados)) {
-		// 				for ($i = 0; $i < count($query_CasosCerrados); $i++) {
-		// 					if ($query_CasosCerrados[$i]->idest == "2") {
-		// 						$estadisticas["Cerrados"] = $query_CasosCerrados[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$query_CasosCerrados[$i]->idest] = $query_CasosCerrados[$i]->count;
-		// 					}
-		// 				}
-		// 			} else {
-		// 				$estadisticas["Cerrados"] = 0;
-		// 			}
-
-					
-
-
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR ATENCION CIUDADANO
-		// 			$query = $model->contarCasosAtencionCiudadano_filtro($desde, $hasta,$id_estado);
-				
-		// 			$estadisticas["Asesoría"] = 0;
-		// 			$estadisticas["Sugerencia"] = 0;
-		// 			$estadisticas["Queja"] = 0;
-		// 			$estadisticas["Reclamo"] = 0;
-		// 			$estadisticas["Denuncia"] = 0;
-		// 			$estadisticas["Petición"] = 0;
-		// 			$estadisticas["Formación"] = 0;
-		// 			if (empty($query)) {
-		// 				$estadisticas = [];
-		// 			} else {
-		// 				for ($i = 0; $i < count($query); $i++) {
-		// 					if ($query[$i]->tipo_aten_nombre === "Asesoría") {
-		// 						$estadisticas["Asesoría"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_aten_nombre === "Sugerencia") {
-		// 						$estadisticas["Sugerencia"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_aten_nombre === "Queja") {
-		// 						$estadisticas["Queja"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_aten_nombre === "Reclamo") {
-		// 						$estadisticas["Reclamo"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_aten_nombre === "Denuncia") {
-		// 						$estadisticas["Denuncia"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_aten_nombre === "Petición") {
-		// 						$estadisticas["Petición"] = $query[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR GENERO MASCULINO
-		// 			$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado);
-				
-		// 			if (!empty($query_casos_atendidos_Masculino)) {
-		// 				for ($i = 0; $i < count($query_casos_atendidos_Masculino); $i++) {
-		// 					if ($query_casos_atendidos_Masculino[$i]->red_s_nom == "Correo Electronico") {
-		// 						$estadisticas["Sexo_CorreoElectronico_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom == "Llamada telefonica") {
-		// 						$estadisticas["Sexo_Llamadatelefonica_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom == "Whatsapp") {
-		// 						$estadisticas["Sexo_Whatsapp_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Masculino[$i]->red_s_nom == "Personal") {
-		// 						$estadisticas["Sexo_Personal_M"] = $query_casos_atendidos_Masculino[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$query_casos_atendidos_Masculino[$i]->red_s_nom] = $query_casos_atendidos_Masculino[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR GENERO FEMENINO
-		// 			$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado);
-					
-		// 			if (!empty($query_casos_atendidos_Femenino)) {
-		// 				for ($i = 0; $i < count($query_casos_atendidos_Femenino); $i++) {
-		// 					if ($query_casos_atendidos_Femenino[$i]->red_s_nom == "Correo Electronico") {
-		// 						$estadisticas["Sexo_CorreoElectronico_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom == "Llamada telefonica") {
-		// 						$estadisticas["Sexo_Llamadatelefonica_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom == "Whatsapp") {
-		// 						$estadisticas["Sexo_Whatsapp_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 					} else if ($query_casos_atendidos_Femenino[$i]->red_s_nom == "Personal") {
-		// 						$estadisticas["Sexo_Personal_F"] = $query_casos_atendidos_Femenino[$i]->count;
-		// 					} else {
-		// 						$estadisticas[$query_casos_atendidos_Femenino[$i]->red_s_nom] = $query_casos_atendidos_Femenino[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL
-		// 			$query = $model->contarCasosPorPI_filtros($desde, $hasta,$id_estado);
-					
-		// 			if (!empty($query)) {
-		// 				for ($i = 0; $i < count($query); $i++) {
-		// 					if ($query[$i]->tipo_prop_nombre === "Derecho de Autor") {
-		// 						$estadisticas["DerechoAutor"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_prop_nombre === "Indicación Geográfica Protegida") {
-		// 						$estadisticas["Indicaciones_Geograficas"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_prop_nombre === "Marcas") {
-		// 						$estadisticas["Marcas"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_prop_nombre === "Patentes") {
-		// 						$estadisticas["Patentes"] = $query[$i]->count;
-		// 					} else if ($query[$i]->tipo_prop_nombre === "No Aplica") {
-		// 						$estadisticas["No_Aplica"] = $query[$i]->count;
-		// 					}
-		// 				}
-		// 			}
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL GENERO MASCULINO
-		// 			$query_casos_MASCULINOS = $model->contarCasos_PI_MACULINO($desde, $hasta,$id_estado);
-					
-		// 			for ($i = 0; $i < count($query_casos_MASCULINOS); $i++) {
-		// 				if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre == "Derecho de Autor") {
-		// 					$estadisticas["sexo_DerechoAutor_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre == "Indicación Geográfica Protegida") {
-		// 					$estadisticas["sexo_Indicaciones_Geograficas_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre == "Marcas") {
-		// 					$estadisticas["sexo_Marcas_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else if ($query_casos_MASCULINOS[$i]->tipo_prop_nombre == "Patentes") {
-		// 					$estadisticas["sexo_Patentes_M"] = $query_casos_MASCULINOS[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_MASCULINOS[$i]->tipo_prop_nombre] = $query_casos_MASCULINOS[$i]->count;
-		// 				}
-		// 			}
-		// 			//BUSCAMOS LOS CASOS ATENDIDOS POR PROPIEDAD INTELECTUAL GENERO FEMENINO
-		// 			$query_casos_FEMENINOS = $model->contarCasos_PI_FEMENINO($desde, $hasta,$id_estado);
-					
-		// 			$estadisticas["sexo_Marcas_F"] = 0;
-		// 			$estadisticas["sexo_Patentes_F"] = 0;
-		// 			$estadisticas["sexo_DerechoAutor_F"] = 0;
-		// 			$estadisticas["sexo_Indicaciones_Geograficas_F"] = 0;
-		// 			for ($i = 0; $i < count($query_casos_FEMENINOS); $i++) {
-		// 				if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre == "Derecho de Autor") {
-		// 					$estadisticas["sexo_DerechoAutor_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre == "Indicación Geográfica Protegida") {
-		// 					$estadisticas["sexo_Indicaciones_Geograficas_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre == "Marcas") {
-		// 					$estadisticas["sexo_Marcas_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else if ($query_casos_FEMENINOS[$i]->tipo_prop_nombre == "Patentes") {
-		// 					$estadisticas["sexo_Patentes_F"] = $query_casos_FEMENINOS[$i]->count;
-		// 				} else {
-		// 					$estadisticas[$query_casos_FEMENINOS[$i]->tipo_prop_nombre] = $query_casos_FEMENINOS[$i]->count;
-		// 				}
-		// 			}
-		// 			$fecha_desde = $desde;
-		// 			$fecha_hasta = $hasta; 
-					
-				
-		// 			// Fecha en formato YYYY-MM-DD
-		// 			// Formatear la fecha al formato dd-mm-yy
-		// 			$fecha_formateada_desde = date("d-m-Y", strtotime($fecha_desde));
-		// 			$fecha_formateada_hasta = date("d-m-Y", strtotime($fecha_hasta));
-		// 			$estadisticas["fecha_desde"] = $fecha_formateada_desde;
-		// 			$estadisticas["fecha_hasta"] = $fecha_formateada_hasta;
-		// 		}
-
-		// 		$fecha_desde = $desde;
-		// 		$fecha_hasta = $hasta;
-
-		// 		// Verificar si las fechas no son nulas o vacías
-		// 		if ($fecha_desde!='null') {
-		// 			// Formatear la fecha al formato dd-mm-yy
-		// 			$fecha_formateada_desde = date("d-m-Y", strtotime($fecha_desde));
-		// 		} else {
-		// 			// Si la fecha es nula o vacía, establecer la fecha formateada en nula
-		// 			$fecha_formateada_desde = null;
-		// 		}
-
-		// 		if ($fecha_hasta!='null') {
-		// 			// Formatear la fecha al formato dd-mm-yy
-		// 			$fecha_formateada_hasta = date("d-m-Y", strtotime($fecha_hasta));
-		// 		} else {
-		// 			// Si la fecha es nula o vacía, establecer la fecha formateada en nula
-		// 			$fecha_formateada_hasta = null;
-		// 		}
-
-
-			
-		// 		$estadisticas["fecha_desde"] = $fecha_formateada_desde;
-		// 		$estadisticas["fecha_hasta"] = $fecha_formateada_hasta;
-		// 		// Pasamos la tabla como parámetro para la vista
-		// 		echo view('template/header');
-		// 		echo view('template/nav_bar');
-		// 		echo view('reportes/estadisticas/content.php', $estadisticas);
-		// 		echo view('template/footer');
-		// 		echo view('reportes/estadisticas/footer.php');
-		// 	}
-		// } else {
-		// 	return redirect()->to('/');
-		// }
+		
 	}
 
 
@@ -1090,7 +488,6 @@ class Reporte_Controler extends BaseController
 			$model = new Casos();
 			//BUSCAMOS LOS CASOS POR ESTADOS
 			$query_consultar_estados = $model->consultar_estados($desde, $hasta);
-
 			$count_estados = [];		
 			$nombres_estados = [];
 			$estado_id = [];
@@ -1115,6 +512,7 @@ class Reporte_Controler extends BaseController
 		
 			// //BUSCAMOS EL ESTATUS DE LOS CASOS EN FUNCION DEL ESTADO
 			$query_estatus_casos_estado = $model->consultar_estatus_caso_estados($desde, $hasta);
+			
 			
 			
 			$nombres_estatus = [];		
@@ -1154,77 +552,6 @@ class Reporte_Controler extends BaseController
 
 
 
-
-
-
-
-
-		// if ($this->session->get('logged')) {
-		// $model = new Casos();
-		// //BUSCAMOS LOS CASOS POR ESTADOS
-		// $query = $model->consultar_estados($desde, $hasta);
-		// $estadisticas = array();
-		// 	if (!empty($query)) {
-		// 		for ($i = 0; $i < count($query); $i++) {
-		// 			if (is_array($estadisticas)) {
-
-		// 				array_push($estadisticas, $query[$i]);
-		// 			} else {
-		// 				$estadisticas["estadosnom"] = isset($estadisticas["estadosnom"]) ? $estadisticas["estadosnom"] + $query[$i]->estadonom : $query[$i]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas
-		// 		];
-
-
-		// 	//BUSCAMOS LOS CASOS ABIERTOS POR ESTADOS
-		// 	$query_casosAbiertosEstadal = $model->ContarCasosAbiertosEstadal($desde, $hasta);
-		// 	$estadisticas_abiertas = array();
-		// 	if (!empty($query_casosAbiertosEstadal)) {
-		// 		for ($a = 0; $a < count($query_casosAbiertosEstadal); $a++) {
-		// 			if (is_array($estadisticas_abiertas)) {
-		// 				array_push($estadisticas_abiertas, $query_casosAbiertosEstadal[$a]);
-		// 			} else {
-		// 				$estadisticas_abiertas["estadosnom"] = isset($estadisticas_abiertas["estadosnom"]) ? $estadisticas_abiertas["estadosnom"] + $query_casosAbiertosEstadal[$a]->estadonom : $query_casosAbiertosEstadal[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_abiertas' => $estadisticas_abiertas
-
-		// 		];
-		// 	// //BUSCAMOS LOS CASOS CERRADOS POR ESTADOS
-		// 	$query_casosCerradosEstadal = $model->ContarCasosCerradosEstadal($desde, $hasta);
-		// 	$estadisticas_cerradas = array();
-		// 	if (!empty($query_casosCerradosEstadal)) {
-		// 		for ($a = 0; $a < count($query_casosCerradosEstadal); $a++) {
-		// 			if (is_array($estadisticas_cerradas)) {
-		// 				array_push($estadisticas_cerradas, $query_casosCerradosEstadal[$a]);
-		// 			} else {
-		// 				$estadisticas_cerradas["estadosnom"] = isset($estadisticas_cerradas["estadosnom"]) ? $estadisticas_cerradas["estadosnom"] + $query_casosCerradosEstadal[$a]->estadonom : $query_casosCerradosEstadal[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_abiertas' => $estadisticas_abiertas,
-		// 			'estadisticas_cerradas' => $estadisticas_cerradas
-		// 		];
-
-		// 	echo view('template/header');
-		// 	echo view('template/nav_bar');
-		// 	echo view('reportes/estadisticas/estadal/content.php', $data);
-		// 	echo view('template/footer');
-		// 	echo view('reportes/estadisticas/estadal/footer.php');
-		// } else {
-		// 	return redirect()->to('/');
-		// }
 	}
 
 	public function vista_estadisticas_beneficiario($desde = null, $hasta = null)
@@ -1263,7 +590,6 @@ class Reporte_Controler extends BaseController
 
 			// //BUSCAMOS LOS CASOS ESTADALES POR TIPO DE BENEFICIAIRIO
 			$query_Tipo_beneficiarios = $model->ContarCasos_Estadal_Tipo_Beneficiario($desde, $hasta);
-			
 			$nombre_tipo_beneficiario = [];		
 			$count_beneficiario = [];
 			$nombre_estado_beneficiario = [];
@@ -1440,189 +766,6 @@ class Reporte_Controler extends BaseController
 		
 		
 		
-		
-		
-		
-		
-		// if ($this->session->get('logged')) {
-		// 	$model = new Casos();
-		// 	//BUSCAMOS LOS CASOS POR ESTADOS
-		// 	$query = $model->consultar_estados($desde, $hasta);
-		// 	$estadisticas = array();
-		// 	if (!empty($query)) {
-		// 		for ($i = 0; $i < count($query); $i++) {
-		// 			if (is_array($estadisticas)) {
-
-		// 				array_push($estadisticas, $query[$i]);
-		// 			} else {
-		// 				$estadisticas["estadosnom"] = isset($estadisticas["estadosnom"]) ? $estadisticas["estadosnom"] + $query[$i]->estadonom : $query[$i]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas
-		// 		];
-		// 	//BUSCAMOS LOS CASOS ESTADALES DE ASESORIA
-		// 	$query_casos_asesoria = $model->ContarCasosAsesoriaEstadal($desde, $hasta);
-		// 	$estadisticas_asesoria = array();
-		// 	if (!empty($query_casos_asesoria)) {
-		// 		for ($a = 0; $a < count($query_casos_asesoria); $a++) {
-		// 			if (is_array($estadisticas_asesoria)) {
-		// 				array_push($estadisticas_asesoria, $query_casos_asesoria[$a]);
-		// 			} else {
-		// 				$estadisticas_asesoria["estadosnom"] = isset($estadisticas_asesoria["estadosnom"]) ? $estadisticas_asesoria["estadosnom"] + $query_casos_asesoria[$a]->estadonom : $query_casos_asesoria[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria
-		// 		];
-		// 	//BUSCAMOS LOS CASOS ESTADALES DE SUGERENCIA 
-		// 	$query_casos_sugerencia = $model->ContarCasosSugerenciaEstadal($desde, $hasta);
-		// 	$estadisticas_sugerencia = array();
-		// 	if (!empty($query_casos_sugerencia)) {
-		// 		for ($a = 0; $a < count($query_casos_sugerencia); $a++) {
-		// 			if (is_array($estadisticas_sugerencia)) {
-		// 				array_push($estadisticas_sugerencia, $query_casos_sugerencia[$a]);
-		// 			} else {
-		// 				$estadisticas_sugerencia["estadosnom"] = isset($estadisticas_sugerencia["estadosnom"]) ? $estadisticas_sugerencia["estadosnom"] + $query_casos_sugerencia[$a]->estadonom : $query_casos_sugerencia[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 			'estadisticas_sugerencia' => $estadisticas_sugerencia
-		// 		];
-		// 	//BUSCAMOS LOS CASOS ESTADALES POR QUEJA
-		// 	$query_casos_queja = $model->ContarCasosQuejaEstadal($desde, $hasta);
-		// 	$estadisticas_queja = array();
-		// 	if (!empty($query_casos_queja)) {
-		// 		for ($a = 0; $a < count($query_casos_queja); $a++) {
-		// 			if (is_array($estadisticas_queja)) {
-		// 				array_push($estadisticas_queja, $query_casos_queja[$a]);
-		// 			} else {
-		// 				$estadisticas_queja["estadosnom"] = isset($estadisticas_queja["estadosnom"]) ? $estadisticas_queja["estadosnom"] + $query_casos_queja[$a]->estadonom : $query_casos_queja[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 			'estadisticas_sugerencia' => $estadisticas_sugerencia,
-		// 			'estadisticas_queja' => $estadisticas_queja
-		// 		];
-		// 	//BUSCAMOS LOS CASOS ESTADALES POR RECLAMO		
-		// 	$query_casos_reclamo = $model->ContarCasosReclamoEstadal($desde, $hasta);
-		// 	$estadisticas_reclamo = array();
-		// 	if (!empty($query_casos_reclamo)) {
-		// 		for ($a = 0; $a < count($query_casos_reclamo); $a++) {
-		// 			if (is_array($estadisticas_reclamo)) {
-		// 				array_push($estadisticas_reclamo, $query_casos_reclamo[$a]);
-		// 			} else {
-		// 				$estadisticas_reclamo["estadosnom"] = isset($estadisticas_reclamo["estadosnom"]) ? $estadisticas_reclamo["estadosnom"] + $query_casos_reclamo[$a]->estadonom : $query_casos_reclamo[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 			'estadisticas_sugerencia' => $estadisticas_sugerencia,
-		// 			'estadisticas_queja' => $estadisticas_queja,
-		// 			'estadisticas_reclamo' => $estadisticas_reclamo
-		// 		];
-
-		// 	//BUSCAMOS LOS CASOS ESTADALES POR DENUNCIA		
-		// 	$query_casos_denuncia = $model->ContarCasosDenunciaEstadal($desde, $hasta);
-		// 	$estadisticas_denuncia = array();
-		// 	if (!empty($query_casos_denuncia)) {
-		// 		for ($a = 0; $a < count($query_casos_denuncia); $a++) {
-		// 			if (is_array($estadisticas_denuncia)) {
-		// 				array_push($estadisticas_denuncia, $query_casos_denuncia[$a]);
-		// 			} else {
-		// 				$estadisticas_denuncia["estadosnom"] = isset($estadisticas_denuncia["estadosnom"]) ? $estadisticas_denuncia["estadosnom"] + $query_casos_denuncia[$a]->estadonom : $query_casos_denuncia[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 			'estadisticas_sugerencia' => $estadisticas_sugerencia,
-		// 			'estadisticas_queja' => $estadisticas_queja,
-		// 			'estadisticas_reclamo' => $estadisticas_reclamo,
-		// 			'estadisticas_denuncia' => $estadisticas_denuncia
-		// 		];
-
-		// 	//BUSCAMOS LOS CASOS ESTADALES POR PETICION	
-		// 	$query_casos_peticion = $model->ContarCasosPeticionEstadal($desde, $hasta);
-		// 	$estadisticas_peticion = array();
-		// 	if (!empty($query_casos_peticion)) {
-		// 		for ($a = 0; $a < count($query_casos_peticion); $a++) {
-		// 			if (is_array($estadisticas_peticion)) {
-		// 				array_push($estadisticas_peticion, $query_casos_peticion[$a]);
-		// 			} else {
-		// 				$estadisticas_peticion["estadosnom"] = isset($estadisticas_peticion["estadosnom"]) ? $estadisticas_peticion["estadosnom"] + $query_casos_peticion[$a]->estadonom : $query_casos_peticion[$a]->estadonom;
-		// 			}
-		// 		}
-		// 	}
-		// 	$data =
-		// 		[
-		// 			'estadisticas' => $estadisticas,
-		// 			'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 			'estadisticas_sugerencia' => $estadisticas_sugerencia,
-		// 			'estadisticas_queja' => $estadisticas_queja,
-		// 			'estadisticas_reclamo' => $estadisticas_reclamo,
-		// 			'estadisticas_denuncia' => $estadisticas_denuncia,
-		// 			'estadisticas_peticion' => $estadisticas_peticion
-		// 		];
-
-
-		// 		//BUSCAMOS LOS CASOS ESTADALES POR TALLERES
-		// 		$query_casos_talleres= $model->ContarCasosTalleresEstadal($desde, $hasta);
-				
-		// 		$estadisticas_talleres= array();
-		// 		if (!empty($query_casos_talleres)) {
-		// 			for ($a = 0; $a < count($query_casos_talleres); $a++) {
-		// 				if (is_array($estadisticas_talleres)) {
-		// 					array_push($estadisticas_talleres, $query_casos_talleres[$a]);
-		// 				} else {
-		// 					$estadisticas_talleres["estadosnom"] = isset($estadisticas_talleres["estadosnom"]) ? $estadisticas_talleres["estadosnom"] + $query_casos_talleres[$a]->estadonom : $query_casos_talleres[$a]->estadonom;
-		// 				}
-		// 			}
-		// 		}
-		// 		$data =
-		// 			[
-		// 				'estadisticas' => $estadisticas,
-		// 				'estadisticas_asesoria' => $estadisticas_asesoria,
-		// 				'estadisticas_sugerencia' => $estadisticas_sugerencia,
-		// 				'estadisticas_queja' => $estadisticas_queja,
-		// 				'estadisticas_reclamo' => $estadisticas_reclamo,
-		// 				'estadisticas_denuncia' => $estadisticas_denuncia,
-		// 				'estadisticas_peticion' => $estadisticas_peticion,
-		// 				'estadisticas_talleres' => $estadisticas_talleres
-		// 			];
-
-
-
-
-
-
-
-		// 	echo view('template/header');
-		// 	echo view('template/nav_bar');
-		// 	echo view('reportes/estadisticas/tipo_atencion/content.php', $data);
-		// 	echo view('template/footer');
-		// 	echo view('reportes/estadisticas/tipo_atencion/footer.php');
-		// } else {
-		// 	return redirect()->to('/');
-		// }
 	}
 
 

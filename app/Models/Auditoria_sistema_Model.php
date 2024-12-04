@@ -9,26 +9,22 @@ class Auditoria_sistema_Model extends BaseModel
 
 
 	public function listar_auditoria_sistema($direccion_ip = null, $dispositivo = null)
-	{
-		$db      = \Config\Database::connect();
-		$strQuery = "";
-		$strQuery .= "SELECT";
-		$strQuery .= " s.audi_id ";
-		$strQuery .= ", '$direccion_ip' as direccion_ip ";
-		$strQuery .= ", '$dispositivo' as dispositivo ";
-		$strQuery .= ",CONCAT(usu.usuopnom,' ',usu.usuopape) as nombre ";
-		$strQuery .= ",s.audi_accion ";
-		$strQuery .= ",s.audi_hora ";
-		$strQuery .= ",s.audi_fecha as fecha_normal ";
-		$strQuery .= ",to_char(s.audi_fecha,'dd-mm-yyyy') as fecha ";
-		$strQuery .= "FROM ";
-		$strQuery .= "  public.sgc_auditoria_sistema as s";
-		$strQuery .= "  JOIN sgc_usuario_operador as usu on  s.audi_user_id=usu.idusuopr";
-		$strQuery .= "  ORDER BY s.audi_id DESC";
-		$query = $db->query($strQuery);
-		$resultado = $query->getResult();
-		return $resultado;
-	}
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_auditoria_sistema as s');
+    $builder->select('s.audi_id');
+    $builder->select("'$direccion_ip' as direccion_ip");
+    $builder->select("'$dispositivo' as dispositivo");
+    $builder->select("CONCAT(usu.usuopnom, ' ', usu.usuopape) as nombre");
+    $builder->select('s.audi_accion');
+    $builder->select('s.audi_hora');
+    $builder->select('s.audi_fecha as fecha_normal');
+    $builder->select("to_char(s.audi_fecha, 'dd-mm-yyyy') as fecha");
+    $builder->join('sgc_usuario_operador as usu', 's.audi_user_id = usu.idusuopr');
+    $builder->orderBy('s.audi_id', 'DESC');
+    $query = $builder->get();
+    return $query->getResult();
+}
 
 	public function agregar($auditoria)
 	{

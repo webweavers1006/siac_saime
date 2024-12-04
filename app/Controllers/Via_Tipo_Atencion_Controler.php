@@ -15,10 +15,10 @@ class Via_Tipo_Atencion_Controler extends BaseController
 	/*
        FUNCION PARA OBTENER LOS TIPOS DE ATENCION DE USUARIOS
     */
-	public function buscar_via_tipo_atenecion($id_red_social=NULL)
+	public function buscar_via_tipo_atencion($id_red_social=NULL)
 	{
 		$model = new Via_Tipo_Atencion_Model();
-		$query = $model->buscar_via_tipo_atenecion($id_red_social);
+		$query = $model->buscar_via_tipo_atencion($id_red_social);
 		if (empty($query)) {
 			$atencion = [];
 		} else {

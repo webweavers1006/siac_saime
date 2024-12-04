@@ -6,285 +6,209 @@ class Casos extends BaseModel
 {
 
     
-
-
-    //Metodo para obtener todos los casos 
     public function obtenerCasos()
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT distinct d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario,a.tipo_atend_id,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-        $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-        $strQuery .= ",a.edad,to_char(a.fecha_nacimiento,'dd/mm/yyyy') as fecha_nacimiento,a.fecha_nacimiento as fecha_nacimiento_normal";
-        $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id,a.profesion";
-        $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-        $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
-        $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
-        $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
-        $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
-        $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-        $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",tpinte.tipo_prop_id ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= ",t_antusu.act_pro_int ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-        $strQuery .= " left join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " left join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-        $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
-        $strQuery .= " left join sgc_tipoatenciondetalle as d on a.tipo_atend_id=d.tipo_atend_id";
-        $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-        $strQuery .= " where a.borrado='false'  ";
-        $strQuery .= " ORDER BY a.idcaso  desc";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as a');
+        $builder->distinct();
+        $builder->select('d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario, a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
+        $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
+        $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+        $builder->select('cgr.competencia_cgr, cgr.asume_cgr');
+        $builder->select('denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+        $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular');
+        $builder->select('denu.denu_rif_instancia, denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado');
+        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+        $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+        $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
+        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
+        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        $builder->where('a.borrado', 'false');
+        $builder->orderBy('a.idcaso', 'DESC');
+        $query = $builder->get();
+        return $query->getResult();
     }
-//Metodo para obtener todos los casos 
-public function listar_Casos_Remitidos($id_direccion)
-{
-   
-    $db      = \Config\Database::connect();
-    $strQuery = "SELECT cr.casos_id,CONCAT(a.caso_nacionalidad,a.casoced) AS cedula,CONCAT(a.casonom,' ',a.casoape) AS beneficiario,";
-    $strQuery .= " a.casotel, a.tipo_beneficiario,tpinte.tipo_prop_nombre,t_antusu.tipo_aten_nombre,to_char(a.casofec,'dd\/mm\/yyyy') as casofec";
-    $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
-    $strQuery .= ",TRIM(a.casoced) AS casoced";
-    $strQuery .= ",cr.direccion_id,dire.correo,a.casodesc,a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid, ";
-    $strQuery .= "a.id_tipo_atencion,a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id ";
-    $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr,denu.denu_afecta_persona ";
-    $strQuery .= ",denu.denu_afecta_comunidad,denu.denu_afecta_terceros,denu.denu_involucrados,denu.denu_fecha_hechos ";
-    $strQuery .= ",denu.denu_instancia_popular,denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto ";
-    $strQuery .= ",denu.denu_monto_aprovado,CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre ";
-    $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name,case when sexo='1'then 'M' else 'F' end as sexo  ";
-    $strQuery .= ",a.casofec as casofec_normal,b.estnom ";
-    $strQuery .= ",tpinte.tipo_prop_id  ";
-    $strQuery .= "from  ";
-    $strQuery .= "sgc_casos_remitidos as cr ";
-    $strQuery .= "join sgc_direcciones_administrativas as dire on cr.direccion_id = dire.id ";
-    $strQuery .= "join sgc_casos as a on cr.casos_id = a.idcaso ";
-    $strQuery .= "join sgc_estatus b on b.idest = a.idest  ";
-    $strQuery .= "join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-    $strQuery .= "left join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso ";
-    $strQuery .= "left join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id ";
-    $strQuery .= "join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id ";
-    $strQuery .= "left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso ";
-    $strQuery .= "left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-    $strQuery .= " where cr.direccion_id='$id_direccion'";
-    $strQuery .= " ORDER BY a.idcaso  desc";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-}
 
 
-  //Metodo para obtener todos los casos por usuario
-  public function obtenerCasos_filtrados_por_usuario($idusur)
-  {
-    
-      $db      = \Config\Database::connect();
-      $strQuery = "SELECT  distinct a.idcaso,a.tipo_beneficiario,a.tipo_atend_id,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-      $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-      $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id,a.profesion";
-      $strQuery .= ",a.edad,to_char(a.fecha_nacimiento,'dd/mm/yyyy') as fecha_nacimiento,a.fecha_nacimiento as fecha_nacimiento_normal,a.profesion";
-      $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-      $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
-      $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
-      $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
-      $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
-      $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-      $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-      $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-      $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-      $strQuery .= ",tpinte.tipo_prop_nombre ";
-      $strQuery .= ",tpinte.tipo_prop_id ";
-      $strQuery .= ",t_antusu.tipo_aten_nombre ";
-      $strQuery .= ",t_antusu.act_pro_int ";
-      $strQuery .= "FROM sgc_casos a ";
-      $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-      $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-      $strQuery .= " left join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-      $strQuery .= " left join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-      $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-      $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
-      $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-      $strQuery .= " where a.borrado='false'  ";
-      $strQuery .= " and a.idusuopr=$idusur ";
-      $strQuery .= " ORDER BY a.idcaso  desc";
-     $query = $db->query($strQuery);
-     $resultado = $query->getResult();
-      return $resultado;
-  }
-
-
-    
-
-
-
-
-
-
-
-
-
-// //Metodo para obtener toda la informacion del caso para la web 
-// public function Informacion_Usuarios($casoced)
-// {
-   
-//     $db      = \Config\Database::connect();
-//     $strQuery = "SELECT a.tipo_beneficiario,a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-//     $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-//     $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
-//     $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-//     $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
-//     $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
-//     $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
-//     $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
-//     $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-//     $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-//     $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-//     $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-//     $strQuery .= ",tpinte.tipo_prop_nombre ";
-//     $strQuery .= ",tpinte.tipo_prop_id ";
-//     $strQuery .= ",t_antusu.tipo_aten_nombre ";
-//     $strQuery .= "FROM sgc_casos a ";
-//     $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-//     $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-//     $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-//     $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-//     $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-//     $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
-//     $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-//     $strQuery .= " where a.borrado='false'  ";
-//     $strQuery .= " and a.casoced='$casoced' ";
-//     $strQuery .= " ORDER BY a.idcaso  desc";
-//     $query = $db->query($strQuery);
-//     $resultado = $query->getResult();
-//     return $resultado;
-// }
-
-
-//Metodo para obtener toda la informacion del caso para la web 
-public function Informacion_Usuarios($casoced)
-{
-
-// Validar que la cédula sea un número entero
-if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
-
-   die("La cédula debe ser un número entero válido.");
-
-}
-
-
-    $db = \Config\Database::connect();
-
-    // Utiliza el Query Builder
-    $builder = $db->table('sgc_casos a');
-    
-    // Selecciona las columnas
-    $builder->select([
-        'a.tipo_beneficiario',
-        'a.idcaso',
-        'a.casotel',
-        'TRIM(a.casoced) AS casoced',
-        'a.casonom',
-        'a.casoape',
-        'a.casodesc',
-        'a.caso_nacionalidad',
-        'a.idrrss',
-        'a.ofiid',
-        'a.estadoid',
-        'a.id_tipo_atencion',
-        'a.municipioid',
-        'a.parroquiaid',
-        'a.direccion',
-        'a.correo',
-        'a.ente_adscrito_id',
-        "CONCAT(a.caso_nacionalidad, a.casoced) AS cedula",
-        'cgr.competencia_cgr',
-        'cgr.asume_cgr',
-        'denu.denu_afecta_persona',
-        'denu.denu_afecta_comunidad',
-        'denu.denu_afecta_terceros',
-        'denu.denu_involucrados',
-        'denu.denu_fecha_hechos',
-        'denu.denu_instancia_popular',
-        'denu.denu_rif_instancia',
-        'denu.denu_ente_financiador',
-        'denu.denu_nombre_proyecto',
-        'denu.denu_monto_aprovado',
-        "CONCAT(a.casonom, ' ', a.casoape) AS nombre",
-        "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape) AS user_name",
-        "CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END AS sexo",
-        "TO_CHAR(a.casofec, 'dd/mm/yyyy') AS casofec",
-        'a.casofec AS casofec_normal',
-        'b.estnom',
-        'tpinte.tipo_prop_nombre',
-        'tpinte.tipo_prop_id',
-        't_antusu.tipo_aten_nombre'
-    ]);
-
-    // Realiza los joins
-    $builder->join('sgc_estatus b', 'b.idest = a.idest');
-    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-    $builder->join('sgc_tipo_prop_caso tpc', 'a.idcaso = tpc.idcaso');
-    $builder->join('sgc_tipo_prop_intelec tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
-    $builder->join('sgc_tipoatencion_usu t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-    $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-    $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-
-    // Establece las condiciones
-    $builder->where('a.borrado', 'false');
-    $builder->where('a.casoced', $casoced);
-
-    // Ordena los resultados
-    $builder->orderBy('a.idcaso', 'desc');
-
-    // Ejecuta la consulta y obtiene los resultados
-    $query = $builder->get();
-    return $query->getResult();
-}
-
-
-
-
-    //Metodo para obtener el caso en funsion del id 
-    public function obtenerCaso_id()
+    //Metodo para obtener todos los casos por usuario
+    public function obtenerCasos_filtrados_por_usuario($idusur)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT a.tipo_beneficiario,a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-        $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-        $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo,a.ente_adscrito_id";
-        $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-        $strQuery .= ",cgr.competencia_cgr,cgr.asume_cgr";
-        $strQuery .= ",denu.denu_afecta_persona,denu.denu_afecta_comunidad,denu.denu_afecta_terceros";
-        $strQuery .= ",denu.denu_involucrados,denu.denu_fecha_hechos,denu.denu_instancia_popular";
-        $strQuery .= ",denu.denu_rif_instancia,denu.denu_ente_financiador,denu.denu_nombre_proyecto,denu.denu_monto_aprovado";
-        $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-        $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",tpinte.tipo_prop_id ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-        $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-        $strQuery .= " left join sgc_registro_cgr cgr on a.idcaso=cgr.id_caso  ";
-        $strQuery .= " left join sgc_casos_denuncias denu on a.idcaso=denu_id_caso ";
-        $strQuery .= " where a.borrado='false'  ";
-        $strQuery .= " ORDER BY a.idcaso  desc";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as a');
+        $builder->distinct();
+        $builder->select('a.idcaso, a.tipo_beneficiario, a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
+        $builder->select('a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
+        $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+        $builder->select('cgr.competencia_cgr, cgr.asume_cgr');
+        $builder->select('denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+        $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular');
+        $builder->select('denu.denu_rif_instancia, denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado');
+        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+        $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+        $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
+        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        $builder->where('a.borrado', 'false');
+        $builder->where('a.idusuopr', $idusur); 
+        $builder->orderBy('a.idcaso', 'DESC');
+        $query = $builder->get();
+        return $query->getResult();
     }
+
+
+    public function listar_Casos_Remitidos($id_direccion)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos_remitidos as cr');
+        $builder->select('cr.casos_id, CONCAT(a.caso_nacionalidad, a.casoced) AS cedula, CONCAT(a.casonom, \' \', a.casoape) AS beneficiario');
+        $builder->select('a.casotel, a.tipo_beneficiario, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre, to_char(a.casofec, \'dd/mm/yyyy\') as casofec');
+        $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, TRIM(a.casoced) AS casoced');
+        $builder->select('cr.direccion_id, dire.correo, a.casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid');
+        $builder->select('a.id_tipo_atencion, a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id');
+        $builder->select('cgr.competencia_cgr, cgr.asume_cgr, denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+        $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular, denu.denu_rif_instancia');
+        $builder->select('denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado, CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name, CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('a.casofec as casofec_normal, b.estnom, tpinte.tipo_prop_id');
+        $builder->join('sgc_direcciones_administrativas as dire', 'cr.direccion_id = dire.id');
+        $builder->join('sgc_casos as a', 'cr.casos_id = a.idcaso');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        $builder->where('cr.direccion_id', $id_direccion); 
+        $builder->orderBy('a.idcaso', 'DESC');
+        $query = $builder->get();
+        return $query->getResult();
+    }
+  
+    //Metodo para obtener toda la informacion del caso para la web 
+    public function Informacion_Usuarios($casoced)
+    {
+    // Validar que la cédula sea un número entero
+    if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
+
+    die("La cédula debe ser un número entero válido.");
+
+    }
+        $db = \Config\Database::connect();
+        // Utiliza el Query Builder
+        $builder = $db->table('sgc_casos a');
+        
+        // Selecciona las columnas
+        $builder->select([
+            'a.tipo_beneficiario',
+            'a.idcaso',
+            'a.casotel',
+            'TRIM(a.casoced) AS casoced',
+            'a.casonom',
+            'a.casoape',
+            'a.casodesc',
+            'a.caso_nacionalidad',
+            'a.idrrss',
+            'a.ofiid',
+            'a.estadoid',
+            'a.id_tipo_atencion',
+            'a.municipioid',
+            'a.parroquiaid',
+            'a.direccion',
+            'a.correo',
+            'a.ente_adscrito_id',
+            "CONCAT(a.caso_nacionalidad, a.casoced) AS cedula",
+            'cgr.competencia_cgr',
+            'cgr.asume_cgr',
+            'denu.denu_afecta_persona',
+            'denu.denu_afecta_comunidad',
+            'denu.denu_afecta_terceros',
+            'denu.denu_involucrados',
+            'denu.denu_fecha_hechos',
+            'denu.denu_instancia_popular',
+            'denu.denu_rif_instancia',
+            'denu.denu_ente_financiador',
+            'denu.denu_nombre_proyecto',
+            'denu.denu_monto_aprovado',
+            "CONCAT(a.casonom, ' ', a.casoape) AS nombre",
+            "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape) AS user_name",
+            "CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END AS sexo",
+            "TO_CHAR(a.casofec, 'dd/mm/yyyy') AS casofec",
+            'a.casofec AS casofec_normal',
+            'b.estnom',
+            'tpinte.tipo_prop_nombre',
+            'tpinte.tipo_prop_id',
+            't_antusu.tipo_aten_nombre'
+        ]);
+        // Realiza los joins
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('sgc_tipo_prop_caso tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('sgc_tipo_prop_intelec tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('sgc_tipoatencion_usu t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        // Establece las condiciones
+        $builder->where('a.borrado', 'false');
+        $builder->where('a.casoced', $casoced);
+        // Ordena los resultados
+        $builder->orderBy('a.idcaso', 'desc');
+        // Ejecuta la consulta y obtiene los resultados
+        $query = $builder->get();
+        return $query->getResult();
+    }
+
+        public function obtenerCaso_id($id_caso)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as a');
+        $builder->select('a.tipo_beneficiario, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id');
+        $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+        $builder->select('cgr.competencia_cgr, cgr.asume_cgr');
+        $builder->select('denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+        $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular');
+        $builder->select('denu.denu_rif_instancia, denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado');
+        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+        $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+        $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        $builder->where('a.borrado', 'false');
+        $builder->where('a.idcaso', $id_caso); 
+        $query = $builder->get();
+        return $query->getRow(); 
+    }
+
     //Metodo para obtener EL ULTIMO ID INSERTADO
     public function obtener_utimo_id()
     {
@@ -295,29 +219,28 @@ if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
         $query = $builder->get();
         return $query;
     }
-    //Metodo para consultar los ultimos veinte casos por usuario
-    public function obtener_ultimos_casos(String $iduser)
+
+        public function obtener_ultimos_casos(string $iduser)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT a.idcaso,a.casotel,a.casoced,";
-        $strQuery .= " CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= " ,case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " join sgc_usuario_operador c on a.idusuopr = c.idusuopr  ";
-        $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-        $strQuery .= "where a.idusuopr= $iduser ";
-        $strQuery .= " ORDER BY a.idcaso  DESC";
-        $strQuery .= " limit(20)";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as a');
+        $builder->select('a.idcaso, a.casotel, a.casoced');
+        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal');
+        $builder->select('b.estnom, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador c', 'a.idusuopr = c.idusuopr');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->where('a.idusuopr', $iduser); 
+        $builder->orderBy('a.idcaso', 'DESC');
+        $builder->limit(20);
+        $query = $builder->get();
+        return $query->getResult();
     }
+
     //Metodo para insertar un nuevo caso en la BD
     public function insertarNuevoCaso(array $datos)
     {
@@ -335,323 +258,195 @@ if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
         $query = $builder->update($datos, 'idcaso = ' . $datos["idcaso"]);
         return $query;
     }
-    //Metodo para obtener el detalle de un solo caso
-    public function detalleCaso(String $idcaso)
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT  a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-        $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion,a.ente_adscrito_id";
-        $strQuery .= ",a.municipioid,a.parroquiaid,a.direccion,a.correo";
-        $strQuery .= ",CASE WHEN direc.descripcion IS null then 'No Aplica' Else  direc.descripcion  end as unidad_administrativa ";
-        $strQuery .= ",est.estadonom";
-        $strQuery .= ",mun.municipionom";
-        $strQuery .= ",p.parroquianom";
-        $strQuery .= ",u_ope.usuopemail";
-        $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-        $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-        $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",tpinte.tipo_prop_id ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " join sgc_estados est on est.estadoid = a.estadoid  ";
-        $strQuery .= " join sgc_municipio mun on mun.municipioid = a.municipioid ";
-        $strQuery .= " join sgc_parroquias p on p.parroquiaid = a.parroquiaid";
-        $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-        $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-        $strQuery .= " left join sgc_casos_remitidos as casos_remi on a.idcaso=casos_remi.casos_id  ";
-        $strQuery .= " left join sgc_direcciones_administrativas as direc on casos_remi.direccion_id=direc.id  ";
-        $strQuery .= " WHERE a.idcaso= $idcaso";
-        $strQuery .= " ORDER BY casofec_normal  ASC";
-        // return  $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
 
+     //Metodo para obtener el detalle de un solo caso
+     public function detalleCaso(string $idcaso)
+     {
+         $db = \Config\Database::connect();
+         $builder = $db->table('sgc_casos as a');
+         $builder->select('a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+         $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion, a.ente_adscrito_id');
+         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo');
+         $builder->select("CASE WHEN direc.descripcion IS NULL THEN 'No Aplica' ELSE direc.descripcion END as unidad_administrativa");
+         $builder->select('est.estadonom, mun.municipionom, p.parroquianom, u_ope.usuopemail');
+         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+         $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+         $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+         $builder->select("CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END as sexo");
+         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+         $builder->join('sgc_estatus b', 'b.idest = a.idest');
+         $builder->join('sgc_estados est', 'est.estadoid = a.estadoid');
+         $builder->join('sgc_municipio mun', 'mun.municipioid = a.municipioid');
+         $builder->join('sgc_parroquias p', 'p.parroquiaid = a.parroquiaid');
+         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+         $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
+         $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+         $builder->join('sgc_casos_remitidos as casos_remi', 'a.idcaso = casos_remi.casos_id', 'left');
+         $builder->join('sgc_direcciones_administrativas as direc', 'casos_remi.direccion_id = direc.id', 'left');
+         $builder->where('a.idcaso', $idcaso); 
+         $query = $builder->get();
+         $resultado = $query->getRow();
+         return $resultado ? [$resultado] : []; 
+     }
 
+     //Metodo para obtener todos los casos para el reporte consolidado 
 
-    //Metodo para obtener todos los casos para el reporte consolidado 
-    public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0,$atencion_cuidadano = 0,$estatus = 0,$id_estado=0,$id_municipio=0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
-    {
-     
+     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0, $id_estado = 0, $id_municipio = 0, $edad_min = null, $edad_max = null, $detalle_atencion = 0)
+     {
+         $db = \Config\Database::connect();
+         $builder = $db->table('sgc_casos as a');
+         $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+         $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+         $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
+         $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
+         $builder->select('a.municipioid, a.parroquiaid');
+         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+         $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+         $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+         $builder->select("CASE WHEN sexo='1' THEN 'M' ELSE 'F' END as sexo");
+         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+         $builder->join('sgc_estatus b', 'b.idest = a.idest');
+         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'left');
+         $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+         $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
+         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
+         $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+         $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
+         $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
+         $builder->where('a.borrado', false); // Cambiar 'false' a false sin comillas
+         $builder->groupStart();
+         $builder->where('caso_r.vigencia', true); // Cambiar 'TRUE' a true sin comillas
+         $builder->orWhere('caso_r.vigencia IS NULL');
+         $builder->groupEnd();
+         if ($desde != 'null' && $hasta != 'null') {
+             $builder->where('caso_r.casofec >=', $desde);
+             $builder->where('caso_r.casofec <=', $hasta);
+         }
 
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT caso_r.casos_re_id,a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-        $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-        $strQuery .= ",case when ubi.descripcion is null then 'No aplica' else ubi.descripcion end as descripcion";
-        //$strQuery .= ",case when a.tipo_beneficiario='1'then 'Usuario' else 'Emprendedor' end as tipo_beneficiario";
-        $strQuery .= ",t_bene.tipo_beneficiario_nombre as tipo_beneficiario";
-        $strQuery .= ",a.municipioid,a.parroquiaid";
-        $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-        $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-        $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",tpinte.tipo_prop_id ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " left join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-        $strQuery .= " left join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " left join sgc_tipo_beneficiarios as t_bene on a.tipo_beneficiario=t_bene.tipo_beneficiario_id";
-        $strQuery .= " left join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id   ";
-        //$strQuery .= " left join sgc_tipoatenciondetalle as det_aten on t_antusu.tipo_aten_id=det_aten.tipo_aten_id  ";
-        $strQuery .= " left join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " left join sgc_casos_remitidos as caso_r on a.idcaso=caso_r.casos_id  ";
-        $strQuery .= " left join sgc_direcciones_administrativas as ubi on caso_r.direccion_id=ubi.id  ";
-        $strQuery .= " where a.borrado='false'  ";
-       // $strQuery .= " ORDER BY casos_re_id DESC'  ";
-         
-        $strQuery .= "  and (caso_r.vigencia='TRUE' OR  caso_r.vigencia IS NULL) ";
-        $strWhere = "";
-        if ($desde != 'null' and $hasta != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-            } else {
-                $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-            }
+         if ($edad_min != 'null' && $edad_max != 'null') {
+            $builder->where('edad >=', $edad_min);
+            $builder->where('edad <=', $edad_max);
         }
 
-        if ($edad_min != 'null' and $edad_max != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND edad BETWEEN '$edad_min'AND '$edad_max'";
-            } else {
-                $strWhere .= " AND edad BETWEEN '$edad_min'AND '$edad_max'";
-            }
-        }
         if ($tipo_pi != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-            } else {
-                $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-            }
+         $builder->where('tpinte.tipo_prop_id', $tipo_pi);
         }
         if ($tipo_atencion_usu != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-            } else {
-                $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-            }
+            $builder->where('t_antusu.tipo_aten_id', $tipo_atencion_usu);
         }
+        
         if ($sexo != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.sexo=$sexo";
-            } else {
-                $strWhere .= " AND a.sexo=$sexo";
-            }
+            $builder->where('a.sexo', $sexo);
         }
+        
         if ($via_atencion != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.idrrss=$via_atencion";
-            } else {
-                $strWhere .= " AND a.idrrss=$via_atencion";
-            }
+            $builder->where('a.idrrss', $via_atencion);
         }
+        
         if ($direcciones_caso != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-            } else {
-                $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-            }
+            $builder->where('caso_r.direccion_id', $direcciones_caso);
         }
-
+        
         if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-            } else {
-                $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-            }
+            $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
         }
-
+        
         if ($atencion_cuidadano != '0' && $atencion_cuidadano != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.ofiid=$atencion_cuidadano";
-            } else {
-                $strWhere .= " AND a.ofiid=$atencion_cuidadano";
-            }
+            $builder->where('a.ofiid', $atencion_cuidadano);
         }
-
+        
         if ($estatus != '0' && $estatus != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.idest=$estatus";
-            } else {
-                $strWhere .= " AND a.idest=$estatus";
-            }
+            $builder->where('a.idest', $estatus);
         }
-
-        var_dump($id_municipio);
-        die();
-
+        
         if ($id_estado != '0' && $id_estado != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.estadoid='$id_estado'";
-            } else {
-                $strWhere .= " AND a.estadoid='$id_estado'";
-            }
+            $builder->where('a.estadoid', $id_estado);
         }
-
+        
         if ($id_municipio != '0' && $id_municipio != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.municipioid='$id_municipio'";
-            } else {
-                $strWhere .= " AND a.municipioid='$id_municipio'";
-            }
+            $builder->where('a.municipioid', $id_municipio);
         }
-
-        // if ($detalle_atencion != '0' && $detalle_atencion != 'null') {
-        //     if (trim($strWhere) == "") {
-        //         $strWhere .= " AND det_aten.tipo_atend_id =$detalle_atencion";
-        //     } else {
-        //         $strWhere .= " AND det_aten.tipo_atend_id =$detalle_atencion";
-        //     }
-        // }
-
-
-
-
-
-        $strQuery = $strQuery . $strWhere;
-        //return $strQuery;
-        $strQuery .= " ORDER BY a.idcaso  desc";
-        $query = $db->query($strQuery);
+        
+        $builder->orderBy('a.idcaso', 'desc');
+        $query = $builder->get();
         $resultado = $query->getResult();
+        //echo $db->getLastQuery(); 
         return $resultado;
     }
-
-    //Metodo para obtener todos los casos para el reporte POR OPERADOR
-    public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_estado=0,$edad_min=null,$edad_max=null)
+        
+  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_estado=0,$edad_min=null,$edad_max=null)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT a.idcaso,a.casotel,TRIM(a.casoced) AS casoced,a.casonom,a.casoape,a.casodesc";
-        $strQuery .= ",a.caso_nacionalidad,a.idrrss,a.ofiid,a.estadoid,a.id_tipo_atencion";
-        $strQuery .= ",t_bene.tipo_beneficiario_nombre as tipo_beneficiario";
-        $strQuery .= ",a.municipioid,a.parroquiaid";
-        $strQuery .= ",case when ubi.descripcion is null then 'No aplica' else ubi.descripcion end as descripcion";
-        $strQuery .= ",CONCAT(a.caso_nacionalidad,a.casoced) AS cedula";
-        $strQuery .= ",CONCAT(a.casonom, ' ',' ', a.casoape) AS nombre";
-        $strQuery .= ",CONCAT(u_ope.usuopnom, ' ',' ', u_ope.usuopape) AS user_name";
-        $strQuery .= ",case when sexo='1'then 'M' else 'F' end as sexo ";
-        $strQuery .= ",to_char(a.casofec,'dd/mm/yyyy') as casofec,a.casofec as casofec_normal,b.estnom ";
-        $strQuery .= ",tpinte.tipo_prop_nombre ";
-        $strQuery .= ",tpinte.tipo_prop_id ";
-        $strQuery .= ",t_antusu.tipo_aten_nombre ";
-        $strQuery .= "FROM sgc_casos a ";
-        $strQuery .= " join sgc_estatus b on b.idest = a.idest  ";
-        $strQuery .= " join sgc_usuario_operador u_ope on a.idusuopr = u_ope.idusuopr  ";
-        $strQuery .= " join sgc_tipo_prop_caso as tpc on a.idcaso=tpc.idcaso  ";
-        $strQuery .= " join sgc_tipo_prop_intelec as tpinte on tpc.idtippropint=tpinte.tipo_prop_id  ";
-        $strQuery .= " join sgc_tipo_beneficiarios as t_bene on a.tipo_beneficiario=t_bene.tipo_beneficiario_id";
-        $strQuery .= " join sgc_tipoatencion_usu as t_antusu on a.id_tipo_atencion=t_antusu.tipo_aten_id  ";
-        $strQuery .= " left join sgc_casos_remitidos as caso_r on a.idcaso=caso_r.casos_id  ";
-        $strQuery .= " left join sgc_direcciones_administrativas as ubi on caso_r.direccion_id=ubi.id  ";
-        $strQuery .= " where a.borrado='false'  ";
-        $strQuery .= "  and (caso_r.vigencia='TRUE' OR  caso_r.vigencia IS NULL) ";
-        // $strQuery .= " and a.idusuopr= $idusuopr ";
-        $strWhere = "";
-
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as a');
+        $builder->select('a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
+        $builder->select('a.municipioid, a.parroquiaid');
+        $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
+        $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+        $builder->select("CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END as sexo");
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+        $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+        $builder->join('sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'left');
+        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
+        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
+        $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
+        $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
+        $builder->where('a.borrado', false); 
+        $builder->groupStart();
+        $builder->where('caso_r.vigencia', true);
+        $builder->orWhere('caso_r.vigencia IS NULL');
+        $builder->groupEnd();
+        // Condiciones adicionales
         if ($usuarios != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND u_ope.idusuopr =$usuarios";
-            } else {
-                $strWhere .= " AND u_ope.idusuopr =$usuarios";
-            }
+            $builder->where('u_ope.idusuopr', $usuarios);
         }
-
-
-        if ($desde != 'null' and $hasta != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-            } else {
-                $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-            }
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('casofec >=', $desde);
+            $builder->where('casofec <=', $hasta);
         }
-        if ($edad_min != 'null' and $edad_max != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND edad BETWEEN '$edad_min'AND '$edad_max'";
-            } else {
-                $strWhere .= " AND edad BETWEEN '$edad_min'AND '$edad_max'";
-            }
+        if ($edad_min != 'null' && $edad_max != 'null') {
+            $builder->where('edad >=', $edad_min);
+            $builder->where('edad <=', $edad_max);
         }
-
         if ($tipo_pi != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-            } else {
-                $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-            }
+            $builder->where('tpinte.tipo_prop_id', $tipo_pi);
         }
         if ($tipo_atencion_usu != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-            } else {
-                $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-            }
+            $builder->where('t_antusu.tipo_aten_id', $tipo_atencion_usu);
         }
         if ($sexo != 0) {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.sexo=$sexo";
-            } else {
-                $strWhere .= " AND a.sexo=$sexo";
-            }
+            $builder->where('a.sexo', $sexo);
         }
         if ($via_atencion != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.idrrss=$via_atencion";
-            } else {
-                $strWhere .= " AND a.idrrss=$via_atencion";
-            }
+            $builder->where('a.idrrss', $via_atencion);
         }
         if ($direcciones_caso != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-            } else {
-                $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-            }
+            $builder->where('caso_r.direccion_id', $direcciones_caso);
         }
-
         if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-            } else {
-                $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-            }
+            $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
         }
-
         if ($id_estado != '0' && $id_estado != 'null') {
-            if (trim($strWhere) == "") {
-                $strWhere .= " AND a.estadoid='$id_estado'";
-            } else {
-                $strWhere .= " AND a.estadoid='$id_estado'";
-            }
+            $builder->where('a.estadoid', $id_estado);
+        }
+        $builder->orderBy('a.idcaso', 'desc');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+       // echo $db->getLastQuery(); 
+        return $resultado;
+
         }
 
 
-        $strQuery = $strQuery . $strWhere;
-        //return $strQuery;
-        $strQuery .= " ORDER BY a.idcaso  desc";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
-
-    // //Metodo para obtener los casos por estatus
-    // public function obtenerCasosPorEstatus(String $estatus)
-    // {
-    //     $builder = $this->dbconn('sgc_casos a');
-    //     $builder->join("sgc_estatus b", "b.idest = a.idest");
-    //     $builder->join('sgc_usuario_operador c', "a.idusuopr = c.idusuopr");
-    //     $builder->where("a.idest", $estatus);
-    //     $builder->where("a.borrado", false);
-    //     $query = $builder->get();
-    //     return $query;
-    // }
     //Metodo para obtener los casos para los reportes
     public function obtenerCasosConsolidados(String $endDate, String $initDate)
     {
@@ -683,1310 +478,996 @@ if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
         return $result;
     }
 
- //Metodo que cuenta los Casos Atendididos por fecha (RED SOCIAL)
- public function contarCasosAtendidos_Fecha($desde, $hasta,$id_estado)
- {
-     $db      = \Config\Database::connect();
-     $strQuery = "  SELECT COALESCE(COUNT(c.idrrss), 0) AS count,rs.red_s_nom FROM public.sgc_red_social rs ";
-     $strQuery .= " LEFT JOIN public.sgc_casos c ON rs.red_s_id = c.idrrss AND c.borrado = 'false' ";
-     if ($desde != 'null' and $hasta != 'null') {
-         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-     }
-     if ($id_estado != 'null'and $id_estado != null) 
+   // Método que cuenta los Casos Atendidos por fecha (RED SOCIAL)
+    public function contarCasosAtendidos_Fecha($desde, $hasta, $id_estado=null)
     {
-    $strQuery .= " and c.estadoid='$id_estado'";
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_red_social AS red');
+        $builder->select('red.red_s_id, red.red_s_nom, COALESCE(tot.count, 0) AS count');
+        $subquery = '(SELECT cas.idrrss, COUNT(cas.idrrss) AS count
+                    FROM sgc_casos AS cas
+                    WHERE NOT cas.borrado';
+        if ($desde !== null && $hasta !== null) {
+            $subquery .= ' AND cas.casofec BETWEEN ' . $db->escape($desde) . ' AND ' . $db->escape($hasta);
+        }
+        $subquery .= ' GROUP BY cas.idrrss) AS tot';
+        $builder->join($subquery, 'red.red_s_id = tot.idrrss', 'left');
+        $builder->where('red.red_s_borrado', 'false');
+        $builder->orderBy('red.red_s_nom', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
     }
-     $strQuery .= " GROUP BY  rs.red_s_id, rs.red_s_nom ";
-     $strQuery .= " order by  rs.red_s_nom desc";
-     $query = $db->query($strQuery);
-     $resultado = $query->getResult();
-     return $resultado;
- }
 
 
 
- public function consultar_estados($desde=null,$hasta=null)
- { 
-    $db      = \Config\Database::connect();
-    $strQuery = " select casos.estadoid,casos.estadonom,casos.count,casos.casofec";
-    $strQuery .= " from ";
-    $strQuery .= " (";
-    $strQuery .= " SELECT ";
-    $strQuery .= "  estados.estadoid,";
-    $strQuery .= "  COUNT(c.estadoid) AS count,";
-    $strQuery .= "  estados.estadonom,c.casofec";
-    $strQuery .= " FROM";
-    $strQuery .= " public.sgc_estados AS estados";
-    $strQuery .= " LEFT JOIN sgc_casos AS c ON estados.estadoid = c.estadoid ";
-    if ($desde != 'null' and $hasta != 'null')
-     {
-     $strQuery .= " WHERE c.borrado = false AND c.casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-     }
-    $strQuery .= " GROUP BY";
-    $strQuery .= " estados.estadoid, estados.estadonom,c.casofec";
-    $strQuery .= " )as casos"; 
-    $strQuery .= " ORDER BY casos.estadonom";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;   
- }
+    // Método que consulta los estados
+    public function consultar_estados($desde = null, $hasta = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_estados AS estados');
+        $builder->select('estados.estadoid, estados.estadonom, COUNT(c.estadoid) AS count, c.casofec');
+        $builder->join('sgc_casos AS c', 'estados.estadoid = c.estadoid', 'left');
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.borrado', false);
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        $builder->groupBy('estados.estadoid, estados.estadonom, c.casofec');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
 
+        return $resultado;
+    }
 
-    // //Metodo que cuenta los Casos Atendididos
-    // public function contarCasosAtendidos()
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = "  SELECT count (red_s.red_s_id),red_s.red_s_nom  FROM public.sgc_casos as c ";
-    //     $strQuery .= "join sgc_red_social red_s on c.idrrss = red_s.red_s_id  ";
-    //     $strQuery .= " where c.borrado='false' ";
-    //     $strQuery .= "group by (red_s.red_s_id,red_s.red_s_nom)  ";
-    //    // return  $strQuery;
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
-
-    //Metodo que cuenta los Casos Atendididos
+    // Método que cuenta los Casos Atendidos
     public function contarCasosAtendidos()
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "  SELECT COALESCE(COUNT(c.idrrss), 0) AS count,rs.red_s_nom FROM public.sgc_red_social rs ";
-        $strQuery .= " LEFT JOIN public.sgc_casos c ON rs.red_s_id = c.idrrss AND c.borrado = 'false' ";
-        $strQuery .= " And  rs.red_s_borrado = 'false' ";
-        $strQuery .= " GROUP BY  rs.red_s_id, rs.red_s_nom ";
-        $strQuery .= " order by  rs.red_s_nom desc";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_red_social AS rs');
+        $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
+        $builder->join('public.sgc_casos AS c', 'rs.red_s_id = c.idrrss ', 'left');
+        $builder->where('rs.red_s_borrado', false);
+        $builder->where('c.borrado', false);
+        $builder->groupBy('rs.red_s_id, rs.red_s_nom');
+        $builder->orderBy('rs.red_s_nom', 'desc');
+        $query = $builder->get();
         $resultado = $query->getResult();
-        return $resultado;
-    }
-
-    // //Metodo que cuenta los casos ATENDIDOS GENERO MASCULINO
-    // public function contarCasosAtendidos_MASCULINO($desde = null, $hasta = null,$id_estado=null)
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = "SELECT count  (red_s.red_s_nom),red_s.red_s_nom FROM public.sgc_casos as c ";
-    //     $strQuery .= "join sgc_red_social red_s on c.idrrss  = red_s.red_s_id  ";
-    //     $strQuery .= " where c.sexo='1'";
-    //     if ($desde != 'null' and $hasta != 'null') {
-    //         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    //     }
-    //     if ( $id_estado != 'null'and $id_estado != null) 
-    //     {
-    //       $strQuery .= "  and c.estadoid='$id_estado'";
-    //     }
-
-    //     $strQuery .= " and c.borrado='false' ";
-    //     $strQuery .= "group by (red_s.red_s_nom,red_s.red_s_nom)  ";
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
-
-
-    //Metodo que cuenta los casos ATENDIDOS GENERO MASCULINO
-    public function contarCasosAtendidos_MASCULINO($desde = null, $hasta = null,$id_estado=null)
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "  SELECT COALESCE(COUNT(c.idrrss), 0) AS count,rs.red_s_nom FROM public.sgc_red_social rs ";
-        $strQuery .= " LEFT JOIN public.sgc_casos c ON rs.red_s_id = c.idrrss AND c.borrado = 'false' ";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-        }
-        if ( $id_estado != 'null'and $id_estado != null) 
-        {
-          $strQuery .= "  and c.estadoid='$id_estado'";
-        }
-        $strQuery .= " and c.sexo='1'";
-        $strQuery .= " GROUP BY  rs.red_s_id, rs.red_s_nom";
-        $strQuery .= " order by  rs.red_s_nom desc";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
+        //echo $db->getLastQuery();
         return $resultado;
     }
 
 
 
-
-
-
-
-
-    // //Metodo que cuenta los casos ATENDIDOS GENERO FEMENINO
-    // public function contarCasosAtendidos_FEMENINO($desde = null, $hasta = null,$id_estado=null)
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = "SELECT count  (red_s.red_s_nom),red_s.red_s_nom FROM public.sgc_casos as c ";
-    //     $strQuery .= "join sgc_red_social red_s on c.idrrss  = red_s.red_s_id  ";
-    //     $strQuery .= " where c.sexo='2'";
-    //     if ($desde != 'null' and $hasta != 'null') {
-    //         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    //     }
-    //     if ( $id_estado != 'null'and $id_estado != null) 
-    //    {
-    //      $strQuery .= "  and c.estadoid='$id_estado'";
-    //    }
-    //     $strQuery .= " and c.borrado='false' ";
-    //     $strQuery .= "group by (red_s.red_s_nom,red_s.red_s_nom)  ";
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
-
- //Metodo que cuenta los casos ATENDIDOS GENERO FEMENINO
- public function contarCasosAtendidos_FEMENINO($desde = null, $hasta = null,$id_estado=null)
- {
-     $db      = \Config\Database::connect();
-     $strQuery = "  SELECT COALESCE(COUNT(c.idrrss), 0) AS count,rs.red_s_nom FROM public.sgc_red_social rs ";
-     $strQuery .= " LEFT JOIN public.sgc_casos c ON rs.red_s_id = c.idrrss AND c.borrado = 'false' ";
-     $strQuery .= " and c.sexo='2'";
-     if ($desde != 'null' and $hasta != 'null') {
-         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-     }
-         if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-     $strQuery .= " GROUP BY  rs.red_s_id, rs.red_s_nom";
-     $strQuery .= " order by  rs.red_s_nom desc";
-     $query = $db->query($strQuery);
-     $resultado = $query->getResult();
-     return $resultado;
- }
-
-    //Metodo que cuenta los Casos Atendididos por tipo de SOlicitud por Fecha
-    public function contarCasosTipoSolicitudFecha($desde = null, $hasta = null,$id_estado=null)
+    // Método que cuenta los casos ATENDIDOS GENERO MASCULINO
+    public function contarCasosAtendidos_MASCULINO($desde = null, $hasta = null, $id_estado = null)
     {
-        
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT COALESCE(COUNT(c.id_tipo_atencion), 0) AS count, tip_ate.tipo_aten_nombre ";
-        $strQuery .= "  FROM (";
-        $strQuery .= "SELECT * FROM sgc_tipoatencion_usu WHERE tipo_aten_borrado = 'false'";
-        $strQuery .= " ) AS tip_ate ";
-        $strQuery .= "LEFT OUTER JOIN public.sgc_casos AS c ON c.id_tipo_atencion = tip_ate.tipo_aten_id ";
-        $strQuery .= "AND c.borrado = 'false'";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_red_social AS rs');
+        $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
+        $builder->join('public.sgc_casos AS c', 'rs.red_s_id = c.idrrss', 'left');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
         }
-        if ( $id_estado != 'null'and $id_estado != null) 
-        {
-          $strQuery .= "  and c.estadoid='$id_estado'";
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
         }
-        $strQuery .= "GROUP BY tip_ate.tipo_aten_nombre ";
-        $strQuery .= "ORDER BY tip_ate.tipo_aten_nombre ASC";
-        $query = $db->query($strQuery);
+        $builder->where('c.sexo', '1');
+        $builder->groupBy('rs.red_s_id, rs.red_s_nom');
+        $builder->orderBy('rs.red_s_nom', 'desc');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // Método que cuenta los casos ATENDIDOS GENERO FEMENINO
+    public function contarCasosAtendidos_FEMENINO($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_red_social AS rs');
+        $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
+        $builder->join('public.sgc_casos AS c', 'rs.red_s_id = c.idrrss', 'left');
+        $builder->where('c.borrado', false);
+        $builder->where('c.sexo', '2');
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('rs.red_s_id, rs.red_s_nom');
+        $builder->orderBy('rs.red_s_nom', 'desc');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    
+    // Método que cuenta los Casos Atendidos por tipo de Solicitud por Fecha
+    public function contarCasosTipoSolicitudFecha($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipoatencion_usu AS tip');
+        $builder->select('tip.tipo_aten_id, tip.tipo_aten_nombre, COALESCE(tot.count, 0) AS count');
+        $subquery = '(SELECT cas.id_tipo_atencion, COUNT(cas.id_tipo_atencion) AS count
+                    FROM sgc_casos AS cas
+                    WHERE NOT cas.borrado';
+        if ($desde !== null && $hasta !== null) {
+            $subquery .= ' AND cas.casofec BETWEEN ' . $db->escape($desde) . ' AND ' . $db->escape($hasta);
+        }
+        $subquery .= ' GROUP BY cas.id_tipo_atencion) AS tot';
+        $builder->join($subquery, 'tip.tipo_aten_id = tot.id_tipo_atencion', 'left');
+        $builder->where('tip.tipo_aten_borrado', 'false');
+        $builder->orderBy('tip.tipo_aten_nombre', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+    
+    // Método que cuenta los casos por propiedad Intelectual
+    public function contarCasosPorPI()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos as c');
+        $builder->join('sgc_tipo_prop_caso as tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('sgc_tipo_prop_intelec as tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->select('COUNT(DISTINCT tp_proint.tipo_prop_nombre) as count, tp_proint.tipo_prop_nombre');
+        $builder->where('c.borrado', false);
+        $builder->groupBy('tp_proint.tipo_prop_nombre');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+ 
+    
+    //Metodo que cuenta los Casos Atendididos por tipo de SOlicitud
+    public function contarCasosAtencionCiudadano()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipoatencion_usu');
+
+        // Subconsulta para obtener el conteo de casos
+        $subQueryCasos = $db->table('sgc_casos')
+            ->select('count(idcaso) as veces, id_tipo_atencion')
+            ->where('borrado', 'false')
+            ->groupBy('id_tipo_atencion');
+
+        // Subconsulta para obtener los tipos de atención
+        $subQueryTipoAtencion = $builder
+            ->select('tipo_aten_nombre, tipo_aten_id')
+            ->where('tipo_aten_borrado', 'false')
+            ->orderBy('tipo_aten_id', 'ASC');
+
+        // Crear la consulta principal utilizando el Query Builder
+        $query = $db->table('sgc_tipoatencion_usu AS tipoaten')
+            ->select('tipoaten.tipo_aten_nombre, COALESCE(casos.veces, 0) AS count')
+            ->join("({$subQueryCasos->getCompiledSelect()}) AS casos", 'casos.id_tipo_atencion = tipoaten.tipo_aten_id', 'left')
+            ->where('tipoaten.tipo_aten_borrado', 'false')
+            ->orderBy('tipoaten.tipo_aten_nombre', 'ASC');
+
+        // Ejecutar la consulta
+        $resultado = $query->get()->getResult();
+        return $resultado; 
+    }
+
+
+    // Método que cuenta los Casos Atendidos por tipo de Solicitud Masculino
+    public function contarCasosTipoSolicitudMasculino($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
+        $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
+        $builder->join('public.sgc_casos AS c', 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'1\'', 'left');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->where('tip_ate.tipo_aten_borrado', false);
+        $builder->groupBy('tip_ate.tipo_aten_nombre');
+        $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado; 
+    }
+
+    // Método que cuenta los Casos Atendidos por tipo de Solicitud Femenino
+    public function contarCasosTipoSolicitudFemenino($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
+        $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
+        $builder->join('public.sgc_casos AS c', 'c.id_tipo_atencion = tip_ate.tipo_aten_id  AND c.sexo = \'2\'', 'left');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->where('tip_ate.tipo_aten_borrado', false);
+        $builder->groupBy('tip_ate.tipo_aten_nombre');
+        $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado; 
+    }
+
+
+    // Método que cuenta los Casos POR ESTATUS
+    public function contarCasosEstatus()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_estatus AS estatus');
+        $builder->select('estatus.estnom, COALESCE(casos.veces, 0) AS count');
+        $builder->join('(SELECT COUNT(c.idcaso) AS veces, c.idest 
+                        FROM sgc_casos c 
+                        WHERE c.borrado = false 
+                        GROUP BY c.idest) AS casos', 'casos.idest = estatus.idest', 'left');
+        $builder->where('estatus.borrado', false);
+        $builder->orderBy('estatus.estnom', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+
+        return $resultado;
+    }
+
+    // Método que consulta el estatus de casos por estados
+    public function consultar_estatus_caso_estados($desde = null, $hasta = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_estatus AS estatus');
+        $builder->select('COALESCE(estatus.estnom, \'No Aplica\') AS estnom, estados.estadonom, estados.estadoid, casos.casofec, COALESCE(casos.veces, 0) AS count');
+        $builder->join('(SELECT COUNT(c.idcaso) AS veces, c.idest, c.estadoid, c.casofec 
+                        FROM sgc_casos c 
+                        GROUP BY c.idest, c.estadoid, c.casofec) AS casos', 'casos.idest = estatus.idest', 'left');
+        $builder->join('public.sgc_estados AS estados', 'casos.estadoid = estados.estadoid', 'right');
+        $builder->where('estatus.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('casos.casofec >=', $desde);
+            $builder->where('casos.casofec <=', $hasta);
+        }
+        $builder->orderBy('estados.estadonom', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // Método que cuenta los casos estadales por tipo de beneficiario
+    public function ContarCasos_Estadal_Tipo_Beneficiario($desde = null, $hasta = null)
+    { 
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, COALESCE(tb.tipo_beneficiario_nombre, \'No Aplica\') AS tipo_beneficiario_nombre, estados.estadonom');
+        $builder->join('sgc_tipo_beneficiarios AS tb', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
+        $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
+        $builder->where('COALESCE(c.borrado, FALSE)', false);
+        $builder->where('COALESCE(tb.tipo_beneficiario_borrado, FALSE)', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        $builder->groupBy('tb.tipo_beneficiario_nombre, estados.estadonom');
+        $builder->orderBy('estados.estadonom', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // Método que cuenta los casos estadales por tipo de propiedad intelectual
+    public function ContarCasos_Estadal_Tipo_Prop_Intelectual($desde = null, $hasta = null)
+    { 
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(tp_proint.tipo_prop_nombre) AS count, tp_proint.tipo_prop_nombre, estados.estadonom');
+        $builder->join('sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        $builder->groupBy('tp_proint.tipo_prop_nombre, estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+
+
+
+    // Método que cuenta los casos atendidos por tipo de atención estadales
+    public function ContarasosTipoSolicitud_Estadal($desde = null, $hasta = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COALESCE(COUNT(c.id_tipo_atencion), 0) AS count, COALESCE(aten.tipo_aten_nombre, \'No Aplica\') AS tipo_aten_nombre, estados.estadonom');
+        $builder->join('sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'right');
+        $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
+        $builder->where('COALESCE(c.borrado, FALSE)', false);
+        $builder->where('COALESCE(aten.tipo_aten_borrado, FALSE)', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        $builder->groupBy('aten.tipo_aten_nombre, estados.estadonom');
+        $builder->orderBy('estados.estadonom', 'ASC');
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado; 
     }
 
 
 
-    //Metodo que cuenta los casos por propiedad Intelectual
-    public function contarCasosPorPI()
+
+
+    // Método que cuenta los casos atendidos con filtros
+    public function contarCasosAtendidos_filtros($desde = null, $hasta = null, $id_estado = null)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT distinct count (tp_proint.tipo_prop_nombre),tp_proint.tipo_prop_nombre from sgc_casos as c ";
-        $strQuery .= "join sgc_tipo_prop_caso tip_caso on c.idcaso=tip_caso.idcaso ";
-        $strQuery .= "join sgc_tipo_prop_intelec tp_proint on tip_caso.idtippropint = tp_proint.tipo_prop_id ";
-        $strQuery .= " where c.borrado='false' ";
-        $strQuery .= "group by (tp_proint.tipo_prop_nombre,tp_proint.tipo_prop_nombre) ";
-        //return  $strQuery;
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(red_s.red_s_nom) AS count, red_s.red_s_nom');
+        $builder->join('sgc_red_social AS red_s', 'c.idrrss = red_s.red_s_id');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('red_s.red_s_nom');
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }
 
-    // //Metodo que cuenta los casos por ATENCION CIUDADANO
-    // public function contarCasosAtencionCiudadano()
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = " SELECT  count (tipoaten.tipo_aten_nombre),tipoaten.tipo_aten_nombre from sgc_casos as c ";
-    //     $strQuery .= "join sgc_tipoatencion_usu tipoaten on c.id_tipo_atencion = tipoaten.tipo_aten_id ";
-    //     $strQuery .= " where c.borrado='false' ";
-    //     $strQuery .= "group by (tipoaten.tipo_aten_nombre,tipoaten.tipo_aten_nombre) ";
-    //     //return  $strQuery;
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
     
-//Metodo que cuenta los Casos Atendididos por tipo de SOlicitud
-public function contarCasosAtencionCiudadano()
-{
-    
-    $db      = \Config\Database::connect();
-    $strQuery = " SELECT tipoaten.tipo_aten_nombre, COALESCE (casos.veces,0)as count ";
-    $strQuery .= "FROM ";
-    $strQuery .= "( ";
-    $strQuery .= " SELECT ";
-    $strQuery .= "ta.tipo_aten_nombre";
-    $strQuery .= ",ta.tipo_aten_id ";
-    $strQuery .= "FROM ";
-    $strQuery .= "public.sgc_tipoatencion_usu ta ";
-    $strQuery .= "WHERE ta.tipo_aten_borrado='false' ";
-    $strQuery .= "ORDER BY ";
-    $strQuery .= "tipo_aten_id ASC ";
-    $strQuery .= ") as tipoaten ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= "( ";
-    $strQuery .= "SELECT ";
-    $strQuery .= "count(c.idcaso) as veces ";
-    $strQuery .= ",c.id_tipo_atencion ";
-    $strQuery .= "FROM ";
-    $strQuery .= "sgc_casos c ";
-    $strQuery .= "where c.borrado='false'";
-    $strQuery .= "GROUP BY c.id_tipo_atencion ";
-    $strQuery .= "ORDER BY veces";
-    $strQuery .= " ) AS casos ON casos.id_tipo_atencion=tipoaten.tipo_aten_id ";
-    $strQuery .= " ORDER BY tipoaten.tipo_aten_nombre";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-
-}
-
-
-
-//Metodo que cuenta los Casos Atendididos por tipo de SOlicitud Masculino
-public function contarCasosTipoSolicitudMasculino($desde = null, $hasta = null,$id_estado=null)
-{
-
-    $db      = \Config\Database::connect();
-    $strQuery = " SELECT tipoaten.tipo_aten_nombre, COALESCE (casos.veces,0)as count ";
-    $strQuery .= "FROM  ";
-    $strQuery .= "(  ";
-    $strQuery .= "SELECT ta.tipo_aten_nombre,ta.tipo_aten_id ";
-    $strQuery .= "FROM public.sgc_tipoatencion_usu ta  ";
-    $strQuery .= "WHERE ta.tipo_aten_borrado='false' ORDER BY tipo_aten_id ASC ";
-    $strQuery .= ") as tipoaten  ";
-    $strQuery .= "LEFT JOIN ";
-    $strQuery .= "(  ";
-    $strQuery .= "SELECT count(c.idcaso) as veces ,c.id_tipo_atencion  ";
-    $strQuery .= "FROM sgc_casos c ";
-    $strQuery .= "where  c.sexo='1'";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    if ($id_estado != 'null'and $id_estado != null) 
+    // Método que cuenta los casos por estatus y por fecha
+    public function contarCasosEstatusFecha($desde = null, $hasta = null, $id_estado = null)
     {
-    $strQuery .= " and c.estadoid='$id_estado'";
-    }
-    $strQuery .= "GROUP BY c.id_tipo_atencion ORDER BY veces ";
-    $strQuery .= ") AS casos ON casos.id_tipo_atencion=tipoaten.tipo_aten_id ";
-    $strQuery .= "ORDER BY tipoaten.tipo_aten_nombre";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//Metodo que cuenta los Casos Atendididos por tipo de SOlicitud Femenino
-public function contarCasosTipoSolicitudFemenino($desde = null, $hasta = null,$id_estado=null)
-{
-    
-    $db      = \Config\Database::connect();
-    $strQuery = " SELECT tipoaten.tipo_aten_nombre, COALESCE (casos.veces,0)as count ";
-    $strQuery .= "FROM  ";
-    $strQuery .= "(  ";
-    $strQuery .= "SELECT ta.tipo_aten_nombre,ta.tipo_aten_id ";
-    $strQuery .= "FROM public.sgc_tipoatencion_usu ta  ";
-    $strQuery .= "WHERE ta.tipo_aten_borrado='false' ORDER BY tipo_aten_id ASC ";
-    $strQuery .= ") as tipoaten  ";
-    $strQuery .= "LEFT JOIN ";
-    $strQuery .= "(  ";
-    $strQuery .= "SELECT count(c.idcaso) as veces ,c.id_tipo_atencion  ";
-    $strQuery .= "FROM sgc_casos c ";
-    $strQuery .= "where  c.sexo='2'";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    if ($id_estado != 'null'and $id_estado != null) 
-    {
-    $strQuery .= " and c.estadoid='$id_estado'";
-    }
-    $strQuery .= "GROUP BY c.id_tipo_atencion ORDER BY veces ";
-    $strQuery .= ") AS casos ON casos.id_tipo_atencion=tipoaten.tipo_aten_id ";
-    $strQuery .= "ORDER BY tipoaten.tipo_aten_nombre";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-
-//	Metodo que cuenta los Casos POR ESTATUS
-public function contarCasosEstatus()
-{
-   $db      = \Config\Database::connect();
-   $strQuery = " SELECT estatus.estnom, COALESCE (casos.veces,0)as count ";
-   $strQuery .= "FROM ";
-   $strQuery .= " ( ";
-   $strQuery .= " SELECT e.estnom,e.idest ";
-   $strQuery .= " FROM ";
-   $strQuery .= " public.sgc_estatus as e ";
-   $strQuery .= " WHERE e.borrado='false' ";
-   $strQuery .= " ORDER BY ";
-   $strQuery .= "  idest ASC ";
-   $strQuery .= " ) as estatus";
-   $strQuery .= " LEFT JOIN ";
-   $strQuery .= " ( ";
-   $strQuery .= "  SELECT ";
-   $strQuery .= " count(c.idcaso) as veces ";
-   $strQuery .= "  ,c.idest ";
-   $strQuery .= " FROM ";
-   $strQuery .= " sgc_casos c ";
-   $strQuery .= "  WHERE c.borrado='false' ";
-   $strQuery .= " GROUP BY ";
-   $strQuery .= " c.idest ";
-   $strQuery .= " ORDER BY  ";
-   $strQuery .= " veces ";
-   $strQuery .= " ) AS casos ON casos.idest=estatus.idest";
-   $strQuery .= " ORDER BY estatus.estnom";
-   $query = $db->query($strQuery);
-   $resultado = $query->getResult();
-   return $resultado;
-}
-
-public function consultar_estatus_caso_estados($desde=null,$hasta=null)
-{ 
-
-
-   $db      = \Config\Database::connect();
-   $strQuery = "  SELECT coalesce(estatus.estnom,'No Aplica')as estnom,estados.estadonom ,estados.estadoid,casos.casofec, ";
-   $strQuery .= " COALESCE (casos.veces,0)as count ";
-   $strQuery .= " FROM ";
-   $strQuery .= "  ( SELECT e.estnom,e.idest ";
-   $strQuery .= "   FROM public.sgc_estatus as e ";
-   $strQuery .= "  WHERE e.borrado='false' ORDER BY idest ASC ";
-   $strQuery .= "   ) as estatus ";
-   $strQuery .= "   LEFT JOIN ";
-   $strQuery .= "  ( ";
-   $strQuery .= "  SELECT count(c.idcaso) as veces ,c.idest,c.estadoid ,c.casofec";
-   $strQuery .= "  FROM sgc_casos c GROUP BY c.idest,c.estadoid ,c.casofec ORDER BY veces";
-   $strQuery .= "  ) AS casos ON casos.idest=estatus.idest";
-   $strQuery .= "  right  JOIN public.sgc_estados AS estados on casos.estadoid=estados.estadoid ";
-   if ($desde != 'null' and $hasta != 'null') {
-    $strQuery .= "where casos.casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-}
-   $strQuery .= " ORDER BY estados.estadonom";
-   $query = $db->query($strQuery);
-   $resultado = $query->getResult();
-   return $resultado;
-
-
-}
-
-
-  //METODO QUE CUENTA LOS CASOS ESTADALES POR TIPO DE BENEFICIAIRIO
-  public function ContarCasos_Estadal_Tipo_Beneficiario($desde = null, $hasta = null)
-  { 
-    $db      = \Config\Database::connect();
-    $strQuery = " SELECT  COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, ";
-    $strQuery .= " COALESCE(tb.tipo_beneficiario_nombre,'No Aplica')as tipo_beneficiario_nombre,estados.estadonom ";
-    $strQuery .= "  FROM";
-    $strQuery .= "  public.sgc_casos AS c";
-    $strQuery .= "   RIGHT JOIN sgc_tipo_beneficiarios AS tb ON c.tipo_beneficiario = tb.tipo_beneficiario_id ";
-    $strQuery .= "   RIGHT JOIN public.sgc_estados AS estados ON c.estadoid = estados.estadoid  ";
-    $strQuery .= "  WHERE";
-    $strQuery .= "   COALESCE(c.borrado, FALSE) IS FALSE  ";
-    $strQuery .= "  AND COALESCE(tb.tipo_beneficiario_borrado, FALSE) IS FALSE  ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  
-    }
-    $strQuery .= " GROUP BY tb.tipo_beneficiario_nombre ,estados.estadonom   ";
-    $strQuery .= " ORDER BY estados.estadonom";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-
-}
-
-
-  //METODO QUE CUENTA LOS CASOS ESTADALES POR TIPO DE BENEFICIAIRIO
-  public function ContarCasos_Estadal_Tipo_Prop_Intelectual($desde = null, $hasta = null)
-  { 
-
-
-    $db      = \Config\Database::connect();
-    $strQuery = "  SELECT COUNT(tp_proint.tipo_prop_nombre) AS count,";
-    $strQuery .= " tp_proint.tipo_prop_nombre,estados.estadonom   ";
-    $strQuery .= " FROM sgc_casos AS c ";
-    $strQuery .= " JOIN sgc_tipo_prop_caso tip_caso ON c.idcaso = tip_caso.idcaso   ";
-    $strQuery .= " JOIN sgc_tipo_prop_intelec tp_proint ON tip_caso.idtippropint = tp_proint.tipo_prop_id  ";
-    $strQuery .= " RIGHT JOIN public.sgc_estados AS estados ON c.estadoid = estados.estadoid   ";
-    $strQuery .= " WHERE c.borrado = 'false'  ";
-    
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  
-    }
-    $strQuery .= " GROUP BY tp_proint.tipo_prop_nombre,estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-
-}
-
-
-
-
-
-//Metodo que cuenta los Casos Atendididos por TIPO DE ATENCION ESTADALES
-public function ContarasosTipoSolicitud_Estadal($desde, $hasta)
-{
-    
-    $db      = \Config\Database::connect();
-    $strQuery = " SELECT COALESCE(COUNT(c.id_tipo_atencion), 0) AS count, COALESCE(aten.tipo_aten_nombre,'No Aplica')as tipo_aten_nombre,";
-    $strQuery .= "estados.estadonom ";
-    $strQuery .= "FROM public.sgc_casos AS c ";
-    $strQuery .= " RIGHT JOIN sgc_tipoatencion_usu AS aten ON c.id_tipo_atencion = aten.tipo_aten_id ";
-    $strQuery .= " RIGHT JOIN public.sgc_estados AS estados ON c.estadoid = estados.estadoid ";
-    $strQuery .= " WHERE COALESCE(c.borrado, FALSE) IS FALSE AND COALESCE(aten.tipo_aten_borrado, FALSE) IS FALSE ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " GROUP BY aten.tipo_aten_nombre ,estados.estadonom";
-    $strQuery .= " ORDER BY estados.estadonom ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-
-}
-
-
-
-
-
-    //Metodo que cuenta los Casos Atendididos
-    public function contarCasosAtendidos_filtros($desde = null, $hasta = null,$id_estado=null)
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT count  (red_s.red_s_nom),red_s.red_s_nom FROM public.sgc_casos as c ";
-        $strQuery .= "join sgc_red_social red_s on c.idrrss  = red_s.red_s_id ";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_estatus AS est');
+        $builder->select('COALESCE(COUNT(c.idest), 0) AS count, est.estnom');
+        $builder->join('public.sgc_casos AS c', 'c.idest = est.idest ', 'left');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
         }
-        $strQuery .= " and c.borrado='false' ";
-        if ($id_estado != 'null'and $id_estado != null) 
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('est.estnom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // Método que cuenta los casos por propiedad intelectual
+    public function contarCasosPorPI_filtros($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(tp_proint.tipo_prop_nombre) AS count, tp_proint.tipo_prop_nombre');
+        $builder->join('sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('tp_proint.tipo_prop_nombre');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // Método que cuenta los casos de propiedad intelectual género masculino
+    public function contarCasos_PI_MASCULINO($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(tp_proint.tipo_prop_nombre) AS count, tp_proint.tipo_prop_nombre');
+        $builder->join('sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->where('c.sexo', '1');
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->where('c.borrado', false);
+        $builder->groupBy('tp_proint.tipo_prop_nombre');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+    // Método que cuenta los casos de propiedad intelectual género femenino
+    public function contarCasos_PI_FEMENINO($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(tp_proint.tipo_prop_nombre) AS count, tp_proint.tipo_prop_nombre');
+        $builder->join('sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->where('c.sexo', '2');
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->where('c.borrado', false);
+        $builder->groupBy('tp_proint.tipo_prop_nombre');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // Método que cuenta los casos por tipo de beneficiario
+    public function contarCasos_Tipo_Beneficiario($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipo_beneficiarios AS tb');
+        $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, tb.tipo_beneficiario_nombre');
+        $builder->join('sgc_casos AS c', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
+        $builder->where('c.borrado', 'false');
+        $builder->orWhere('c.tipo_beneficiario IS NULL');
+        $builder->where('tb.tipo_beneficiario_borrado', 'false');
+        // Agregamos condiciones de fecha si están presentes
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        // Agregamos condición de estado si está presente
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('tb.tipo_beneficiario_nombre');
+        $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // Método que cuenta los casos por tipo de beneficiario en función de la fecha
+    public function contarCasos_Tipo_Beneficiario_fecha($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_tipo_beneficiarios AS tb');
+        $builder->select('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre, COALESCE(SUM(casos_fecha.count), 0) AS total_fecha_tipo, COALESCE(SUM(casos_fecha.count), 0) AS count');
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('c.casofec, c.tipo_beneficiario, COUNT(c.tipo_beneficiario) AS count');
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $subQuery->where('c.estadoid', $id_estado);
+        }
+        $subQuery->groupBy('c.tipo_beneficiario, c.casofec');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder->join("($subQueryString) AS casos_fecha", 'tb.tipo_beneficiario_id = casos_fecha.tipo_beneficiario', 'left');
+        $builder->groupBy('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre');
+        $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+   
+    // Método que cuenta los casos por ATENCION CIUDADANO filtro
+    public function contarCasosAtencionCiudadano_filtro($desde = null, $hasta = null, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(tipoaten.tipo_aten_nombre) AS total, tipoaten.tipo_aten_nombre');
+        $builder->join('sgc_tipoatencion_usu AS tipoaten', 'c.id_tipo_atencion = tipoaten.tipo_aten_id');
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->where('c.borrado', false);
+        $builder->groupBy('tipoaten.tipo_aten_nombre');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+  
+    // BUSCAMOS LOS CASOS ABIERTOS
+    public function contarCasosAbiertos($desde, $hasta, $id_estado = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COUNT(idest) AS total, idest');
+        $builder->where('c.idest', '1');
+        $builder->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        if ($id_estado != 'null' && $id_estado != null) {
+            $builder->where('c.estadoid', $id_estado);
+        }
+        $builder->groupBy('idest');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // BUSCAMOS LOS CASOS ABIERTOS ESTADALES
+    public function ContarCasosAbiertosEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos')
+            ->select('COUNT(idest) AS abiertos, estadoid')
+            ->where('idest', '1')
+            ->where('borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('casofec >=', $desde);
+            $subQuery->where('casofec <=', $hasta);
+        }
+        $subQuery->groupBy('estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(cuenta.abiertos, 0) AS abiertos');
+        $builder->join("($subQueryString) AS cuenta", 'estados.estadoid = cuenta.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS CERRADOS ESTADALES
+    public function ContarCasosCerradosEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos')
+            ->select('COUNT(idest) AS cerrados, estadoid')
+            ->where('idest', '2')
+            ->where('borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('casofec >=', $desde);
+            $subQuery->where('casofec <=', $hasta);
+        }
+        $subQuery->groupBy('estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(cuenta.cerrados, 0) AS cerrados');
+        $builder->join("($subQueryString) AS cuenta", 'estados.estadoid = cuenta.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE BENEFICIARIO USUARIO
+    public function ContarCasosUsuariosEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS usuario, c.estadoid')
+            ->where('c.tipo_beneficiario', 1)
+            ->where('c.borrado', 'false');
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(cuenta.usuario, 0) AS usuario');
+        $builder->join("($subQueryString) AS cuenta", 'estados.estadoid = cuenta.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE BENEFICIARIO EMPRENDEDOR
+    public function ContarCasosEmprendedorEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS emprendedor, c.estadoid')
+            ->where('c.tipo_beneficiario', 2)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(cuenta.emprendedor, 0) AS emprendedor');
+        $builder->join("($subQueryString) AS cuenta", 'estados.estadoid = cuenta.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL PATENTES
+    public function ContarCasosPatentesEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
+            ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
+            ->where('t.idtippropint', 2)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.idtippropint, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS patentes');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL NO APLICA
+    public function ContarCasosNoAplicaEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
+            ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
+            ->where('t.idtippropint', 1)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.idtippropint, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS no_aplica');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL DERECHO DE AUTOR
+    public function ContarCasosDerecho_AutorEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
+            ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
+            ->where('t.idtippropint', 3)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.idtippropint, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS derecho_autor');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL INDICACIONES GEOGRÁFICAS
+    public function ContarCasosIndicaciondesGeograficas($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
+            ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
+            ->where('t.idtippropint', 4)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.idtippropint, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS indicacione_geograficas');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL MARCAS
+    public function ContarCasosMarcas($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
+            ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
+            ->where('t.idtippropint', 5)
+            ->where('c.borrado', 'false');
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.idtippropint, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS marcas');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN ASESORÍA
+    public function ContarCasosAsesoriaEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 1)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS asesoria');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+    /// BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN SUGERENCIA
+    public function ContarCasosSugerenciaEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 2)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS sugerencia');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN QUEJA
+    public function ContarCasosQuejaEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 3)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS queja');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN RECLAMO
+    public function ContarCasosReclamoEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 4)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS reclamo');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN DENUNCIA
+    public function ContarCasosDenunciaEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 5)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS denuncia');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN PETICIÓN
+    public function ContarCasosPeticionEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 6)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS peticion');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+    // BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCIÓN TALLERES
+    public function ContarCasosTalleresEstadal($desde, $hasta)
+    {
+        $db = \Config\Database::connect();
+        $subQuery = $db->table('sgc_casos AS c')
+            ->select('COUNT(c.idcaso) AS cuenta, t.tipo_aten_id, c.estadoid')
+            ->join('sgc_tipoatencion_usu AS t', 'c.id_tipo_atencion = t.tipo_aten_id')
+            ->where('t.tipo_aten_id', 7)
+            ->where('c.borrado', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
+        }
+        $subQuery->groupBy('t.tipo_aten_id, c.estadoid');
+        $subQueryString = $subQuery->getCompiledSelect();
+        $builder = $db->table('sgc_estados AS estados');
+        $builder->select('estados.estadonom, COALESCE(tipo.cuenta, 0) AS talleres');
+        $builder->join("($subQueryString) AS tipo", 'tipo.estadoid = estados.estadoid', 'left');
+        $builder->orderBy('estados.estadonom');
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+    }
+
+
+
+
+        // BUSCAMOS LOS CASOS CERRADOS
+        public function ContarCasosCerrados($desde, $hasta, $id_estado = null)
         {
-          $strQuery .= "  and c.estadoid='$id_estado'";
-        }
-        $strQuery .= "group by (red_s.red_s_nom,red_s.red_s_nom) ";
-        //return  $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+            $db = \Config\Database::connect();
+            $builder = $db->table('sgc_casos AS c');
+            $builder->select('COUNT(idest) AS count, idest');
+            $builder->where('c.idest', '2');
+            if ($desde != 'null' && $hasta != 'null') {
+                $builder->where('c.casofec >=', $desde);
+                $builder->where('c.casofec <=', $hasta);
+            }
 
-    
-     //Metodo que cuenta los Casos POR ESTATUS POR FECHA 
-     public function contarCasosEstatusFecha($desde = null, $hasta = null,$id_estado=null)
-     {
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT COALESCE(COUNT(c.idest), 0) AS count,est.estnom FROM sgc_estatus AS est ";
-        $strQuery .= "LEFT OUTER JOIN public.sgc_casos AS c ON c.idest = est.idest AND c.borrado = 'false' ";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
+            if ($id_estado != 'null' && $id_estado != null) {
+                $builder->where('c.estadoid', $id_estado);
+            }
+            $builder->where('c.borrado', false);
+            $builder->groupBy('idest');
+            $query = $builder->get();
+            $resultado = $query->getResult();
+            return $resultado;
         }
-        if ($id_estado != 'null'and $id_estado != null) 
+
+
+        // BUSCAMOS LOS CASOS CREADOS PARA EL REPORTE DE PORTAL WEB
+        public function ContarCasos($desde, $hasta)
         {
-          $strQuery .= "  and c.estadoid='$id_estado'";
+            $db = \Config\Database::connect();
+            $builder = $db->table('sgc_casos AS c');
+            $builder->select('COUNT(c.idcaso) AS total_idcaso, c.casofec');
+            if ($desde != 'null' && $hasta != 'null') {
+                $builder->where('c.casofec >=', $desde);
+                $builder->where('c.casofec <=', $hasta);
+            }
+            $builder->where('c.borrado', false);
+            $builder->groupBy('c.casofec');
+            $query = $builder->get();
+            $resultado = $query->getResult();
+            return $resultado;
         }
-        $strQuery .= "   GROUP BY  est.estnom"; 
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
 
-     }
-
-
-
-    //Metodo que cuenta los casos por propiedad Intelectual
-    public function contarCasosPorPI_filtros($desde = null, $hasta = null,$id_estado=null)
+     // BUSCAMOS LOS CASOS CERRADOS
+    public function ContarCasos_Portal_Web($desde, $hasta)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT  count (tp_proint.tipo_prop_nombre),tp_proint.tipo_prop_nombre from sgc_casos as c ";
-        $strQuery .= "join sgc_tipo_prop_caso tip_caso on c.idcaso=tip_caso.idcaso ";
-        $strQuery .= "join sgc_tipo_prop_intelec tp_proint on tip_caso.idtippropint = tp_proint.tipo_prop_id ";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-        }
-        $strQuery .= " and c.borrado='false' ";
-        if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-        $strQuery .= "group by (tp_proint.tipo_prop_nombre,tp_proint.tipo_prop_nombre) ";
-        //return  $strQuery;
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select("TO_CHAR(c.casofec, 'Day') AS dia_semana_completo, c.casofec AS fecha, COUNT(DISTINCT c.idcaso) AS casos_creados");
+        $builder->join('sta_usuarios_visitas AS v', 'c.casofec = v.fecha', 'left');
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
+        $builder->where('v.idrrss', '3');
+        $builder->where('c.borrado', 'false');
+        $builder->groupBy('c.casofec, TO_CHAR(c.casofec, \'Day\')');
+        $builder->orderBy('c.casofec', 'ASC');
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }
-
-
-
-    //Metodo que cuenta los casos de propiedad Intelectual GENERO MASCULINO
-    public function contarCasos_PI_MACULINO($desde = null, $hasta = null,$id_estado=null)
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT  count (tp_proint.tipo_prop_nombre),tp_proint.tipo_prop_nombre from sgc_casos as c  ";
-        $strQuery .= "join sgc_tipo_prop_caso tip_caso on c.idcaso=tip_caso.idcaso ";
-        $strQuery .= "join sgc_tipo_prop_intelec tp_proint on tip_caso.idtippropint = tp_proint.tipo_prop_id ";
-        $strQuery .= "where c.sexo='1'";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-        }
-
-        if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-        $strQuery .= " and c.borrado='false' ";
-        $strQuery .= "group by (tp_proint.tipo_prop_nombre,tp_proint.tipo_prop_nombre) ";
-        //return  $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
-
-    //Metodo que cuenta los casos de propiedad Intelectual FEMENINO
-    public function contarCasos_PI_FEMENINO($desde = null, $hasta = null,$id_estado=null)
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT  count (tp_proint.tipo_prop_nombre),tp_proint.tipo_prop_nombre from sgc_casos as c  ";
-        $strQuery .= "join sgc_tipo_prop_caso tip_caso on c.idcaso=tip_caso.idcaso ";
-        $strQuery .= "join sgc_tipo_prop_intelec tp_proint on tip_caso.idtippropint = tp_proint.tipo_prop_id ";
-        $strQuery .= "where c.sexo='2'";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-        }
-        if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-        $strQuery .= " and c.borrado='false' ";
-        $strQuery .= "group by (tp_proint.tipo_prop_nombre,tp_proint.tipo_prop_nombre) ";
-        //return  $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
-
-
-
-    //Metodo que cuenta los casos por tipo de beneficiario 
-    public function contarCasos_Tipo_Beneficiario($desde = null, $hasta = null,$id_estado=null)
-    {  
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT  COALESCE(COUNT(c.tipo_beneficiario), 0) AS count,";
-        $strQuery .= " tb.tipo_beneficiario_nombre";
-        $strQuery .= "  FROM";
-        $strQuery .= "  public.sgc_casos AS c";
-        $strQuery .= "  RIGHT JOIN sgc_tipo_beneficiarios AS tb ON c.tipo_beneficiario = tb.tipo_beneficiario_id";
-        $strQuery .= "  WHERE";
-        $strQuery .= "  c.borrado = 'false' OR c.tipo_beneficiario IS NULL ";
-        $strQuery .= "  and tb.tipo_beneficiario_borrado='false' ";
-        if ($desde != 'null' and $hasta != 'null') {
-            $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  
-        }
-        if ( $id_estado != 'null'and $id_estado != null ) {
-            $strQuery .= "and c.estadoid='$id_estado'";  # code...
-        }
-        $strQuery .= " group by (tb.tipo_beneficiario_nombre)  ";
-        $strQuery .= " order by tb.tipo_beneficiario_nombre asc  ";
-
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-        
-    }
-
-
-//Metodo que cuenta los casos por tipo de beneficiario  en funcion de la fecha 
-public function contarCasos_Tipo_Beneficiario_fecha($desde = null, $hasta = null,$id_estado=null)
-{
-   
-$db      = \Config\Database::connect();
-$strQuery = " SELECT  ";
-$strQuery .= " tb.tipo_beneficiario_id,";
-$strQuery .= " tb.tipo_beneficiario_nombre, ";
-$strQuery .= " COALESCE(SUM(casos_fecha.count), 0) as total_fecha_tipo,";
-$strQuery .= " COALESCE(SUM(casos_fecha.count), 0) as count ";
-$strQuery .= " FROM";
-$strQuery .= " sgc_tipo_beneficiarios AS tb ";
-$strQuery .= " left join ";
-$strQuery .= " (";
-$strQuery .= " select c.casofec,c.tipo_beneficiario,count(c.tipo_beneficiario)";
-$strQuery .= " from sgc_casos as c ";
-if ($desde != 'null' and $hasta != 'null') {
-	$strQuery .= "WHERE c.casofec BETWEEN '$desde' AND '$hasta'";  
-}
-
-if ( $id_estado != 'null'and $id_estado != null ) {
-    $strQuery .= "and c.estadoid='$id_estado'";  # code...
-}
-$strQuery .= "  group by (c.tipo_beneficiario, c.casofec)";
-$strQuery .= "  ) as casos_fecha ON  tb.tipo_beneficiario_id = casos_fecha.tipo_beneficiario ";
-$strQuery .= "  group by  (tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre)  ";
-$strQuery .= "  order by tb.tipo_beneficiario_nombre ASC";
-$query = $db->query($strQuery);
-$resultado = $query->getResult();
-return $resultado;
-
-    
-}
-
-
-
-    // //Metodo que cuenta los casos por tipo de beneficiario (USUARIO)
-    // public function contarCasos_Beneficiario_Usuario($desde = null, $hasta = null,$id_estado=null)
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = " SELECT count  (tipo_beneficiario),tipo_beneficiario FROM public.sgc_casos as c ";
-    //     $strQuery .= " where c.tipo_beneficiario='1'";
-    //     if ($desde != 'null' and $hasta != 'null') {
-    //         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    //     }
-    //     if ( $id_estado != 'null'and $id_estado != null ) {
-    //         $strQuery .= "and c.estadoid='$id_estado'";  # code...
-    //     }
-    //     $strQuery .= " and c.borrado='false' ";
-    //     $strQuery .= " group by (tipo_beneficiario,tipo_beneficiario) ";
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
-    // //Metodo que cuenta los casos por tipo de beneficiario (EMPRENDEDOR)
-    // public function contarCasos_Beneficiario_Emprendedor($desde = null, $hasta = null,$id_estado=null)
-    // {
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = " SELECT count  (tipo_beneficiario),tipo_beneficiario FROM public.sgc_casos as c ";
-    //     $strQuery .= " where c.tipo_beneficiario='2'";
-    //     if ($desde != 'null' and $hasta != 'null') {
-    //         $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    //     }
-    //     if ( $id_estado != 'null'and $id_estado != null ) {
-    //         $strQuery .= "and c.estadoid='$id_estado'";  # code...
-    //     }
-    //     $strQuery .= " and c.borrado='false' ";
-    //     $strQuery .= " group by (tipo_beneficiario,tipo_beneficiario) ";
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-    //     return $resultado;
-    // }
-
-  //Metodo que cuenta los casos por ATENCION CIUDADANO filtro
-  public function contarCasosAtencionCiudadano_filtro($desde = null, $hasta = null,$id_estado=null)
-  {
-      $db      = \Config\Database::connect();
-      $strQuery = " SELECT  count (tipoaten.tipo_aten_nombre),tipoaten.tipo_aten_nombre from sgc_casos as c ";
-      $strQuery .= "join sgc_tipoatencion_usu tipoaten on c.id_tipo_atencion = tipoaten.tipo_aten_id ";
-      if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-      }
-      if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-      $strQuery .= " and c.borrado='false' ";
-      $strQuery .= "group by (tipoaten.tipo_aten_nombre,tipoaten.tipo_aten_nombre) ";
-      //return  $strQuery;
-      $query = $db->query($strQuery);
-      $resultado = $query->getResult();
-      return $resultado;
-  }
-  
- //BUSCAMOS LOS CASOS ABIERTOS
-  public function contarCasosAbiertos($desde, $hasta,$id_estado=null)
-  {
-      $db      = \Config\Database::connect();
-      $strQuery = " SELECT count  (idest),idest FROM public.sgc_casos as c ";
-      $strQuery .= " where c.idest='1'";
-      $strQuery .= " and c.borrado='false' ";
-      if ($desde != 'null' and $hasta != 'null') {
-          $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-      }
-      if ($id_estado != 'null'and $id_estado != null) {
-        $strQuery .= "and c.estadoid='$id_estado'";  # code...
-    }
-      $strQuery .= " group by (idest,idest) ";
-      $query = $db->query($strQuery);
-      $resultado = $query->getResult();
-      return $resultado;
-  }
-
-//BUSCAMOS LOS CASOS ABIERTOS ESTADALES
-public function  ContarCasosAbiertosEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(cuenta.abiertos,0) AS abiertos  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "( ";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados  ";
-    $strQuery .= "LEFT JOIN ";
-    $strQuery .= "( ";
-    $strQuery .= " SELECT COUNT(idest) AS abiertos,estadoid  ";
-    $strQuery .= "FROM  sgc_casos ";
-    $strQuery .= "WHERE  idest=1 ";
-    $strQuery .= " and sgc_casos.borrado='false' ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-    }
-   
-    $strQuery .= " GROUP BY idest,estadoid ";
-    $strQuery .= " ORDER BY  estadoid ";
-    $strQuery .= ") AS cuenta ON estados.estadoid=cuenta.estadoid "; 
-   
-    $strQuery .= "order by estados.estadonom  ";
-    // $strQuery;
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-}
-//BUSCAMOS LOS CASOS CERRADOS ESTADALES
-public function  ContarCasosCerradosEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(cuenta.cerrados,0) AS cerrados  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "( ";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados  ";
-    $strQuery .= "LEFT JOIN ";
-    $strQuery .= "( ";
-    $strQuery .= " SELECT COUNT(idest) AS cerrados,estadoid  ";
-    $strQuery .= "FROM  sgc_casos ";
-    $strQuery .= "WHERE  idest=2 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-    }
-    $strQuery .= " and sgc_casos.borrado='false' ";
-    $strQuery .= " GROUP BY idest,estadoid ";
-    $strQuery .= " ORDER BY  estadoid ";
-    $strQuery .= ") AS cuenta ON estados.estadoid=cuenta.estadoid "; 
-   
-    $strQuery .= "order by estados.estadonom  ";
-    // $strQuery;
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-}
-
-/*USUARIO Y EMPRENDEDOR*/
-
-/*select estados.estadonom,COALESCE(cuenta.emprendedor,0) AS emprendedor
-FROM 
-(
-	SELECT estadoid ,estadonom FROM sgc_estados
-) AS estados 
-LEFT JOIN ( 
-	SELECT count(c.idcaso) as emprendedor,c.tipo_beneficiario,c.estadoid 
-	FROM sgc_casos c 
-	WHERE c.tipo_beneficiario=1
-	group by c.tipo_beneficiario,c.estadoid
-) AS cuenta ON estados.estadoid=cuenta.estadoid*/
-
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE BENEFICIARIO USUARIO 
-public function  ContarCasosUsuariosEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(cuenta.usuario,0) AS usuario  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(SELECT ";
-    $strQuery .= "estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= ") AS estados ";
-    $strQuery .= "LEFT JOIN (  ";
-    $strQuery .= "SELECT count(c.idcaso) as usuario,c.tipo_beneficiario,c.estadoid  ";
-    $strQuery .= "FROM sgc_casos c ";
-    $strQuery .= "WHERE c.tipo_beneficiario=1 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "group by c.tipo_beneficiario,c.estadoid";
-    $strQuery .= ") AS cuenta ON estados.estadoid=cuenta.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE BENEFICIARIO EMPRENDEDOR
-public function  ContarCasosEmprendedorEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(cuenta.emprendedor,0) AS emprendedor  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(SELECT ";
-    $strQuery .= "estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= ") AS estados ";
-    $strQuery .= "LEFT JOIN (  ";
-    $strQuery .= "SELECT count(c.idcaso) as emprendedor,c.tipo_beneficiario,c.estadoid  ";
-    $strQuery .= "FROM sgc_casos c ";
-    $strQuery .= "WHERE c.tipo_beneficiario=2 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "group by c.tipo_beneficiario,c.estadoid";
-    $strQuery .= ") AS cuenta ON estados.estadoid=cuenta.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-}
-
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL PATENTES
-public function  ContarCasosPatentesEstadal($desde,$hasta)
-{
-
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS patentes  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.idtippropint";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipo_prop_caso t ON c.idcaso=t.idcaso";
-    $strQuery .= " ";
-    $strQuery .= " ";
-    $strQuery .= "WHERE t.idtippropint=2 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.idtippropint,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-  
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL NO APLICA
-public function  ContarCasosNoAplicaEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS no_aplica  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.idtippropint";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipo_prop_caso t ON c.idcaso=t.idcaso";
-    $strQuery .= " ";
-    $strQuery .= " ";
-    $strQuery .= "WHERE t.idtippropint=1 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.idtippropint,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL DERECHO DE AUTOR
-public function  ContarCasosDerecho_AutorEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS derecho_autor  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.idtippropint";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipo_prop_caso t ON c.idcaso=t.idcaso";
-    $strQuery .= " ";
-    $strQuery .= " ";
-    $strQuery .= "WHERE t.idtippropint=3 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.idtippropint,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL INDICACIONES GEOGRAFICAS
-public function  ContarCasosIndicaciondesGeograficas($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS indicacione_geograficas  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.idtippropint";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipo_prop_caso t ON c.idcaso=t.idcaso";
-    $strQuery .= " ";
-    $strQuery .= " ";
-    $strQuery .= "WHERE t.idtippropint=4 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.idtippropint,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE PROPIEDAD INTELECTUAL INDICACIONES GEOGRAFICAS
-public function  ContarCasosMarcas($desde,$hasta)
-{
-   
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS marcas  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.idtippropint";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipo_prop_caso t ON c.idcaso=t.idcaso";
-    $strQuery .= " ";
-    $strQuery .= " ";
-    $strQuery .= "WHERE t.idtippropint=5 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.idtippropint,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION ASESORIA
-public function  ContarCasosAsesoriaEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS asesoria  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=1 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION SUGERENCIA
-public function  ContarCasosSugerenciaEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS sugerencia  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=2 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION SUGERENCIA
-public function  ContarCasosQuejaEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS queja  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=3 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION RECLAMO
-public function  ContarCasosReclamoEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS reclamo  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=4 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION DENUNICA
-public function  ContarCasosDenunciaEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS denuncia  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=5 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION PETICION
-public function  ContarCasosPeticionEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS peticion  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id=6 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-//BUSCAMOS LOS CASOS ESTADALES POR TIPO DE ATENCION PETICION
-public function  ContarCasosTalleresEstadal($desde,$hasta)
-{
-    $db      = \Config\Database::connect();
-    $strQuery = "select estados.estadonom,COALESCE(tipo.cuenta,0) AS talleres  ";
-    $strQuery .= "FROM ";
-    $strQuery .= "(";
-    $strQuery .= " SELECT estadoid ,estadonom FROM sgc_estados ";
-    $strQuery .= " ) AS estados ";
-    $strQuery .= "LEFT JOIN";
-    $strQuery .= " (";
-    $strQuery .= " SELECT";
-    $strQuery .= " count(c.idcaso) cuenta";
-    $strQuery .= " ,t.tipo_aten_id";
-    $strQuery .= " ,c.estadoid";
-    $strQuery .= " FROM";
-    $strQuery .= " sgc_casos c";
-    $strQuery .= " JOIN sgc_tipoatencion_usu t ON c.id_tipo_atencion=t.tipo_aten_id ";
-    $strQuery .= "WHERE t.tipo_aten_id= 7 ";
-    if ($desde != 'null' and $hasta != 'null') {
-        $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta'";  # code...
-    }
-    $strQuery .= " and c.borrado='false' ";
-    $strQuery .= "GROUP BY t.tipo_aten_id,c.estadoid";
-    $strQuery .= ") AS tipo on tipo.estadoid = estados.estadoid "; 
-    $strQuery .= "order by estados.estadonom  ";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado; 
-}
-
-
-
-
-
-
-   //BUSCAMOS LOS CASOS CERRADOS
-   public function ContarCasosCerrados($desde, $hasta,$id_estado=null)
-   {
-       $db      = \Config\Database::connect();
-       $strQuery = " SELECT count  (idest),idest FROM public.sgc_casos as c ";
-       $strQuery .= " where c.idest='2' ";
-       if ($desde != 'null' and $hasta != 'null') {
-           $strQuery .= "and c.casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-       }
-       if ( $id_estado != 'null'and $id_estado != null) 
-       {
-         $strQuery .= "  and c.estadoid='$id_estado'";
-       }
-
-      $strQuery .= " and c.borrado='false' ";
-       $strQuery .= " group by (idest,idest) ";
-      // return $strQuery;
-       $query = $db->query($strQuery);
-       $resultado = $query->getResult();
-       return $resultado;
-   }
-
-
-
-     //BUSCAMOS LOS CASOS  CREADOS PARA EL REPORTE DE PORTAL WEB 
-     public function ContarCasos($desde, $hasta)
-     {
-         $db      = \Config\Database::connect();
-         $strQuery = " SELECT count  (c.idcaso) as total_idcaso,casofec  FROM public.sgc_casos as c ";
-         if ($desde != 'null' and $hasta != 'null') {
-             $strQuery .= "where c.casofec BETWEEN '$desde' AND '$hasta' ";  # code...
-         }
-        $strQuery .= " and c.borrado='false' ";
-         $strQuery .= "  group by (c.casofec) ";
-        // return $strQuery;
-         $query = $db->query($strQuery);
-         $resultado = $query->getResult();
-         return $resultado;
-     }
-  
-
-     //BUSCAMOS LOS CASOS CERRADOS
-     public function ContarCasos_Portal_Web($desde, $hasta)
-     {
-         $db      = \Config\Database::connect();
-         $strQuery = " SELECT   TO_CHAR(c.casofec, 'Day') AS dia_semana_completo, ";
-         $strQuery .= " c.casofec AS fecha,COUNT(DISTINCT c.idcaso) AS casos_creados ";
-         $strQuery .= " FROM public.sgc_casos AS c ";
-         $strQuery .= " left JOIN public.sta_usuarios_visitas AS v ON c.casofec = v.fecha ";
-         $strQuery .= " where c.casofec BETWEEN '$desde' AND '$hasta'";
-         $strQuery .= " and idrrss='3' "; 
-         $strQuery .= " AND c.borrado = 'false' ";
-         $strQuery .= " GROUP BY c.casofec, TO_CHAR(c.casofec, 'Day') ";
-         $strQuery .= " ORDER BY c.casofec ASC; ";
-         //return $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-         return $resultado;
-     }
 
     //Metodo para agregar  el nombre de los cocumentos de asosciados a los casos
     public function agregar_docu_casos(array $documentos_casos)
-
     {
+        $db = \Config\Database::connect();
         $builder = $this->dbconn('sgc_documentos_casos');
         $query = $builder->insert($documentos_casos);
         return $query;
@@ -1995,221 +1476,141 @@ public function  ContarCasosTalleresEstadal($desde,$hasta)
     //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
     public function buscar_correo($caseid)
 	{
+        $db = \Config\Database::connect();
+        $caseid = trim(urldecode($caseid));
 		$builder = $this->dbconn('public.sgc_casos as c');
 		$builder->select(
 			"c.correo,c.casonom,c.casoape ,c.casodesc"
 		);
 		$builder->where(['c.idcaso' => $caseid]);
 		$query = $builder->get();
+        //echo $db->getLastQuery(); 
 		return $query;
 	}
 
-    //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
-    public function buscar_token($token)
-	{
-	
-        $db      = \Config\Database::connect();
-        $strQuery = " SELECT t.id_usuario FROM  sgc_usuario_token as t   ";
-        $strQuery .= " where t.token='$token'";
-        //return $strQuery;
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
+    // //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
+    // public function buscar_token($token)
+	// {
+
+    //     $db      = \Config\Database::connect();
+    //     $strQuery = " SELECT t.id_usuario FROM  sgc_usuario_token as t   ";
+    //     $strQuery .= " where t.token='$token'";
+    //     $query = $db->query($strQuery);
+    //     $resultado = $query->getResult();
         
+    //     return $resultado;
+	// }
+    // Método que busca el correo del usuario en función del caso y la descripción del caso
+    public function buscar_token($token)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_usuario_token AS t');
+        $builder->select('t.id_usuario');
+        $builder->where('t.token', $token);
+        $query = $builder->get();
+        $resultado = $query->getResult();
         return $resultado;
-	}
-
-//   //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
-  public function buscar_usuario($datos)
-  {
-
-  
-    $builder = $this->dbconn('public.sgc_casos as c');
-    $builder->select(
-        "*"
-    );
-    $builder->where(['c.casoced' => $datos]);
-    $query = $builder->get();
-    return $query;
-    
-
-  }
+    }
 
 
-//Metodo para obtener todas las atenciones de una caso 
-public function reporte_atencion($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0,$atencion_cuidadano = 0,$estatus = 0)
-{
- 
-
-    $db      = \Config\Database::connect();
-
-   
-
-    
-    
-    $strQuery = " SELECT c.idcaso,CONCAT(c.caso_nacionalidad,c.casoced) AS cedula,CONCAT(c.casonom, ' ',' ', c.casoape) AS nombre,";
-    $strQuery .= " c.casotel,c.casodesc,c.estnom,sc.idestllam,sc.segcoment,case when sexo='1'then 'M' else 'F' end as sexo,";
-    $strQuery .= " to_char(sc.segfec,'dd/mm/yyyy') as fecha_seguimiento,sc.segfec as fecha_seg_normal,";
-    $strQuery .= " CONCAT(usu.usuopnom, ' ',' ', usu.usuopape) AS nombre_usuario";
-    $strQuery .= ",case when c.tipo_beneficiario='1'then 'Usuario' else 'Emprendedor' end as tipo_beneficiario";
-    $strQuery .= " FROM public.sgc_seguimiento_caso as sc";
-    $strQuery .= " join vista_casos_atendidos as c on sc.idcaso=c.idcaso";
-    $strQuery .= " join sgc_usuario_operador as usu on sc.idusuopr=usu.idusuopr";
-    $strQuery .= " where sc.borrado='false'  ";
-    $strWhere = "";
-    $strQuery = $strQuery . $strWhere;
-    //return $strQuery;
-    $strQuery .= " ORDER BY c.idcaso  desc";
-    $query = $db->query($strQuery);
-    $resultado = $query->getResult();
-    return $resultado;
-  
-   // $strQuery .= " ORDER BY casos_re_id DESC'  ";
-     
-    // $strQuery .= "  and (caso_r.vigencia='TRUE' OR  caso_r.vigencia IS NULL) ";
-    // $strWhere = "";
-    // if ($desde != 'null' and $hasta != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-    //     } else {
-    //         $strWhere .= " AND casofec BETWEEN '$desde'AND '$hasta'";
-    //     }
-    // }
-    // if ($tipo_pi != 0) {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-    //     } else {
-    //         $strWhere .= " AND tpinte.tipo_prop_id=$tipo_pi";
-    //     }
-    // }
-    // if ($tipo_atencion_usu != 0) {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-    //     } else {
-    //         $strWhere .= " AND t_antusu.tipo_aten_id=$tipo_atencion_usu";
-    //     }
-    // }
-    // if ($sexo != 0) {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND a.sexo=$sexo";
-    //     } else {
-    //         $strWhere .= " AND a.sexo=$sexo";
-    //     }
-    // }
-    // if ($via_atencion != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND a.idrrss=$via_atencion";
-    //     } else {
-    //         $strWhere .= " AND a.idrrss=$via_atencion";
-    //     }
-    // }
-    // if ($direcciones_caso != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-    //     } else {
-    //         $strWhere .= " AND caso_r.direccion_id=$direcciones_caso";
-    //     }
-    // }
-
-    // if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-    //     } else {
-    //         $strWhere .= " AND a.tipo_beneficiario=$tipo_beneficiario";
-    //     }
-    // }
-
-    // if ($atencion_cuidadano != '0' && $atencion_cuidadano != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND a.ofiid=$atencion_cuidadano";
-    //     } else {
-    //         $strWhere .= " AND a.ofiid=$atencion_cuidadano";
-    //     }
-    // }
-
-    // if ($estatus != '0' && $estatus != 'null') {
-    //     if (trim($strWhere) == "") {
-    //         $strWhere .= " AND a.idest=$estatus";
-    //     } else {
-    //         $strWhere .= " AND a.idest=$estatus";
-    //     }
-    // }
-
-   
-}
+    //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
+    public function buscar_usuario($datos)
+    {
+        $builder = $this->dbconn('public.sgc_casos as c');
+        $builder->select(
+            "*"
+        );
+        $builder->where(['c.casoced' => $datos]);
+        $query = $builder->get();
+        return $query;
+    }
 
 
+        // Método para obtener todas las atenciones de un caso
+        public function reporte_atencion($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0)
+        {
+            $db = \Config\Database::connect();
 
+            // Construimos la consulta
+            $builder = $db->table('sgc_seguimiento_caso AS sc');
+            $builder->select("c.idcaso, CONCAT(c.caso_nacionalidad, c.casoced) AS cedula, CONCAT(c.casonom, ' ', c.casoape) AS nombre, 
+                            c.casotel, c.casodesc, c.estnom, sc.idestllam, sc.segcoment, 
+                            CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END AS sexo, 
+                            TO_CHAR(sc.segfec, 'dd/mm/yyyy') AS fecha_seguimiento, sc.segfec AS fecha_seg_normal, 
+                            CONCAT(usu.usuopnom, ' ', usu.usuopape) AS nombre_usuario, 
+                            CASE WHEN c.tipo_beneficiario = '1' THEN 'Usuario' ELSE 'Emprendedor' END AS tipo_beneficiario");
+            // Realizamos los JOIN necesarios
+            $builder->join('vista_casos_atendidos AS c', 'sc.idcaso = c.idcaso');
+            $builder->join('sgc_usuario_operador AS usu', 'sc.idusuopr = usu.idusuopr');
+            // Agregamos condiciones
+            $builder->where('sc.borrado', false);
+            // Ordenamos por idcaso en orden descendente
+            $builder->orderBy('c.idcaso', 'DESC');
+            // Ejecutamos la consulta
+            $query = $builder->get();
+            $resultado = $query->getResult();
+            return $resultado; 
+        }
+        //   //Metodo que busca los casos por municipios para el mapa
+        public function Listar_Casos_Municipios()
+        {
+            $db = \Config\Database::connect();
+            $builder = $db->table('sgc_casos c');
+            $builder->select('e.estadoid,e.estadonom, m.municipioid, m.municipionom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
+            $builder->join('sgc_municipio m', 'c.municipioid = m.municipioid');
+            $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
+            $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
+            $builder->where('c.borrado', false);
+            $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
+            $builder->groupBy('e.estadoid,m.municipioid, m.municipionom, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
+            $builder->orderBy('e.estadoid,m.municipionom');
+            $resultado = $builder->get()->getResult();
+            return $resultado; 
+        }
 
-//   //Metodo que busca los casos por municipios para el mapa
-public function Listar_Casos_Municipios()
-{
+        //   //Metodo que busca los casos por estados para el mapa
+        public function Listar_Casos_Estados()
+        {
 
-   
+        
+            $db = \Config\Database::connect();
+            $builder = $db->table('sgc_casos c');
+            $builder->select('e.estadoid, e.estadonom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
+            $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
+            $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
+            $builder->where('c.borrado', false);
+            $builder->where('c.idcaso IS NOT NULL'); 
+            $builder->groupBy('e.estadoid, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
+            $builder->orderBy('e.estadoid');
+            $builder->orderBy('e.estadonom');
+            $builder->orderBy('t.tipo_aten_nombre');
+            
+            $resultado = $builder->get()->getResult();
+            return $resultado;
+        
+        }
 
-    $db = \Config\Database::connect();
-    $builder = $db->table('sgc_casos c');
-    $builder->select('e.estadoid,e.estadonom, m.municipioid, m.municipionom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
-    $builder->join('sgc_municipio m', 'c.municipioid = m.municipioid');
-    $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
-    $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
-    $builder->where('c.borrado', false);
-    $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
-    $builder->groupBy('e.estadoid,m.municipioid, m.municipionom, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
-    $builder->orderBy('e.estadoid,m.municipionom');
-    $resultado = $builder->get()->getResult();
-    return $resultado;
+        public function BuscarCasosExistentes($casos_existentes)
+        {
+            $builder = $this->db->table('public.sgc_casos as c');
+            $builder->select("*");
+            $builder->where(['c.casoced' => $casos_existentes['casoced']]);
+            $query = $builder->get();
+            $result = $query->getResult();
+            return count($result) > 0; // Devuelve true si hay registros, false si no
+        }
 
-  
-}
+        public function ActualizarFechaNacimiento($casos_existentes)
 
-
-
-
-//   //Metodo que busca los casos por estados para el mapa
-public function Listar_Casos_Estados()
-{
-
-   
-    $db = \Config\Database::connect();
-    $builder = $db->table('sgc_casos c');
-    $builder->select('e.estadoid, e.estadonom, t.tipo_aten_nombre, t.tipo_aten_id AS id_tipo_atencion, COUNT(c.idcaso) AS casos');
-    $builder->join('sgc_estados e', 'c.estadoid = e.estadoid');
-    $builder->join('sgc_tipoatencion_usu t', 'c.id_tipo_atencion = t.tipo_aten_id');
-    $builder->where('c.borrado', false);
-    $builder->where('c.idcaso IS NOT NULL'); // Agregamos esta condición para filtrar los resultados
-    $builder->groupBy('e.estadoid, e.estadonom, t.tipo_aten_id, t.tipo_aten_nombre');
-    $builder->orderBy('e.estadoid');
-    $builder->orderBy('e.estadonom');
-    $builder->orderBy('t.tipo_aten_nombre');
-    
-    $resultado = $builder->get()->getResult();
-    return $resultado;
-  
-}
-
-
-
-public function BuscarCasosExistentes($casos_existentes)
-{
-    $builder = $this->db->table('public.sgc_casos as c');
-    $builder->select("*");
-    $builder->where(['c.casoced' => $casos_existentes['casoced']]);
-    $query = $builder->get();
-    $result = $query->getResult();
-    return count($result) > 0; // Devuelve true si hay registros, false si no
-}
-
-public function ActualizarFechaNacimiento($casos_existentes)
-
-{
-    // Intentamos actualizar la fecha de nacimiento
-    $builder = $this->db->table('public.sgc_casos');
-    $builder->set('fecha_nacimiento', $casos_existentes['fecha_nacimiento']);
-    $builder->set('profesion', $casos_existentes['profesion']);
-    $builder->set('edad', $casos_existentes['edad']);
-    $builder->where('casoced', $casos_existentes['casoced']);
-    $updated = $builder->update();
-    return $updated; // Retorna true si se actualizó, false si no se actualizó
+        {
+            // Intentamos actualizar la fecha de nacimiento
+            $builder = $this->db->table('public.sgc_casos');
+            $builder->set('fecha_nacimiento', $casos_existentes['fecha_nacimiento']);
+            $builder->set('profesion', $casos_existentes['profesion']);
+            $builder->set('edad', $casos_existentes['edad']);
+            $builder->where('casoced', $casos_existentes['casoced']);
+            $updated = $builder->update();
+            return $updated; // Retorna true si se actualizó, false si no se actualizó
 
 }
 

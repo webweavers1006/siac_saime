@@ -256,7 +256,7 @@ public function editTipoEstatus()
 
     public function enviar_correo_portal($caseid,$tipocorreo)
     {
-
+        $caseid = trim(urldecode($caseid));
         // CORREO PARA SIAC 
         if ($tipocorreo=='1'||$tipocorreo==1)
         {
@@ -265,6 +265,7 @@ public function editTipoEstatus()
           $correo = new casos();
           //Buscamos el correo del Usuario , el  nombre del usuario 
           $buscar_correo=	$correo->buscar_correo($caseid);
+         
           if (isset($buscar_correo))
            {
               foreach ($buscar_correo->getResult() as $row) {

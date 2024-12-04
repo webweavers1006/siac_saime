@@ -43,14 +43,10 @@ class Casos_Remitidos extends BaseController
 			unset($query);
 			$query = $direccionesModel->buscar_correo($id_direccion);
 			
-		
 			foreach ($query->getResult() as $row) 
 			{
 				$direccion=$row->descripcion;	
 			}
-
-			
-			
 			$data["mensaje"] = '';
 			$data["direccion"] = $direccion;
 			echo view('template/header');

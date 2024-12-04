@@ -4,23 +4,23 @@ namespace App\Models;
 
 class Seguimientos extends BaseModel
 {
-    //Metodo para obtener los seguimientos de un caso
+    // Método para obtener los seguimientos de un caso
     public function obtenerSeguimientoDeCaso(String $idcaso)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT sg.idusuopr,sg.idsegcas,sg.idestllam,sg.segcoment,sg.segfec ";
-        $strQuery .= ",to_char(sg.segfec,'dd-mm-yyyy') as fecha_segui ";
-        $strQuery .= ",b.estllamnom as desc_est_llamada";
-        $strQuery .= ",CONCAT(usuop.usuopnom, ' ',' ', usuop.usuopape) AS user_name ";
-        $strQuery .= "FROM sgc_seguimiento_caso sg  ";
-        $strQuery .= " join sgc_estatus_llamadas b on sg.idestllam = b.idestllam   ";
-        $strQuery .= " join sgc_usuario_operador usuop on  sg.idusuopr = usuop.idusuopr   ";
-        $strQuery .= " join sgc_casos d on sg.idcaso = d.idcaso  ";
-        $strQuery .= " join sgc_estatus e on d.idest = e.idest ";
-        $strQuery .= " WHERE sg.idcaso= $idcaso";
-        $strQuery .= " and sg.borrado='false'";
-        $strQuery .= " ORDER BY sg.segfec  ASC";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_seguimiento_caso sg');
+        $builder->select('sg.idusuopr, sg.idsegcas, sg.idestllam, sg.segcoment, sg.segfec');
+        $builder->select("to_char(sg.segfec, 'dd-mm-yyyy') as fecha_segui");
+        $builder->select('b.estllamnom as desc_est_llamada');
+        $builder->select("CONCAT(usuop.usuopnom, ' ', usuop.usuopape) AS user_name");
+        $builder->join('sgc_estatus_llamadas b', 'sg.idestllam = b.idestllam');
+        $builder->join('sgc_usuario_operador usuop', 'sg.idusuopr = usuop.idusuopr');
+        $builder->join('sgc_casos d', 'sg.idcaso = d.idcaso');
+        $builder->join('sgc_estatus e', 'd.idest = e.idest');
+        $builder->where('sg.idcaso', $idcaso);
+        $builder->where('sg.borrado', false);
+        $builder->orderBy('sg.segfec', 'ASC');
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }

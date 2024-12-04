@@ -90,6 +90,7 @@ $(document).on('click', '.consultar', function(e) {
         
     }else
     {
+        id_estado=null;
         if (desde == '') {
             desde = 'null'
         }

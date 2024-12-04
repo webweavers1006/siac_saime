@@ -988,6 +988,7 @@ curl_close($ch);
 			$query = $model->obtenerCasos();
 			
 			
+			
 		if (empty($query)) {
 				$casos = [];
 			} else {

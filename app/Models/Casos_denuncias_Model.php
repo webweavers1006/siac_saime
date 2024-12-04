@@ -22,26 +22,25 @@ class Casos_denuncias_Model extends BaseModel
     //Buscar si existe el id de casos 
     public function verificar_id_caso_denuncia($idcaso = null)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT denu_id ";
-        $strQuery .= "FROM sgc_casos_denuncias  WHERE denu_id_caso=$idcaso";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos_denuncias');
+        $builder->select('denu_id');
+        $builder->where('denu_id_caso', $idcaso);
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }
-    //Metodo para obtener todas las denuncias
     public function info_denuncias($idcaso)
-    {
-
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT denu_afecta_persona,denu_afecta_comunidad,denu_afecta_terceros,denu_involucrados ";
-        $strQuery .= ",to_char(denu_fecha_hechos,'dd/mm/yyyy') as denu_fecha_hechos ";
-        $strQuery .= ",denu_instancia_popular,denu_rif_instancia,denu_ente_financiador,denu_nombre_proyecto,denu_monto_aprovado ";
-        $strQuery .= ",denu_id_caso,denu_borrado ";
-        $strQuery .= "FROM sgc_casos_denuncias ";
-        $strQuery .= " where denu_id_caso='$idcaso'  ";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos_denuncias');
+    $builder->select('denu_afecta_persona, denu_afecta_comunidad, denu_afecta_terceros, denu_involucrados, 
+                      to_char(denu_fecha_hechos, \'dd/mm/yyyy\') as denu_fecha_hechos, 
+                      denu_instancia_popular, denu_rif_instancia, denu_ente_financiador, 
+                      denu_nombre_proyecto, denu_monto_aprovado, denu_id_caso, denu_borrado');
+    $builder->where('denu_id_caso', $idcaso);
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 }

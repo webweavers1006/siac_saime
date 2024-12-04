@@ -19,20 +19,18 @@ class Registro_cgr_Model extends BaseModel
         $query = $builder->update($cgr, 'id_caso = ' . $cgr['id_caso']);
         return $query;
     }
-    //Buscar si existe el id de casos 
+    // Buscar si existe el id de casos 
     public function verificar_id_caso_CGR($idcaso = null)
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT id_cgr ";
-        $strQuery .= "FROM sgc_registro_cgr  WHERE id_caso=$idcaso";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_registro_cgr');
+        $builder->select('id_cgr');
+        $builder->where('id_caso', $idcaso);
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }
 
 
-
-
-
-    
+  
 }

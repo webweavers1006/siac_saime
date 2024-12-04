@@ -6,13 +6,17 @@ use CodeIgniter\Model;
 
 class Estados_Model extends BaseModel
 {
-    public function listar_Estados()
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT estds.estadoid,estds.estadonom ";
-        $strQuery .= "FROM public.sgc_estados as estds WHERE estds.borrado='false' ";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+   
+
+    // Método para listar estados
+public function listar_Estados()
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_estados AS estds');
+    $builder->select('estds.estadoid, estds.estadonom');
+    $builder->where('estds.borrado', false);
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 }

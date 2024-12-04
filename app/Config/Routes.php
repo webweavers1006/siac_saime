@@ -142,15 +142,12 @@ $routes->setAutoRoute(false);
      $routes->get('/listar_roles', "Roles_Controler::listar_roles");
      $routes->post('/add_Rol', "Roles_Controler::add_Rol");
      $routes->post('/editRol', "Roles_Controler::editRol");
-
      //RUTAS PARA LOS TIPOS DE ATENCION
      $routes->get('/vista_tipo_atencion', 'Tipo_Atencion_Usu_Controler::vista_tipo_atencion');
      $routes->get('/Listar_Tipo_Atencion', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion");
      $routes->get('/Listar_Tipo_Atencion_filtro', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion_filtro");
-     
-       //RUTAS PARA LOS TIPOS DE ATENCION EN FUNCION DE LAS VIAS 
-     $routes->get('/buscar_via_tipo_atenecion/(:any)','Via_Tipo_Atencion_Controler::buscar_via_tipo_atenecion/$1');
-     
+     //RUTAS PARA LOS TIPOS DE ATENCION EN FUNCION DE LAS VIAS 
+     $routes->get('/buscar_via_tipo_atencion/(:any)','Via_Tipo_Atencion_Controler::buscar_via_tipo_atencion/$1');
      $routes->post('/add_Tipo_Atencion', "Tipo_Atencion_Usu_Controler::add_Tipo_Atencion");
      $routes->post('/editTipoAtencion', "Tipo_Atencion_Usu_Controler::editTipoAtencion");
      //Rutas para los seguimientos
@@ -159,8 +156,6 @@ $routes->setAutoRoute(false);
      $routes->post('/actualizar_Seguimiento', "Seguimiento_Controler::actualizar_Seguimiento");
      $routes->post('/eliminar_seguimiento', "Seguimiento_Controler::eliminar_seguimiento");
      $routes->post('/gettl', "Seguimiento_Controler::obtenerTL");
-     
-     
      //RUTAS PARA LOS TIPOS DE ESTATUS
      $routes->get('/vista_tipo_Estatus', 'Estatus::vista_tipo_Estatus');
      $routes->get('/Listar_Tipo_Estatus', "Estatus::Listar_Tipo_Estatus");
@@ -168,17 +163,13 @@ $routes->setAutoRoute(false);
      $routes->post('/add_Tipo_Estatus', "Estatus::add_Tipo_Estatus");
      $routes->post('/editTipoEstatus', "Estatus::editTipoEstatus");
      $routes->post('/cambiarEstatus', "Estatus::cambioEstatus");
-     $routes->get('/enviar_correo_portal/(:any)',"Estatus::enviar_correo_portal/$1");
-
-
+     //$routes->get('/enviar_correo_portal/(:any)',"Estatus::enviar_correo_portal/$1");
      //RUTAS PARA LOS TIPOS DE BENEFICIARIOS
      $routes->get('/vista_tipo_Beneficiarios', 'Tipo_Beneficiarios_Controler::vista_tipo_Beneficiarios');
      $routes->get('/Listar_Tipo_Beneficiarios', "Tipo_Beneficiarios_Controler::Listar_Tipo_Beneficiarios");
      $routes->get('/Listar_Tipo_Beneficiarios_filtro', "Tipo_Beneficiarios_Controler::Listar_Tipo_Beneficiarios_filtro");
      $routes->post('/add_Tipo_Beneficiarios', "Tipo_Beneficiarios_Controler::add_Tipo_Beneficiarios");
      $routes->post('/editTipoBeneficiario', "Tipo_Beneficiarios_Controler::editTipoBeneficiario");
-
-
      //RUTAS PARA DETALLE TIPO ATENCION
      $routes->get('/vista_detalle_atencion', 'Tipo_Atencion_Detalle_Controler::vista_detalle_atencion'); 
      $routes->get('/Listar_Detalle_Atencion', "Tipo_Atencion_Detalle_Controler::Listar_Detalle_Atencion");
@@ -186,14 +177,6 @@ $routes->setAutoRoute(false);
      $routes->post('/add_Detalle_Atencion', "Tipo_Atencion_Detalle_Controler::add_Detalle_Atencion");
      $routes->post('/editDetalle_Atencion', "Tipo_Atencion_Detalle_Controler::editDetalle_Atencion");
      $routes->get('/buscar_hijos_detalle_atencion/(:any)', "Tipo_Atencion_Detalle_Controler::buscar_hijos_detalle_atencion/$1");
-     
-
-
-
-
-
-
-
      //Rutas para enviar correo al beneficiario desde el protal web 
      $routes->get('/enviar_correo_portal/(:any)/(:any)',"Estatus::enviar_correo_portal/$1/$2");
      //RUTAS PARA EL SUPERVISOR
@@ -210,10 +193,7 @@ $routes->setAutoRoute(false);
      $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2");
      $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
      $routes->get('/estadisticas2', "Reporte_Controler::vista_estadisticas2");
-     
      $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
-     
-
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");
      $routes->get('/generar_pdf/(:any)', "PdfController::generar_pdf/$1");
      //Rutas generales de la aplicacion
@@ -312,10 +292,6 @@ $routes->get('/estadisticas_audiencias', 'Audiencias_Controler::estadisticas_aud
 $routes->get('/citas_otorgadas/(:any)', 'Audiencias_Controler::citas_otorgadas/$1');
 
 $routes->get('/casos_categorias', 'Audiencias_Controler::casos_categorias');
-
-
-
-
 
 
 

@@ -29,21 +29,23 @@ class Tipo_Beneficiario_Model extends BaseModel
 
     public function Listar_Tipo_Beneficiarios_filtro()
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT b.tipo_beneficiario_id,b.tipo_beneficiario_nombre,case when b.tipo_beneficiario_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
-        $strQuery .= "FROM public.sgc_tipo_beneficiarios as b  WHERE b.tipo_beneficiario_borrado='false' ";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_tipo_beneficiarios as b');
+        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre');
+        $builder->select("CASE WHEN b.tipo_beneficiario_borrado = 'f' THEN 'Activo' ELSE 'Inactivo' END as borrado");
+        $builder->where('b.tipo_beneficiario_borrado', false);
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }
 
-
     public function Listar_Tipo_Beneficiarios()
     {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT b.tipo_beneficiario_id,b.tipo_beneficiario_nombre,case when b.tipo_beneficiario_borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
-        $strQuery .= "FROM public.sgc_tipo_beneficiarios as b  ";
-        $query = $db->query($strQuery);
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_tipo_beneficiarios as b');
+        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre');
+        $builder->select("CASE WHEN b.tipo_beneficiario_borrado = 'f' THEN 'Activo' ELSE 'Inactivo' END as borrado");
+        $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;
     }

@@ -35,6 +35,7 @@ class Auditoria_sistema_Controllers extends BaseController
 		if ($this->session->get('logged')) {
 			$model = new Auditoria_sistema_Model();
 			$query = $model->listar_auditoria_sistema($direccion_ip, $dispositivo);
+		
 			if (empty($query)) {
 				$auditoria = [];
 			} else {

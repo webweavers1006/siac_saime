@@ -8,62 +8,51 @@ class Via_Tipo_Atencion_Model extends BaseModel
 {
 
 
-	public function hijos_Asociadas($ViaAtencionId=null)
+		public function hijos_Asociadas($ViaAtencionId = null)
 	{
- 
-	   $db      = \Config\Database::connect();
-	   $strQuery ="";
-	   $strQuery .="SELECT";
-	   $strQuery .=" vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado ";  
-	   $strQuery .="FROM ";
-	   $strQuery .="  sgc_via_tipo_atencion as vt_atencion ";	
-	   $strQuery .= "WHERE vt_atencion.via_atencion_id = '$ViaAtencionId' ";
-	   $query = $db->query($strQuery);
-	   $resultado=$query->getResult(); 
-	   return $resultado;
+		$db = \Config\Database::connect();
+		$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
+		$builder->select('vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
+		if ($ViaAtencionId !== null) {
+			$builder->where('vt_atencion.via_atencion_id', $ViaAtencionId);
+		}
+		$query = $builder->get();
+		$resultado = $query->getResult();
+		return $resultado;
 	}
 
-	public function buscar_via_tipo_atenecion($ViaAtencionId=null)
-	{
- 
-	   $db      = \Config\Database::connect();
-	   $strQuery ="";
-	   $strQuery .="SELECT";
-	   $strQuery .=" tu.act_pro_int,tu.tipo_aten_nombre,vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado ";  
-	   $strQuery .="FROM ";
-	   $strQuery .="  sgc_via_tipo_atencion as vt_atencion ";	
-	   $strQuery .= " JOIN sgc_tipoatencion_usu tu on vt_atencion.tipo_atencion_id=tu.tipo_aten_id ";
-	   $strQuery .= " WHERE vt_atencion.via_atencion_id = '$ViaAtencionId' ";
-	   $query = $db->query($strQuery);
-	   $resultado=$query->getResult(); 
-	   return $resultado;
-	}
-	
 
+	public function buscar_via_tipo_atencion($ViaAtencionId = null)
+	{
+		$db = \Config\Database::connect();
+		$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
+		$builder->select('tu.act_pro_int, tu.tipo_aten_nombre, vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
+		$builder->join('sgc_tipoatencion_usu tu', 'vt_atencion.tipo_atencion_id = tu.tipo_aten_id');
+		if ($ViaAtencionId !== null) {
+			$builder->where('vt_atencion.via_atencion_id', $ViaAtencionId);
+		}
+		$query = $builder->get();
+		$resultado = $query->getResult();
+		return $resultado;
+	}
 
 	public function hijos_existentes($datos2 = null)
-{
-    // Verificamos si $datos2 no es nulo y contiene al menos un elemento
-    if ($datos2 && isset($datos2[0])) {
-        // Extraemos los valores de via_atencion_id y tipo_atencion_id
-        $viaAtencionId = $datos2[0]['via_atencion_id'];
-        $tipoAtencionId = $datos2[0]['tipo_atencion_id'];
-        
-        $db = \Config\Database::connect();
-        $strQuery = "";
-        $strQuery .= "SELECT";
-        $strQuery .= " vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado ";  
-        $strQuery .= "FROM ";
-        $strQuery .= " sgc_via_tipo_atencion as vt_atencion ";    
-        $strQuery .= "WHERE vt_atencion.via_atencion_id = '$viaAtencionId' ";
-        $strQuery .= "AND vt_atencion.tipo_atencion_id = '$tipoAtencionId' ";  
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult(); 
-        return $resultado;
-    }
-
-   
-}
+	{
+		// Verificamos si $datos2 no es nulo y contiene al menos un elemento
+		if ($datos2 && isset($datos2[0])) {
+			$viaAtencionId = $datos2[0]['via_atencion_id'];
+			$tipoAtencionId = $datos2[0]['tipo_atencion_id'];
+			$db = \Config\Database::connect();
+			$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
+			$builder->select('vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
+			$builder->where('vt_atencion.via_atencion_id', $viaAtencionId);
+			$builder->where('vt_atencion.tipo_atencion_id', $tipoAtencionId);
+			$query = $builder->get();
+			$resultado = $query->getResult();
+			return $resultado;
+		}
+		return null;
+	}
 
 
 

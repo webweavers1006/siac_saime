@@ -22,27 +22,20 @@ class Usuarios_Visitas_Model extends BaseModel
 
  //CONTAMOS LAS VISITAS
  public function ContarUsuariosVisitas($desde, $hasta)
- {
-	 $db      = \Config\Database::connect();
-
-
-
-	 $strQuery = " SELECT ";
-	 $strQuery .= "  TO_CHAR(fecha, 'Day') AS dia_semana_completo, fecha,";
-	 $strQuery .= " COUNT(user_requests_ip) AS num_requests";
-	 $strQuery .= "  FROM ";
-	 $strQuery .= " public.sta_usuarios_visitas";
-	 if ($desde != 'null' and $hasta != 'null') {
-		 $strQuery .= " where  fecha BETWEEN '$desde' AND '$hasta' ";  # code...
-	 }
-	 $strQuery .= " GROUP BY ";
-	 $strQuery .= " fecha, TO_CHAR(fecha, 'Day')";
-	 $strQuery .= " ORDER BY ";
-	 $strQuery .= " fecha ASC;"; // Ordenar en orden ascendente
-	 $query = $db->query($strQuery);
-	 $resultado = $query->getResult();
-	 return $resultado;
- }
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('public.sta_usuarios_visitas');
+    $builder->select("TO_CHAR(fecha, 'Day') AS dia_semana_completo, fecha, COUNT(user_requests_ip) AS num_requests");
+    if ($desde !== 'null' && $hasta !== 'null') {
+        $builder->where('fecha >=', $desde);
+        $builder->where('fecha <=', $hasta);
+    }
+    $builder->groupBy('fecha, TO_CHAR(fecha, \'Day\')');
+    $builder->orderBy('fecha', 'ASC');
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 
 
  

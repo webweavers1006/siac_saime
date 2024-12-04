@@ -921,9 +921,8 @@ class Reporte_Atencion_Controler extends BaseController
 
 				
 			//BUSCAMOS LOS CASOS ESTADALES DE MARCAS
-			
+	
 			$query_casos_marcas = $model->ContarCasosMarcas($desde, $hasta);
-			
 			$estadisticas_marcas = array();
 			if (!empty($query_casos_marcas)) {
 				for ($a = 0; $a < count($query_casos_marcas); $a++) {
@@ -1102,84 +1101,200 @@ class Reporte_Atencion_Controler extends BaseController
 			return redirect()->to('/');
 		}
 	}
+	// public function Listar_Casos_Municipios()
+	// {
+	// 	$model = new Casos();
+	// 	$casos = $model->Listar_Casos_Municipios();  
+	// 	// Inicializar un array para almacenar los resultados
+	// 	$resultados = [];
+	// 	// Procesar cada caso
+	// 	$index = 1;
+	// 	foreach ($casos as $caso) {
+	// 		// Verificar que el caso tenga las propiedades necesarias
+	// 		if (!isset($caso->estadoid,$caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
+	// 			continue; // O manejar el error de otra manera
+	// 		}
+	// 		$estado = $caso->estadonom;
+	// 		$estadoid = $caso->estadoid;
+	// 		$municipioId = $caso->municipioid;
+	// 		$municipio = $caso->municipionom;
+	// 		$casos = (int)$caso->casos;
+	// 		// Inicializar el municipio si no existe en el array de resultados
+	// 		if (!isset($resultados[$municipioId.$estadoid])) {
+	// 			$resultados[$municipioId.$estadoid] = [
+	// 				'ID_estado' => $estadoid,
+	// 				'estado' => $estado,
+	// 				'ID_municipio' => $municipioId,
+	// 				'municipio' => $municipio,
+	// 				'Asesoría' => 0,
+	// 				'Sugerencia' => 0,
+	// 				'Queja' => 0,
+	// 				'Reclamo' => 0,
+	// 				'Denuncia' => 0,
+	// 				'Petición' => 0,
+	// 				'Talleres' => 0,
+	// 				'total_atencion' => 0,
+	// 			];
+	// 		}
+	// 		// Clasificar los casos en los diferentes tipos de atención
+	// 		switch ($caso->tipo_aten_nombre) {
+	// 			case 'Asesoría':
+	// 				$resultados[$municipioId.$estadoid]['Asesoría'] += $casos;
+	// 				break;
+	// 			case 'Sugerencia':
+	// 				$resultados[$municipioId.$estadoid]['Sugerencia'] += $casos;
+	// 				break;
+	// 			case 'Queja':
+	// 				$resultados[$municipioId.$estadoid]['Queja'] += $casos;
+	// 				break;
+	// 			case 'Reclamo':
+	// 				$resultados[$municipioId.$estadoid]['Reclamo'] += $casos;
+	// 				break;
+	// 			case 'Denuncia':
+	// 				$resultados[$municipioId.$estadoid]['Denuncia'] += $casos;
+	// 				break;
+	// 			case 'Petición':
+	// 				$resultados[$municipioId.$estadoid]['Petición'] += $casos;
+	// 				break;
+	// 			case 'Talleres':
+	// 				$resultados[$municipioId.$estadoid]['Talleres'] += $casos;
+	// 				break;
+	// 		}
+	// 		// Actualizar el total de atenciones
+	// 		$resultados[$municipioId.$estadoid]['total_atencion'] += $casos;
+	// 	}
+	// 	// Retornar el array de resultados en formato JSON
+	// 	header('Content-Type: application/json; charset=utf-8');
+	// 	echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+
+		
+	// }
+
 	public function Listar_Casos_Municipios()
 	{
 		$model = new Casos();
 		$casos = $model->Listar_Casos_Municipios();  
-		
 		// Inicializar un array para almacenar los resultados
 		$resultados = [];
+		
+		// Definir los tipos de atención
+		$tiposAtencion = ['Asesoría', 'Sugerencia', 'Queja', 'Reclamo', 'Denuncia', 'Petición', 'Talleres'];
 	
 		// Procesar cada caso
-		$index = 1;
 		foreach ($casos as $caso) {
 			// Verificar que el caso tenga las propiedades necesarias
-			if (!isset($caso->estadoid,$caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
+			if (!isset($caso->estadoid, $caso->municipioid, $caso->municipionom, $caso->casos, $caso->tipo_aten_nombre)) {
 				continue; // O manejar el error de otra manera
 			}
+			
 			$estado = $caso->estadonom;
 			$estadoid = $caso->estadoid;
 			$municipioId = $caso->municipioid;
 			$municipio = $caso->municipionom;
-			$casos = (int)$caso->casos;
-		
+			$casosCount = (int)$caso->casos;
+			
+			// Crear una clave única para el municipio y estado
+			$key = $municipioId . $estadoid;
+	
 			// Inicializar el municipio si no existe en el array de resultados
-			if (!isset($resultados[$municipioId.$estadoid])) {
-				$resultados[$municipioId.$estadoid] = [
+			if (!isset($resultados[$key])) {
+				$resultados[$key] = [
 					'ID_estado' => $estadoid,
 					'estado' => $estado,
 					'ID_municipio' => $municipioId,
 					'municipio' => $municipio,
-					'Asesoría' => 0,
-					'Sugerencia' => 0,
-					'Queja' => 0,
-					'Reclamo' => 0,
-					'Denuncia' => 0,
-					'Petición' => 0,
-					'Talleres' => 0,
 					'total_atencion' => 0,
 				];
+	
+				// Inicializar todos los tipos de atención a 0
+				foreach ($tiposAtencion as $tipo) {
+					$resultados[$key][$tipo] = 0;
+				}
 			}
 	
-			
 			// Clasificar los casos en los diferentes tipos de atención
-			switch ($caso->tipo_aten_nombre) {
-				case 'Asesoría':
-					$resultados[$municipioId.$estadoid]['Asesoría'] += $casos;
-					break;
-				case 'Sugerencia':
-					$resultados[$municipioId.$estadoid]['Sugerencia'] += $casos;
-					break;
-				case 'Queja':
-					$resultados[$municipioId.$estadoid]['Queja'] += $casos;
-					break;
-				case 'Reclamo':
-					$resultados[$municipioId.$estadoid]['Reclamo'] += $casos;
-					break;
-				case 'Denuncia':
-					$resultados[$municipioId.$estadoid]['Denuncia'] += $casos;
-					break;
-				case 'Petición':
-					$resultados[$municipioId.$estadoid]['Petición'] += $casos;
-					break;
-				case 'Talleres':
-					$resultados[$municipioId.$estadoid]['Talleres'] += $casos;
-					break;
+			if (in_array($caso->tipo_aten_nombre, $tiposAtencion)) {
+				$resultados[$key][$caso->tipo_aten_nombre] += $casosCount;
 			}
 	
 			// Actualizar el total de atenciones
-			$resultados[$municipioId.$estadoid]['total_atencion'] += $casos;
+			$resultados[$key]['total_atencion'] += $casosCount;
 		}
 	
 		// Retornar el array de resultados en formato JSON
 		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
-
-		
 	}
 
 
+	// public function Listar_Casos_Estados()
+	// {
+	// 	$model = new Casos();
+	// 	$casos = $model->Listar_Casos_Estados();  
+		
+	// 	// Inicializar un array para almacenar los resultados
+	// 	$resultados = [];
+	
+	// 	// Procesar cada caso
+	// 	foreach ($casos as $caso) {
+	// 		// Verificar que el caso tenga las propiedades necesarias
+	// 		if (!isset($caso->estadoid, $caso->estadonom, $caso->casos, $caso->tipo_aten_nombre)) {
+	// 			continue; // O manejar el error de otra manera
+	// 		}
+	// 		$estado = $caso->estadonom;
+	// 		$estadoid = $caso->estadoid;
+	// 		$casos = (int)$caso->casos;
+	
+	// 		// Inicializar el municipio si no existe en el array de resultados
+	// 		if (!isset($resultados[$estadoid])) {
+	// 			$resultados[$estadoid] = [
+	// 				'ID_estado' => $estadoid,
+	// 				'estado' => $estado,
+	// 				'Asesoría' => 0,
+	// 				'Sugerencia' => 0,
+	// 				'Queja' => 0,
+	// 				'Reclamo' => 0,
+	// 				'Denuncia' => 0,
+	// 				'Petición' => 0,
+	// 				'Talleres' => 0,
+	// 				'total_atencion' => 0,
+	// 			];
+	// 		}
+	// 		// Clasificar los casos en los diferentes tipos de atención
+	// 		switch ($caso->tipo_aten_nombre) {
+	// 			case 'Asesoría':
+	// 				$resultados[$estadoid]['Asesoría'] += $casos;
+	// 				break;
+	// 			case 'Sugerencia':
+	// 				$resultados[$estadoid]['Sugerencia'] += $casos;
+	// 				break;
+	// 			case 'Queja':
+	// 				$resultados[$estadoid]['Queja'] += $casos;
+	// 				break;
+	// 			case 'Reclamo':
+	// 				$resultados[$estadoid]['Reclamo'] += $casos;
+	// 				break;
+	// 			case 'Denuncia':
+	// 				$resultados[$estadoid]['Denuncia'] += $casos;
+	// 				break;
+	// 			case 'Petición':
+	// 				$resultados[$estadoid]['Petición'] += $casos;
+	// 				break;
+	// 			case 'Talleres':
+	// 				$resultados[$estadoid]['Talleres'] += $casos;
+	// 				break;
+	// 		}
+	
+	// 		// Actualizar el total de atenciones
+	// 		$resultados[$estadoid]['total_atencion'] += $casos;
+	// 	}
+	
+	// 	// Retornar el array de resultados en formato JSON
+	// 	header('Content-Type: application/json; charset=utf-8');
+	// 	echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
 
+		
+	// }
 	public function Listar_Casos_Estados()
 	{
 		$model = new Casos();
@@ -1187,68 +1302,56 @@ class Reporte_Atencion_Controler extends BaseController
 		
 		// Inicializar un array para almacenar los resultados
 		$resultados = [];
-	
+		
 		// Procesar cada caso
 		foreach ($casos as $caso) {
 			// Verificar que el caso tenga las propiedades necesarias
 			if (!isset($caso->estadoid, $caso->estadonom, $caso->casos, $caso->tipo_aten_nombre)) {
 				continue; // O manejar el error de otra manera
 			}
-			$estado = $caso->estadonom;
+			
 			$estadoid = $caso->estadoid;
-			$casos = (int)$caso->casos;
+			$estado = $caso->estadonom;
+			$casosCount = (int)$caso->casos;
+			$tipoAtencion = $caso->tipo_aten_nombre;
 	
-			// Inicializar el municipio si no existe en el array de resultados
+			// Inicializar el estado si no existe en el array de resultados
 			if (!isset($resultados[$estadoid])) {
 				$resultados[$estadoid] = [
 					'ID_estado' => $estadoid,
 					'estado' => $estado,
-					'Asesoría' => 0,
-					'Sugerencia' => 0,
-					'Queja' => 0,
-					'Reclamo' => 0,
-					'Denuncia' => 0,
-					'Petición' => 0,
-					'Talleres' => 0,
 					'total_atencion' => 0,
 				];
 			}
-			// Clasificar los casos en los diferentes tipos de atención
-			switch ($caso->tipo_aten_nombre) {
-				case 'Asesoría':
-					$resultados[$estadoid]['Asesoría'] += $casos;
-					break;
-				case 'Sugerencia':
-					$resultados[$estadoid]['Sugerencia'] += $casos;
-					break;
-				case 'Queja':
-					$resultados[$estadoid]['Queja'] += $casos;
-					break;
-				case 'Reclamo':
-					$resultados[$estadoid]['Reclamo'] += $casos;
-					break;
-				case 'Denuncia':
-					$resultados[$estadoid]['Denuncia'] += $casos;
-					break;
-				case 'Petición':
-					$resultados[$estadoid]['Petición'] += $casos;
-					break;
-				case 'Talleres':
-					$resultados[$estadoid]['Talleres'] += $casos;
-					break;
+	
+			// Inicializar el tipo de atención si no existe
+			if (!isset($resultados[$estadoid][$tipoAtencion])) {
+				$resultados[$estadoid][$tipoAtencion] = 0;
 			}
 	
+			// Clasificar los casos en los diferentes tipos de atención
+			$resultados[$estadoid][$tipoAtencion] += $casosCount;
+	
 			// Actualizar el total de atenciones
-			$resultados[$estadoid]['total_atencion'] += $casos;
+			$resultados[$estadoid]['total_atencion'] += $casosCount;
+		}
+	
+		// Asegurarse de que todos los tipos de atención estén presentes con valor 0
+		foreach ($resultados as $estadoid => $data) {
+			// Aquí puedes definir los tipos de atención que deseas asegurar que existan
+			$tiposAtencion = ['Asesoría', 'Sugerencia', 'Queja', 'Reclamo', 'Denuncia', 'Petición', 'Talleres'];
+	
+			foreach ($tiposAtencion as $tipo) {
+				if (!isset($resultados[$estadoid][$tipo])) {
+					$resultados[$estadoid][$tipo] = 0;
+				}
+			}
 		}
 	
 		// Retornar el array de resultados en formato JSON
 		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
-
-		
 	}
-
 
 	public function vista_estadisticas2()
 	{

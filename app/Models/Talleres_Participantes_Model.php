@@ -63,26 +63,6 @@ class Talleres_Participantes_Model extends Model
          if ($id_parroquia != '0' && $id_parroquia != 'null') {
             $builder->where("p.parroquia", $id_parroquia);
         }
-
-
-
-
-
-        // if ($tipo_pi != '0' && $tipo_pi != 'null') {
-        //     $builder->where("tpc.idtipropint", $tipo_pi);
-        // }
-
-
-
-
-
-
-
-
-
-
-       
-
         
         $resultado = $builder->get()->getResult();
         return $resultado;

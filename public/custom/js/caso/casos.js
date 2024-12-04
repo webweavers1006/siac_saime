@@ -2288,7 +2288,7 @@ $("#red-social").on('change', function() {
 });
 
 function llenar_Tipo_Atencion_filtros(e, id_red_social, id_tipo_atencion) {
-    let url = "/buscar_via_tipo_atenecion/" + id_red_social;
+    let url = "/buscar_via_tipo_atencion/" + id_red_social;
     $.ajax({
         url: url,
         method: "GET",

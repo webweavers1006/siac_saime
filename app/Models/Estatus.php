@@ -22,26 +22,29 @@ class Estatus extends BaseModel{
     }
 
 
-	public function Listar_Tipo_Estatus()
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT e.idest,e.estnom,case when e.borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
-        $strQuery .= "FROM public.sgc_estatus as e  ";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+	// Método para listar tipos de estatus
+public function Listar_Tipo_Estatus()
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_estatus AS e');
+    $builder->select('e.idest, e.estnom, CASE WHEN e.borrado = \'f\' THEN \'Activo\' ELSE \'Inactivo\' END AS borrado');
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 
+// Método para listar tipos de atención con filtro
+public function Listar_Tipo_Atencion_filtro()
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_estatus AS e');
+    $builder->select('e.tipo_aten_id, e.tipo_aten_nombre, CASE WHEN e.borrado = \'f\' THEN \'Activo\' ELSE \'Inactivo\' END AS borrado');
+    $builder->where('e.borrado', false);
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 
-    public function Listar_Tipo_Atencion_filtro()
-    {
-        $db      = \Config\Database::connect();
-        $strQuery = "SELECT e.tipo_aten_id,e.tipo_aten_nombre,case when e.borrado='f' then 'Activo' else 'Inactivo' end as borrado  ";
-        $strQuery .= "FROM public.sgc_estatus as e WHERE e.borrado='false' ";
-        $query = $db->query($strQuery);
-        $resultado = $query->getResult();
-        return $resultado;
-    }
 
 	//Metodo para obtener los estatus de los casos
 	public function estatusCaso(){
