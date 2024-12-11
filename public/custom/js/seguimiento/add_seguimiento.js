@@ -381,14 +381,14 @@ function listar_talleres_participantes(id_caso) {
 
                                     },
                                     {
-                                        margin: [-1030, 70, -25, 0],
+                                        margin: [-1234, 70, -25, 0],
                                         color: '#4c8aa0', 
                                         fontSize: 18,
                                         alignment: 'center',
                                         text: 'Nombre de la Actividad : ',
                                     },
                                     {
-                                        margin: [-500, 70, -25, 0], 
+                                        margin: [-640, 70, -25, 0], 
                                         color: '#000000', 
                                         fontSize: 18,
                                         alignment: 'center',

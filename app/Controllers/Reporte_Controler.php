@@ -48,11 +48,12 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles
-	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
+	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
 	{
 		
+		
 		$model = new Casos();
-		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$id_municipio,$edad_min,$edad_max,$detalle_atencion);
+		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion);
 		
 		
 		if (empty($query)) {
@@ -118,11 +119,11 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles POR USUARIO
-	public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_estado = 0,$edad_min=null,$edad_max=null)
+	public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null)
 	{
 		$model = new Casos();
 		$idusuopr   = $this->session->get('iduser');
-		$query = $model->reporte_operador($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $idusuopr, $via_atencion, $direcciones_caso, $tipo_beneficiario, $usuarios,$id_estado,$edad_min,$edad_max);
+		$query = $model->reporte_operador($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $idusuopr, $via_atencion, $direcciones_caso, $tipo_beneficiario, $usuarios,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max);
 		if (empty($query)) {
 			$casos = [];
 		} else {

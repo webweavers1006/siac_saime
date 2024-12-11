@@ -24,7 +24,7 @@ class PdfController extends BaseController
 	{
 		$model = new Pdf_Model();
 		$model_denuncias = new Casos_denuncias_Model();
-		$query_tipo_atencion = $model->obtenerCasos($idcaso);
+		$query_tipo_atencion = $model->obtenerCasos($idcaso);		
 		$query_pdf = $model->obtenerCasos($idcaso);
 		foreach ($query_tipo_atencion as $tipoatencion) {
 			$datos_tipoatencion['id_tipo_atencion']         = $tipoatencion->id_tipo_atencion;

@@ -66,6 +66,8 @@ class Pdf_Model extends BaseModel
         $builder->orderBy('a.idcaso', 'DESC');
     
         $query = $builder->get();
-        return $query->getResultArray();
+        $resultado = $query->getResult();
+       // echo $db->getLastQuery(); 
+        return $resultado;
     }
 }

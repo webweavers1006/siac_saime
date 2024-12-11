@@ -71,20 +71,15 @@
 
                         </div>
 
-                       
-                       
-                       
-
-                      
                         <div class="row mt-3">
-                            <div class="col-md-3">
+                        <div class="col-lg-4 col-sm-4 col-md-4">
                                 <label for="tipo-pi">Tipo de Propiedad Intelectual:</label>
                                 <select class="form-control" id="tipo-pi" name="tipo-pi">
                                     <option value="0" selected disabled>seleccione</option>
                                 </select>
                             </div>
                           
-                            <div class="col-md-2">
+                            <div class="col-lg-4 col-sm-4 col-md-4">
                                 <label for="estatus">Estatus:</label>
                                 <select class="form-control" id="estatus" name="estatus">
                                     <option value="0" selected disabled>seleccione</option>
@@ -94,27 +89,39 @@
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-lg-4 col-sm-4 col-md-4">
                                 <label for="office">Dirección Administrativa:</label>
                                 <select class="form-control" id="direcciones_caso" name="direcciones_caso">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <?php echo $direcciones; ?>
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
+                            <div class="col-lg-4 col-sm-4 col-md-4">
+                                <label for="pais-caso">País</label>
+                                <select id="pais-caso"  name=" pais-caso" class="form-control">
+                                <option value="1" selected >Venezuela</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-4 col-sm-4 col-md-4">
                             <label for="estado-caso">Estado</label>
                             <select id="estado-caso" name="estado-caso" class="form-control">
                                 <option value="0" disabled>Seleccione Estado</option>
                             </select>
                         </div>
-                        <div class="col-4">
+                        <div class="col-lg-4 col-sm-4 col-md-4">
                             <label for="municipio-caso">Municipio</label>
                             <select id="municipio-caso" name="municipio-caso" class="form-control">
                             <option value="0" selected >Seleccione Municipio</option>
                             </select>
                         </div>
                         
-                            
+                        <div class="col-4">
+                            <label for="parroquia-caso">Parroquia</label>
+                            <select id="parroquia-caso" name="parroquia-caso" class="form-control">
+                            <option value="0">Seleccione Parroquia</option>
+                            </select>
+                        </div>  
                    
                        
                        <div class="col-md-5">

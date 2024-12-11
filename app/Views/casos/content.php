@@ -236,8 +236,8 @@ $session = session();
 
                         <div class="col-4">
                           <label for="pais-caso">País</label>
-                          <select id="pais-caso" disabled="di" name="pais-caso" class="form-control">
-                            <option value="1" selected disabled>Venezuela</option>
+                          <select id="pais-caso"  name="pais-caso" class="form-control">
+                            <option value="1" selected >Venezuela</option>
                           </select>
                         </div>
                         <div class="col-4">
@@ -401,7 +401,7 @@ $session = session();
     </div>
 
     <!--/.Remitir caso-->
-    <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3) { ?>
+    <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
       <div class="modal fade" id="remitir_caso">
         <div class="modal-dialog  modal-dialog-centered modal-md">
           <div class="modal-content">

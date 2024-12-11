@@ -296,7 +296,7 @@ to {
           </div>
           
           
-          <div class="col-lg-3 col-sm-3 col-md-3">
+          <div class="col-lg-3 col-sm-3 col-md-3" style="display: none;">
               <label for="apellido-persona">Profesión</label>
               <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
           </div>
@@ -377,8 +377,8 @@ to {
 
           <div class="col-4">
               <label for="pais-caso">País</label>
-              <select id="pais-caso"  disabled="disabled"name=" pais-caso" class="form-control">
-              <option value="1" selected disabled>Venezuela</option>
+              <select id="pais-caso"  name=" pais-caso" class="form-control">
+              <option value="1" selected >Venezuela</option>
               </select>
           </div>
           <div class="col-4">

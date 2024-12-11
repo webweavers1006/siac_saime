@@ -179,7 +179,10 @@ public function editViaAtencion()
 					// BUSCAMOS SI YA EXISTE ESA TIPO DE ATENCION PARA ESTA VIA DE ATENCION 
 					$query_hijos_existentes = $model_via_atencion->hijos_existentes($datos2);
 					$hijos_a_activar = []; // Inicializamos el array para almacenar los hijos a activar
+					$tipos_existentes = []; // Para almacenar los tipos de atención existentes
+
 					foreach ($query_hijos_existentes as $existentes) {
+						$tipos_existentes[] = $existentes->tipo_atencion_id; // Guardamos el tipo de atención existente
 						$borrado = $existentes->borrado;
 						if ($borrado === 't') {
 							// Si está borrado, lo agregamos a la lista de hijos a activar
@@ -189,39 +192,27 @@ public function editViaAtencion()
 							];
 						}
 					}
+
 					// Activamos los hijos asociados si hay alguno que activar
 					if (!empty($hijos_a_activar)) {
 						$model_via_atencion->Activar_hijos_Asociadas($hijos_a_activar);
 					}
-					// Ahora, verificamos si hay registros nuevos para insertar
-					foreach ($datos2 as $nuevo_dato) 
-					{
-						$existe = false;
 
-						foreach ($query_hijos_existentes as $existentes) 
-						{
-							if ($existentes->tipo_atencion_id == $nuevo_dato['tipo_atencion_id']) {
-								// Si existe y no está borrado, lo ignoramos
-								if ($existentes->borrado === 'f') {
-									$existe = true;
-									break;
-								}
-							}
-						}
-						// Si no existe, lo agregamos
-						if (!$existe) 
-						{
+					// Ahora, verificamos si hay registros nuevos para insertar
+					foreach ($datos2 as $nuevo_dato) {
+						// Solo insertamos si no existe en los tipos existentes
+						if (!in_array($nuevo_dato['tipo_atencion_id'], $tipos_existentes)) {
 							$results[] = $model_via_atencion->agregar([$nuevo_dato]);
 						}
 					}
+
 					// Si hay elementos eliminados, los eliminamos
-					if (!empty($deletedElements))
-					{
+					if (!empty($deletedElements)) {
 						$model_via_atencion->Eliminar_hijos_Asociadas($deletedElements, $ViaAtencionId);
 					}
+
 					$mensaje = 1;
 					return json_encode($mensaje);
-									
 				}
 								
 		}		

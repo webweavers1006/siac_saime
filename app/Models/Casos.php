@@ -12,7 +12,7 @@ class Casos extends BaseModel
         $builder = $db->table('sgc_casos as a');
         $builder->distinct();
         $builder->select('d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario, a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
-        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('a.pais,a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
         $builder->select('a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
@@ -293,8 +293,10 @@ class Casos extends BaseModel
 
      //Metodo para obtener todos los casos para el reporte consolidado 
 
-     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0, $id_estado = 0, $id_municipio = 0, $edad_min = null, $edad_max = null, $detalle_atencion = 0)
+     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null, $edad_min = null, $edad_max = null, $detalle_atencion = 0)
      {
+
+        
          $db = \Config\Database::connect();
          $builder = $db->table('sgc_casos as a');
          $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
@@ -322,9 +324,11 @@ class Casos extends BaseModel
          $builder->orWhere('caso_r.vigencia IS NULL');
          $builder->groupEnd();
          if ($desde != 'null' && $hasta != 'null') {
-             $builder->where('caso_r.casofec >=', $desde);
-             $builder->where('caso_r.casofec <=', $hasta);
+             $builder->where('a.casofec >=', $desde);
+             $builder->where('a.casofec <=', $hasta);
          }
+
+        
 
          if ($edad_min != 'null' && $edad_max != 'null') {
             $builder->where('edad >=', $edad_min);
@@ -348,6 +352,10 @@ class Casos extends BaseModel
         
         if ($direcciones_caso != 'null') {
             $builder->where('caso_r.direccion_id', $direcciones_caso);
+            if ($desde != 'null' && $hasta != 'null') {
+                $builder->where('caso_r.fecha >=', $desde);
+                $builder->where('caso_r.fecha <=', $hasta);
+            }
         }
         
         if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
@@ -362,13 +370,21 @@ class Casos extends BaseModel
             $builder->where('a.idest', $estatus);
         }
         
-        if ($id_estado != '0' && $id_estado != 'null') {
+       
+        if ($id_pais != '0' && $id_pais != 'null') {
+            $builder->where('a.pais', $id_pais);
+        }
+        if ($id_estado != '0' && $id_estado != 'null'&& $id_estado != '26') {
             $builder->where('a.estadoid', $id_estado);
         }
-        
-        if ($id_municipio != '0' && $id_municipio != 'null') {
+        if ($id_municipio != '0' && $id_municipio != 'null' && $id_municipio != '336') {
             $builder->where('a.municipioid', $id_municipio);
         }
+
+        if ($id_parroquia != '0' && $id_parroquia != 'null'&& $id_parroquia != '1135') {
+            $builder->where('a.parroquiaid', $id_parroquia);
+        }
+
         
         $builder->orderBy('a.idcaso', 'desc');
         $query = $builder->get();
@@ -377,7 +393,7 @@ class Casos extends BaseModel
         return $resultado;
     }
         
-  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_estado=0,$edad_min=null,$edad_max=null)
+  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
@@ -410,8 +426,8 @@ class Casos extends BaseModel
             $builder->where('u_ope.idusuopr', $usuarios);
         }
         if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('casofec >=', $desde);
-            $builder->where('casofec <=', $hasta);
+            $builder->where('a.casofec >=', $desde);
+            $builder->where('a.casofec <=', $hasta);
         }
         if ($edad_min != 'null' && $edad_max != 'null') {
             $builder->where('edad >=', $edad_min);
@@ -431,13 +447,32 @@ class Casos extends BaseModel
         }
         if ($direcciones_caso != 'null') {
             $builder->where('caso_r.direccion_id', $direcciones_caso);
+            if ($desde != 'null' && $hasta != 'null') {
+                $builder->where('caso_r.fecha >=', $desde);
+                $builder->where('caso_r.fecha <=', $hasta);
+            }
         }
         if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
             $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
         }
-        if ($id_estado != '0' && $id_estado != 'null') {
+
+
+
+        if ($id_pais != '0' && $id_pais != 'null') {
+            $builder->where('a.pais', $id_pais);
+        }
+        if ($id_estado != '0' && $id_estado != 'null'&& $id_estado != '26') {
             $builder->where('a.estadoid', $id_estado);
         }
+        if ($id_municipio != '0' && $id_municipio != 'null' && $id_municipio != '336') {
+            $builder->where('a.municipioid', $id_municipio);
+        }
+
+        if ($id_parroquia != '0' && $id_parroquia != 'null'&& $id_parroquia != '1135') {
+            $builder->where('a.parroquiaid', $id_parroquia);
+        }
+
+
         $builder->orderBy('a.idcaso', 'desc');
         $query = $builder->get();
         $resultado = $query->getResult();

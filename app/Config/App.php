@@ -23,8 +23,9 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'http://siac_v2.com/';
+	//  public $baseURL = 'http://siac_v2.com/';
 
+	public $baseURL = 'http://10.100.2.94/';
 	/*
 	|--------------------------------------------------------------------------
 	| Index File

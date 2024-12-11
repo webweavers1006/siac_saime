@@ -5,6 +5,7 @@ $(function() {
    
      llenar_Propiedad_Intelectual(Event);
      llenar_Estados(Event);
+     llenar_pais(Event);
      llenar_Red_social(Event);
      llenar_Entes_asdcritos(Event);
      llenar_Tipo_Beneficiarios(Event);
@@ -178,61 +179,106 @@ $(function() {
      });
  }
  
- //FUNCION PARA LLENAR EL COMBO ESTADOS
- function llenar_Estados(e, id) {
-     e.preventDefault;
-     url = "/llenar_Estados";
-     $.ajax({
-         url: url,
-         method: "GET",
-         dataType: "JSON",
-         beforeSend: function(data) {},
-         success: function(data) {
-             if (data.length >= 1) {
-                 $("#estado-caso").empty();
-                 $("#estado-caso").append(
-                     "<option value=0  selected disabled>Seleccione</option>"
-                 );
-                 if (id === undefined) {
-                     $.each(data, function(i, item) {
-                         //console.log(data)
-                         $("#estado-caso").append(
-                             "<option value=" +
-                             item.estadoid +
-                             ">" +
-                             item.estadonom +
-                             "</option>"
-                         );
-                     });
-                 } else {
-                     $.each(data, function(i, item) {
-                         if (item.id === id) {
-                             $("#estado-caso").append(
-                                 "<option value=" +
-                                 item.estadoid +
-                                 " selected>" +
-                                 item.estadonom +
-                                 "</option>"
-                             );
-                         } else {
-                             $("#estado-caso").append(
-                                 "<option value=" +
-                                 item.estadoid +
-                                 ">" +
-                                 item.estadonom +
-                                 "</option>"
-                             );
-                         }
-                     });
-                 }
-             }
-         },
-         error: function(xhr, status, errorThrown) {
-             alert(xhr.status);
-             alert(errorThrown);
-         },
-     });
- }
+ // FUNCION PARA LLENAR EL COMBO ESTADOS
+function llenar_Estados(e, id) {
+    const url = "/llenar_Estados"; // Usar const para variables que no cambian
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {
+            // Puedes agregar un loader o alguna indicación de que se está cargando
+        },
+        success: function(data) {
+            console.log(data);
+          
+            if (data.length >= 1) {
+                $("#estado-caso").empty(); // Limpiar el combo
+                $("#estado-caso").append(
+                    "<option value='0' selected disabled>Seleccione</option>"
+                );
+                $.each(data, function(i, item) {
+                    // Agregar las opciones al combo
+                    if (id === undefined) {
+                        $("#estado-caso").append(
+                            "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
+                        );
+                    } else {
+                       
+                        if (item.estadoid === id) {
+                            $("#estado-caso").append(
+                                "<option value='" + item.estadoid + "' selected>" + item.estadonom + "</option>"
+                            );
+                        } else {
+                            $("#estado-caso").append(
+                                "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
+                            );
+                        }
+                    }
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            alert("Error: " + xhr.status + " - " + errorThrown);
+        },
+    });
+}
+
+//FUNCION PARA LLENAR EL COMBO PAIS
+function llenar_pais(e, id) {
+    e.preventDefault;
+    url = "/llenar_pais";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $("#pais-caso").empty();
+               
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //console.log(data)
+                        $("#pais-caso").append(
+                            "<option value=" +
+                            item.paisid +
+                            ">" +
+                            item.paisnom +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id === id) {
+                            $("#pais-caso").append(
+                                "<option value=" +
+                                item.paisid +
+                                " selected>" +
+                                item.paisnom +
+                                "</option>"
+                            );
+                        } else {
+                            $("#pais-caso").append(
+                                "<option value=" +
+                                item.paisid +
+                                ">" +
+                                item.paisnom +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            alert(xhr.status);
+            alert(errorThrown);
+        },
+    });
+}
+
+
  
  //FUNCION PARA LLENAR EL COMBO TIPO DE PROPIEDAD INTELECTUAL
  function llenar_Propiedad_Intelectual(e, id) {
@@ -293,7 +339,7 @@ $(function() {
 // Función para llenar el combo tipo de atención usuario con formación
 
 function llenar_Tipo_Atencion(e, id_red_social) {
-    let url = "/buscar_via_tipo_atenecion/" + id_red_social;
+    let url = "/buscar_via_tipo_atencion/" + id_red_social;
     $.ajax({
         url: url,
         method: "GET",
@@ -434,6 +480,117 @@ $("#tipo-atencion-usu").on('change', function(e) {
     llenar_detalle_atencion(e, id_tipo_atencion);
 
 });
+
+
+$("#pais-caso").on('change', function() {
+
+    $("#pais-caso").removeClass('is-invalid');
+    var pais = $('#pais-caso').val();  
+    if (pais != 1) 
+    {
+        llenar_Estados(Event, '26'); 
+        $("#municipio-caso").val('336');
+        $("#parroquia-caso").val('1135');
+       
+        $("#estado-caso").prop('disabled', true);
+        $("#municipio-caso").prop('disabled', true);
+        $("#parroquia-caso").prop('disabled', true);
+
+        let datos_m = {
+            id_estado: 26,
+        };
+
+        $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos_m)),
+            },
+        })
+        .then((response) => {
+            $("#municipio-caso").html(response.data);
+
+            // Cargar parroquias solo si hay municipios
+            let mun = $("#municipio-caso").val();
+            if (mun != 0) {
+                let datos_p = {
+                    id_municipio: mun,
+                };
+                return $.ajax({
+                    url: "/parroquias",
+                    method: "POST",
+                    dataType: "JSON",
+                    data: {
+                        data: btoa(JSON.stringify(datos_p)),
+                    },
+                });
+            }
+        })
+        .then((response) => {
+            $("#parroquia-caso").html(response.data);
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar datos", "error");
+        });
+        
+    } 
+    else
+    {
+        // Si el país es 1, restablecer y deshabilitar selectores
+
+        $("#estado-caso").val('0').prop('disabled', false); // Restablecer y deshabilitar
+        $("#municipio-caso").val('0').prop('disabled', false); // Restablecer y deshabilitar
+        $("#parroquia-caso").val('0').prop('disabled', false); // Restablecer y deshabilitar
+        llenar_Estados(Event, '1'); 
+        $("#municipio-caso").val('1');
+        $("#parroquia-caso").val('1');
+
+        let datos_m = {
+            id_estado: 1,
+        };
+
+        $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos_m)),
+            },
+        })
+        .then((response) => {
+            $("#municipio-caso").html(response.data);
+
+            // Cargar parroquias solo si hay municipios
+            let mun = $("#municipio-caso").val();
+            if (mun != 0) {
+                let datos_p = {
+                    id_municipio: mun,
+                };
+                return $.ajax({
+                    url: "/parroquias",
+                    method: "POST",
+                    dataType: "JSON",
+                    data: {
+                        data: btoa(JSON.stringify(datos_p)),
+                    },
+                });
+            }
+        })
+        .then((response) => {
+            $("#parroquia-caso").html(response.data);
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar datos", "error");
+        });
+
+    }
+});
+
+
+
+
+
 
 
 function  llenar_detalle_atencion(e,id_tipo_atencion)

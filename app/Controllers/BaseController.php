@@ -50,6 +50,7 @@ class BaseController extends Controller
 			'172.16.0.39', 
 			'186.167.8.181', 
 			'172.16.0.186', 
+			'10.100.2.94',
 		];
 	
 		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

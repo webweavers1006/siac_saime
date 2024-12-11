@@ -86,6 +86,7 @@ $routes->setAutoRoute(false);
      $routes->get('/casosActivos', "Casos_Controler::listadoCasosActivos");
      $routes->get('/historicoCasos', "Casos_Controler::historicoCasos");
      //Rutas para la busqueda de la Division Politico territorial de Venezuela
+     $routes->get('/llenar_pais', "Pais_Controler::llenar_pais");
      $routes->get('/llenar_Estados', "Estados_Controler::listar_Estados");
      $routes->post('/municipios', "Municipios_Controler::listar_Municipios");
      $routes->post('/parroquias', "Municipios_Controler::listar_Parroquias");
@@ -181,10 +182,10 @@ $routes->setAutoRoute(false);
      $routes->get('/enviar_correo_portal/(:any)/(:any)',"Estatus::enviar_correo_portal/$1/$2");
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
-     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15");
+     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
-     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12");
+     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15");
      //RUTAS PARA LAS ESTADISTICAS
      $routes->get('/estadisticas', "Reporte_Controler::vista_estadisticas");
      $routes->get('/estadal/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_estadal/$1/$2");

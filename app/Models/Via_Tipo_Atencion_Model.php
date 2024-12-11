@@ -46,7 +46,7 @@ class Via_Tipo_Atencion_Model extends BaseModel
 			$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
 			$builder->select('vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
 			$builder->where('vt_atencion.via_atencion_id', $viaAtencionId);
-			$builder->where('vt_atencion.tipo_atencion_id', $tipoAtencionId);
+			//$builder->where('vt_atencion.tipo_atencion_id', $tipoAtencionId);
 			$query = $builder->get();
 			$resultado = $query->getResult();
 			return $resultado;

@@ -202,6 +202,7 @@ curl_close($ch);
 			$newCase["idusuopr"]    = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
 			$newCase["estadoid"]    = $datos["state"];
 			$newCase["municipioid"] = $datos["county"];
+			$newCase["pais"] = $datos["country"];
 			$newCase["sexo"] = $datos["sexo"];
 			$newCase["parroquiaid"] = $datos["town"];
 			$newCase["ofiid"]       = $datos["office"];
@@ -426,6 +427,7 @@ curl_close($ch);
 				$newCase["idusuopr"]    = $this->session->get('iduser');
 				$newCase["estadoid"]    = $datos["state"];
 				$newCase["municipioid"] = $datos["county"];
+				$newCase["pais"] = $datos["country"];
 				$newCase["sexo"] = $datos["sexo"];
 				$newCase["parroquiaid"] = $datos["town"];
 				$newCase["ofiid"]       = $datos["office"];
@@ -616,6 +618,7 @@ curl_close($ch);
 	//Vista de carga de un caso
 	public function vercaso($id)
 	{
+	
 		$idrol = (session('userrol'));
 		$casoModel = new Casos();
 		$segModel = new Seguimientos();
@@ -639,7 +642,7 @@ curl_close($ch);
 					$data["estado"] = ucfirst(strtolower($row->estadonom));
 					$data["municipio"] = ucfirst(strtolower($row->municipionom));
 					$data["parroquia"] = ucfirst(strtolower($row->parroquianom));
-					$data["casodesc"] = ucfirst(strtolower($row->casodesc));
+					$data["casodesc"] = ucfirst(mb_strtolower(mb_convert_encoding($row->casodesc, 'UTF-8', 'auto')));
 					$data["correo"] = ucfirst(strtolower($row->correo));
 					$data["fecha_caso"] = $row->casofec;
 					$data["usuario_operador"] = $row->user_name;
@@ -647,7 +650,7 @@ curl_close($ch);
 					$data["direccion"] = $row->direccion;
 					$data["correo_beneficiario"] = $row->correo;
 					$data["id_tipo_atencion"] = $row->id_tipo_atencion;	
-					$data["casodesc"] = ucfirst(strtolower($row->casodesc));	
+					//$data["casodesc"] = ucfirst(strtolower($row->casodesc));	
 					
 					//$idEstatusCaso = $row->idest;
 				}

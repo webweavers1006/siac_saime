@@ -48,13 +48,17 @@ class Red_Social_Model extends BaseModel
     }
     public function listar_Red_Social_filtro()
     {
+
+
         $db = \Config\Database::connect();
-        $builder = $db->table('public.sgc_red_social');
-        $builder->select('red_s_id', 'red_s_nom');
+        $builder = $db->table('sgc_red_social');
+        $builder->select('red_s_id, red_s_nom');
         $builder->where('red_s_borrado', false);
         $builder->where('red_s_id !=', 3);
         $query = $builder->get();
-        return $query->getResult();
+        $resultado = $query->getResult();
+        return $resultado;
+
     }
     
         public function buscar_formacion_red_social($id_red_social = null)

@@ -32,6 +32,7 @@ $(function() {
     llenar_via_atencion(Event);
     llenar_Estados(Event);
     llenar_Tipo_Beneficiarios(Event);
+    llenar_pais(Event);
 });
 
 
@@ -90,7 +91,7 @@ $(function() {
         },
     });
 }
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,id_estado=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado=null) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado=null) {
 
     // Convertir la fecha
     var fechaOriginal = desde;
@@ -256,7 +257,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+ '/' +id_estado+'/'+edad_min+'/'+edad_max,
+            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+ '/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max,
             "type": "GET",
             dataSrc: ''
         },
@@ -474,60 +475,6 @@ function llenar_Tipo_Atencion(e, id) {
 }
 
 
-//FUNCION PARA LLENAR EL COMBO ESTADOS
-function llenar_Estados(e, id) {
-    e.preventDefault;
-    url = "/llenar_Estados";
-    $.ajax({
-        url: url,
-        method: "GET",
-        dataType: "JSON",
-        beforeSend: function(data) {},
-        success: function(data) {
-            if (data.length >= 1) {
-                $("#estado-caso").empty();
-                $("#estado-caso").append(
-                    "<option value=0  selected disabled>Seleccione</option>"
-                );
-                if (id === undefined) {
-                    $.each(data, function(i, item) {
-                        //console.log(data)
-                        $("#estado-caso").append(
-                            "<option value=" +
-                            item.estadoid +
-                            ">" +
-                            item.estadonom +
-                            "</option>"
-                        );
-                    });
-                } else {
-                    $.each(data, function(i, item) {
-                        if (item.id === id) {
-                            $("#estado-caso").append(
-                                "<option value=" +
-                                item.estadoid +
-                                " selected>" +
-                                item.estadonom +
-                                "</option>"
-                            );
-                        } else {
-                            $("#estado-caso").append(
-                                "<option value=" +
-                                item.estadoid +
-                                ">" +
-                                item.estadonom +
-                                "</option>"
-                            );
-                        }
-                    });
-                }
-            }
-        },
-        error: function(xhr, status, errorThrown) {
-         
-        },
-    });
-}
 
 
 $(document).on('click', '.consultar', function(e) {
@@ -541,7 +488,12 @@ $(document).on('click', '.consultar', function(e) {
     let tipo_pi = $('#tipo-pi').val();
     let tipo_atencion_usu = $('#tipo-atencion-usu').val();
     let sexo = $('#sexo').val();
+    
+
+    let id_pais = $('#pais-caso').val();
     let id_estado = $('#estado-caso').val();
+    let id_municipio = $('#municipio-caso').val();
+    let id_parroquia = $('#parroquia-caso').val();
 
     let nombre_propiedad = $('#tipo-pi option:selected').text();
     let nombre_atencion = $('#tipo-atencion-usu option:selected').text();
@@ -583,7 +535,7 @@ $(document).on('click', '.consultar', function(e) {
     }else
     {
     $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,id_estado,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado);
 
     }
 })
@@ -619,4 +571,275 @@ function insertarSaltoDeLinea(texto, longitudMaxima) {
     return textoFormateado.trim(); // Retornar el texto formateado sin espacios al final
 
 }
-//
+
+
+//FUNCION PARA LLENAR EL COMBO PAIS
+function llenar_pais(e, id) {
+    e.preventDefault;
+    url = "/llenar_pais";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $("#pais-caso").empty();
+               
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //console.log(data)
+                        $("#pais-caso").append(
+                            "<option value=" +
+                            item.paisid +
+                            ">" +
+                            item.paisnom +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id === id) {
+                            $("#pais-caso").append(
+                                "<option value=" +
+                                item.paisid +
+                                " selected>" +
+                                item.paisnom +
+                                "</option>"
+                            );
+                        } else {
+                            $("#pais-caso").append(
+                                "<option value=" +
+                                item.paisid +
+                                ">" +
+                                item.paisnom +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            alert(xhr.status);
+            alert(errorThrown);
+        },
+    });
+}
+
+
+// FUNCION PARA LLENAR EL COMBO ESTADOS
+function llenar_Estados(e, id) {
+    const url = "/llenar_Estados"; // Usar const para variables que no cambian
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {
+            // Puedes agregar un loader o alguna indicación de que se está cargando
+        },
+        success: function(data) {
+            console.log(data);
+          
+            if (data.length >= 1) {
+                $("#estado-caso").empty(); // Limpiar el combo
+                $("#estado-caso").append(
+                    "<option value='0' selected disabled>Seleccione</option>"
+                );
+                $.each(data, function(i, item) {
+                    // Agregar las opciones al combo
+                    if (id === undefined) {
+                        $("#estado-caso").append(
+                            "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
+                        );
+                    } else {
+                       
+                        if (item.estadoid === id) {
+                            $("#estado-caso").append(
+                                "<option value='" + item.estadoid + "' selected>" + item.estadonom + "</option>"
+                            );
+                        } else {
+                            $("#estado-caso").append(
+                                "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
+                            );
+                        }
+                    }
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            alert("Error: " + xhr.status + " - " + errorThrown);
+        },
+    });
+}
+
+$("#pais-caso").on('change', function() {
+
+    $("#pais-caso").removeClass('is-invalid');
+    var pais = $('#pais-caso').val();  
+    if (pais != 1) 
+    {
+        llenar_Estados(Event, '26'); 
+        $("#municipio-caso").val('336');
+        $("#parroquia-caso").val('1135');
+       
+        $("#estado-caso").prop('disabled', true);
+        $("#municipio-caso").prop('disabled', true);
+        $("#parroquia-caso").prop('disabled', true);
+
+        let datos_m = {
+            id_estado: 26,
+        };
+
+        $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos_m)),
+            },
+        })
+        .then((response) => {
+            $("#municipio-caso").html(response.data);
+
+            // Cargar parroquias solo si hay municipios
+            let mun = $("#municipio-caso").val();
+            if (mun != 0) {
+                let datos_p = {
+                    id_municipio: mun,
+                };
+                return $.ajax({
+                    url: "/parroquias",
+                    method: "POST",
+                    dataType: "JSON",
+                    data: {
+                        data: btoa(JSON.stringify(datos_p)),
+                    },
+                });
+            }
+        })
+        .then((response) => {
+            $("#parroquia-caso").html(response.data);
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar datos", "error");
+        });
+        
+    } 
+    else
+    {
+        // Si el país es 1, restablecer y habilitar selectores
+        $("#estado-caso").val('0').prop('disabled', false); // Restablecer y habilitar
+        $("#municipio-caso").val('0').prop('disabled', false); // Restablecer y habilitar
+        $("#parroquia-caso").val('0').prop('disabled', false); // Restablecer y habilitar
+        llenar_Estados(Event, '1'); 
+
+        let datos_m = {
+            id_estado: 1,
+        };
+
+        $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos_m)),
+            },
+        })
+        .then((response) => {
+            let opciones = '<option value="0" selected>Seleccione un municipio</option>';
+            opciones += response.data; // Asegúrate de que response.data contenga las opciones en formato HTML
+            $("#municipio-caso").html(opciones);
+
+            // Cargar parroquias solo si hay municipios
+            let mun = $("#municipio-caso").val();
+            if (mun != 0) {
+                let datos_p = {
+                    id_municipio: mun,
+                };
+                return $.ajax({
+                    url: "/parroquias",
+                    method: "POST",
+                    dataType: "JSON",
+                    data: {
+                        data: btoa(JSON.stringify(datos_p)),
+                    },
+                });
+            } else {
+                // Si no hay municipios, restablecer parroquias
+                let opciones2 = '<option value="0" selected>Seleccione una Parroquia</option>';
+                $("#parroquia-caso").html(opciones2);
+                return Promise.reject(); // Para evitar que se ejecute el siguiente then
+            }
+        })
+        .then((response) => {
+            let opciones2 = '<option value="0" selected>Seleccione una Parroquia</option>';
+            opciones2 += response.data; // Asegúrate de que response.data contenga las opciones en formato HTML
+            $("#parroquia-caso").html(opciones2);
+            $("#parroquia-caso").val('0'); // Asegúrate de que "Seleccione una Parroquia" esté seleccionado
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar datos", "error");
+        });
+    }
+});
+
+
+
+
+
+
+//Evento que busca los municipios por estados
+$(document).on("change", "#estado-caso", (e) => {
+    e.preventDefault();
+
+    let datos = {
+        id_estado: $("#estado-caso").val(),
+    };
+    $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos)),
+            },
+        })
+        .then((response) => {
+            // Agregamos el valor "0" seleccionado por defecto
+            let opciones = '<option value="0" selected>Seleccione un municipio</option>';
+            opciones += response.data;
+            $("#municipio-caso").html(opciones);
+
+            let mun = $("#municipio-caso").val();
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Ocurrió un error", "error");
+        });
+});
+
+
+
+//Evento que busca las parroquias por municipio
+$(document).on("change", "#municipio-caso", (e) => {
+    e.preventDefault();
+    let datos = {
+        id_municipio: $("#municipio-caso").val(),
+    };
+    $.ajax({
+            url: "/parroquias",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datos)),
+            },
+        })
+        .then((response) => {
+            let opciones2 = '<option value="0" selected>Seleccione una Parroquia</option>';
+            opciones2 += response.data; // Asegúrate de que response.data contenga las opciones en formato HTML
+            $("#parroquia-caso").html(opciones2);
+            $("#parroquia-caso").val('0'); // Asegúrate de que "Seleccione una Parroquia" esté seleccionado
+        })
+        .catch((request) => {
+            Swal.fire("Error", response.JSONmessage, "Error");
+        });
+});

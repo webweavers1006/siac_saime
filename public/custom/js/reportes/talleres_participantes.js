@@ -159,7 +159,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     text: 'PDF',
                     className: 'btn-xs btn-dark',
                     orientation: 'landscape',
-                    pageSize: 'LETTER',
+                    pageSize: 'A4',
                     header: true,
                     footer: true,
                     download: 'open',
@@ -202,7 +202,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
 
                                     },
                                     {
-                                        margin: [-800, 50, -25, 0],
+                                        margin: [-800, 75, -40, 0],
                                         color: '#4c8aa0',
                                         fontSize: '18',
                                         alignment: 'center',
