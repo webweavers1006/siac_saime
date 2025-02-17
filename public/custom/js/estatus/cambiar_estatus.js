@@ -3,6 +3,7 @@ $(document).on('submit', '#caso-estatus', function(e) {
     let datos = {
         "casestatus": $("#estatus-caso").val(),
         "caseid": $("#id-caso").val(),
+        "env_correo": $("#env_correo").val(),
     }
     $.ajax({
         url: "/cambiarEstatus",

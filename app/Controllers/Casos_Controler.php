@@ -52,12 +52,14 @@ class Casos_Controler extends BaseController
 	public function casos()
 	{
 		
+	
 		$casoModel = new Documentos_casos_Model();
 		if ($this->session->get('logged')) {
 			$direccionesModel = new Ubi_Admini_Model();
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
 			$query = $direccionesModel->listar_direcciones_administrativas();
+			
 			$direccionesopt = '';
 			if (isset($query)) {
 				foreach ($query->getResult() as $row) {
@@ -642,7 +644,8 @@ curl_close($ch);
 					$data["estado"] = ucfirst(strtolower($row->estadonom));
 					$data["municipio"] = ucfirst(strtolower($row->municipionom));
 					$data["parroquia"] = ucfirst(strtolower($row->parroquianom));
-					$data["casodesc"] = ucfirst(mb_strtolower(mb_convert_encoding($row->casodesc, 'UTF-8', 'auto')));
+					//$data["casodesc"] = ucfirst(mb_strtolower(mb_convert_encoding($row->casodesc, 'UTF-8', 'auto')));
+					$data["casodesc"] = mb_strtoupper(mb_convert_encoding($row->casodesc, 'UTF-8', 'auto'));
 					$data["correo"] = ucfirst(strtolower($row->correo));
 					$data["fecha_caso"] = $row->casofec;
 					$data["usuario_operador"] = $row->user_name;
@@ -650,6 +653,7 @@ curl_close($ch);
 					$data["direccion"] = $row->direccion;
 					$data["correo_beneficiario"] = $row->correo;
 					$data["id_tipo_atencion"] = $row->id_tipo_atencion;	
+					$data["env_correo"] = $row->env_correo;	
 					//$data["casodesc"] = ucfirst(strtolower($row->casodesc));	
 					
 					//$idEstatusCaso = $row->idest;
@@ -988,6 +992,7 @@ curl_close($ch);
 		$model = new Casos();
 		if($idrol==1 or  $idrol ==3 or  $idrol ==5)
 		{ 
+		
 			$query = $model->obtenerCasos();
 			
 			

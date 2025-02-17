@@ -22,37 +22,56 @@ class Participantes_Controler extends BaseController
     {
         // Obtenemos los datos del formulario
         $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
-        $id_caso["id_caso"] = $datos["id_caso"];
-        $participantes["solicitudes"] = $datos["solicitudes"];
+        $id_caso = ["id_caso" => $datos["id_caso"]];
+        $participantes = $datos["solicitudes"]; 
+        $ids_insertados = [];
+        // Iteramos sobre cada solicitud de participante
+        foreach ($participantes as $solicitud) {
+            $cedula = $solicitud["cedula"];
+            $query_participante = $model->buscar_participante($cedula);
+            
+            if (empty($query_participante)) 
+            {
+                // Si no existe el participante, lo agregamos
+             
+                $id_insertado = $model->agregar_participante($solicitud); 
+                if ($id_insertado) {
+                    $ids_insertados[] = $id_insertado; // Guardamos el ID del participante insertado
+                }
+            } 
+            else 
+            {
+				
+                // Si el participante ya existe, guardamos su ID
+                $ids_insertados[] = $query_participante[0]->id; 
+				
+            }
+        }
 
-        // Llamar al modelo para agregar participantes y obtener los IDs
-        $ids_insertados = $model->agregar_participantes($participantes);
-		if ($ids_insertados !== false) 
-		{
-			$info_talleres = array();
+        // Si se insertaron o encontraron participantes, procedemos a agregar a los talleres
+        if (!empty($ids_insertados)) 
+        {
+            $info_talleres = array();
 
-			foreach ($ids_insertados as $id_participante) {
-				$info_talleres[] = array(
-					"id_caso" => $id_caso,
-					"participante_id" => $id_participante
-					
-				);
-			}
-			$query_agregar_participantes_talleres = $model->agregar_participantes_talleres($info_talleres);
+            foreach ($ids_insertados as $id_participante) {
+                $info_talleres[] = array(
+                    "id_caso" => $id_caso["id_caso"], // Cambié para acceder correctamente al id_caso
+                    "participante_id" => $id_participante
+                );
+            }
 
 			
-			if ($query_agregar_participantes_talleres) {
-				return json_encode(['status' => 1, 'message' => 'Registro Exitoso.']);
-			}else{
-				return json_encode(['status' => 404, 'message' => 'Error al insertar participantes.']);
+            $query_agregar_participantes_talleres = $model->agregar_participantes_talleres($info_talleres);
 
-			}
-			
-
+            if ($query_agregar_participantes_talleres) {
+                return json_encode(['status' => 1, 'message' => 'Registro Exitoso.']);
+            } else {
+                return json_encode(['status' => 404, 'message' => 'Error al insertar participantes en talleres.']);
+            }
         } 
         else 
         {
-            return json_encode(['status' => 2, 'message' => 'Error al insertar participantes.']);
+            return json_encode(['status' => 2, 'message' => 'No se insertaron participantes.']);
         }       
     } 
     else 
@@ -120,7 +139,22 @@ public function actualizar_participantes($id_participante)
 		echo json_encode($participantes);
 	}
 
-	
+	/*
+       FUNCION PARA OBTENER LOS PARTICIPANTES EN FUNCION DE LA CEDULA
+    */
+	public function buscar_participante($cedula)
+	{
+		
+		$model = new Participantes_Model();
+		$query = $model->buscar_participante($cedula);
+		
+		if (empty($query)) {
+			$participantes = [];
+		} else {
+			$participantes = $query;
+		}
+		echo json_encode($participantes);
+	}
 
 
 

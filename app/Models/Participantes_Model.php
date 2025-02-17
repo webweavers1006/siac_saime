@@ -7,40 +7,37 @@ use CodeIgniter\Model;
 
 class Participantes_Model extends Model
 {
-    public function agregar_participantes($participantes)
+    public function agregar_participante($participantes)
     {
-
-        
         $ids_insertados = [];
         $builder = $this->db->table('sgc_participantes'); // Asegúrate de que este sea el nombre correcto de tu tabla
-        foreach ($participantes['solicitudes'] as $dato) {
-            $query = $builder->insert($dato);
-            if ($query) {
-                $ids_insertados[] = $this->db->insertID(); 
-            } else {
-                return false; 
-            }
+        $query = $builder->insert($participantes);
+        if ($query) {
+            $ids_insertados[] = $this->db->insertID(); 
+        } else {
+            return false; 
         }
+    
         return $ids_insertados; 
     }
 
-
-    public function agregar_participantes_talleres($info_talleres)
-    {
-        $builder = $this->db->table('sgc_talleres_participantes');
-        try {
-            foreach ($info_talleres as $dato) {
-                $builder->insert([
-                    'id_caso' => $dato['id_caso']['id_caso'],
-                    'participante_id' => $dato['participante_id'] 
-                ]);
-            }
-            return true; 
-        } catch (\Exception $e) {
-           
-            return false; 
+   public function agregar_participantes_talleres($info_talleres)
+{
+    $builder = $this->db->table('sgc_talleres_participantes');
+    try {
+        foreach ($info_talleres as $dato) {
+            $builder->insert([
+                'id_caso' => $dato['id_caso'], // Cambié para acceder directamente al id_caso
+                'participante_id' => $dato['participante_id'] 
+            ]);
         }
+        return true; 
+    } catch (\Exception $e) {
+        // Registra el error para depuración
+        error_log('Error al insertar participantes en talleres: ' . $e->getMessage());
+        return false; 
     }
+}
     
 
 
@@ -69,8 +66,7 @@ class Participantes_Model extends Model
 
 
 
-    
- 
+
 
     public function editar_participante($participante, $id_participante)
 {
@@ -82,5 +78,20 @@ class Participantes_Model extends Model
     return $success;
     
 }
+
+public function buscar_participante($cedula)
+    {
+        $db = \Config\Database::connect();
+        $builder = $this->db->table('sgc_participantes p');
+        $builder->select("p.id,p.nombre,p.apellido,p.cedula,p.nacionalidad,p.tipo_beneficiario,p.edad,p.pais,p.estado,p.municipio "); 
+        $builder->select("p.parroquia, p.telefono, p.sexo");
+        $builder->where(['p.cedula' => $cedula]);
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        //echo $db->getLastQuery(); 
+        return $resultado;
+    }
+
+
 
 }

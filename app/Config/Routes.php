@@ -221,6 +221,7 @@ $routes->setAutoRoute(false);
      $routes->POST('/agregar_participantes', 'Participantes_Controler::agregar_participantes'); 
      $routes->POST('/actualizar_participantes/(:any)', 'Participantes_Controler::actualizar_participantes/$1'); 
      $routes->get('/listar_participantes/(:any)', "Participantes_Controler::listar_participantes/$1");
+     $routes->get('/buscar_participante/(:any)', "Participantes_Controler::buscar_participante/$1");
      $routes->get('/reporte_talleres', "Participantes_Controler::reporte_talleres");
      
     

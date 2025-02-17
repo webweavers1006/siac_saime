@@ -868,7 +868,7 @@ $("#pais-caso").on('change', function() {
         $("#estado-caso").val('0').prop('disabled', false); // Restablecer y habilitar
         $("#municipio-caso").val('0').prop('disabled', false); // Restablecer y habilitar
         $("#parroquia-caso").val('0').prop('disabled', false); // Restablecer y habilitar
-        llenar_Estados(Event, '1'); 
+        llenar_Estados(Event); 
 
         let datos_m = {
             id_estado: 1,

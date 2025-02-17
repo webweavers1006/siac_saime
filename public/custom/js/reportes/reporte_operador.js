@@ -54,7 +54,7 @@ $(function() {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                       
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -325,7 +325,7 @@ function llenar_via_atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        
                         $("#via-atencion").append(
                             "<option value=" +
                             item.red_s_id +
@@ -380,7 +380,7 @@ function llenar_Propiedad_Intelectual(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        
                         $("#tipo-pi").append(
                             "<option value=" +
                             item.tipo_prop_id +
@@ -435,7 +435,7 @@ function llenar_Tipo_Atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                       
                         $("#tipo-atencion-usu").append(
                             "<option value=" +
                             item.tipo_aten_id +
@@ -588,7 +588,7 @@ function llenar_pais(e, id) {
                
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                       
                         $("#pais-caso").append(
                             "<option value=" +
                             item.paisid +
@@ -639,8 +639,6 @@ function llenar_Estados(e, id) {
             // Puedes agregar un loader o alguna indicación de que se está cargando
         },
         success: function(data) {
-            console.log(data);
-          
             if (data.length >= 1) {
                 $("#estado-caso").empty(); // Limpiar el combo
                 $("#estado-caso").append(
@@ -679,7 +677,7 @@ $("#pais-caso").on('change', function() {
     var pais = $('#pais-caso').val();  
     if (pais != 1) 
     {
-        llenar_Estados(Event, '26'); 
+        llenar_Estados(Event); 
         $("#municipio-caso").val('336');
         $("#parroquia-caso").val('1135');
        

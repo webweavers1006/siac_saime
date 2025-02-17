@@ -342,40 +342,46 @@ $userdata = $session->get();
 
  
                <?php
-                  if (isset($userdata['permisos']['permisos']) && in_array('requerimientos.read', $userdata['permisos']['permisos'])) {
-                      echo '<li class="nav-item">
-                              <a href="' . base_url() . '/vista_audiencias" class="nav-link">
-                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                  <p>Listado</p>
-                              </a>
-                            </li>';
-                  } else {
-                      // No se muestra nada
-                  }
+                  if (isset($userdata['permisos']['permisos'])) {
+                      // Verificar permisos para "requerimientos.read"
+                      if (in_array('requerimientos.read', $userdata['permisos']['permisos'])) {
+                          echo '<li class="nav-item">
+                                  <a href="' . base_url() . '/vista_audiencias" class="nav-link">
+                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                      <p>Listado</p>
+                                  </a>
+                                </li>';
+                      }
 
-                  if (isset($userdata['permisos']['permisos']) && in_array('solicitudes.read', $userdata['permisos']['permisos'])) {
-                      echo '<li class="nav-item">
-                              <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
-                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                  <p>Listado de solicitudes</p>
-                              </a>
-                            </li>';
+                      // Verificar permisos para "solicitudes.read"
+                      if (in_array('solicitudes.read', $userdata['permisos']['permisos'])) {
+                          echo '<li class="nav-item">
+                                  <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
+                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                      <p>Listado de solicitudes</p>
+                                  </a>
+                                </li>';
+                      }
 
-                      echo '<li class="nav-item">
-                              <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
-                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                  <p>Registrar Audiencias</p>
-                              </a>
-                            </li>';
-                      
-                      echo '<li class="nav-item">
-                              <a href="' . base_url() . '/citas" class="nav-link">
-                                  <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                  <p>Citas</p>
-                              </a>
-                            </li>';
-                  } else {
-                      // No se muestra nada
+                      // Verificar permisos para "requerimientos.create"
+                      if (in_array('requerimientos.create', $userdata['permisos']['permisos'])) {
+                          echo '<li class="nav-item">
+                                  <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
+                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                      <p>Registrar Audiencias</p>
+                                  </a>
+                                </li>';
+                      }
+
+                      // Verificar permisos para "citas.read"
+                      if (in_array('citas.read', $userdata['permisos']['permisos'])) {
+                          echo '<li class="nav-item">
+                                  <a href="' . base_url() . '/citas" class="nav-link">
+                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                                      <p>Citas</p>
+                                  </a>
+                                </li>';
+                      }
                   }
                   ?>
  
@@ -454,7 +460,7 @@ $userdata = $session->get();
                       <li class="nav-item">
                           <a href="<?php echo base_url(); ?>/vista_Usuario_Areas_audiencias" class="nav-link">
                               <i class="nav-icon fas fa-user" style="font-size:20px"></i>
-                              <p>Usuarios Areas</p>
+                              <p>Asignar Trabajador</p>
                           </a>
                       </li>
 

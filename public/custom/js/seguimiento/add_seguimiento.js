@@ -949,34 +949,38 @@ $(document).on('click', '.delete-button', function() {
   
 
 
-/* METODO PARA AGREGAR PARTICIPANTES */
 $('#agregar_participantes').on('click', function() {
-    let id_caso= $('#id_caso').val(); 
-    let datos = 
-    {
-        id_caso: id_caso,
-        solicitudes:solicitudes
+    let id_caso = $('#id_caso').val(); 
+
+    // Verifica si solicitudes está vacío o es null
+    if (!solicitudes || solicitudes.length === 0) {
+        Swal.fire("Advertencia", "Debe agregar participantes para poder guardar", "warning");
+        return; // Salir de la función si no hay solicitudes
     }
- $.ajax({
-            url: "/agregar_participantes",
-            method: "POST",
-            dataType: "JSON",
-            data: {
-                "data": btoa(JSON.stringify(datos))
-            },
-            beforeSend: function() 
-            {
-             
-            }
-        }).then((response) => {
-            Swal.fire('Exito', response.message, "success");
-            setTimeout(function() {
-                location.reload();
-            }, 1500);
-        }).catch((request) => {
-          Swal.fire("Error", request.responseJSON.message, "error");
-        });
-       
+
+    let datos = {
+        id_caso: id_caso,
+        solicitudes: solicitudes
+    };
+
+    $.ajax({
+        url: "/agregar_participantes",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            "data": btoa(JSON.stringify(datos))
+        },
+        beforeSend: function() {
+            // Puedes agregar un loader o alguna otra acción aquí si lo deseas
+        }
+    }).then((response) => {
+        Swal.fire('Éxito', response.message, "success");
+        setTimeout(function() {
+            location.reload();
+        }, 1500);
+    }).catch((request) => {
+        Swal.fire("Error", request.responseJSON.message, "error");
+    });
 });
 
 
@@ -1006,6 +1010,7 @@ $(document).on("change", "#informacion", (e) => {
  // Mostrar y ocultar elementos al abrir el modal
 $('#btn-add-participantes').on('click', function() {
     $('#ingresar_participante').show();
+    $('.buscar_participante').show();
     $('#table_audiencia').show();
     $('#agregar_participantes').show();
     $('#actualizar_participantes').hide();
@@ -1016,6 +1021,7 @@ $('#btn-add-participantes').on('click', function() {
 $('#listar_participantes').on('click', '.Editar', function(e) {
     e.preventDefault();
     $('#ingresar_participante').hide();
+    $('.buscar_participante').hide();
     $('#table_audiencia').hide();
     $('#agregar_participantes').hide();
     $('#actualizar_participantes').show();
@@ -1172,3 +1178,49 @@ function llenar_parroquias(e, municipioid, parroquiaid) {
         });
 
 }
+
+/* METODO PARA BUSCAR PARTICIPANTES */
+$('#btn_buscar').on('click', function() {
+    let cedula = $('#cedula-existente').val().trim(); 
+
+   
+    $.ajax({
+        url: "/buscar_participante/" + cedula,
+        method: "get",
+        dataType: "JSON",
+        beforeSend: function() {
+    
+        }
+    }).then((response) => {
+        // Verifica si la respuesta tiene datos
+        if (response.length > 0) { 
+            const participante = response[0]; 
+
+            $('#add-participantes').find('#nombre').val(participante.nombre);
+            $('#add-participantes').find('#apellido').val(participante.apellido);
+            $('#add-participantes').find('#cedula').val(participante.cedula);
+            $('#add-participantes').find('#tipo-persona').val(participante.nacionalidad);
+            $('#add-participantes').find('#t-beneficiario').val(participante.tipo_beneficiario);
+            $('#add-participantes').find('#edad').val(participante.edad);
+            $('#add-participantes').find('#telefono').val(participante.telefono);
+            $('#add-participantes').find('#sexo').val(participante.sexo);
+            llenar_Estados(Event, participante.estado); 
+            llenar_municipios(Event, participante.estado, participante.municipio); 
+            llenar_parroquias(Event, participante.municipio, participante.parroquia);
+        } else {
+            // Limpiar los campos si no se encuentra el participante
+            $('#add-participantes').find('#nombre').val('');
+            $('#add-participantes').find('#apellido').val('');
+            $('#add-participantes').find('#cedula').val('');
+            $('#add-participantes').find('#tipo-persona').val('V');
+            $('#add-participantes').find('#t-beneficiario').val('0');
+            $('#add-participantes').find('#edad').val('');
+            $('#add-participantes').find('#telefono').val('');
+            $('#add-participantes').find('#sexo').val('0');
+            Swal.fire("No encontrado", "No se encontró un participante con esa cédula.", "info");
+            $('#add-participantes').find('#cedula').val(cedula);
+        }
+    }).catch((request) => {
+        Swal.fire("Error", request.responseJSON.message || "Ocurrió un error inesperado.", "error");
+    });
+});

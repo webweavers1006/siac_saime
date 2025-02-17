@@ -190,7 +190,7 @@ function llenar_Estados(e, id) {
             // Puedes agregar un loader o alguna indicación de que se está cargando
         },
         success: function(data) {
-            console.log(data);
+            //console.log(data);
           
             if (data.length >= 1) {
                 $("#estado-caso").empty(); // Limpiar el combo
@@ -1198,19 +1198,25 @@ error:function(xhr, status, errorThrown)
              success:function(data)
              {    
 
-               // console.log(data);
+               console.log(data);
                 if (data==0) 
                 {
                    alert('La cedula no se encuentra registrada');
                    $("#cedula-persona").val(cedula_existente);
                 }else
                 {
+                   
                      // Accede al objeto data
                 const caso = data[0];
                 const nombre = caso.casonom ;
                 const apellido = caso.casoape ;
                 const cedula = cedula_normal;
-                const nacionalidad = caso.caso_nacionalidad;
+                let nacionalidad = caso.caso_nacionalidad;
+                if (nacionalidad == 'null' || nacionalidad == null) {
+                    nacionalidad = 'V'; 
+                }
+                
+               
                 const beneficiario = caso.tipo_beneficiario;
                 const genero = caso.sexo;
                 const telefono = caso.casotel;

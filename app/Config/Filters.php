@@ -10,18 +10,15 @@ class Filters extends BaseConfig
 		'csrf'     => \CodeIgniter\Filters\CSRF::class,
 		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class,
 		'honeypot' => \CodeIgniter\Filters\Honeypot::class,
+		'security' => \App\Filters\SecurityHeadersFilter::class,
 	];
 
 	// Always applied before every request
 	public $globals = [
 		'before' => [
-			//'honeypot'
-			// 'csrf',
+			'security',
 		],
-		'after'  => [
-			'toolbar',
-			//'honeypot'
-		],
+		'after' => [],
 	];
 
 	// Works on all of a particular HTTP method
@@ -33,4 +30,7 @@ class Filters extends BaseConfig
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
 	public $filters = [];
+
+
+	
 }

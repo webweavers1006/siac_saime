@@ -274,7 +274,7 @@ class Casos extends BaseModel
          $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
          $builder->select("CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END as sexo");
          $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
-         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre,t_antusu.env_correo');
          $builder->join('sgc_estatus b', 'b.idest = a.idest');
          $builder->join('sgc_estados est', 'est.estadoid = a.estadoid');
          $builder->join('sgc_municipio mun', 'mun.municipioid = a.municipioid');

@@ -54,13 +54,13 @@ $session = session();
         <?php if ($acc_participantes == 't') : ?>
           <br>
           <div class="row">
-              <div class="col-lg-7 col-md-7 col-sm-7">
+          <div class="col-lg-7 col-md-7 col-sm-7">
               <h3 class="text-secondary">
-                 &nbsp;&nbsp;&nbsp; Nombre de la Actividad : 
-                  <span style="color: black;"><?= $casodesc; ?></span>
-                  <input type="hidden" id="descripcion_actividad" value="<?php echo $casodesc;?>"  >
+                  Nombre de la Actividad:
               </h3>
-              </div>
+              <h4 style="color: black;"><?= htmlspecialchars($casodesc); ?></h4>
+              <input type="hidden" id="descripcion_actividad" value="<?php echo htmlspecialchars($casodesc); ?>">
+          </div>
               <div class="col-lg-1 col-md-1 col-sm-1">
                  
               </div>
@@ -324,8 +324,19 @@ $session = session();
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        
 
         <div class="modal-body">
+
+        <div class="row">
+        <div class="col-lg-8 col-sm-8 col-md-8 buscar_participante">
+          <div style="display: flex;">  <label for="cedula-persona">Buscar Cédula   &nbsp;&nbsp;&nbsp; </label>
+            <input type="text" class="form-control" style="width: 200px;"  onkeypress="return valideKey(event);" name="cedula-existente" min="7" id="cedula-existente" autocomplete="off">
+            &nbsp;&nbsp;&nbsp; <button type="button" style="font-size: 11px;" id="btn_buscar" class="btn btn-xs btn-primary btn_buscar">Buscar</button>
+          </div>
+        </div>
+        </div>
+
     <div class="row">
         <div class="form-group col-md-4"> <!-- Primera columna -->
             <label for="nombre">Nombre</label>
@@ -513,6 +524,7 @@ $session = session();
       <div class="modal-content">
         <form id="caso-estatus" method="POST">
           <div class="modal-header">
+            <input type="hidden" id="env_correo" value="<?php echo $env_correo; ?>">
             <h4 class="modal-title">Cambiar estatus de caso</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>

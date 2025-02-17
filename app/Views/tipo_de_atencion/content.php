@@ -87,7 +87,8 @@ $session = session();
               
               &nbsp; <label for="user-pass">Acceso a participantes</label>&nbsp;&nbsp;
               <input type="checkbox" class="participantes" id="participantes" name="participantes" value='false'>
-
+              &nbsp; <label for="user-pass"> Correo</label>&nbsp;&nbsp;
+              <input type="checkbox" class="correo" id="correo" name="correo" value='false'>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
                 <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>
@@ -124,8 +125,9 @@ $session = session();
                 &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
               <input type="checkbox" class="borrado" id="edit_acceso_pro_int" name="borrado" value='false'>
               &nbsp; <label for="user-pass"> Participantes</label>&nbsp;&nbsp;
-              <input type="checkbox" class="edit_participantes" id="edit_participantes" name="edit_participantes" value='false'>
-
+              <input type="checkbox" class="edit_participantes" id="edit_participantes" name="edit_participantes" value='false'> &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+              &nbsp; &nbsp; <label for="user-pass"> Correo</label>&nbsp;&nbsp;
+              <input type="checkbox" class="edit_correo" id="edit_correo" name="edit_correo" value='false'>
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
