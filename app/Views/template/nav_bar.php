@@ -295,7 +295,7 @@ $userdata = $session->get();
               <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/vista_tipo_Beneficiarios/" class="nav-link">
                     <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
-                    <p>Tipo de Beneficiarios</p>
+                    <p>Tipo de Beneficiarios.</p>
                   </a>
                 </li>  
                 <li class="nav-item">
