@@ -1,11 +1,11 @@
 $(function() {
-    listar_Direcciones_Administra();
+    listar_tipo_beneficiarios();
 });
 
 /*
  * Función para definir datatable:
  */
-function listar_Direcciones_Administra() {
+function listar_tipo_beneficiarios() {
     $('#table_beneficiarios').DataTable({
         "order": [
             [0, "desc"]
@@ -17,7 +17,7 @@ function listar_Direcciones_Administra() {
         "autoWidth": true,
         //"stateSave":true,
         "ajax": {
-            "url": "/Listar_Tipo_Beneficiarios/",
+            "url": "https://siac.sapi.gob.ve/Listar_Tipo_Beneficiarios/",
             "type": "GET",
             dataSrc: ''
         },
