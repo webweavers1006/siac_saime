@@ -167,7 +167,7 @@ $routes->setAutoRoute(false);
      //$routes->get('/enviar_correo_portal/(:any)',"Estatus::enviar_correo_portal/$1");
      //RUTAS PARA LOS TIPOS DE BENEFICIARIOS
      $routes->get('/vista_tipo_Beneficiarios', 'Tipo_Beneficiarios_Controler::vista_tipo_Beneficiarios');
-     $routes->get('/Listar_Tipo_Beneficiarios', "Tipo_Beneficiarios_Controler::Listar_Tipo_Beneficiarios");
+     $routes->get('/ListarTipoBeneficiarios', "Tipo_Beneficiarios_Controler::Listar_Tipo_Beneficiarios");
      $routes->get('/Listar_Tipo_Beneficiarios_filtro', "Tipo_Beneficiarios_Controler::Listar_Tipo_Beneficiarios_filtro");
      $routes->post('/add_Tipo_Beneficiarios', "Tipo_Beneficiarios_Controler::add_Tipo_Beneficiarios");
      $routes->post('/editTipoBeneficiario', "Tipo_Beneficiarios_Controler::editTipoBeneficiario");
