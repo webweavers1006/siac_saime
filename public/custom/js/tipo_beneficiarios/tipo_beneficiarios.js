@@ -17,7 +17,7 @@ function listar_tipo_beneficiarios() {
         "autoWidth": true,
         //"stateSave": true, // Descomentar si deseas guardar el estado de la tabla
         "ajax": {
-            "url": "/Listar_Tipo_Beneficiarios/",
+            "url": "https://siac.sapi.gob.ve/Listar_Tipo_Beneficiarios/",
             "type": "GET",
             "dataSrc": ''
         },
