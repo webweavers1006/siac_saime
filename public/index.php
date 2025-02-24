@@ -1,13 +1,5 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-// application/index.php
-
-// Habilitar CORS
-header("Access-Control-Allow-Origin: *"); // Permitir todos los orígenes
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Métodos permitidos
-header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Cabeceras permitidas
-
-// Resto del código...
 // Path to the front controller (this file)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
