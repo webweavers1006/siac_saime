@@ -1,42 +1,37 @@
 $(function() {
-    listar_Direcciones_Administra();
+    listar_tipo_beneficiarios();
 });
 
 /*
  * Función para definir datatable:
  */
-function listar_Direcciones_Administra() {
+function listar_tipo_beneficiarios() {
     $('#table_beneficiarios').DataTable({
         "order": [
             [0, "desc"]
         ],
         "paging": true,
         "info": true,
-        "filter": true,
+        "searching": true, // Cambié "filter" a "searching"
         "responsive": true,
         "autoWidth": true,
-        //"stateSave":true,
+        //"stateSave": true, // Descomentar si deseas guardar el estado de la tabla
         "ajax": {
             "url": "/Listar_Tipo_Beneficiarios/",
             "type": "GET",
-            dataSrc: ''
+            "dataSrc": ''
         },
         "columns": [
             { data: 'tipo_beneficiario_id' },
             { data: 'tipo_beneficiario_nombre' },
             { data: 'borrado' },
-
-
             {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     tipo_beneficiario_id=' + row.tipo_beneficiario_id + '    tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
-
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar" tipo_beneficiario_id="' + row.tipo_beneficiario_id + '" tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '" borrado="' + row.borrado + '"> <i class="material-icons">create</i></a>';
                 }
             }
-
-
         ],
         "language": {
             "sProcessing": "Procesando...",
@@ -46,10 +41,7 @@ function listar_Direcciones_Administra() {
             "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
             "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
             "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sInfoPostFix": "",
             "sSearch": "Buscar:",
-            "sUrl": "",
-            "sInfoThousands": ",",
             "sLoadingRecords": "Cargando...",
             "oPaginate": {
                 "sFirst": "Primero",
@@ -60,16 +52,15 @@ function listar_Direcciones_Administra() {
             "oAria": {
                 "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                 "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-            },
-            "columnDefs": [{
-                "targets": [0],
-                "visible": false,
-                "searchable": false
-            }],
-        }
+            }
+        },
+        "columnDefs": [{
+            "targets": [0],
+            "visible": false,
+            "searchable": false
+        }]
     });
 }
-
 // //EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
 $(document).on('submit', "#new-beneficiarios", function(e) {
     e.preventDefault();
