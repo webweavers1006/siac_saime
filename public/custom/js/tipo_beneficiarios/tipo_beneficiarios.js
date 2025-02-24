@@ -5,7 +5,7 @@ $(function() {
 /*
  * Función para definir datatable:
  */
-function listar_Direcciones_Administra() {zz
+function listar_Direcciones_Administra() {
     $('#table_beneficiarios').DataTable({
         "order": [
             [0, "desc"]
