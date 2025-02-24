@@ -5,127 +5,68 @@ $(function() {
 /*
  * Función para definir datatable:
  */
-function listar_Direcciones_Administra() {
-console.log(window.location)
-axios.get('/Listar_Tipo_Beneficiarios/')
+function listar_Direcciones_Administra() {zz
+    $('#table_beneficiarios').DataTable({
+        "order": [
+            [0, "desc"]
+        ],
+        "paging": true,
+        "info": true,
+        "filter": true,
+        "responsive": true,
+        "autoWidth": true,
+        //"stateSave":true,
+        "ajax": {
+            "url": "/Listar_Tipo_Beneficiarios/",
+            "type": "GET",
+            dataSrc: ''
+        },
+        "columns": [
+            { data: 'tipo_beneficiario_id' },
+            { data: 'tipo_beneficiario_nombre' },
+            { data: 'borrado' },
 
-    .then(response => {
 
-        console.log(response.data)
-        // Inicializa DataTable con los datos obtenidos
-
-        $('#table_beneficiarios').DataTable({
-
-            "order": [
-
-                [0, "desc"]
-
-            ],
-
-            "paging": true,
-
-            "info": true,
-
-            "filter": true,
-
-            "responsive": true,
-
-            "autoWidth": true,
-
-            //"stateSave": true,
-
-            "data": response.data, // Usa los datos de la respuesta
-
-            "columns": [
-
-                { data: 'tipo_beneficiario_id' },
-
-                { data: 'tipo_beneficiario_nombre' },
-
-                { data: 'borrado' },
-
-                {
-
-                    orderable: true,
-
-                    data: null,
-
-                    render: function(data, type, row) {
-
-                        return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar" tipo_beneficiario_id=' + row.tipo_beneficiario_id + ' tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '" borrado=' + row.borrado + ' > <i class="material-icons">create</i></a>';
-
-                    }
+            {
+                orderable: true,
+                data: null,
+                render: function(data, type, row) {
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     tipo_beneficiario_id=' + row.tipo_beneficiario_id + '    tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
 
                 }
-
-            ],
-
-            "language": {
-
-                "sProcessing": "Procesando...",
-
-                "sLengthMenu": "Mostrar _MENU_ registros",
-
-                "sZeroRecords": "No se encontraron resultados",
-
-                "sEmptyTable": "Ningún dato disponible en esta tabla",
-
-                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-
-                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-
-                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-
-                "sInfoPostFix": "",
-
-                "sSearch": "Buscar:",
-
-                "sUrl": "",
-
-                "sInfoThousands": ",",
-
-                "sLoadingRecords": "Cargando...",
-
-                "oPaginate": {
-
-                    "sFirst": "Primero",
-
-                    "sLast": "Último",
-
-                    "sNext": "Siguiente",
-
-                    "sPrevious": "Anterior"
-
-                },
-
-                "oAria": {
-
-                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-
-                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-
-                },
-
-                "columnDefs": [{
-
-                    "targets": [0],
-
-                    "visible": false,
-
-                    "searchable": false
-
-                }],
-
             }
 
-        });
 
-    })
-
-    .catch(error => {
-
-        console.error('Error al realizar la solicitud:', error);
-
+        ],
+        "language": {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": false
+            }],
+        }
     });
 }
 
