@@ -17,7 +17,7 @@ function listar_Direcciones_Administra() {
         "autoWidth": true,
         //"stateSave":true,
         "ajax": {
-            "url": "/Listar_Tipo_Beneficiarios/",
+            "url": "/tipo/beneficiarios/",
             "type": "GET",
             dataSrc: ''
         },
