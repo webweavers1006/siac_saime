@@ -282,7 +282,7 @@ $userdata = $session->get();
               <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/vista_tipo_atencion" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
-                    <p>Tipo De Atención 1</p>
+                    <p>Tipo De Atención </p>
                   </a>
               </li> 
               <li class="nav-item">
