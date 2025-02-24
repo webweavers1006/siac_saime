@@ -69,7 +69,7 @@ $userdata = $session->get();
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu1">
           <li class="nav-item ">
             <a href="<?php echo base_url(); ?>/pantalla_bienvenida" class="nav-link active"><i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Inicio </p>
+              <p>Inicio siac_v2 </p>
             </a>
           </li>
 
@@ -267,7 +267,7 @@ $userdata = $session->get();
 
             <li class="nav-item">
             <a href="#" class="nav-link" id=""><i class="nav-icon fas far fa-sun"></i>
-              <p> Mantenimiento 777</p>
+              <p> Mantenimiento </p>
               <i class="right fas fa-angle-left"></i>
             </a>
             <ul class="nav nav-treeview">
