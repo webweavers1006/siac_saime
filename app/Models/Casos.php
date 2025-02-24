@@ -37,6 +37,7 @@ class Casos extends BaseModel
         $builder->where('a.borrado', 'false');
         $builder->orderBy('a.idcaso', 'DESC');
         $query = $builder->get();
+       // echo $db->getLastQuery(); 
         return $query->getResult();
     }
 
