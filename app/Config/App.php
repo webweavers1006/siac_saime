@@ -23,7 +23,7 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	 public $baseURL = 'http://siac_v2.com/';
+	 public $baseURL = 'https://siac.sapi.gob.ve/';
 
 	//public $baseURL = 'http://10.100.2.94/';
 	/*
