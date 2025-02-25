@@ -263,7 +263,7 @@ $userdata = $session->get();
      
 
          
-          <?php if ($session->get('userrol') == 5 ) { ?>
+          <?php if ($session->get('userrol') == 5 || $session->get('userrol') == 3 ) { ?>
 
             <li class="nav-item">
             <a href="#" class="nav-link" id=""><i class="nav-icon fas far fa-sun"></i>
