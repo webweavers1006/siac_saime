@@ -46,47 +46,47 @@ $(document).on('submit', "#login-user", function(e) {
 
                            
                           
-                            if (data[0].idrol === "9" ||data[0].idrol === "5" ||data[0].acceso_audi==="t")
-                            {
-                                let datos_audience = 
-                                {
-                                    "user": $("#usuario-email").val(),
-                                    "pass": $("#usuario-clave").val(),                               
-                                };  
-                                $.ajax({
-                                    type: "POST",
-                                    url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/authentication",
-                                    data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
-                                    contentType: "application/json; charset=utf-8",
-                                    dataType: "json",
-                                    success: function(response)
-                                    {
+                            // if (data[0].idrol === "9" ||data[0].idrol === "5" ||data[0].acceso_audi==="t")
+                            // {
+                            //     let datos_audience = 
+                            //     {
+                            //         "user": $("#usuario-email").val(),
+                            //         "pass": $("#usuario-clave").val(),                               
+                            //     };  
+                            //     $.ajax({
+                            //         type: "POST",
+                            //         url: "https://siac.sapi.gob.ve/api/audiencia/auth/user/authentication",
+                            //         data: JSON.stringify(datos_audience), // Convertir objeto a cadena JSON
+                            //         contentType: "application/json; charset=utf-8",
+                            //         dataType: "json",
+                            //         success: function(response)
+                            //         {
                                         
                                         
-                                        localStorage.setItem('user_audiencia', JSON.stringify(response));
-                                        Toast.fire({
-                                        type: 'success',
-                                        title: "Iniciando Sesion"
+                            //             localStorage.setItem('user_audiencia', JSON.stringify(response));
+                            //             Toast.fire({
+                            //             type: 'success',
+                            //             title: "Iniciando Sesion"
 
-                                        });
-                                       setTimeout(function() {
+                            //             });
+                            //            setTimeout(function() {
 
-                                        const userData = localStorage.getItem('user_audiencia');
-                                        const userDataJson = JSON.parse(userData);
-                                        const token = userDataJson.token;
-                                        const nivel_rol = userDataJson.id_rol;
+                            //             const userData = localStorage.getItem('user_audiencia');
+                            //             const userDataJson = JSON.parse(userData);
+                            //             const token = userDataJson.token;
+                            //             const nivel_rol = userDataJson.id_rol;
                                      
-                                        document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-                                        document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+                            //             document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+                            //             document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
                                 
-                                       window.location.href = '/pantalla_bienvenida';
+                            //            window.location.href = '/pantalla_bienvenida';
                                          
-                                       }, 1400);
+                            //            }, 1400);
 
-                                    }
+                            //         }
 
-                                });
-                            } else {
+                            //     });
+                            // } else {
                                 Toast.fire({
                                     type: 'success',
                                     title: "Iniciando Sesion"
@@ -95,7 +95,7 @@ $(document).on('submit', "#login-user", function(e) {
                                     setTimeout(function() {
                                         window.location = "/pantalla_bienvenida";
                                     }, 1400);
-                            }
+                           // }
                         
                         },
                         error: function(xhr, status, errorThrown) {
