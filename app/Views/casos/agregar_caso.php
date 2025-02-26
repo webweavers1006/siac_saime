@@ -417,8 +417,8 @@ to {
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
               <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
-              <select disabled class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
-              <option value="0" disabled>Seleccione</option>
+              <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
+              <option value="0">Seleccione</option>
               </select>
           </div>
 
