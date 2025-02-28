@@ -486,6 +486,10 @@ $('#listar_casos').on('click', '.Editar', function(e) {
     let apellido_anterior = apellido
     let cedula = $(this).attr('cedula');
     let tipo_atend_id = $(this).attr('tipo_atend_id');
+
+
+
+   
     let tipo_atend_borrado = $(this).attr('tipo_atend_borrado');
     let cedula_anterior = cedula
     let edad = $(this).attr('edad');
@@ -720,6 +724,7 @@ $('#listar_casos').on('click', '.Editar', function(e) {
             {
                 $(".prop_int").show();
                 document.getElementById("tipo-pi").disabled = false;
+                $("#cgr").hide();
                 
             }else
             {
