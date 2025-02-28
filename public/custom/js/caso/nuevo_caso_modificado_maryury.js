@@ -466,19 +466,22 @@ $("#tipo-atencion-usu").on('change', function(e) {
     let selectedOption = $(this).find('option:selected');
     let act_pro_int = selectedOption.data('act-pro-int');
     // Muestra u oculta elementos según el tipo de atención
-    if (id_tipo_atencion == 5 || id_tipo_atencion == 1) {
-        $("#denuncias").toggle(id_tipo_atencion == 5);
-        $(".tipoproint").toggle(act_pro_int === 't');
-        document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
+    $("#tipo-pi").prop('disabled', false);
+    if (id_tipo_atencion == 1) {
+        $("#denuncias").hide();
+        $(".tipoproint").show();
+    }
+    else if (id_tipo_atencion == 5) {
+        $("#denuncias").show();
+        $(".tipoproint").hide();
     } else {
         $("#cgr").hide();
         $("#denuncias").hide();
-        $(".tipoproint").toggle(act_pro_int === 't');
+        $(".tipoproint").hide();
         document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
     }
     // Llama a la función para llenar detalles de atención
     llenar_detalle_atencion(e, id_tipo_atencion);
-
 });
 
 
@@ -1198,7 +1201,7 @@ error:function(xhr, status, errorThrown)
              success:function(data)
              {    
 
-              
+               console.log(data);
                 if (data==0) 
                 {
                    alert('La cedula no se encuentra registrada');
@@ -1382,4 +1385,5 @@ $("#fecha-nacimiento").on('change', function() {
     // Asignar la edad al elemento con id='edad'
     $("#edad").val(edad);
 });
+
 

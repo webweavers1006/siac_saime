@@ -324,8 +324,10 @@ to {
               </select>
           </div>
           <div class="col-lg-3 col-sm-3 col-md-3">
-              <label for="telefono-persona">Teléfono</label>
-              <input type="text" class="form-control" onkeypress="return valideKey(event);" name="telefono" id="telefono" autocomplete="off">
+          <label for="telefono-persona">Teléfono</label>
+          <input type="text" class="form-control" onkeypress="return valideKey(event);" 
+           maxlength="12" pattern="\d{12}" title="Debe ingresar exactamente 12 dígitos" 
+           name="telefono" id="telefono" autocomplete="off">
           </div>
           <div class="col-lg-2 col-sm-2 col-md-2">
               <label for="fecha-recibido">Fecha de Recibido</label>
@@ -893,4 +895,18 @@ function updateProgressbar() {
       });
       </script>
 
-      
+      <script>
+        function valideKey(evt) {
+    // Permitir solo números
+    var code = (evt.which) ? evt.which : evt.keyCode;
+    if (code < 48 || code > 57) {
+        evt.preventDefault();
+    }
+
+    // Limitar a 12 dígitos
+    var input = document.getElementById("telefono");
+    if (input.value.length >= 12) {
+        evt.preventDefault();
+    }
+}
+      </script>

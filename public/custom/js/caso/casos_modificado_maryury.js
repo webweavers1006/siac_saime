@@ -891,8 +891,7 @@ $('#listar_casos').on('click', '.Editar', function(e) {
     }
     llenar_pais(Event,paisid);
     llenar_Red_social(Event, idrrss);
-    llenar_Estados(Event, estadoid)
-    
+     
     llenar_municipios(Event, estadoid, municipioid);
     llenar_parroquias(Event, municipioid, parroquiaid);
     llenar_Propiedad_Intelectual(Event, tipo_prop_id);

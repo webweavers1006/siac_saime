@@ -22,20 +22,37 @@ class Via_Tipo_Atencion_Model extends BaseModel
 	}
 
 
-	public function buscar_via_tipo_atencion($ViaAtencionId = null)
+	public function buscar_via_tipo_atencion($id_red_social = null)
 	{
+		
+		
 		$db = \Config\Database::connect();
 		$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
 		$builder->select('tu.act_pro_int, tu.tipo_aten_nombre, vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
 		$builder->join('sgc_tipoatencion_usu tu', 'vt_atencion.tipo_atencion_id = tu.tipo_aten_id');
-		if ($ViaAtencionId !== null) {
-			$builder->where('vt_atencion.via_atencion_id', $ViaAtencionId);
+		if ($id_red_social !== null) {
+			$builder->where('vt_atencion.via_atencion_id', $id_red_social);
 		}
 		$query = $builder->get();
 		$resultado = $query->getResult();
 		return $resultado;
 	}
 
+
+	// public function buscar_via_tipo_atencion($ViaAtencionId = null)
+	// {
+		
+	// 	$db = \Config\Database::connect();
+	// 	$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
+	// 	$builder->select('tu.act_pro_int, tu.tipo_aten_nombre, vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
+	// 	$builder->join('sgc_tipoatencion_usu tu', 'vt_atencion.tipo_atencion_id = tu.tipo_aten_id');
+	// 	if ($ViaAtencionId !== null) {
+	// 		$builder->where('vt_atencion.via_atencion_id', $ViaAtencionId);
+	// 	}
+	// 	$query = $builder->get();
+	// 	$resultado = $query->getResult();
+	// 	return $resultado;
+	// }
 	public function hijos_existentes($datos2 = null)
 	{
 		// Verificamos si $datos2 no es nulo y contiene al menos un elemento

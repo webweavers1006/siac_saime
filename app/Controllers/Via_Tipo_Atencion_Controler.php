@@ -19,6 +19,7 @@ class Via_Tipo_Atencion_Controler extends BaseController
 	{
 		$model = new Via_Tipo_Atencion_Model();
 		$query = $model->buscar_via_tipo_atencion($id_red_social);
+		
 		if (empty($query)) {
 			$atencion = [];
 		} else {
