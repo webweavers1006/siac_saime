@@ -257,7 +257,7 @@ function llenar_via_atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#via-atencion").append(
                             "<option value=" +
                             item.red_s_id +
@@ -312,7 +312,7 @@ function llenar_Propiedad_Intelectual(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-pi").append(
                             "<option value=" +
                             item.tipo_prop_id +
@@ -367,7 +367,7 @@ function llenar_Tipo_Atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-atencion-usu").append(
                             "<option value=" +
                             item.tipo_aten_id +

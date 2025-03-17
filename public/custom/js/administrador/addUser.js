@@ -25,7 +25,7 @@ function llenar_combo_roles(e, id) {
                 $('#edit-user-rol').append('<option value=0  selected disabled>Seleccione</option>');
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $('#edit-user-rol').append('<option value=' + item.idrol + '>' + item.rolnom + '</option>');
                     });
                 } else {
@@ -96,6 +96,7 @@ function llenar_combo_Direcciones_normal(e, id) {
 
 //FUNCION PARA LLENAR EL COMBO DE DIRECCIONES
 function llenar_combo_Direcciones(e,id,act_aud) {
+   
     e.preventDefault
     url = '/listar_direcciones_user_create/'+act_aud;
     $.ajax({
@@ -103,7 +104,8 @@ function llenar_combo_Direcciones(e,id,act_aud) {
         method: 'GET',
         dataType: 'JSON',
         beforeSend: function(data) {},
-        success: function(data) {
+        success: function(data)
+         {
             if (data.length >= 1) {
                 $('#id_direccion_administrativa').empty();
                 $('#id_direccion_administrativa').append('<option value=0  selected disabled>Seleccione</option>');
@@ -133,7 +135,7 @@ function llenar_combo_Direcciones(e,id,act_aud) {
             }
         },
         error: function(xhr, status, errorThrown) {
-            // alert(xhr.status);
+            
             // alert(errorThrown);
         }
     });
@@ -532,17 +534,27 @@ $('#listar_usuarios').on('click', '.Editar', function(e) {
     var acceso_audi = $(this).attr('acceso_audi');
     var id_direccion_administrativa = $(this).attr('id_direccion_administrativa');
     
-    
+   
+
     if (acceso_audi=='t') {
         let act_aud='true';
 
         llenar_combo_Direcciones(Event,id,act_aud);
+        let direccion=$("#edit_direccion_administrativa").val();
+        if (direccion=='0'||direccion==null) 
+        {
+            llenar_combo_Direcciones_normal(Event,id_direccion_administrativa);
+            
+        }
+       
         
     }else{
         let act_aud='false';
         llenar_combo_Direcciones_normal(Event,id_direccion_administrativa);
         
     }
+
+
     if (usercargo == 'null') 
     {
         usercargo = ''
@@ -1121,6 +1133,7 @@ $("#user-rol").on('change', function() {
         $(".id_rol_nivel").hide().css('display', 'none');
         $(".user_cedula").hide().css('display', 'none');
         let act_aud='false';
+        llenar_combo_Direcciones(Event,id,act_aud);
         
     }
 });

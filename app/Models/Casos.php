@@ -77,16 +77,15 @@ class Casos extends BaseModel
         return $query->getResult();
     }
 
-
     public function listar_Casos_Remitidos($id_direccion)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos_remitidos as cr');
-        $builder->select('cr.casos_id, CONCAT(a.caso_nacionalidad, a.casoced) AS cedula, a.casonom,a.casoape, CONCAT(a.casonom, \' \', a.casoape) AS beneficiario');
-        $builder->select('a.fecha_nacimiento,a.idcaso,a.casotel,a.edad, a.tipo_beneficiario, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre, to_char(a.casofec, \'dd/mm/yyyy\') as casofec');
-        $builder->select('a.municipioid,a.pais as paisid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, TRIM(a.casoced) AS casoced');
+        $builder->select('cr.casos_id, CONCAT(a.caso_nacionalidad, a.casoced) AS cedula, a.casonom, a.casoape, CONCAT(a.casonom, \' \', a.casoape) AS beneficiario');
+        $builder->select('a.fecha_nacimiento, a.idcaso, a.casotel, a.edad, a.tipo_beneficiario, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre, to_char(a.casofec, \'dd/mm/yyyy\') as casofec');
+        $builder->select('a.municipioid, a.pais as paisid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, TRIM(a.casoced) AS casoced');
         $builder->select('cr.direccion_id, dire.correo, a.casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid');
-        $builder->select('a.id_tipo_atencion, a.municipioid, a.parroquiaid, a.direccion,a.profesion, a.correo, a.ente_adscrito_id');
+        $builder->select('a.id_tipo_atencion, a.municipioid, a.parroquiaid, a.direccion, a.profesion, a.correo, a.ente_adscrito_id');
         $builder->select('cgr.competencia_cgr, cgr.asume_cgr, denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
         $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular, denu.denu_rif_instancia');
         $builder->select('denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado, CONCAT(a.casonom, \' \', a.casoape) AS nombre');
@@ -102,11 +101,16 @@ class Casos extends BaseModel
         $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
         $builder->where('cr.direccion_id', $id_direccion); 
-        $builder->orderBy('a.idcaso', 'DESC');
+       
         $query = $builder->get();
         return $query->getResult();
     }
-  
+// if ($estatus =='1' || $estatus === 'null') {
+        //     $builder->orderBy('b.estnom', 'asc');
+        // } else {
+        //     $builder->orderBy('b.estnom', 'desc');   
+        // }
+
     //Metodo para obtener toda la informacion del caso para la web 
     public function Informacion_Usuarios($casoced)
     {
@@ -394,7 +398,7 @@ class Casos extends BaseModel
         return $resultado;
     }
         
-  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null)
+  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
@@ -457,7 +461,10 @@ class Casos extends BaseModel
             $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
         }
 
-
+        if ($estatus != '0' && $estatus != 'null') {
+            $builder->where('a.idest', $estatus);
+        }
+        
 
         if ($id_pais != '0' && $id_pais != 'null') {
             $builder->where('a.pais', $id_pais);

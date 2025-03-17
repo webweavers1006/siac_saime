@@ -426,7 +426,7 @@ curl_close($ch);
 				$newCase["casotel"]     = $datos["telephone"];
 				$newCase["idest"]       = 1;
 				$newCase["idrrss"]      = $datos["social_network"];
-				$newCase["idusuopr"]    = $this->session->get('iduser');
+				$user["idusuopr"]    = $this->session->get('iduser');
 				$newCase["estadoid"]    = $datos["state"];
 				$newCase["municipioid"] = $datos["county"];
 				$newCase["pais"] = $datos["country"];
@@ -483,7 +483,7 @@ curl_close($ch);
 					$newCase["casotel"]     = $datos["telephone"];
 					$newCase["idest"]       = 1;
 					$newCase["idrrss"]      = $datos["social_network"];
-					$newCase["idusuopr"]    = $this->session->get('iduser');
+					$user["idusuopr"]    = $this->session->get('iduser');
 					$newCase["estadoid"]    = $datos["state"];
 					$newCase["municipioid"] = $datos["county"];
 					$newCase["sexo"] = $datos["sexo"];
@@ -520,7 +520,7 @@ curl_close($ch);
 					$newCase["casotel"]     = $datos["telephone"];
 					$newCase["idest"]       = 1;
 					$newCase["idrrss"]      = $datos["social_network"];
-					$newCase["idusuopr"]    = $this->session->get('iduser');
+					$user["idusuopr"]    = $this->session->get('iduser');
 					$newCase["estadoid"]    = $datos["state"];
 					$newCase["municipioid"] = $datos["county"];
 					$newCase["sexo"] = $datos["sexo"];
@@ -1054,7 +1054,7 @@ public function upload()
     $archivo = $_FILES['archivo'] ?? null;
 
     // LISTA BLANCA
-	$config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|xls|xlsx|mp4|mp3|MPEG-4|MOV|WMV|AVI|MKV|SWF|odt';
+	$config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|ods|xls|xlsx|mp4|mp3|m4a|m4v|mov|wmv|avi|mkv|swf|odt';
     $tamañoMaximo = 10 * 1024 * 1024; // 10MB en bytes
 
     // Verificar si se ha subido un archivo

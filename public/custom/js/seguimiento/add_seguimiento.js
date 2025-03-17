@@ -51,7 +51,7 @@ function llenar_Tipo_Beneficiarios(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -174,7 +174,7 @@ function llenar_Estados(e, estadoid) {
                 );
                 if (estadoid === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#estado-caso").append(
                             "<option value=" +
                             item.estadoid +

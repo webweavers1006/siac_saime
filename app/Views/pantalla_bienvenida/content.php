@@ -3,7 +3,7 @@
 $session = session();
 ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
+
 <style>
   table.dataTable thead,
   table.dataTable tfoot {

@@ -91,7 +91,7 @@ $(function() {
         },
     });
 }
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado=null) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,estatus=0,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus=null,nombre_estado=null) {
 
     // Convertir la fecha
     var fechaOriginal = desde;
@@ -127,7 +127,9 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     if (tipo_beneficiario != null && tipo_beneficiario != 0) {
         encabezado = encabezado + 'Tipo beneficiario :' + ' ' + nombre_tipo_beneficiario + ' ';
     }
-
+    if (estatus != null && estatus != 0) {
+        encabezado = encabezado + 'Estatus :' + ' ' + nombre_estatus+ ' ';
+    }
 
     if (edad_min !='null'&& edad_max!='null'&& edad_min !=null&& edad_max!=null ) {
         encabezado = encabezado + 'Edad:' + ' '+'Entre'+' '+edad_min+' '+'y'+' '+edad_max+' ';
@@ -257,7 +259,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+ '/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max,
+            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max,
             "type": "GET",
             dataSrc: ''
         },
@@ -306,6 +308,19 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             }, ]
 
         },
+        initComplete: function(settings, json) {
+            // Recuperar el estado de la paginación
+            let savedPage = localStorage.getItem('datatable_page');
+            if (savedPage !== null) {
+                table.page(parseInt(savedPage)).draw(false);
+                localStorage.removeItem('datatable_page');
+            }
+        }
+    });
+     // Guardar el estado de la paginación antes de recargar la página
+     table.on('page.dt', function () {
+        let info = table.page.info();
+        localStorage.setItem('datatable_page', info.page);
     });
 }
 //FUNCION PARA LLENAR EL COMBO DE LAS REDES SOCIALES
@@ -488,7 +503,7 @@ $(document).on('click', '.consultar', function(e) {
     let tipo_pi = $('#tipo-pi').val();
     let tipo_atencion_usu = $('#tipo-atencion-usu').val();
     let sexo = $('#sexo').val();
-    
+    let estatus = $('#estatus').val();
 
     let id_pais = $('#pais-caso').val();
     let id_estado = $('#estado-caso').val();
@@ -503,6 +518,7 @@ $(document).on('click', '.consultar', function(e) {
     let nombre_direccion_remi = $('#direcciones_caso option:selected').text();
     let nombre_usuario = $('#usuarios option:selected').text();
     let nombre_estado = $('#estado-caso option:selected').text();
+    let nombre_estatus = $('#estatus option:selected').text();
     if (desde == '') {
         desde = 'null'
     }
@@ -535,7 +551,7 @@ $(document).on('click', '.consultar', function(e) {
     }else
     {
     $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estado);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus,nombre_estado);
 
     }
 })

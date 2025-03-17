@@ -4,7 +4,7 @@ $session = session();
 ?>
 
 <div class="content-wrapper">
-<link rel="stylesheet" href="<?php echo base_url(); ?>/datatable_responsive/css/responsive.bootstrap4.css">
+
 
   <style>
     table.dataTable thead,
@@ -66,13 +66,13 @@ $session = session();
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-2">
                                 <label for="via-atencion">Vía de Atención</label>
                                 <select class="form-control" id="via-atencion" name="via-atencion">
                                     <option value="0" selected disabled>Seleccione</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-2">
                                 <label for="tipo-atencion-usu">Tipo de Atención</label>
                                 <select class="form-control" id="tipo-atencion-usu" name="tipo-atencion-usu">
                                     <option value="0" selected disabled>Seleccione</option>
@@ -111,7 +111,14 @@ $session = session();
                             <option value="0">Seleccione Parroquia</option>
                             </select>
                         </div>
-
+                        <div class="col-lg-4 col-sm-4 col-md-4">
+                                <label for="estatus">Estatus:</label>
+                                <select class="form-control" id="estatus" name="estatus">
+                                    <option value="0" selected disabled>seleccione</option>
+                                    <option value="1">Abierto</option>
+                                    <option value="2">Cerrado</option>
+                                </select>
+                            </div>
 
                             <div class="col-md-5">
                         <br>

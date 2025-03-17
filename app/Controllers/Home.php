@@ -23,11 +23,11 @@ class Home extends BaseController
 		echo view('login/content');
 		echo view('login/footer');
 	}
-	//Vista principal
+	//Vista principal de operadores aud
 	public function dashboard()
 	{
 
-	
+		
 		if ($this->session->get('logged')) {
 
 			$token = $_COOKIE['token'];
@@ -41,10 +41,6 @@ class Home extends BaseController
 			$nivel_rol = $session->get('nivel_rol');
 			
 			
-			//ESTO TIENE TOLO LO DEL USUARIO EN SESION
-			$userdata = $session->get();
-			
-
 			// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
 			$contexto = stream_context_create([
 				'http' => [
@@ -54,8 +50,29 @@ class Home extends BaseController
 			]);
 			
 			$estado = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
-		$data['estatus'] = $estado;
+		   $data['estatus'] = $estado;
 
+			// BUSCO LOS PERMISOS DEL ROL
+			$url = "https://siac.sapi.gob.ve/api/audiencia/roles/".$nivel_rol;
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $token
+			));
+			$response = curl_exec($ch);
+			$error_number = curl_errno($ch);
+			$error_message = curl_error($ch);
+			curl_close($ch);
+			if ($error_number) {
+				echo "Error: $error_message";
+			} else {
+				$permisos = json_decode($response, true);
+
+			}
+		  //ESTO TIENE TOLO LO DEL USUARIO EN SESION
+			$userdata = $session->get();
+			$session->set('permisos', $permisos);
 			echo view('template/header');
 			echo view('template/nav_bar');
 			echo view('dashboard/content',$data);
@@ -66,14 +83,14 @@ class Home extends BaseController
 		}
 	}
 
-	//Vista principal
+	//Vista principal de los trabajadores
 	public function pantalla_bienvenida()
 	{
 		
 		if (session('logged')==TRUE) {
 
 
-			$token = $_COOKIE['token'];
+			/* $token = $_COOKIE['token'];
 			$nivel_rol = $_COOKIE['nivel_rol'];
   			$session = session();
 			
@@ -105,7 +122,7 @@ class Home extends BaseController
 			
 			//ESTO TIENE TODO LO DEL USUARIO EN SESION
 			$userdata = $session->get();
-			
+			 */
 			
 
 			//ESTO TIENE TOLO LO DEL USUARIO EN SESION

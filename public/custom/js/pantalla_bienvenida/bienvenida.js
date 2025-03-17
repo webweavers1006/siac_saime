@@ -1,6 +1,6 @@
-// setTimeout(function() {
-//     window.location = "/inicio";
-// }, 2500);
+// // setTimeout(function() {
+// //     window.location = "/inicio";
+// // }, 2500);
 
 window.addEventListener('load', function() {
     var imagen = document.querySelector('.form-login_imagen');
@@ -9,19 +9,19 @@ window.addEventListener('load', function() {
 
 
 
-let rol = $("#rol").val();
-if (rol == 9 || rol == 5) {
-  setTimeout(function() {
-    const userData = localStorage.getItem('user_audiencia');
-    const userDataJson = JSON.parse(userData);
-    const token = userDataJson.token;
-    const nivel_rol = userDataJson.id_rol;
+// let rol = $("#rol").val();
+// if (rol == 9 || rol == 5) {
+//   setTimeout(function() {
+//     const userData = localStorage.getItem('user_audiencia');
+//     const userDataJson = JSON.parse(userData);
+//     const token = userDataJson.token;
+//     const nivel_rol = userDataJson.id_rol;
  
-    document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-    document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+//     document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+//     document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
 
-   window.location.href = '/inicio';
-  }, 700); // 700ms = 0.7 segundos
-}
+//    window.location.href = '/inicio';
+//   }, 700); // 700ms = 0.7 segundos
+// }
 
  

@@ -13,6 +13,13 @@
 //
 defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
 
+// app/Config/Constants.php
+
+// app/Config/Constants.php
+
+defined('URL_ENCUESTAS') || define('URL_ENCUESTAS', 'https://siac.sapi.gob.ve');
+
+
 /*
 |--------------------------------------------------------------------------
 | Composer Path

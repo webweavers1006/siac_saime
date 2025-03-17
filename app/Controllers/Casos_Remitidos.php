@@ -146,7 +146,6 @@ class Casos_Remitidos extends BaseController
 		
 		$model = new Casos();
 		$query = $model->listar_Casos_Remitidos($id_direccion);	
-		
 		if (empty($query)) {
 				$casos_remitidos = [];
 		} else {

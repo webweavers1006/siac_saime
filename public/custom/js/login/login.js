@@ -79,7 +79,7 @@ $(document).on('submit', "#login-user", function(e) {
                                         document.cookie = `nivel_rol=${nivel_rol}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
                                         document.cookie = `token=${token}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
                                 
-                                       window.location.href = '/pantalla_bienvenida';
+                                       window.location.href = '/inicio';
                                          
                                        }, 1400);
 

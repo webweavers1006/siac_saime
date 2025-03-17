@@ -385,6 +385,38 @@ $session = session();
                       </select>
                       <br />
                     </div>
+
+                    </div>
+<style>
+.notification-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Cambia el ancho a un porcentaje */
+    max-width: 600px; /* Establece un ancho máximo si es necesario */
+}
+.notification-card h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #333;
+}
+.notification-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+.extensions {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
+                    
+                    <div class="notification-card">
+                      <h2>Extensiones Permitidas</h2>
+                      <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt</p>
+                    </div>
                   
                   <div class="modal-footer ">
                     <!-- <button class="btn btn-light" type="reset">Limpiar</button> -->

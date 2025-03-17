@@ -29,7 +29,7 @@ $(function() {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -84,7 +84,7 @@ $(function() {
                  );
                  if (ente_adscrito_id === undefined) {
                      $.each(data, function(i, item) {
-                         //console.log(data)
+                         //
                          $("#ente-adscrito").append(
                              "<option value=" +
                              item.ente_id +
@@ -140,7 +140,7 @@ $(function() {
                  );
                  if (id === undefined) {
                      $.each(data, function(i, item) {
-                         //console.log(data)
+                         //
                          $("#red-social").append(
                              "<option value=" +
                              item.red_s_id +
@@ -190,7 +190,7 @@ function llenar_Estados(e, id) {
             // Puedes agregar un loader o alguna indicación de que se está cargando
         },
         success: function(data) {
-            //console.log(data);
+            //;
           
             if (data.length >= 1) {
                 $("#estado-caso").empty(); // Limpiar el combo
@@ -239,7 +239,7 @@ function llenar_pais(e, id) {
                
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#pais-caso").append(
                             "<option value=" +
                             item.paisid +
@@ -297,7 +297,7 @@ function llenar_pais(e, id) {
                  );
                  if (id === undefined) {
                      $.each(data, function(i, item) {
-                         //console.log(data)
+                         //
                          $("#tipo-pi").append(
                              "<option value=" +
                              item.tipo_prop_id +
@@ -621,7 +621,7 @@ if(data.length>=1)
          $.each(data, function(i, item)
          {
            $(".detelle_atencion").hide();
-              //console.log(data)
+              //
               $('#detalles_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
 
          });

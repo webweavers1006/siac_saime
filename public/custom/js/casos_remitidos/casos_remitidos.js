@@ -2,7 +2,8 @@ $('#btn_agregar').on('click', function(e) {
     window.location = '/vista_agregar_caso'
 });
 $(function() {
-    Listar_Casos();
+    let estatus =null
+    Listar_Casos(estatus);
 });
 
 llenar_Tipo_Beneficiarios(Event);
@@ -25,7 +26,7 @@ llenar_Tipo_Beneficiarios(Event);
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -244,7 +245,7 @@ function llenar_Red_social(e, idrrss) {
                 );
                 if (idrrss === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#red-social").append("<option value=" + item.red_s_id + ">" + item.red_s_nom + "</option>");
                     });
 
@@ -285,7 +286,7 @@ function llenar_Propiedad_Intelectual(e, tipo_prop_id) {
                 );
                 if (tipo_prop_id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-pi").append(
                             "<option vallistar_Parroquiasue=" +
                             item.tipo_prop_id +
@@ -332,7 +333,8 @@ function llenar_Propiedad_Intelectual(e, tipo_prop_id) {
 /*
  * Función para definir datatable de usuarios:
  */
-function Listar_Casos() {
+function Listar_Casos(estatus=null) {
+    let info;
     let rol_usuario=$('#rol_usuario').val();
     let ruta_imagen = rootpath;
     var encabezado = '';
@@ -444,9 +446,8 @@ function Listar_Casos() {
                 }
             ]
         },
-        "order": [
-            [0, "desc"]
-        ],
+        
+        order: [[7, (estatus === '1' || estatus === null) ? "asc" : "desc"]],
         "paging": true,
         "lengthChange": true,
 
@@ -458,30 +459,45 @@ function Listar_Casos() {
         ],
         "ordering": true,
         "info": true,
-        "autoWidth": true,
-        //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
-        "ajax": {
-            "url": "/listar_Casos_Remitidos",
-            "type": "GET",
+        autoWidth: false, // Cambiar a false para controlar el ancho manualmente
+
+        ajax: {
+
+            url: "/listar_Casos_Remitidos",
+
+            type: "GET",
+
             dataSrc: ''
+
         },
-        "columns": [
-            { data: 'casos_id' },
-            { data: 'cedula' },
-            { data: 'nombre' },
-            { data: 'casotel' },
-            { data: 'tipo_prop_nombre' },
-            { data: 'tipo_aten_nombre' },
-            { data: 'casofec' },
-            { data: 'estnom' },
-            { data: 'user_name' },
+
+        columns: [
+
+            { data: 'casos_id', width: "5%" },
+
+            { data: 'cedula', width: "10%" },
+
+            { data: 'nombre', width: "20%" },
+
+            { data: 'casotel', width: "10%" },
+
+            { data: 'tipo_prop_nombre', width: "15%" },
+
+            { data: 'tipo_aten_nombre', width: "15%" },
+
+            { data: 'casofec', width: "10%" },
+
+            { data: 'estnom', width: "10%" },
+
+            { data: 'user_name', width: "10%" },
+
             {
                 
                 data: null,
               
                 render: function(data, type, row) {
                 return  '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style=" font-size:1px" data-toggle="tooltip" title="Seguimientos"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.casos_id + '> <i class="material-icons ">search</i> </a>'  + ' ' +
-                '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"   paisid="' + row.paisid + '"   tipo_atend_borrado="' + row.tipo_atend_borrado + '"   act_pro_int="' + row.act_pro_int + '"   fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '"    denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >create</i></a>'
+                '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"   paisid="' + row.paisid + '"   tipo_atend_borrado="' + row.tipo_atend_borrado + '"   act_pro_int="' + row.act_pro_int + '"   fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '"    denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >attach_file</i></a>'
                         
                 }
             }
@@ -519,6 +535,19 @@ function Listar_Casos() {
             }, ]
 
         },
+        initComplete: function(settings, json) {
+            // Recuperar el estado de la paginación
+            let savedPage = localStorage.getItem('datatable_page');
+            if (savedPage !== null) {
+                table.page(parseInt(savedPage)).draw(false);
+                localStorage.removeItem('datatable_page');
+            }
+        }
+    });
+     // Guardar el estado de la paginación antes de recargar la página
+     table.on('page.dt', function () {
+        let info = table.page.info();
+        localStorage.setItem('datatable_page', info.page);
     });
 }
 
@@ -1169,7 +1198,7 @@ function llenar_Estados(e, estadoid) {
                 );
                 if (estadoid === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#estado-caso").append(
                             "<option value=" +
                             item.estadoid +
@@ -1293,7 +1322,7 @@ function llenar_Red_social(e, idrrss) {
                 );
                 if (idrrss === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#red-social").append("<option value=" + item.red_s_id + ">" + item.red_s_nom + "</option>");
                     });
 
@@ -1334,7 +1363,7 @@ function llenar_Propiedad_Intelectual(e, tipo_prop_id) {
                 );
                 if (tipo_prop_id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-pi").append(
                             "<option vallistar_Parroquiasue=" +
                             item.tipo_prop_id +
@@ -1392,7 +1421,7 @@ function llenar_Entes_asdcritos(e, ente_adscrito_id) {
                 );
                 if (ente_adscrito_id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#ente_adscrito_id").append(
                             "<option value=" +
                             item.ente_id +
@@ -2274,7 +2303,7 @@ function llenar_pais(e, id) {
                
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#pais-caso").append(
                             "<option value=" +
                             item.paisid +
@@ -2456,7 +2485,7 @@ function  llenar_detalle_atencion(e,id_tipo_atencion,tipo_atend_id,hijos_detalle
                         {      
                             $.each(data, function(i, item)
                             {
-                                //console.log(data)
+                                //
                                 $('#edit_detelle_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
                     
                             });
@@ -2500,3 +2529,14 @@ $('#editCase').on('hidden.bs.modal', function () {
 
   });
 
+
+
+
+$("#estatus").on('change', function(e) {
+
+    let estatus = $('#estatus').val();
+    $("#table_casos").dataTable().fnDestroy();
+  
+        Listar_Casos(estatus); // Fetch data first
+    
+});

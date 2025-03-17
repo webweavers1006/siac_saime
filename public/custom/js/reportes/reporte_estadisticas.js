@@ -21,7 +21,7 @@ function llenar_Estados(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#estado-caso").append(
                             "<option value=" +
                             item.estadoid +

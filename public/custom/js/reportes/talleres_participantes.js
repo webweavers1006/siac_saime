@@ -50,7 +50,7 @@ $(function() {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -335,7 +335,7 @@ function llenar_via_atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#via-atencion").append(
                             "<option value=" +
                             item.red_s_id +
@@ -390,7 +390,7 @@ function llenar_Propiedad_Intelectual(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-pi").append(
                             "<option value=" +
                             item.tipo_prop_id +
@@ -445,7 +445,7 @@ function llenar_Tipo_Atencion(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-atencion-usu").append(
                             "<option value=" +
                             item.tipo_aten_id +
@@ -502,7 +502,7 @@ function llenar_Estados(e, id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#estado-caso").append(
                             "<option value=" +
                             item.estadoid +
@@ -734,7 +734,7 @@ function llenar_detalle_atencion(e, id_tipo_atencion) {
             // Puedes agregar un spinner o un mensaje de carga aquí si lo deseas
         },
         success: function(data) {
-           console.log(data);
+           ;
             if (data.length >= 1) {
                 $('#edit_detelle_atencion').empty();
                 $('#edit_detelle_atencion').append('<option value="0" selected disabled>Seleccione</option>');

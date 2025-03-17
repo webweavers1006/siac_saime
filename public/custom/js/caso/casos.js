@@ -26,7 +26,7 @@ $(function() {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
@@ -229,14 +229,12 @@ $(document).on("click", "#subir_archivos", (e) => {
 /*
  * Función para definir datatable de usuarios:
  */
-
 function Listar_Casos() {
-    let rol_usuario=$('#rol_usuario').val();
+    let rol_usuario = $('#rol_usuario').val();
     let ruta_imagen = rootpath;
     var encabezado = '';
-    var table = $('#table_casos').DataTable({
+    let table = $('#table_casos').DataTable({
         responsive: true,
-      
         dom: "Bfrtip",
         buttons: {
             dom: {
@@ -245,119 +243,94 @@ function Listar_Casos() {
                 },
             },
             buttons: [{
-                    //definimos estilos del boton de pd
-                    extend: "pdf",
-                    text: 'PDF',
-                    className: 'btn-xs btn-dark',
-                    orientation: 'landscape',
-                    pageSize: 'LETTER',
-                    header: true,
-                    footer: true,
-                    download: 'open',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                extend: "pdf",
+                text: 'PDF',
+                className: 'btn-xs btn-dark',
+                orientation: 'landscape',
+                pageSize: 'LETTER',
+                header: true,
+                footer: true,
+                download: 'open',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                },
+                alignment: 'center',
+                customize: function(doc) {
+                    doc.content.splice(0, 1);
+                    doc.styles.title = {
+                        color: '#4c8aa0',
+                        fontSize: '18',
+                        alignment: 'center'
+                    }
+                    doc.styles['td:nth-child(2)'] = {
+                        width: '130px',
+                        'max-width': '130px'
                     },
-                    alignment: 'center',
-
-                    customize: function(doc) {
-                        //Remove the title created by datatTables
-                        doc.content.splice(0, 1);
-                        doc.styles.title = {
-                            color: '#4c8aa0',
-                            fontSize: '18',
-                            alignment: 'center'
-                        }
-                        doc.styles['td:nth-child(2)'] = {
-                                width: '130px',
-                                'max-width': '130px'
+                    doc.styles.tableHeader = {
+                        fillColor: '#4c8aa0',
+                        color: 'white',
+                        alignment: 'center'
+                    },
+                    doc.pageMargins = [40, 95, 0, 70];
+                    doc['header'] = (function(page, pages) {
+                        return {
+                            columns: [{
+                                margin: [10, 3, 40, 40],
+                                image: ruta_imagen,
+                                width: 780,
+                                height: 50,
                             },
-                            doc.styles.tableHeader = {
-                                fillColor: '#4c8aa0',
-                                color: 'white',
-                                alignment: 'center'
-                            },
-                            // Create a header
-                            doc.pageMargins = [40, 95, 0, 70];
-                        doc['header'] = (function(page, pages) {
-                            doc.styles.title = {
+                            {
+                                margin: [-800, 50, -25, 0],
                                 color: '#4c8aa0',
                                 fontSize: '18',
                                 alignment: 'center',
-                            }
-                            return {
-                                columns: [{
-                                        margin: [10, 3, 40, 40],
-                                        image: ruta_imagen,
-                                        width: 780,
-                                        height: 50,
-
-                                    },
-                                    {
-                                        margin: [-800, 50, -25, 0],
-                                        color: '#4c8aa0',
-                                        fontSize: '18',
-                                        alignment: 'center',
-                                        text: 'Control de Casos',
-                                        fontSize: 18,
-                                    },
-                                    {
-                                        margin: [-600, 80, -25, 0],
-                                        text: encabezado,
-                                    },
-                                ],
-                            }
-                        });
-                        // Create a footer
-                        doc['footer'] = (function(page, pages) {
-                            return {
-                                columns: [{
-                                    alignment: 'center',
-                                    text: ['pagina ', { text: page.toString() }, ' of ', { text: pages.toString() }]
-                                }],
-                            }
-                        });
-
-                    },
+                                text: 'Control de Casos',
+                                fontSize: 18,
+                            },
+                            {
+                                margin: [-600, 80, -25, 0],
+                                text: encabezado,
+                            }],
+                        }
+                    });
+                    doc['footer'] = (function(page, pages) {
+                        return {
+                            columns: [{
+                                alignment: 'center',
+                                text: ['pagina ', { text: page.toString() }, ' of ', { text: pages.toString() }]
+                            }],
+                        }
+                    });
                 },
-
-                {
-                    //definimos estilos del boton de excel
-                    extend: "excel",
-                    text: 'Excel',
-                    className: 'btn-xs btn-dark',
-                    title: 'Control de Casos',
-
-                    download: 'open',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-                    },
-                    excelStyles: {
-                        "template": [
-                            "blue_medium",
-                            "header_blue",
-                            "title_medium"
-                        ]
-                    },
-
-                }
-            ]
+            },
+            {
+                extend: "excel",
+                text: 'Excel',
+                className: 'btn-xs btn-dark',
+                title: 'Control de Casos',
+                download: 'open',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                },
+                excelStyles: {
+                    "template": [
+                        "blue_medium",
+                        "header_blue",
+                        "title_medium"
+                    ]
+                },
+            }]
         },
-        "order": [
-            [0, "desc"]
-        ],
+        "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,
-
         dom: 'Blfrtip',
         "searching": true,
-        "lengthMenu": [
-            [10, 25, 50, -1],
-            ['10', '25', '50', 'Todos']
-        ],
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
         "ordering": true,
         "info": true,
         "autoWidth": true,
-        //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
             "url": "/listar_Casos_Usuarios",
             "type": "GET",
@@ -374,9 +347,7 @@ function Listar_Casos() {
             { data: 'estnom' },
             { data: 'user_name' },
             {
-                
                 data: null,
-              
                 render: function(data, type, row) {
                     if(rol_usuario==1){
                         return '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"   pais="' + row.pais + '"   tipo_atend_borrado="' + row.tipo_atend_borrado + '"   act_pro_int="' + row.act_pro_int + '"   fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '"    denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >create</i></a>' + ' ' +
@@ -386,62 +357,66 @@ function Listar_Casos() {
                     }else if(rol_usuario==2){
                        return `<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style="font-size:1px" data-toggle="tooltip" title="Editar" tipo_atend_borrado="${row.tipo_atend_borrado}" act_pro_int="${row.act_pro_int}" fecha_nacimiento_normal="${row.fecha_nacimiento_normal}" tipo_atend_id="${row.tipo_atend_id}" edad="${row.edad}" fecha_nacimiento="${row.fecha_nacimiento}" profesion="${row.profesion}" denu_involucrados="${row.denu_involucrados}" denu_monto_aprovado="${row.denu_monto_aprovado}" denu_nombre_proyecto="${row.denu_nombre_proyecto}" denu_ente_financiador="${row.denu_ente_financiador}" denu_rif_instancia="${row.denu_rif_instancia}" denu_instancia_popular="${row.denu_instancia_popular}" denu_fecha_hechos="${row.denu_fecha_hechos}" denu_afecta_terceros="${row.denu_afecta_terceros}" denu_afecta_comunidad="${row.denu_afecta_comunidad}" denu_afecta_persona="${row.denu_afecta_persona}" asume_cgr="${row.asume_cgr}" competencia_cgr="${row.competencia_cgr}" ente_adscrito_id="${row.ente_adscrito_id}" correo="${row.correo}" direccion="${row.direccion}" tipo_beneficiario="${row.tipo_beneficiario}" casoape="${row.casoape}" casonom="${row.casonom}" cedula="${row.casoced}" caso_nacionalidad="${row.caso_nacionalidad}" sexo="${row.sexo}" casotel="${row.casotel}" casofec_normal="${row.casofec_normal}" idrrss="${row.idrrss}" ofiid="${row.ofiid}" estadoid="${row.estadoid}" tipo_prop_id="${row.tipo_prop_id}" id_tipo_atencion="${row.id_tipo_atencion}" casodesc="${row.casodesc}" municipioid="${row.municipioid}" parroquiaid="${row.parroquiaid}" idcaso="${row.idcaso}"><i class="material-icons">create</i></a> <a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style="font-size:1px" data-toggle="tooltip" title="Seguimientos" casoape="${row.casoape}" casonom="${row.casonom}" cedula="${row.casoced}" caso_nacionalidad="${row.caso_nacionalidad}" sexo="${row.sexo}" casotel="${row.casotel}" casofec_normal="${row.casofec_normal}" idrrss="${row.idrrss}" ofiid="${row.ofiid}" estadoid="${row.estadoid}" tipo_prop_id="${row.tipo_prop_id}" id_tipo_atencion="${row.id_tipo_atencion}" casodesc="${row.casodesc}" municipioid="${row.municipioid}" parroquiaid="${row.parroquiaid}" idcaso="${row.idcaso}"><i class="material-icons">search</i></a>`;
                         
-                    }else if(rol_usuario==3){
+                    } else if (rol_usuario == 3) {
                         return '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" pais="' + row.pais + '" tipo_atend_borrado="' + row.tipo_atend_borrado + '" tipo_atend_borrado="' + row.tipo_atend_borrado + '" act_pro_int="' + row.act_pro_int + '"  fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '"  denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >create</i></a>' + ' ' +
                         '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style=" font-size:1px" data-toggle="tooltip" title="Seguimientos"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >search</i> </a>' + ' ' +
                         '<a href="javascript:;" class="btn btn-xs btn-dark Imprimir" style=" font-size:1px" data-toggle="tooltip" title="Imprimir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"    tipo_atend_id="' + row.tipo_atend_id + '" cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >print</i> </a>' + ' ' + 
-                        '<a href="javascript:;" class="btn btn-xs btn-success Remitir" style=" font-size:1px" data-toggle="tooltip" title="Remitir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >redo</i> </a>' 
-                    }else if(rol_usuario==4){
+                        '<a href="javascript:;" class="btn btn-xs btn-success Remitir" style=" font-size:1px" data-toggle="tooltip" title="Remitir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >redo</i> </a>';
+                    } else if (rol_usuario == 4) {
                         return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style=" font-size:1px" data-toggle="tooltip" title="Seguimientos"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"  tipo_atend_id="' + row.tipo_atend_id + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >search</i> </a>' + ' ' +
-                        '<a href="javascript:;" class="btn btn-xs btn-dark Imprimir" style=" font-size:1px" data-toggle="tooltip" title="Imprimir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"  tipo_atend_id="' + row.tipo_atend_id + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >print</i> </a>'     
-                    } else if(rol_usuario==5){
+                        '<a href="javascript:;" class="btn btn-xs btn-dark Imprimir" style=" font-size:1px" data-toggle="tooltip" title="Imprimir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"  tipo_atend_id="' + row.tipo_atend_id + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >print</i> </a>';
+                    } else if (rol_usuario == 5) {
                         return '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"  pais="' + row.pais + '" tipo_atend_borrado="' + row.tipo_atend_borrado + '" act_pro_int="' + row.act_pro_int + '"  fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '" denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >create</i></a>' + ' ' +
                         '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style=" font-size:1px" data-toggle="tooltip" title="Seguimientos"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons ">search</i> </a>' + '  ' +
                         '<a href="javascript:;" class="btn btn-xs btn-success Remitir" style=" font-size:1px" data-toggle="tooltip" title="Remitir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >redo</i> </a>' +' '+
                         '<a href="javascript:;" class="btn btn-xs btn-dark Imprimir" style=" font-size:1px" data-toggle="tooltip" title="Imprimir"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >print</i> </a>' + ' ' +
-                        '<a href="javascript:;" class="btn btn-xs btn-light Bloquear" style=" font-size:1px" data-toggle="tooltip" title="Bloquear"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >delete</i> </a>'
+                        '<a href="javascript:;" class="btn btn-xs btn-light Bloquear" style=" font-size:1px" data-toggle="tooltip" title="Bloquear"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   tipo_atend_id="' + row.tipo_atend_id + '"  cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >delete</i> </a>';
                     }
-                   
-
                 }
             }
-
         ],
-
-        
-        "language": {
-            "sProcessing": "Procesando...",
-            "sLengthMenu": "Mostrar _MENU_ registros",
-            "sZeroRecords": "No se encontraron resultados",
-            "sEmptyTable": "Ningún dato disponible en esta tabla",
-            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sInfoPostFix": "",
-            "sSearch": "Buscar:",
-            "sUrl": "",
-            "sInfoThousands": ",",
-            "sLoadingRecords": "Cargando...",
-            "oPaginate": {
-                "sFirst": "Primero",
-                "sLast": "Último",
-                "sNext": "Siguiente",
-                "sPrevious": "Anterior"
+        language: {
+            sProcessing: "Procesando...",
+            sLengthMenu: "Mostrar _MENU_ registros",
+            sZeroRecords: "No se encontraron resultados",
+            sEmptyTable: "Ningún dato disponible en esta tabla",
+            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+            sInfoPostFix: "",
+            sSearch: "Buscar:",
+            sUrl: "",
+            sInfoThousands: ",",
+            sLoadingRecords: "Cargando...",
+            oPaginate: {
+                sFirst: "Primero",
+                sLast: "Último",
+                sNext: "Siguiente",
+                sPrevious: "Anterior"
             },
-            "oAria": {
-                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-            },
-            "columnDefs": [{
-                "targets": [0],
-                "visible": false,
-                "searchable": false
-            }, ]
-
+            oAria: {
+                sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+                sSortDescending: ": Activar para ordenar la columna de manera descendente"
+            }
         },
+        initComplete: function(settings, json) {
+            // Recuperar el estado de la paginación
+            let savedPage = localStorage.getItem('datatable_page');
+            if (savedPage !== null) {
+                table.page(parseInt(savedPage)).draw(false);
+                localStorage.removeItem('datatable_page');
+            }
+        }
+    });
+
+    // Guardar el estado de la paginación antes de recargar la página
+    table.on('page.dt', function () {
+        let info = table.page.info();
+        localStorage.setItem('datatable_page', info.page);
     });
 }
-let competencia_cgr = '';
+
+                        let competencia_cgr = '';
 let asume_cgr = '';
 let denu_afecta_persona = '';
 let denu_afecta_comunidad = '';
@@ -1013,7 +988,7 @@ function llenar_Estados(e, estadoid) {
                 );
                 if (estadoid === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#estado-caso").append(
                             "<option value=" +
                             item.estadoid +
@@ -1137,7 +1112,7 @@ function llenar_Red_social(e, idrrss) {
                 );
                 if (idrrss === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#red-social").append("<option value=" + item.red_s_id + ">" + item.red_s_nom + "</option>");
                     });
 
@@ -1178,7 +1153,7 @@ function llenar_Propiedad_Intelectual(e, tipo_prop_id) {
                 );
                 if (tipo_prop_id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#tipo-pi").append(
                             "<option vallistar_Parroquiasue=" +
                             item.tipo_prop_id +
@@ -1283,7 +1258,7 @@ function llenar_Entes_asdcritos(e, ente_adscrito_id) {
                 );
                 if (ente_adscrito_id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#ente_adscrito_id").append(
                             "<option value=" +
                             item.ente_id +
@@ -2449,7 +2424,7 @@ function  llenar_detalle_atencion(e,id_tipo_atencion,tipo_atend_id,hijos_detalle
                         {      
                             $.each(data, function(i, item)
                             {
-                                //console.log(data)
+                                //
                                 $('#edit_detelle_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
                     
                             });
@@ -2510,7 +2485,7 @@ function llenar_pais(e, id) {
                
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //console.log(data)
+                        //
                         $("#pais-caso").append(
                             "<option value=" +
                             item.paisid +

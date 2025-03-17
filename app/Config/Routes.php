@@ -185,7 +185,7 @@ $routes->setAutoRoute(false);
      $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
-     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15");
+     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
      //RUTAS PARA LAS ESTADISTICAS
      $routes->get('/estadisticas', "Reporte_Controler::vista_estadisticas");
      $routes->get('/estadal/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_estadal/$1/$2");
@@ -230,7 +230,17 @@ $routes->setAutoRoute(false);
      $routes->get('/Talleres_Participantes', "Talleres_Participantes_Controler::Talleres_Participantes");
      $routes->get('/listar_talleres_participantes/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Talleres_Participantes_Controler::listar_talleres_participantes/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
     
+          
+     //RUTAS PARA ENCUESTAS DE SASTIFACION
+     $routes->get('/vista_Encuesta', "Encuesta_sastifaccion_Controler::vista_Encuesta");
+     $routes->get('/Vista_Detalle_Encuesta/(:any)', "Encuesta_sastifaccion_Controler::Vista_Detalle_Encuesta/$1");
+
+ 
+       
+     //RUTAS PARA  GRAFICAS DE ENCUESTAS DE SASTIFACION
+     $routes->get('/vista_Grafica_Encuestas/(:any)/(:any)', "Encuesta_sastifaccion_Controler::vista_Grafica_Encuestas/$1/$2");
      
+ 
 
      
 

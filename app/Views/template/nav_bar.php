@@ -67,7 +67,11 @@ $userdata = $session->get();
           </div>
 <br>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu1">
-          <li class="nav-item ">
+          
+
+
+        
+        <li class="nav-item ">
             <a href="<?php echo base_url(); ?>/pantalla_bienvenida" class="nav-link active"><i class="nav-icon fas fa-tachometer-alt"></i>
               <p>Inicio </p>
             </a>
@@ -140,7 +144,8 @@ $userdata = $session->get();
                     <p>Analista</p>
                   </a>
                 </li>
-
+                
+                
                 <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/Talleres_Participantes" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
@@ -180,6 +185,14 @@ $userdata = $session->get();
                 <p> Estadal</p>
                 <i class="right fas fa-angle-left"></i>
               </a>
+
+              <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
+                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
+                    <p>Graficas Encuestas </p>
+                  </a>
+                </li>
+
              
               <ul class="nav nav-treeview">
               <li class="nav-item">
@@ -342,6 +355,7 @@ $userdata = $session->get();
 
  
                <?php
+               
                   if (isset($userdata['permisos']['permisos'])) {
                       // Verificar permisos para "requerimientos.read"
                       if (in_array('requerimientos.read', $userdata['permisos']['permisos'])) {

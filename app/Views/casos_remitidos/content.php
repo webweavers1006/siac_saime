@@ -39,13 +39,21 @@ $session = session();
               <div class="d-flex justify-content-between">
               <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Casos Remitidos </h3>
               <h5 class="text-primary"> <?php echo $direccion;?></h5>
-                
+              <div class="col-lg-2 col-sm-2 col-md-2">
+                                <label for="estatus">Estatus:</label>
+                                <select class="form-control" id="estatus" name="estatus">
+                                    <option value="0" selected disabled>seleccione</option>
+                                    <option value="1">Abierto</option>
+                                    <option value="2">Cerrado</option>
+                                </select>
+                            </div> 
                 <input type="hidden" name="" id="rol_usuario" value="<?php echo($session->get('userrol'));?>">
                 </h3>
                 <input type="hidden" name="" id="mensaje_documento" value="<?php echo $mensaje ?>">
 
                 
               </div>
+              
               <div class="row">
                   <div class="col-lg-12 col-sm-12 col-md-12 ">
                     
@@ -99,7 +107,7 @@ $session = session();
             <!--Form-->
             <div class="row">
               <div class="col-lg-12 col-sm-12 col-md-12 ">
-                <div class="card">
+                <div class="card "style="  pointer-events: none; opacity: 0.6;" >
                   <!-- <form role="form" id="editar_caso" name="editar_caso"> -->
                   <input type="hidden" id="id_caso">
                  
@@ -371,26 +379,63 @@ $session = session();
                       </div>
                     </div>
                     <br>
-                    <div class="row">
-                      <form id="miFormulario" enctype="multipart/form-data">
-                        <input type="file" class="mi-estilo" id="archivo" name="archivo">
-                        <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="button" id="subir_archivos" enctype="multipart/form-data" class="btn btn-sm btn-primary" value="Subir archivo">
-                      </form>&nbsp;&nbsp;&nbsp;&nbsp;
-                      <label for="t-beneficiario">DOCUMENTOS CASO</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                      <select class="form-control" style="width: 350px;" id="docu-casos" name="docu-casos">
-                        <option value="0" selected disabled>Seleccione</option>
-                      </select>
-                      <br />
+
+
+
+
+                    
+                  </div>
+                    <div class="row" style="pointer-events: auto; opacity: 1;">
+                        <form id="miFormulario" enctype="multipart/form-data">
+                            <input type="file" class="mi-estilo" id="archivo" name="archivo">
+                            <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="button" id="subir_archivos" enctype="multipart/form-data" class="btn btn-sm btn-primary" value="Subir archivo">
+                        </form>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label for="t-beneficiario">DOCUMENTOS CASO</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <select class="form-control" style="width: 270px;" id="docu-casos" name="docu-casos">
+                            <option value="0" selected disabled>Seleccione</option>
+                        </select>
+                        <br />
                     </div>
-                  
-                  <div class="modal-footer ">
+<style>
+.notification-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Cambia el ancho a un porcentaje */
+    max-width: 600px; /* Establece un ancho máximo si es necesario */
+}
+.notification-card h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #333;
+}
+.notification-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+.extensions {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
+                    
+                    <div class="notification-card">
+                      <h2>Extensiones Permitidas</h2>
+                      <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt</p>
+                    </div>
+                    
+                    <div class="modal-footer ">
                     <!-- <button class="btn btn-light" type="reset">Limpiar</button> -->
                     <button class="btn  btn-sm btn-primary" id="editar_caso" type="submit">Guardar</button>
                     <button type="button" class="btn  btn-sm  btn-danger" data-dismiss="modal">Cerrar</button>
                   </div>
+                 
                   <!-- </form> -->
-                </div>
+               
               </div>
             </div>
           </div>
