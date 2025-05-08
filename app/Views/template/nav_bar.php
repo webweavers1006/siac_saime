@@ -154,15 +154,20 @@ $userdata = $session->get();
                 </li>
               <?php } ?>
 
-              
+              <!-- <php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
+                <li class="nav-item">
+                  <a href="<php echo base_url(); ?>/atencion" class="nav-link">
+                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
+                    <p>Atencion</p>
+                  </a>
+                </li>
+              <php } ?> -->
              
             </ul>
           </li>
           <?php } ?>
           
-          <?php 
-$userRoles = [1, 3, 5, 6];
-if (in_array($session->get('userrol'), $userRoles)) { ?>
+          <?php if (in_array($session->get('userrol'), [1, 3, 5, 6])): ?>
   <li class="nav-item">
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-chart-bar"></i>
@@ -221,50 +226,38 @@ if (in_array($session->get('userrol'), $userRoles)) { ?>
           </li>
         </ul>
       </li>
+      <?php if (in_array($session->get('userrol'), [1, 5, 6])): ?>
+        <li class="nav-item">
+          <a href="<?php echo base_url(); ?>/Control_Visitas" class="nav-link">
+            <i class="nav-icon fas fa-users" style='font-size:20px'></i>
+            <p>Contador de Visitas</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-chart-bar"></i>
+            <p>Estad. Audiencias</p>
+            <i class="right fas fa-angle-left"></i>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
+                <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
+                <p>Citas otorgadas</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
+                <i class="nav-icon fas fa-file" style='font-size:20px'></i>
+                <p>Casos por categoría</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+      <?php endif; ?>
     </ul>
   </li>
-<?php } ?>
-              <?php if ($session->get('userrol') == 5 or $session->get('userrol') == 1 or $session->get('userrol') == 6) { ?>
-              <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/Control_Visitas" class="nav-link">
-                  <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
-                    <p>Contador de Visitas</p>
-                  </a>
-              </li>
-                      <!-- ESTADISTICAS AUDIENCIAS -->
-                      <li class="nav-item">
-                      <a href="#" class="nav-link" id="">
-                          <i class="nav-icon fas fa-chart-bar"></i>
-                          <p>Estad. Audiencias</p> 
-                          <i class="right fas fa-angle-left"></i> 
-                      </a>
-                      <ul class="nav nav-treeview">
-                      <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
-                              <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
-                                  <p>Citas otorgadas</p>
-                              </a>
-                          </li> 
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
-                                  <i class="nav-icon fas fa-file" style='font-size:20px'></i>
-                                  <p>Casos por categoría</p>
-                              </a>
-                          </li>   
-                      </ul>
-                  </li>
-
-
-
-            </ul>
-               
-
-          </li>
-
-
-          <?php } ?>
-       
-         
+<?php endif; ?>
        
 
      
