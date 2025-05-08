@@ -154,81 +154,76 @@ $userdata = $session->get();
                 </li>
               <?php } ?>
 
-              <!-- <php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
-                <li class="nav-item">
-                  <a href="<php echo base_url(); ?>/atencion" class="nav-link">
-                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
-                    <p>Atencion</p>
-                  </a>
-                </li>
-              <php } ?> -->
+              
              
             </ul>
           </li>
           <?php } ?>
           
-          <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5 or $session->get('userrol') == 6) { ?>
+          <?php 
+$userRoles = [1, 3, 5, 6];
+if (in_array($session->get('userrol'), $userRoles)) { ?>
+  <li class="nav-item">
+    <a href="#" class="nav-link">
+      <i class="nav-icon fas fa-chart-bar"></i>
+      <p>Estadísticas</p>
+      <i class="right fas fa-angle-left"></i>
+    </a>
+    <ul class="nav nav-treeview">
+      <li class="nav-item">
+        <a href="<?php echo base_url(); ?>/estadisticas" class="nav-link">
+          <i class="nav-icon fas fa-globe" style='font-size:20px'></i>
+          <p>Global</p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link">
+          <i class="nav-icon fa fa-book"></i>
+          <p>Estadal</p>
+          <i class="right fas fa-angle-left"></i>
+        </a>
+        <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="#" class="nav-link" id=""><i class="nav-icon  nav-icon fas fa-chart-bar"></i>
-              <p> Estadísticas</p>
-              <i class="right fas fa-angle-left"></i>
+            <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
+              <i class="nav-icon fas fa-users" style='font-size:20px'></i>
+              <p>Graficas Encuestas</p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadisticas" class="nav-link">
-                    <i class="nav-icon 	 fas fa-globe" style='font-size:20px'></i>
-                    <p>Global</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-              <a href="#" class="nav-link" id=""><i class="nav-icon fa  fa-book"></i>
-                <p> Estadal</p>
-                <i class="right fas fa-angle-left"></i>
-              </a>
-
-              <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
-                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
-                    <p>Graficas Encuestas </p>
-                  </a>
-                </li>
-
-             
-              <ul class="nav nav-treeview">
-              <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadal/null/null" class="nav-link">
-                    <i class="nav-icon 	 fa fa-bookmark  " style='font-size:20px'></i>
-                    <p>Estatus</p>
-                  </a>
-              </li>
-                <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadisticas_benificiario/null/null" class="nav-link">
-                    <i class="nav-icon 	fas  fa-address-card " style='font-size:20px'></i>
-                    <p>Beneficiario</p>
-                  </a>
-                </li>
-               
-                <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadisticas_propiedad_intelectual/null/null" class="nav-link">
-                    <i class="nav-icon 	fas  fas fa-clipboard " style='font-size:20px'></i>
-                    <p>Propiedad Intelectual</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                  <a href="<?php echo base_url(); ?>/estadisticas_tipo_atencion/null/null" class="nav-link">
-                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
-                    <p>Tipo Atencion</p>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-              <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
-                  <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
-                  <p>Mapa de Venezuela</p>
-              </a>
-            </li>
-
-              </ul>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadal/null/null" class="nav-link">
+              <i class="nav-icon fa fa-bookmark" style='font-size:20px'></i>
+              <p>Estatus</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas_benificiario/null/null" class="nav-link">
+              <i class="nav-icon fas fa-address-card" style='font-size:20px'></i>
+              <p>Beneficiario</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas_propiedad_intelectual/null/null" class="nav-link">
+              <i class="nav-icon fas fa-clipboard" style='font-size:20px'></i>
+              <p>Propiedad Intelectual</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas_tipo_atencion/null/null" class="nav-link">
+              <i class="nav-icon fas fa-chalkboard-teacher" style='font-size:20px'></i>
+              <p>Tipo Atencion</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
+              <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
+              <p>Mapa de Venezuela</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+<?php } ?>
               <?php if ($session->get('userrol') == 5 or $session->get('userrol') == 1 or $session->get('userrol') == 6) { ?>
               <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/Control_Visitas" class="nav-link">
@@ -268,7 +263,7 @@ $userdata = $session->get();
 
 
           <?php } ?>
-          <?php } ?>
+       
          
        
 
