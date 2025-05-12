@@ -411,11 +411,25 @@ $session = session();
     margin-top: 10px;
     font-weight: bold;
 }
+
+body {
+    margin: 0;
+    padding: 1em;
+    font-family: Arial, sans-serif;
+  }
+.extensions2 {
+    color: blue;
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 1em 0;
+    white-space: nowrap;
+  }
 </style>
                     
                     <div class="notification-card">
                       <h2>Extensiones Permitidas</h2>
-                      <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt</p>
+                      <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt </p>
+                      <p class="extensions2">Tamaño Maximo 10MB  </p>
                     </div>
                   
                   <div class="modal-footer ">
