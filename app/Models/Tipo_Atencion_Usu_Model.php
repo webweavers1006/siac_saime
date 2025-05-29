@@ -56,7 +56,7 @@ class Tipo_Atencion_Usu_Model extends BaseModel
     {
         $db = \Config\Database::connect();
         $builder = $db->table('public.sgc_tipoatencion_usu as a_usu');
-        $builder->select('a_usu.env_correo,a_usu.acc_participantes, a_usu.act_pro_int, a_usu.tipo_aten_id, a_usu.tipo_aten_nombre');
+        $builder->select('a_usu.organismo_pp,a_usu.env_correo,a_usu.acc_participantes, a_usu.act_pro_int, a_usu.tipo_aten_id, a_usu.tipo_aten_nombre');
         $builder->select("CASE WHEN a_usu.tipo_aten_borrado = 'f' THEN 'Activo' ELSE 'Inactivo' END as borrado");
         $query = $builder->get();
         $resultado = $query->getResult();

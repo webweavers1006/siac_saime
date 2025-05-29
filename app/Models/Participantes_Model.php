@@ -9,26 +9,32 @@ class Participantes_Model extends Model
 {
     public function agregar_participante($participantes)
     {
-        $ids_insertados = [];
-        $builder = $this->db->table('sgc_participantes'); // Asegúrate de que este sea el nombre correcto de tu tabla
-        $query = $builder->insert($participantes);
-        if ($query) {
-            $ids_insertados[] = $this->db->insertID(); 
-        } else {
-            return false; 
+        $builder = $this->db->table('sgc_participantes');
+        
+        try {
+            $builder->insert($participantes);
+            return $this->db->insertID(); // Retorna el ID del participante insertado
+        } catch (\Exception $e) {
+            error_log('Error al insertar participante: ' . $e->getMessage());
+            return false; // Retorna false si la inserción falla
         }
-    
-        return $ids_insertados; 
     }
 
    public function agregar_participantes_talleres($info_talleres)
 {
+
+   
+
+
     $builder = $this->db->table('sgc_talleres_participantes');
     try {
         foreach ($info_talleres as $dato) {
             $builder->insert([
                 'id_caso' => $dato['id_caso'], // Cambié para acceder directamente al id_caso
-                'participante_id' => $dato['participante_id'] 
+                'participante_id' => $dato['participante_id'] ,
+                'org_id' => $dato['org_id'] 
+
+                
             ]);
         }
         return true; 
@@ -44,7 +50,7 @@ class Participantes_Model extends Model
     public function listar_participantes($idcaso)
     {
         $builder = $this->db->table('public.sgc_talleres_participantes as t');
-        $builder->select("p.id, p.nombre || ' ' || p.apellido as nombre_completo, p.cedula, p.nacionalidad, p.tipo_beneficiario,p.edad");
+        $builder->select("t.id as id_taller,t.org_id,p.id, p.nombre || ' ' || p.apellido as nombre_completo, p.cedula, p.nacionalidad, p.tipo_beneficiario,p.edad");
         $builder->select("p.edad, p.pais, p.estado, p.municipio, p.parroquia, p.telefono,p.sexo");
         $builder->select("p.nombre, p.apellido");
         $builder->select("b.tipo_beneficiario_nombre,");

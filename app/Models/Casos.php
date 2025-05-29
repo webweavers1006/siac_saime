@@ -8,12 +8,13 @@ class Casos extends BaseModel
     
     public function obtenerCasos()
     {
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
         $builder->distinct();
         $builder->select('d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario,a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
         $builder->select('a.pais,a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
-        $builder->select('a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
+        $builder->select('a.caso_org_id,a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
         $builder->select('cgr.competencia_cgr, cgr.asume_cgr');
@@ -25,7 +26,7 @@ class Casos extends BaseModel
         $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
-        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int');
+        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
         $builder->join('sgc_estatus b', 'b.idest = a.idest');
         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
@@ -49,7 +50,7 @@ class Casos extends BaseModel
         $builder = $db->table('sgc_casos as a');
         $builder->distinct();
         $builder->select('a.idcaso, a.tipo_beneficiario, a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
-        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+        $builder->select('a.caso_org_id,a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
         $builder->select('a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
@@ -62,7 +63,7 @@ class Casos extends BaseModel
         $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
-        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int');
+        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
         $builder->join('sgc_estatus b', 'b.idest = a.idest');
         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
@@ -298,10 +299,10 @@ class Casos extends BaseModel
 
      //Metodo para obtener todos los casos para el reporte consolidado 
 
-     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null, $edad_min = null, $edad_max = null, $detalle_atencion = 0)
+     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null, $edad_min = null, $edad_max = null, $detalle_atencion = 0,$org_id = 0)
      {
 
-        
+       
          $db = \Config\Database::connect();
          $builder = $db->table('sgc_casos as a');
          $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
@@ -390,6 +391,9 @@ class Casos extends BaseModel
             $builder->where('a.parroquiaid', $id_parroquia);
         }
 
+        if ($org_id != '0' && $org_id != 'null') {
+            $builder->where('a.caso_org_id', $org_id);
+        }
         
         $builder->orderBy('a.idcaso', 'desc');
         $query = $builder->get();
@@ -398,7 +402,7 @@ class Casos extends BaseModel
         return $resultado;
     }
         
-  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null)
+  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null,$org_id = 0)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
@@ -479,7 +483,10 @@ class Casos extends BaseModel
         if ($id_parroquia != '0' && $id_parroquia != 'null'&& $id_parroquia != '1135') {
             $builder->where('a.parroquiaid', $id_parroquia);
         }
-
+        if ($org_id != '0' && $org_id != 'null') {
+            $builder->where('a.caso_org_id', $org_id);
+        }
+        
 
         $builder->orderBy('a.idcaso', 'desc');
         $query = $builder->get();
@@ -806,6 +813,36 @@ class Casos extends BaseModel
         $resultado = $query->getResult();
         return $resultado;
     }
+
+ 
+// //BUSCAMOS LOS CASOS ESTADALES POR ORGANISMO DEL PODER POPULAR
+public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
+{ 
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos AS c');
+    $builder->select('COUNT(c.caso_org_id) AS count, COALESCE(org.org_nombre) AS org_nombre, estados.estadonom');
+    $builder->join('sgc_org_pod_popular AS org', 'c.caso_org_id = org.org_id', 'right');
+    $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
+    $builder->where('COALESCE(c.borrado, FALSE)', false);
+    $builder->where('COALESCE(org.org_borrado, FALSE)', false);
+    if ($desde != 'null' && $hasta != 'null') {
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
+    }
+    // Agrupación y ordenación
+    $builder->groupBy('org.org_nombre, estados.estadonom');
+    $builder->orderBy('estados.estadonom', 'ASC');
+    // Ejecutar la consulta
+     //$query = $builder->get();
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    
+    return $resultado;
+}
+
+
+
+
 
 
     // Método que cuenta los casos estadales por tipo de propiedad intelectual

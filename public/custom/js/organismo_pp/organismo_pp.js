@@ -1,12 +1,13 @@
 $(function() {
-    listar_Direcciones_Administra();
+    listar_via_de_atencion();
+
 });
 
 /*
  * Función para definir datatable:
  */
-function listar_Direcciones_Administra() {
-    $('#table_direcciones').DataTable({
+function listar_via_de_atencion() {
+    $('#table_Organismos_pp').DataTable({
         "order": [
             [0, "desc"]
         ],
@@ -17,13 +18,13 @@ function listar_Direcciones_Administra() {
         "autoWidth": true,
         //"stateSave":true,
         "ajax": {
-            "url": "/Listar_Tipo_Atencion/",
+            "url": "/Listar_organismo_pp/",
             "type": "GET",
             dataSrc: ''
         },
         "columns": [
-            { data: 'tipo_aten_id' },
-            { data: 'tipo_aten_nombre' },
+            { data: 'org_id' },
+            { data: 'org_nombre' },
             { data: 'borrado' },
 
 
@@ -31,7 +32,7 @@ function listar_Direcciones_Administra() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" organismo_pp=' + row.organismo_pp + ' env_correo=' + row.env_correo + ' taller=' + row.acc_participantes + '  act_pro_int=' + row.act_pro_int + '   tipo_aten_id=' + row.tipo_aten_id + '    tipo_aten_nombre="' + row.tipo_aten_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     org_id=' + row.org_id + '    org_nombre="' + row.org_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
 
                 }
             }
@@ -70,26 +71,24 @@ function listar_Direcciones_Administra() {
     });
 }
 
-// //EVENTO PARA AGREGAR UN NUEVO TIPO DE ATENCION
-$(document).on('submit', "#new-atencion", function(e) {
+
+
+
+
+
+
+
+// //EVENTO PARA AGREGAR UN NUEVO TIPO DE ORGANISMO
+$(document).on('submit', "#new-organismo_pp", function(e) {
     e.preventDefault();
-    let descripcion = $("#name-atencion").val();
-    let act_pro_int = $("#acceso_pro_int").is(':checked') ? "true" : "false";
-    let acc_participantes = $("#participantes").is(':checked') ? "true" : "false";
-    let env_correo = $("#correo").is(':checked') ? "true" : "false";
-    let organismo_pp = $("#organismo_pp").is(':checked') ? "true" : "false";
-    descripcion = descripcion.trim();
+    let org_nombre = $("#name-organismo_pp").val();
+    org_nombre = org_nombre.trim();
     let datos = {
-        "descripcion": descripcion,
-        "act_pro_int": act_pro_int,
-        "acc_participantes": acc_participantes,
-        "env_correo": env_correo,
-        "organismo_pp": organismo_pp,
+        "org_nombre": org_nombre,
     }
 
-
     $.ajax({
-        url: "/add_Tipo_Atencion",
+        url: "/add_organismo_pp",
         method: "POST",
         dataType: "JSON",
         data: {
@@ -112,7 +111,7 @@ $(document).on('submit', "#new-atencion", function(e) {
 
                 });
                 setTimeout(function() {
-                    window.location = "/vista_tipo_atencion";
+                    window.location = "/vista_organismo_pp";
                 }, 1500);
             } else if (mensaje == 2) {
                 Swal.fire({
@@ -125,7 +124,7 @@ $(document).on('submit', "#new-atencion", function(e) {
                     //timer: 1500,
                 });
                 setTimeout(function() {
-                    window.location = "/vista_tipo_atencion";
+                    window.location = "/vista_organismo_pp";
                 }, 1500);
             }
         }
@@ -134,27 +133,15 @@ $(document).on('submit', "#new-atencion", function(e) {
 
 
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION
-$('#listar_tipo_atencion').on('click', '.Editar', function(e) {
-    var id_atencion = $(this).attr('tipo_aten_id');
-    var descripcion = $(this).attr('tipo_aten_nombre');
-    var act_pro_int = $(this).attr('act_pro_int');
+$('#listar_organismo_pp').on('click', '.Editar', function(e) {
+    var org_id = $(this).attr('org_id');
+    var org_nombre = $(this).attr('org_nombre');
     var borrado = $(this).attr('borrado');
-    var taller = $(this).attr('taller');
-    var env_correo = $(this).attr('env_correo');
-    var organismo_pp = $(this).attr('organismo_pp');
     $("#editar").modal("show");
-    $('#editar').find('#editar-atencion').val(descripcion);
-    $('#editar').find('#id-atencion').val(id_atencion);
+    // Limpia todos los checkboxes dentro del modal
 
-     
-    if (act_pro_int == 't') {
-        $('#edit_acceso_pro_int').attr('checked', 'checked');
-        $('#edit_acceso_pro_int').val('true');
-    }
-    if (act_pro_int == 'f') {
-        $('#edit_acceso_pro_int').removeAttr('checked')
-        $('#edit_acceso_pro_int').val('false')
-    }
+    $('#editar').find('#editar-org_nombre').val(org_nombre);
+    $('#editar').find('#org_id').val(org_id);
 
     if (borrado == 'Activo') {
         $('#borrado').attr('checked', 'checked');
@@ -164,47 +151,16 @@ $('#listar_tipo_atencion').on('click', '.Editar', function(e) {
         $('#borrado').removeAttr('checked')
         $('#borrado').val('true')
     }
-    if (taller == 't') {
-        $('#edit_participantes').attr('checked', 'checked');
-        $('#edit_participantes').val('false');
-    }
-    if (taller == 'f') {
-        $('#edit_participantes').removeAttr('checked')
-        $('#edit_participantes').val('f')
-    }
-    if (env_correo == 't') {
-        $('#edit_correo').attr('checked', 'checked');
-        $('#edit_correo').val('false');
-    }
-    if (env_correo == 'f') {
-        $('#edit_correo').removeAttr('checked')
-        $('#edit_correo').val('f')
-    }
-
-    if (organismo_pp == 't') {
-        $('#edit_organismo_pp').attr('checked', 'checked');
-        $('#edit_organismo_pp').val('false');
-    }
-    if (organismo_pp == 'f') {
-        $('#edit_organismo_pp').removeAttr('checked')
-        $('#edit_organismo_pp').val('f')
-    }
-
-
-    
 
 });
 
 
 // //Evento para guardar la edicion
-$(document).on('submit', "#edit-atencion", function(e) {
+$(document).on('click', "#btnActualizar", function(e) {
     e.preventDefault();
-    let descripcion = $("#editar-atencion").val();
+    let org_nombre = $("#editar-org_nombre").val();
     let borrado = $("#borrado").val();
-    let id_atencion = $("#id-atencion").val();
-    let acc_participantes = $("#edit_participantes").val();
-    let env_correo = $("#edit_correo").val();
-    let organismo_pp = $("#edit_organismo_pp").val();
+    let org_id = $("#org_id").val();
     if ($('#borrado').is(':checked')) {
         borrado = 'false';
 
@@ -212,58 +168,13 @@ $(document).on('submit', "#edit-atencion", function(e) {
         borrado = 'true';
 
     }
-
-    if ($('#edit_correo').is(':checked')) {
-        env_correo = 'true';
-
-    } else {
-        env_correo = 'false';
-
-    }
-
-
-
-    if ($('#edit_acceso_pro_int').is(':checked')) {
-        act_pro_int = 'true';
-
-    } else {
-        act_pro_int = 'false';
-
-    }
-
-    if ($('#edit_participantes').is(':checked')) {
-
-        acc_participantes = 'true';
-
-    } else {
-        acc_participantes = 'false';
-    }
-
-
-    if ($('#edit_organismo_pp').is(':checked')) {
-
-        organismo_pp = 'true';
-
-    } else {
-        organismo_pp = 'false';
-    }
-
-    
-
-
-
     let datos = {
-        "descripcion": descripcion,
+        "org_nombre": org_nombre,
         "borrado": borrado,
-        "id_atencion": id_atencion,
-        "act_pro_int": act_pro_int,
-        "acc_participantes": acc_participantes,
-        "env_correo": env_correo,
-        "organismo_pp": organismo_pp,
+        "org_id": org_id,
     }
-   
     $.ajax({
-        url: "/editTipoAtencion",
+        url: "/edit_organimo_pp",
         method: "POST",
         dataType: "JSON",
         data: {
@@ -284,7 +195,7 @@ $(document).on('submit', "#edit-atencion", function(e) {
                     //timer: 3500,
                 });
                 setTimeout(function() {
-                    window.location = "/vista_tipo_atencion";
+                    window.location = "/vista_organismo_pp";
                 }, 1500);
             } else if (mensaje === 2) {
                 Swal.fire({
@@ -297,10 +208,12 @@ $(document).on('submit', "#edit-atencion", function(e) {
                     //timer: 1500,
                 });
                 setTimeout(function() {
-                    window.location = "/vista_tipo_atencion";
+                    window.location = "/vista_organismo_pp";
                 }, 1500);
             }
         }
     });
 
 });
+
+

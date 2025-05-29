@@ -9,7 +9,7 @@ class Talleres_Participantes_Model extends Model
 {
     
 
-    public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
+    public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0,$org_id=0)
     {
 
         
@@ -55,6 +55,11 @@ class Talleres_Participantes_Model extends Model
         if ($id_estado != '0' && $id_estado != 'null') {
             $builder->where("p.estado", $id_estado);
         }
+        
+        if ($org_id != '0' && $org_id != 'null') {
+            $builder->where("t.org_id", $org_id);
+        }
+        
 
         if ($id_municipio != '0' && $id_municipio != 'null') {
             $builder->where("p.municipio", $id_municipio);
@@ -67,5 +72,26 @@ class Talleres_Participantes_Model extends Model
         $resultado = $builder->get()->getResult();
         return $resultado;
     }
+
+
+    public function editar_org_taller($info_talleres)
+    {
+        $participante_id = (int) $info_talleres['participante_id'];
+        $id = (int) $info_talleres['id'];
+        $org_id = (int) $info_talleres['org_id'];
+        $builder = $this->db->table('sgc_talleres_participantes');
+        $builder->where('id', $id);
+        $builder->where('participante_id', $participante_id);
+        $data = [
+            'org_id' => $org_id
+        ];
+        $success = $builder->update($data);
+    
+        return $success;
+    }
+    
+
+
+    
 
 }

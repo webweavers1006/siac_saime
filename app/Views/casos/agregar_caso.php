@@ -362,7 +362,13 @@ to {
           <option value="2">Dirección de Atención Estadal</option>
           </select>
       </div>
+
+     
+
+
       <?php } ?>
+
+      
       <div class="col-lg-5 col-sm-5 col-md-5">
           <label for="correo">Correo Electrónico</label>
           <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
@@ -417,14 +423,23 @@ to {
               <option value="0" disabled>Seleccione</option>
               </select>
           </div>
+
+          
+
+
           <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
               <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
               <option value="0">Seleccione</option>
               </select>
           </div>
-
-
+          <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
+          <label for="organismo-caso">Organismo del Poder Poular</label>
+          <select id="organismo-caso" name="organismo-caso" class="form-control">
+          <option value="0">Seleccione Organismo</option>
+          </select>
+          </div>
+          
           
           <!-- IMPUT QUE VALIDA SI SE SELECCIONO UN TIPO DE ATENCION CON HIJOS -->
           <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >

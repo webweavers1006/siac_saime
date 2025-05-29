@@ -110,8 +110,18 @@ $routes->setAutoRoute(false);
      $routes->get('/buscar_hijos_via_atencion/(:any)',"Red_Social_Controler::buscar_hijos_via_atencion/$1");
      
      
+      //ORGANISMO DEL PODER POPULAR
+      $routes->get('/vista_organismo_pp', 'Organismo_pp_Controler::vista_organismo_pp');
+      $routes->get('/listar_Red_Social', "Organismo_pp_Controler::listar_Red_Social");
+      $routes->get('/Listar_organismo_pp', "Organismo_pp_Controler::Listar_organismo_pp");
+      $routes->get('/Listar_Organismo_PP_filtro', "Organismo_pp_Controler::Listar_Organismo_PP_filtro");
+      $routes->post('/add_organismo_pp', "Organismo_pp_Controler::add_organismo_pp");
+      $routes->post('/edit_organimo_pp', "Organismo_pp_Controler::edit_organimo_pp");
+      $routes->get('/buscar_hijos_via_atencion/(:any)',"Organismo_pp_Controler::buscar_hijos_via_atencion/$1");
+      
+      
 
-
+     
 
      
 
@@ -182,14 +192,15 @@ $routes->setAutoRoute(false);
      $routes->get('/enviar_correo_portal/(:any)/(:any)',"Estatus::enviar_correo_portal/$1/$2");
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
-     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
+     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17/$18");
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
-     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
+     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17");
      //RUTAS PARA LAS ESTADISTICAS
      $routes->get('/estadisticas', "Reporte_Controler::vista_estadisticas");
      $routes->get('/estadal/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_estadal/$1/$2");
      $routes->get('/estadisticas_benificiario/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_beneficiario/$1/$2");
+     $routes->get('/estadisticas_pp/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_pp/$1/$2");
      $routes->get('/estadisticas_propiedad_intelectual/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_prop_intelectual/$1/$2");
      $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2");
      $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
@@ -228,7 +239,7 @@ $routes->setAutoRoute(false);
 
      //RUTAS PARA TALLERES PARTICIPANTES
      $routes->get('/Talleres_Participantes', "Talleres_Participantes_Controler::Talleres_Participantes");
-     $routes->get('/listar_talleres_participantes/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Talleres_Participantes_Controler::listar_talleres_participantes/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16");
+     $routes->get('/listar_talleres_participantes/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Talleres_Participantes_Controler::listar_talleres_participantes/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17");
     
           
      //RUTAS PARA ENCUESTAS DE SASTIFACION

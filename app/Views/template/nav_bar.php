@@ -218,6 +218,14 @@ $userdata = $session->get();
               <p>Tipo Atencion</p>
             </a>
           </li>
+
+          <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/estadisticas_pp/null/null" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Organismo del PP</p>
+                  </a>
+          </li>  
+
           <li class="nav-item">
             <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
               <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
@@ -303,6 +311,13 @@ $userdata = $session->get();
                   <a href="<?php echo base_url(); ?>/vista_tipo_Estatus/" class="nav-link">
                     <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
                     <p>Tipo de Estatus</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/vista_organismo_pp/" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Organismo del PP</p>
                   </a>
                 </li>
             </ul>

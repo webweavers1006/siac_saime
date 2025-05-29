@@ -86,6 +86,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["act_pro_int"]     = $datos["act_pro_int"];
 			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			$atencion["env_correo"]     = $datos["env_correo"];
+			$atencion["organismo_pp"]     = $datos["organismo_pp"];
 			//Realizamos la insercion en la tabla
 			$query_insertar_atencion = $model->add_Atencion($atencion);
 			if (isset($query_insertar_atencion)) {
@@ -118,6 +119,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["act_pro_int"]     = $datos["act_pro_int"];
 			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			$atencion["env_correo"]     = $datos["env_correo"];
+			$atencion["organismo_pp"]     = $datos["organismo_pp"];
 			//Realizamos la actualizacion en la tabla
 			$query_editar_atencion = $model->editTipoAtencion($atencion);
 			if (isset($query_editar_atencion)) {

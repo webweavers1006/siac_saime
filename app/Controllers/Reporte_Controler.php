@@ -48,12 +48,12 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles
-	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
+	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0,$org_id=0)
 	{
 		
 		
 		$model = new Casos();
-		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion);
+		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion,$org_id);
 		
 		
 		if (empty($query)) {
@@ -119,11 +119,11 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles POR USUARIO
-	public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null)
+	public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$org_id=0)
 	{
 		$model = new Casos();
 		$idusuopr   = $this->session->get('iduser');
-		$query = $model->reporte_operador($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $idusuopr, $via_atencion, $direcciones_caso, $tipo_beneficiario, $usuarios,$estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max);
+		$query = $model->reporte_operador($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $idusuopr, $via_atencion, $direcciones_caso, $tipo_beneficiario, $usuarios,$estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$org_id);
 		if (empty($query)) {
 			$casos = [];
 		} else {
@@ -554,6 +554,85 @@ class Reporte_Controler extends BaseController
 
 
 	}
+
+
+	public function vista_estadisticas_pp($desde = null, $hasta = null)
+	{
+
+
+		if ($this->session->get('logged')) {
+
+			$model = new Casos();
+
+
+		//BUSCAMOS LOS CASOS POR ESTADOS
+		$query_consultar_estados = $model->consultar_estados($desde, $hasta);
+		$count_estados = [];		
+		$nombres_estados = [];
+		$estado_id = [];
+
+		// Verificamos si el resultado de la consulta no está vacío
+		if (!empty($query_consultar_estados))
+		{
+			foreach ($query_consultar_estados as $estados) 
+			{
+				$nombres_estados[] = $estados->estadonom;
+				$count_estados[] = $estados->count;
+				$estado_id[] = $estados->estadoid;
+			}
+		}
+		$data = [
+			'nombres_estados' => $nombres_estados, 
+			'count_estados' => $count_estados,
+			'estado_id' => $estado_id,
+		];
+
+			// //BUSCAMOS LOS CASOS ESTADALES POR ORGANISMO DEL PODER POPULAR
+			$query_Organismo_pp = $model->ContarCasos_Estadal_Organismo_PP($desde, $hasta);
+		
+			$nombre_tipo_organismo = [];		
+			$count_organismo = [];
+			$nombre_estado_organismo = [];
+
+			if (!empty($query_Organismo_pp)) {
+				foreach ($query_Organismo_pp as $organismo) {
+					
+					$nombre_tipo_organismo[] = $organismo->org_nombre; // Cambiado a org_nombre
+					$count_organismo[] = $organismo->count; // Se mantiene como count
+					$nombre_estado_organismo[] = $organismo->estadonom; // Se mantiene como estadonom
+				}
+			}
+
+			
+			$data = [
+				'nombres_estados' => $nombres_estados, 
+				'count_estados' => $count_estados,
+				'estado_id' => $estado_id,
+				'nombre_tipo_organismo' => $nombre_tipo_organismo, 
+				'count_organismo' => $count_organismo, 
+				'nombre_estado_organismo' => $nombre_estado_organismo,
+			];
+			
+	
+			
+			$json_data = json_encode($data);
+		
+			echo view('template/header');
+			echo view('template/nav_bar');
+			echo view('reportes/estadisticas/organismo_pp/content.php', array('json_data' => $json_data));
+			echo view('template/footer');
+			echo view('reportes/estadisticas/organismo_pp/footer.php');
+		} else {
+			return redirect()->to('/');
+		}
+
+
+	}
+
+
+
+
+
 
 	public function vista_estadisticas_beneficiario($desde = null, $hasta = null)
 	{

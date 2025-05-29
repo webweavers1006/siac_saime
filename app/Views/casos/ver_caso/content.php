@@ -318,6 +318,7 @@ $session = session();
   <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Cambiado a modal-lg -->
     <div class="modal-content">
       <input type="hidden"id="id_participante" >
+      <input type="hidden"id="id_taller" >
         <div class="modal-header">
           <h4 class="modal-title">Participantes</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -419,6 +420,16 @@ $session = session();
         </div>
       </div>
      
+      <div class="col-lg-4 col-sm-4 col-md-4 org_pp ">
+        <label for="organismo-caso">Organismo del Poder Poular</label>
+        <select id="organismo-caso" name="organismo-caso" class="form-control">
+        <option value="0">Seleccione Organismo</option>
+        </select>
+      </div>
+
+
+
+
       <div class="row">
         <div class="col-4">
         </div>

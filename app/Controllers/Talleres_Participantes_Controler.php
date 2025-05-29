@@ -48,11 +48,11 @@ public function Talleres_Participantes()
 
 
 //Metodo queo obtiene  los todos los casos disponibles
-public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$id_parroquia = 0,$edad_min=null,$edad_max=null,$detalle_atencion=0)
+public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$id_parroquia = 0,$edad_min=null,$edad_max=null,$detalle_atencion=0,$org_id=0)
 {
 	
 	$model = new Talleres_Participantes_Model();
-	$query = $model->listar_talleres_participantes($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion);
+	$query = $model->listar_talleres_participantes($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion,$org_id);
 	if (empty($query)) {
 		$participantes = [];
 	} else {

@@ -33,8 +33,8 @@ $session = session();
           <div class="card">
             <div class="card-header border-0">
               <div class="d-flex justify-content-between">
-                <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Tipo de Atención
-                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-tipo-atencion">Agregar</button>
+                <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Organismos del Poder Popular
+                  <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-organismo_pp">Agregar</button>
                 </h3>
               </div>
               <div class="card-body">
@@ -42,7 +42,7 @@ $session = session();
                   <div class="col-lg-11 col-sm-11 col-md-11 ">
                     <div class="card">
                       <div class="card-body">
-                        <table class="display table-responsive" id="table_direcciones" style="width:100%" style="margin-top: 20px">
+                        <table class="display table-responsive" id="table_Organismos_pp" style="width:100%" style="margin-top: 20px">
                           <thead>
                             <tr>
                               <td class="text-center" style="width: 1%;">id</td>
@@ -51,7 +51,7 @@ $session = session();
                               <td class="text-center" style="width: 1%;">Acciones</td>
                             </tr>
                           </thead>
-                          <tbody id="listar_tipo_atencion">
+                          <tbody id="listar_organismo_pp">
                           </tbody>
                         </table>
                       </div>
@@ -66,31 +66,23 @@ $session = session();
       </div>
       <!-- /.content-wrapper -->
       <!-- Modal -->
-      <div class="modal fade" id="add-tipo-atencion">
+      <div class="modal fade" id="add-organismo_pp">
         <div class="modal-dialog modal-dialog-centered  modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Tipo de Atencion</h4>
+              <h4 class="modal-title">Organimo del poder popular </h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="new-atencion" method="POST" role="form">
+            <form id="new-organismo_pp" method="POST" role="form">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="text" name="name-atencion"  id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
+                  <input type="text" name="name-atencion"  id="name-organismo_pp" class="form-control"  autocomplete="off" required>
                 </div>
               </div>
-              &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
-              <input type="checkbox" class="borrado" id="acceso_pro_int" name="borrado" value='false'>
-              
-              &nbsp; <label for="user-pass">Acceso a participantes</label>&nbsp;&nbsp;
-              <input type="checkbox" class="participantes" id="participantes" name="participantes" value='false'>
-              &nbsp; <label for="user-pass"> Correo</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="correo" name="correo" value='false'>
-              &nbsp; &nbsp; <label for="user-pass"> Organismos del poder popular</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="organismo_pp" name="correo" value='false'>
+          
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
                 <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>
@@ -104,41 +96,59 @@ $session = session();
       </div>
       <!-- /.modal -->
       <!-- Modal para editar usuarios-->
-
+      
       <div class="modal fade" id="editar">
+
+      <style>
+				.historial_info {
+
+          border-radius: 5px 5px 5px 5px;
+          border: 2px solid rgb(209, 205, 207);
+          font-size: 13px;
+          border-radius: 10px 10px 10px 10px;
+          box-shadow: 10px 10px 3px 3px rgb(88, 88, 88);
+          color: #104b72;
+          outline: none; 
+
+          }
+				</style>
+
+
+
         <div class="modal-dialog modal-dialog-centered  modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Editar Tipo de Atencion</h4>
+              <h4 class="modal-title">Editar Organismo</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form id="edit-atencion" method="POST" role="form">
+           
               <div class="modal-body">
+              
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="hidden" name="id-atencion" id="id-atencion" class="form-control">
-                  <input type="text" name="name-atencion"  id="editar-atencion" class="form-control" placeholder="Ej: Direccion de tecnología" autocomplete="off" required>
+                  <input type="hidden" name="org_id" id="org_id" class="form-control">
+                  <input type="text" name="name-atencion"  id="editar-org_nombre" class="form-control"  autocomplete="off" required> 
                 </div>
-
                 &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
                 <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'>
-                &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
-              <input type="checkbox" class="borrado" id="edit_acceso_pro_int" name="borrado" value='false'>
-              &nbsp; <label for="user-pass"> Participantes</label>&nbsp;&nbsp;
-              <input type="checkbox" class="edit_participantes" id="edit_participantes" name="edit_participantes" value='false'> &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-              &nbsp; &nbsp; <label for="user-pass"> Correo</label>&nbsp;&nbsp;
-              <input type="checkbox" class="edit_correo" id="edit_correo" name="edit_correo" value='false'>
-              &nbsp; &nbsp; <label for="user-pass"> Organismos del poder popular</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="edit_organismo_pp" name="correo" value='false'>
+              
+                <div>
+                  <div class="row">
+                    <div class="col-md-1">
+                    </div>
+                    
+                  </div>	
+                </div>
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
-                <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>
+                <button class="btn  btn-sm btn-primary btnActualizar "  id="btnActualizar" type="button" >Actualizar</button>
                 <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
               </div>
-            </form>
+              
+           
           </div>
           <!-- /.modal-content -->
         </div>
@@ -173,6 +183,3 @@ $session = session();
           e.value = e.value.toUpperCase();
         }
       </script>
-
-
-

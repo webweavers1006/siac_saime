@@ -222,6 +222,7 @@ $session = session();
                           <label for="tipo-pi">Correo Electronico</label>
                           <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
                         </div>
+                      
 
                         </div>   
 
@@ -234,7 +235,8 @@ $session = session();
                           <input type="text" style="display: none;" class="form-control" name="direccion" id="direccion" autocomplete="off">
                         </div>
                       </div>
-                      <div class="row">
+                      
+                                    <div class="row">
 
                         <div class="col-4">
                           <label for="pais-caso">País</label>
@@ -274,6 +276,13 @@ $session = session();
                           <select disabled class="form-control " id="tipo-pi" name="tipo-pi">
                               <option value="0" disabled>Seleccione</option>
                           </select>
+                      </div>
+
+                      <div class="col-lg-3 col-sm-3 col-md-3 org_pp ">
+                        <label for="organismo-caso">Organismo del Poder Poular</label>
+                        <select id="organismo-caso" name="organismo-caso" class="form-control">
+                        <option value="0">Seleccione Organismo</option>
+                        </select>
                       </div>
 
                       <div class="col-lg-4 col-sm-4 col-md-4 detalle_atencion oculto">
@@ -369,17 +378,19 @@ $session = session();
                       <div class="col-12">
                         <label for="planteamiento-caso">Descripción del Caso</label>
                         <textarea type="text" class="form-control" name="requerimiento-usuario" id="requerimiento-usuario" required>
-                  </textarea>
+                          </textarea>
                       </div>
                     </div>
-                    <br>
+
+                   
                     <div class="row">
+                    
                       <form id="miFormulario" enctype="multipart/form-data">
-                        <input type="file" class="mi-estilo" id="archivo" name="archivo">
+                     &nbsp;&nbsp; <input type="file" class="mi-estilo" id="archivo" name="archivo">
                         <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">&nbsp;&nbsp;&nbsp;&nbsp;
                         <input type="button" id="subir_archivos" enctype="multipart/form-data" class="btn btn-sm btn-primary" value="Subir archivo">
                       </form>&nbsp;&nbsp;&nbsp;&nbsp;
-                      <label for="t-beneficiario">DOCUMENTOS CASO</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                      <label for="t-beneficiario">DOCUMENTOS CASO</label>
                       <select class="form-control" style="width: 350px;" id="docu-casos" name="docu-casos">
                         <option value="0" selected disabled>Seleccione</option>
                       </select>

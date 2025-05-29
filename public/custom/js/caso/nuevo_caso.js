@@ -9,8 +9,72 @@ $(function() {
      llenar_Red_social(Event);
      llenar_Entes_asdcritos(Event);
      llenar_Tipo_Beneficiarios(Event);
+     llenar_Organismos_PP(Event);
  });
  
+
+//FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
+function llenar_Organismos_PP(e, id) {
+    e.preventDefault;
+    url = "/Listar_Organismo_PP_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#organismo-caso").empty();
+                $("#organismo-caso").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //
+                        $("#organismo-caso").append(
+                            "<option value=" +
+                            item.org_id+
+                            ">" +
+                            item.org_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== org_id) {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                " selected>" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                ">" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
+
+
+
+
+
+
+
+
  
  //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
  function llenar_Tipo_Beneficiarios(e, id) {
@@ -338,33 +402,6 @@ function llenar_pais(e, id) {
  
 // Función para llenar el combo tipo de atención usuario con formación
 
-function llenar_Tipo_Atencion(e, id_red_social) {
-    let url = "/buscar_via_tipo_atencion/" + id_red_social;
-    $.ajax({
-        url: url,
-        method: "GET",
-        dataType: "JSON",
-        beforeSend: function() {
-            // Puedes agregar un loader o alguna acción antes de la solicitud
-        },
-        success: function(data) {
-            let $select = $("#tipo-atencion-usu");
-            $select.empty();
-            $select.append("<option value='0' selected disabled>Seleccione</option>");
-            $.each(data, function(index, item) {
-                $select.append($('<option></option>')
-                    .val(item.tipo_atencion_id)
-                    .text(item.tipo_aten_nombre)
-                    .attr('data-act-pro-int', item.act_pro_int)
-                );
-            });
-        },
-        error: function(xhr) {
-            alert("Error: " + xhr.status + " - " + xhr.statusText);
-        },
-    });
-}
-
 
 
 
@@ -456,30 +493,66 @@ function llenar_Tipo_Atencion(e, id_red_social) {
 
 
 
+ function llenar_Tipo_Atencion(e, idRedSocial) {
+    let url = "/buscar_via_tipo_atencion/" + idRedSocial;
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function() {
+            // Puedes agregar un loader o alguna acción antes de la solicitud
+        },
+        success: function(data) {
+            let $select = $("#tipo-atencion-usu");
+            $select.empty();
+            $select.append("<option value='0' selected disabled>Seleccione</option>");
+            $.each(data, function(index, item) {
+                $select.append($('<option></option>')
+                    .val(item.tipo_atencion_id)
+                    .text(item.tipo_aten_nombre)
+                    .attr('data-act-pro-int', item.act_pro_int)
+                    .attr('data-organismo_pp', item.organismo_pp)
+                );
+            });
+        },
+        error: function(xhr) {
+            alert("Error: " + xhr.status + " - " + xhr.statusText);
+        },
+    });
+}
+
+
+
+
  
  // Evento change para el select de tipo de atención
-
-$("#tipo-atencion-usu").on('change', function(e) {
+ $("#tipo-atencion-usu").on('change', function(e) {
     document.getElementById("detalles_atencion").disabled = false;
     $("#hijos_tipoatencion").val('NO');
-    let id_tipo_atencion = $(this).val(); 
+    let idTipoAtencion = $(this).val(); 
     let selectedOption = $(this).find('option:selected');
-    let act_pro_int = selectedOption.data('act-pro-int');
+
+    let actProInt = selectedOption.data('act-pro-int');
+    let organismoPp = selectedOption.data('organismo_pp');
     // Muestra u oculta elementos según el tipo de atención
-    if (id_tipo_atencion == 5 || id_tipo_atencion == 1) {
-        $("#denuncias").toggle(id_tipo_atencion == 5);
-        $(".tipoproint").toggle(act_pro_int === 't');
-        document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
+    if (idTipoAtencion == 5 || idTipoAtencion == 1) {
+        $("#denuncias").toggle(idTipoAtencion == 5);
+        $(".tipoproint").toggle(actProInt === 't');
+        document.getElementById("tipo-pi").disabled = (actProInt !== 't');
+        $(".org_pp").toggle(organismoPp === 't');
+        document.getElementById("organismo-caso").disabled = (organismoPp !== 't');
     } else {
         $("#cgr").hide();
         $("#denuncias").hide();
-        $(".tipoproint").toggle(act_pro_int === 't');
-        document.getElementById("tipo-pi").disabled = (act_pro_int !== 't');
+        $(".tipoproint").toggle(actProInt === 't');
+        document.getElementById("tipo-pi").disabled = (actProInt !== 't');
+        $(".org_pp").toggle(organismoPp === 't');
+        document.getElementById("organismo-caso").disabled = (organismoPp !== 't');
     }
     // Llama a la función para llenar detalles de atención
-    llenar_detalle_atencion(e, id_tipo_atencion);
-
+    llenar_detalle_atencion(e, idTipoAtencion);
 });
+
 
 
 $("#pais-caso").on('change', function() {
@@ -593,7 +666,7 @@ $("#pais-caso").on('change', function() {
 
 
 
-function  llenar_detalle_atencion(e,id_tipo_atencion)
+function  llenar_detalle_atencion(e,idTipoAtencion)
 {
 
     e.preventDefault;
@@ -614,7 +687,7 @@ if(data.length>=1)
 {
      $('#detalles_atencion').empty();
      $('#detalles_atencion').append('<option value=0  selected disabled>Seleccione</option>');   
-     if(id_tipo_atencion===undefined)
+     if(idTipoAtencion===undefined)
     {
       
       
@@ -629,7 +702,7 @@ if(data.length>=1)
     else
     {
        $(".detelle_atencion").hide();
-       data=data.filter(dato=>dato.tipo_aten_id==id_tipo_atencion);
+       data=data.filter(dato=>dato.tipo_aten_id==idTipoAtencion);
        //console.log(buscar);
           $.each(data, function(i, item)
           {
@@ -667,6 +740,11 @@ error:function(xhr, status, errorThrown)
      let requerimiento_user = $("#requerimiento-usuario").val();
      let red_social = $("#red-social").val();
      let estado = $("#estado-caso").val();
+     let org_id = $("#organismo-caso").val();
+        if (org_id == null || org_id == '') {
+            org_id = 1; 
+        }
+
      let sexo = $("#sexo").val();
      requerimiento_user = requerimiento_user.trim();
      if (red_social == null) {
@@ -766,6 +844,11 @@ error:function(xhr, status, errorThrown)
                      });
                  }else
                  {
+
+                   
+
+
+
                      // competencia_crg = $("#competencia-cgr").val()
                      // asume_crg = $("#asume-cgr").val()
                      // if (competencia_crg == null) {
@@ -812,6 +895,7 @@ error:function(xhr, status, errorThrown)
                       "correo": $("#correo").val(),
                       "profesion": $("#profesion").val(),
                       "ente_adscrito": 0,
+                      "organismo-caso": org_id,
                       //"ente_adscrito": $("#ente-adscrito").val(0),
                   }
                   
@@ -979,6 +1063,7 @@ error:function(xhr, status, errorThrown)
                                 "edad": $("#edad").val(),
                                 "fecha_nacimiento": $("#fecha-nacimiento").val(),
                                 "profesion": $("#profesion").val(),
+                                "organismo-caso": org_id,
                                 
                             }
                             $.ajax({
@@ -1102,6 +1187,7 @@ error:function(xhr, status, errorThrown)
                  "edad": $("#edad").val(),
                  "fecha_nacimiento": $("#fecha-nacimiento").val(),
                  "profesion": $("#profesion").val(),
+                 "organismo-caso": org_id,
              }
              $.ajax({
                  url: "/registrarCaso",
@@ -1224,7 +1310,7 @@ error:function(xhr, status, errorThrown)
                 const estado = caso.estadoid;
                 const municipio = caso.municipioid;
                 const parroquia = caso.parroquiaid;
-                const tipo_atencion = caso.id_tipo_atencion;
+                const tipo_atencion = caso.idTipoAtencion;
                 const fecha_nacimiento = caso.fecha_nacimiento;
                 const edad = caso.edad;
                 const profesion = caso.profesion;

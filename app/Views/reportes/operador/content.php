@@ -120,6 +120,14 @@ $session = session();
                                 </select>
                             </div>
 
+
+                            <div class="col-lg-4 col-sm-4 col-md-4 org_pp ">
+                            <label for="organismo-caso">Organismo del Poder Poular</label>
+                            <select id="organismo-caso" name="organismo-caso" class="form-control">
+                            <option value="0">Seleccione Organismo</option>
+                            </select>
+                        </div>
+
                             <div class="col-md-5">
                         <br>
                          <label for="estado-caso">Edad-> </label>

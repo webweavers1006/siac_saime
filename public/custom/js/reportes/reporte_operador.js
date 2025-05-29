@@ -13,7 +13,7 @@ $(function() {
     let tipo_beneficiario = $('#t-beneficiario').val();
     let edad_min = $('#edad_min').val();
     let edad_max = $('#edad_max').val();
-
+    let org_id = $('#organismo-caso').val();
     let sexo = $('#sexo').val();
     if (desde == '' && hasta == '') {
 
@@ -26,16 +26,71 @@ $(function() {
         edad_min = 'null'
         edad_max = 'null'
     }
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,org_id);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
     llenar_via_atencion(Event);
     llenar_Estados(Event);
     llenar_Tipo_Beneficiarios(Event);
     llenar_pais(Event);
+    llenar_Organismos_PP(Event);
 });
 
 
+//FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
+function llenar_Organismos_PP(e, id) {
+    e.preventDefault;
+    url = "/Listar_Organismo_PP_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#organismo-caso").empty();
+                $("#organismo-caso").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //
+                        $("#organismo-caso").append(
+                            "<option value=" +
+                            item.org_id+
+                            ">" +
+                            item.org_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== org_id) {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                " selected>" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                ">" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
 
  //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
  function llenar_Tipo_Beneficiarios(e, id) {
@@ -91,7 +146,7 @@ $(function() {
         },
     });
 }
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,estatus=0,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus=null,nombre_estado=null) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,estatus=0,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null,org_id=0, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus=null,nombre_estado=null,nombre_org_id=null) {
 
     // Convertir la fecha
     var fechaOriginal = desde;
@@ -129,6 +184,11 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     }
     if (estatus != null && estatus != 0) {
         encabezado = encabezado + 'Estatus :' + ' ' + nombre_estatus+ ' ';
+    }
+
+
+    if (org_id != null && org_id != 0) {
+        encabezado = encabezado + 'Organismo del poder popular  :' + ' ' + nombre_org_id+ ' ';
     }
 
     if (edad_min !='null'&& edad_max!='null'&& edad_min !=null&& edad_max!=null ) {
@@ -259,7 +319,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max,
+            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max+'/'+org_id,
             "type": "GET",
             dataSrc: ''
         },
@@ -509,7 +569,7 @@ $(document).on('click', '.consultar', function(e) {
     let id_estado = $('#estado-caso').val();
     let id_municipio = $('#municipio-caso').val();
     let id_parroquia = $('#parroquia-caso').val();
-
+    let org_id = $('#organismo-caso').val();
     let nombre_propiedad = $('#tipo-pi option:selected').text();
     let nombre_atencion = $('#tipo-atencion-usu option:selected').text();
     let nombresexo = $('#sexo option:selected').text();
@@ -519,6 +579,7 @@ $(document).on('click', '.consultar', function(e) {
     let nombre_usuario = $('#usuarios option:selected').text();
     let nombre_estado = $('#estado-caso option:selected').text();
     let nombre_estatus = $('#estatus option:selected').text();
+    let nombre_org_id = $('#organismo-caso option:selected').text();
     if (desde == '') {
         desde = 'null'
     }
@@ -551,7 +612,7 @@ $(document).on('click', '.consultar', function(e) {
     }else
     {
     $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus,nombre_estado);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario, usuarios,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,org_id, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus,nombre_estado,nombre_org_id);
 
     }
 })

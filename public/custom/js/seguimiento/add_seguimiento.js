@@ -32,8 +32,66 @@ $(function() {
     llenar_Tipo_Beneficiarios(Event);
     listar_seguimientos(id_caso);
     listar_talleres_participantes(id_caso);
+    llenar_Organismos_PP(Event);
 
 });
+
+
+//FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
+function llenar_Organismos_PP(e,org_id) {
+
+    e.preventDefault;
+    url = "/Listar_Organismo_PP_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#organismo-caso").empty();
+                $("#organismo-caso").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (org_id === undefined) {
+                    $.each(data, function(i, item) {
+                        //
+                        $("#organismo-caso").append(
+                            "<option value=" +
+                            item.org_id+
+                            ">" +
+                            item.org_nombre +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.org_id=== org_id) {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                " selected>" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        } else {
+                            $("#organismo-caso").append(
+                                "<option value=" +
+                                item.org_id+
+                                ">" +
+                                item.org_nombre +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
 //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
 function llenar_Tipo_Beneficiarios(e, id) {
     e.preventDefault;
@@ -478,7 +536,7 @@ function listar_talleres_participantes(id_caso) {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" sexo=' + row.sexo + ' telefono=' + row.telefono + ' estado=' + row.estado + '  municipio=' + row.municipio + ' parroquia=' + row.parroquia + '  id=' + row.id + '  nombre=' + row.nombre + '   apellido=' + row.apellido + '    cedula="' + row.cedula + '" nacionalidad=' + row.nacionalidad + ' tipo_beneficiario=' + row.tipo_beneficiario + '  edad=' + row.edad + ' > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"    id_taller=' + row.id_taller + '  org_id=' + row.org_id + ' sexo=' + row.sexo + ' telefono=' + row.telefono + ' estado=' + row.estado + '  municipio=' + row.municipio + ' parroquia=' + row.parroquia + '  id=' + row.id + '  nombre=' + row.nombre + '   apellido=' + row.apellido + '    cedula="' + row.cedula + '" nacionalidad=' + row.nacionalidad + ' tipo_beneficiario=' + row.tipo_beneficiario + '  edad=' + row.edad + ' > <i class="material-icons " >create</i></a>'
 
                 }
             }
@@ -735,6 +793,14 @@ $('#ingresar_participante').on('click', function() {
     let nacionalidad = $('#tipo-persona').val();
     let tipo_beneficiario = $('#t-beneficiario').val();
     let edad = $('#edad').val();
+    let organismo_pp = $('#organismo-caso').val();
+
+    if (organismo_pp==''||organismo_pp==null) 
+        {
+            organismo_pp = 1;
+            
+        }
+
     if (edad==''||edad==null) 
     {
         edad = 0;
@@ -879,6 +945,7 @@ $('#ingresar_participante').on('click', function() {
                 estado:estado,
                 municipio:municipio,
                 parroquia:parroquia,
+                organismo_pp:organismo_pp
             };
             // Agregar el nuevo participante al arreglo de solicitudes
             solicitudes.push(nuevoParticipante);
@@ -899,6 +966,7 @@ $('#ingresar_participante').on('click', function() {
             $('#estado-caso').val('0');
             $('#municipio-caso').val('0');
             $('#parroquia-caso').val('0');
+            $('#organismo-caso').val('0');
 
        }    
 
@@ -1026,6 +1094,7 @@ $('#listar_participantes').on('click', '.Editar', function(e) {
     $('#agregar_participantes').hide();
     $('#actualizar_participantes').show();
     let id = $(this).attr('id');
+    let id_taller = $(this).attr('id_taller');
     let nombre = $(this).attr('nombre');
     let apellido = $(this).attr('apellido');
     let cedula = $(this).attr('cedula');
@@ -1037,10 +1106,13 @@ $('#listar_participantes').on('click', '.Editar', function(e) {
     let parroquiaid = $(this).attr('parroquia');
     let telefono = $(this).attr('telefono');
     let sexo = $(this).attr('sexo');
+    let org_id = $(this).attr('org_id');
+    
 
     $("#add-participantes").modal("show");
     $('#add-participantes').find('#nombre').val(nombre);
     $('#add-participantes').find('#id_participante').val(id);
+    $('#add-participantes').find('#id_taller').val(id_taller);
     $('#add-participantes').find('#apellido').val(apellido);
     $('#add-participantes').find('#cedula').val(cedula);
     $('#add-participantes').find('#tipo-persona').val(nacionalidad);
@@ -1051,7 +1123,7 @@ $('#listar_participantes').on('click', '.Editar', function(e) {
     llenar_Estados(Event, estadoid);
     llenar_municipios(Event, estadoid, municipioid);
     llenar_parroquias(Event, municipioid, parroquiaid);
-    
+    llenar_Organismos_PP(Event,org_id);
 })
 
 
@@ -1060,6 +1132,7 @@ $('#listar_participantes').on('click', '.Editar', function(e) {
 /* METODO PARA ACTUALIZAR PARTICIPANTES */
 $('#actualizar_participantes').on('click', function() {
     let id_participante= $('#id_participante').val(); 
+    let id_taller= $('#id_taller').val(); 
     let nombre = $('#nombre').val().trim();
     let apellido = $('#apellido').val().trim();
     let cedula = $('#cedula').val().trim();
@@ -1072,8 +1145,11 @@ $('#actualizar_participantes').on('click', function() {
     let estado = $('#estado-caso').val();
     let municipio = $('#municipio-caso').val();
     let parroquia = $('#parroquia-caso').val();
+    let org_id = $('#organismo-caso').val();
     let datos = 
     {
+        id_taller:id_taller,
+        org_id:org_id,
         nombre:nombre,
         apellido:apellido,
         cedula:cedula,
