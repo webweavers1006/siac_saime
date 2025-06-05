@@ -168,6 +168,7 @@
                 <thead>
                   <tr>
                     <!-- <td class="text-center" style="width: 1%;">Nº</td> -->
+                    <td class="text-center" style="width: 1%;">Nº</td>
                     <td class="text-center" style="width: 1%;">Cédula</td>
                     <td class="text-center" style="width: 1%;">Tipo Ben</td>
                     <td class="text-center" style="width: 12%;">Beneficiario</td>

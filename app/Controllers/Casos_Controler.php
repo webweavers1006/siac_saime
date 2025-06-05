@@ -25,6 +25,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use VARIANT;
 
+
+
 class Casos_Controler extends BaseController
 {
 
@@ -992,13 +994,11 @@ curl_close($ch);
 	{
 		$idrol = (session('userrol'));
 		$idusur = (session('iduser'));
-		
 		$model = new Casos();
 		if($idrol==1 or  $idrol ==3 or  $idrol ==5)
 		{ 
 		
 			$query = $model->obtenerCasos();
-			
 			
 			
 		if (empty($query)) {

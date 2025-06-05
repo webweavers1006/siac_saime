@@ -194,6 +194,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     if (edad_min !='null'&& edad_max!='null'&& edad_min !=null&& edad_max!=null ) {
         encabezado = encabezado + 'Edad:' + ' '+'Entre'+' '+edad_min+' '+'y'+' '+edad_max+' ';
     }
+    console.log("/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max+'/'+org_id)
     let ruta_imagen = rootpath;
     var table = $('#table_casos').DataTable({
         responsive: true,
@@ -323,6 +324,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             "type": "GET",
             dataSrc: ''
         },
+        
         "columns": [
             //{data:'cedula_beneficiario'},
             { data: 'cedula' },
@@ -662,7 +664,9 @@ function llenar_pais(e, id) {
         success: function(data) {
             if (data.length >= 1) {
                 $("#pais-caso").empty();
-               
+                $("#pais-caso").append(
+                    "<option value='0'>Seleccione</option>"
+                );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
                        

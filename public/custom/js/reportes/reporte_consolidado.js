@@ -251,8 +251,10 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         encabezado = encabezado + 'Atencion Cuidadano :' + ' ' + nombre_aten_cuidadano+ ' ';
     }
 
-    if (org_id != null && org_id != 0) {
+     if (org_id != null && org_id != 0) {
         encabezado = encabezado + 'Organismo del poder popular  :' + ' ' + nombre_org_id+ ' ';
+    }else{
+        org_id =0; 
     }
 
 
@@ -385,14 +387,13 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "autoWidth": true,
         //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+edad_min+'/'+edad_max+'/'+detalle_atencion+'/'+org_id,
-           
-                                                                        
+            "url": "reporte_consolidado/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario+ '/' +atencion_cuidadano+'/'+estatus+'/'+id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+edad_min+'/'+edad_max+'/'+detalle_atencion+'/'+org_id,                                                  
             "type": "GET",
             dataSrc: ''
         },
         "columns": [
-            //{data:'cedula_beneficiario'},
+            
+            {data:'idcaso'},
             { data: 'cedula' },
             { data: 'tipo_beneficiario' },
             { data: 'nombre' },
