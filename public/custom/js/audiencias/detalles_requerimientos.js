@@ -21,7 +21,7 @@ $('#table_audiencia tbody a').on('click', function(e) {
 
 
 // Obtener el select, el botón y los checkboxes
-const selectElement = document.querySelector('select[name="id_trabajador"]');
+const selectElement = document.querySelector('select[name="id_estado"]');
 const remitirButton = document.getElementById('remitir');
 const checkboxes = document.getElementsByName('select[]');
 const selectAllCheckbox = document.getElementById('selectAll');
@@ -139,7 +139,7 @@ $.ajax({
 
 $('#remitir').on('click', function() {
   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
-  let id_trabajador=$("#id_trabajador").val();
+  let id_estado=$("#id_estado").val();
   let id_requerimiento=$("#id_requerimiento").val();
   
   const selectedIds = [];
@@ -157,7 +157,7 @@ $('#remitir').on('click', function() {
 
   // // DATOS PARA EL USUARIO EN AUDIENCIAS
   const audienceData = {
-    id_trabajador: id_trabajador,
+    id_estado: id_estado,
   };
 
 

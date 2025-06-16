@@ -1,4 +1,3 @@
-
 <?php
 $session = session();
 $userdata = $session->get();
@@ -18,14 +17,16 @@ $userdata = $session->get();
       <div class="row justify-content-center">
         <div class="col-lg-12 custom-col-width">
           <div class="card card_table audiencia" style="max-width: 1850px; margin: 20px auto;">
-            <div class="d-flex align-items-center">
-              <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
-              <div class="ml-2">
-                <span style="font-size: 18px; font-weight: bold;">Solicitud</span>
-                <p class="mb-0"><?php echo $datos['num_solicitud']; ?></p>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
+                <div class="ml-2">
+                  <span style="font-size: 18px; font-weight: bold;">Solicitud</span>
+                  <p class="mb-0"><?php echo $datos['num_solicitud']; ?></p>
+                </div>
+                <input type="hidden" id="id_categoria_original" value="<?php echo $datos['id_categoria']; ?>">
               </div>
-              <input type="hidden" id="id_categoria_original" value="<?php echo $datos['id_categoria']; ?>">
-
+              <a href="https://siac.sapi.gob.ve/api/audiencia/solicitudes/pdf/<?php echo $datos['id']; ?>" target="_blank" class="btn btn-primary btn-sm ml-4">Ver PDF</a>
             </div>
             <input type="hidden" id="id_solicitud" value="<?php echo $datos['id']; ?>">
             <div class="row mb-0">

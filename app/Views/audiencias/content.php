@@ -42,6 +42,30 @@ $userdata = $session->get();
                 <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar" data-toggle="modal" data-target="#add-direcciones" <?php echo $estado_boton; ?>>
                     Agregar (+)
                 </button>
+                <!-- Inputs de fecha inicial y final -->
+                <input type="date" id="fecha_inicial" class="form-control form-control-sm d-inline-block ml-2" style="width: auto; display: inline-block;" placeholder="Fecha inicial" required>
+                <input type="date" id="fecha_final" class="form-control form-control-sm d-inline-block ml-2" style="width: auto; display: inline-block;" placeholder="Fecha final" required>
+                <a href="#" target="_blank" class="btn btn-sm btn-success ml-2" style="vertical-align: middle; pointer-events: none; opacity: 0.6;" id="descargar_excel">Descargar Formato Excel</a>
+                <script>
+                // Script para modificar el href del enlace según las fechas seleccionadas y habilitar el botón solo si ambos inputs tienen valor
+                const descargarExcel = document.getElementById('descargar_excel');
+                const fechaInicial = document.getElementById('fecha_inicial');
+                const fechaFinal = document.getElementById('fecha_final');
+
+                function actualizarHref() {
+                    if (fechaInicial.value && fechaFinal.value) {
+                        descargarExcel.href = `https://siac.sapi.gob.ve/api/audiencia/solicitudes/excel/${fechaInicial.value}/${fechaFinal.value}`;
+                        descargarExcel.style.pointerEvents = 'auto';
+                        descargarExcel.style.opacity = '1';
+                    } else {
+                        descargarExcel.href = '#';
+                        descargarExcel.style.pointerEvents = 'none';
+                        descargarExcel.style.opacity = '0.6';
+                    }
+                }
+                fechaInicial.addEventListener('change', actualizarHref);
+                fechaFinal.addEventListener('change', actualizarHref);
+                </script>
               </div>
             </div>
             <div class="card-body">
@@ -60,6 +84,8 @@ $userdata = $session->get();
                           <td class="text-center" style="width: 8%;">Estatus del caso</td>
                           <td class="text-center" style="width: 3%;">Area</td>
                           <td class="text-center" style="width: 8%;">Usuario</td>
+                          <td class="text-center" style="width: 8%;">Contacto</td>
+                          <td class="text-center" style="width: 8%;">Solicitudes</td>
                           <td class="text-center" style="width: 5%;">Acciones</td>
                         </tr>
                       </thead>
@@ -114,7 +140,6 @@ $userdata = $session->get();
       </div>
     </div>
   </div>
-</div>
 
 
 

@@ -146,6 +146,8 @@ function listado_Audiencias() {
           { data: 'estado' },   
           { data: 'area' },
           { data: 'nombre' },
+          { data: 'nombre_contacto'},
+          { data: 'solicitudes', visible: false, searchable: true },
           {
             orderable: true,
             data: null,

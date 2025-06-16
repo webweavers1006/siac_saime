@@ -1,4 +1,3 @@
-
 <?php
 $session = session();
 $userdata = $session->get();
@@ -21,13 +20,16 @@ $userdata = $session->get();
       <div class="row">
         <div class="col-lg-12 custom-col-width">
           <div class="card card_table audiencia" style="max-width: 1350px; margin: 20px auto;">
-            <div class="d-flex align-items-center">
-              <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
-              <div class="ml-2">
-              <p class="mb-0" style="font-size: 18px; font-weight: bold;">Audiencia</p>
-                <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?></span>
-                <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img src="<?php echo base_url(); ?>/img/favicon.jpg" style="width: 30px; height: 30px;">
+                <div class="ml-2">
+                  <p class="mb-0" style="font-size: 18px; font-weight: bold;">Audiencia</p>
+                  <span style="font-size: 14px;">Nº <?php echo $datos2['id']; ?></span>
+                  <input type="hidden" id="id_requerimiento" value="<?php echo $datos2['id']; ?>">
+                </div>
               </div>
+              <a href="https://siac.sapi.gob.ve/api/audiencia/reportes-requerimientos/pdf/<?php echo $datos2['id']; ?>" target="_blank" class="btn btn-primary btn-sm ml-4">Ver PDF</a>
             </div>
           
             <div class="row">
@@ -124,16 +126,10 @@ $userdata = $session->get();
                                
                                 <div class="select" style="display: inline-block; margin-left: 6px;">
 
-                                  <select name="id_trabajador" id="id_trabajador">
-                                  <option value="0" selected>---Seleccione un responsable---</option>
-
-                                  <?php foreach ($responsable['usuariosareas'] as $usuarioarea) { ?>
-                                      <?php if ($usuarioarea['id_area'] == $datos2['id_area']) { ?>
-                                          <option value="<?php echo $usuarioarea['id_usuario']; ?>" >
-                                              <?php echo $usuarioarea['nombre']; ?>
-                                          </option>
-                                      <?php } ?>
-                                  <?php } ?>
+                                  <select name="id_estado" id="id_estado">
+                                  <option value="0">---Seleccione un Estatus---</option>
+                                  <option value="6">Por resolver</option>
+                                  <option value="7">Resuelta</option>
                               </select>
 
                                 <!-- <select name="id_trabajador" disabled id="id_trabajador">
