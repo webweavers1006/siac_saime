@@ -19,7 +19,7 @@ $userdata = $session->get();
       <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
     </li>
   </ul>
-  <input type="text" name="" disabled="disabled" style="width: 100px; background-color: transparent; border: none;" value="">
+  <input type="text" name="" disabled="disabled" style="width: 350px; background-color: transparent; border: none;" value="">
   <img src="<?php echo base_url(); ?>/img/cintillo_tradicional.png" height="60" class="d-none d-lg-block">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
