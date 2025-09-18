@@ -12,7 +12,7 @@
         <div class="col-sm-6">
 
 
-          <h1>Estadísticas - Tipo de Atención</h1>
+          <h1>Estadísticas - Detalle Tipo de Atención</h1>
         </div>
      
       
@@ -23,13 +23,6 @@
           <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="hasta" id="hasta">&nbsp;
           &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary consultar">Consultar</button>
           &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-secondary limpiar">Limpiar</button>
-      
-      <div class="col-lg-4 col-sm-4 col-md-4">
-                            <label for="estado-caso">Estado</label>
-                            <select id="estado-caso" name="estado-caso" class="form-control">
-                                <option value="0" disabled>Seleccione Estado</option>
-                            </select>
-                        </div>
         </div>
       </div>
     </div><!-- /.container-fluid -->
@@ -109,7 +102,7 @@ foreach ($data['nombres_estados'] as $key => $estado) {
 
 foreach ($data['nombre_estado_solicitud'] as $key => $nombre_estado_solicitud) {
     $estado_key = array_search(trim($nombre_estado_solicitud), array_map('trim', $data['nombres_estados']));
-    $solicitud = $data['nombre_tipo_solicitud'][$key];
+    $solicitud = $data['nombre_detalle_atencion'][$key];
     $count_solicitud = $data['count_solicitud'][$key];
     
     if (isset($estados[$estado_key])) {

@@ -26,6 +26,8 @@ class Tipo_Atencion_Detalle_Controler extends BaseController
 		}
 	}
 
+
+
 	/*
        FUNCION PARA OBTENER LOS TIPOS DE solicitud
     */

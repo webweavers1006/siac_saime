@@ -219,6 +219,14 @@ $userdata = $session->get();
             </a>
           </li>
 
+
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas_Detalle_tipo_atencion/null/null" class="nav-link">
+              <i class="nav-icon fas fa-chalkboard-teacher" style='font-size:20px'></i>
+              <p>Detalle Tipo Atencion</p>
+            </a>
+          </li>
+
           <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/estadisticas_pp/null/null" class="nav-link">
                     <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>

@@ -892,6 +892,28 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
 
 
 
+    // Método que cuenta los casos atendidos por el detalle del  tipo de atención estadales
+    public function Contarcasos_Detalle_Tipo_Atencion_Estadal($desde = null, $hasta = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos AS c');
+        $builder->select('COALESCE(COUNT(c.tipo_atend_id), 0) AS count, COALESCE(deta.tipo_atend_nombre, \'No Aplica\') AS tipo_atend_nombre, estados.estadonom');
+        $builder->join('sgc_tipoatenciondetalle AS deta', 'c.tipo_atend_id = deta.tipo_atend_id', 'right');
+        $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
+        $builder->where('COALESCE(c.borrado, FALSE)', false);
+        $builder->where('COALESCE(deta.tipo_atend_borrado, FALSE)', false);
+        if ($desde != 'null' && $hasta != 'null') {
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
+        }
+        $builder->groupBy('deta.tipo_atend_nombre, estados.estadonom'  );
+        $builder->orderBy('estados.estadonom', 'ASC' );
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        //echo $db->getLastQuery(); 
+        return $resultado; 
+    }
+
 
 
     // Método que cuenta los casos atendidos con filtros

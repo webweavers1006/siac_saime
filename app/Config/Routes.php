@@ -157,6 +157,8 @@ $routes->setAutoRoute(false);
      $routes->get('/vista_tipo_atencion', 'Tipo_Atencion_Usu_Controler::vista_tipo_atencion');
      $routes->get('/Listar_Tipo_Atencion', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion");
      $routes->get('/Listar_Tipo_Atencion_filtro', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion_filtro");
+     
+    
      //RUTAS PARA LOS TIPOS DE ATENCION EN FUNCION DE LAS VIAS 
      $routes->get('/buscar_via_tipo_atencion/(:any)','Via_Tipo_Atencion_Controler::buscar_via_tipo_atencion/$1');
      $routes->post('/add_Tipo_Atencion', "Tipo_Atencion_Usu_Controler::add_Tipo_Atencion");
@@ -208,6 +210,11 @@ $routes->setAutoRoute(false);
      $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");
      $routes->get('/generar_pdf/(:any)', "PdfController::generar_pdf/$1");
+
+
+     //RUTAS PARA EL DETALLE DE  TIPOS DE ATENCION
+     $routes->get('/estadisticas_Detalle_tipo_atencion/(:any)/(:any)', "Reporte_Controler::vista_Detalle_tipo_atencion/$1/$2");
+
      //Rutas generales de la aplicacion
      $routes->get('/403', "Home::forbidden");
      $routes->get('/404', "Home::notFound");

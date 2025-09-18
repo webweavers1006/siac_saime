@@ -851,6 +851,70 @@ class Reporte_Controler extends BaseController
 
 
 
+
+	public function vista_Detalle_tipo_atencion($desde = null, $hasta = null)
+	{
+		
+	if ($this->session->get('logged')) {
+			$model = new Casos();
+			//BUSCAMOS LOS CASOS POR ESTADOS
+			$query_consultar_estados = $model->consultar_estados($desde, $hasta);
+			
+			$count_estados = [];		
+			$nombres_estados = [];
+			
+
+			// Verificamos si el resultado de la consulta no está vacío
+			if (!empty($query_consultar_estados))
+			{
+				foreach ($query_consultar_estados as $estados) 
+				{
+					$nombres_estados[] = $estados->estadonom;
+					$count_estados[] = $estados->count;	
+				}
+			}
+			$data = [
+				'nombres_estados' => $nombres_estados, 
+				'count_estados' => $count_estados,
+			];
+
+			// //BUSCAMOS LOS CASOS ESTADALES POR TIPO DE TIPO DE SOLICITUD
+			$query_Tipo_solicitud = $model->Contarcasos_Detalle_Tipo_Atencion_Estadal($desde, $hasta);
+			$nombre_detalle_atencion = [];		
+			$count_solicitud = [];
+			$nombre_estado_solicitud = [];
+			
+			if (!empty($query_Tipo_solicitud)) {
+				foreach ($query_Tipo_solicitud as $solicitud) {
+					$nombre_detalle_atencion[] = $solicitud->tipo_atend_nombre;
+					$count_solicitud[] = $solicitud->count;
+					$nombre_estado_solicitud[] = $solicitud->estadonom;
+				}
+			}
+			
+			$data = [
+				'nombres_estados' => $nombres_estados, 
+				'count_estados' => $count_estados,
+				'nombre_detalle_atencion' => $nombre_detalle_atencion, 
+				'count_solicitud' => $count_solicitud, 
+				'nombre_estado_solicitud' => $nombre_estado_solicitud,
+			];
+			
+			
+			$json_data = json_encode($data);
+		
+		if ($this->session->get('logged')) {
+			echo view('template/header');
+			echo view('template/nav_bar');
+			echo view('reportes/estadisticas/estadal/tipo_atencion_detalle/content.php', array('json_data' => $json_data));
+			echo view('template/footer');
+			echo view('reportes/estadisticas/estadal/tipo_atencion_detalle/footer_Detalle_tipo_atencion_detalle.php');
+		} else {
+			return redirect()->to('/');
+		}
+	}
+
+}
 	public function vista_estadisticas2()
 	{
 		echo view('template/header');
