@@ -778,8 +778,11 @@ nextBtns.forEach((btn) => {
     let tipo_atencion = $("#tipo-atencion-usu").val();
     let tipo_prop_intelec = $("#tipo-pi").val();
     let fecha_recivido=$("#fecha-recibido").val();
-     let actcoordenadas=$("#actcoordenadas").val();
-     let detalles_atencion=$("#detalles_atencion").val();
+    let actcoordenadas=$("#actcoordenadas").val();
+    let detalles_atencion=$("#detalles_atencion").val();
+    let t_beneficiario=$("#t-beneficiario").val();
+
+     
     if (fecha_recivido>getFormattedDate()) 
     {
      alert('La fecha de creación no debe ser mayor al dia de hoy ')
@@ -851,12 +854,30 @@ nextBtns.forEach((btn) => {
         });
     
       } 
+     
+
+
+      else if (t_beneficiario == null ||t_beneficiario == 'null'  ) {
+         $("#fecha-nacimiento").removeClass('is-invalid');
+        $("#t-beneficiario").addClass('is-invalid');
+        Swal.fire({
+            icon: "success",
+            type: 'error',
+            html: '<strong>DEBE SELECCIONAR EL TIPO DE BENEFICIARIO </strong>',
+            toast: true,
+            position: "center",
+            showConfirmButton: false,
+            timer: 3500,
+        });
+    
+      } 
       
       
       
       
       
       else if (red_social == null) {
+         $("#t-beneficiario").removeClass('is-invalid');
         $("#red-social").addClass('is-invalid');
         $("#cedula-persona").removeClass('is-invalid');
         Swal.fire({

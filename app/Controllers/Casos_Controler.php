@@ -236,6 +236,9 @@ curl_close($ch);
 			$newCase["profesion"]    = $datos["profesion"];
 			$bandera_cgr["bandera_cgr"]    = $datos["bandera_cgr"];
 			$bandera_denuncia["bandera_denuncia"]    = $datos["bandera_denuncia"];
+
+
+
 			$pi_type = $datos["pi-type"];
 			if (empty($datos["record-work"])) {
 				$newCase["casonumsol"] = 'No Aplica';
@@ -243,7 +246,7 @@ curl_close($ch);
 				$newCase["casonumsol"] = $datos["record-work"];
 			}
 
-	$act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
+	      $act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
 	
 
 			//VERIFICO SI EXISTEN CASOS ANTERIOSRES EN FUNCION DE LA CEDULA , PARA ACTUALIZAR LA FECHA DE NACIMIENTO Y LA PROFECION
