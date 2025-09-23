@@ -92,6 +92,9 @@ $routes->setAutoRoute(false);
      $routes->post('/parroquias', "Municipios_Controler::listar_Parroquias");
      //Rutas del controlador Tipo de Atencion Usuario
      $routes->get('/Listar_Tipo_Atencion', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion");
+    $routes->get('/Listar_Tipo_Atencion_act_coordenadas/(:any)', "Tipo_Atencion_Usu_Controler::Listar_Tipo_Atencion_act_coordenadas/$1");
+    
+    
      //Rutas del controlador Entes asdcritos
      $routes->get('/Listar_Entes_asdcritos', "Entes_asdcritos_Controler::Listar_Entes_asdcritos");
      //Rutas del controlador Tipo de Propiedad Intelectual
@@ -194,18 +197,18 @@ $routes->setAutoRoute(false);
      $routes->get('/enviar_correo_portal/(:any)/(:any)',"Estatus::enviar_correo_portal/$1/$2");
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
-     $routes->get('/reporte_consolidado/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_consolidado/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17/$18");
+     $routes->get('/reporte_consolidado', 'Reporte_Controler::reporte_consolidado');
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
-     $routes->get('/reporte_operador/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::reporte_operador/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17");
+     $routes->get('/reporte_operador', "Reporte_Controler::reporte_operador");
      //RUTAS PARA LAS ESTADISTICAS
      $routes->get('/estadisticas', "Reporte_Controler::vista_estadisticas");
      $routes->get('/estadal/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_estadal/$1/$2");
      $routes->get('/estadisticas_benificiario/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_beneficiario/$1/$2");
      $routes->get('/estadisticas_pp/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_pp/$1/$2");
      $routes->get('/estadisticas_propiedad_intelectual/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_prop_intelectual/$1/$2");
-     $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2");
-     $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
+     $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2/$3");
+     $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
      $routes->get('/estadisticas2', "Reporte_Controler::vista_estadisticas2");
      $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");
@@ -230,6 +233,9 @@ $routes->setAutoRoute(false);
 
        //RUTAS PARA EL MAPA , EN EL SIAC ESTADOS
        $routes->get('/Listar_Casos_Estados', "Reporte_Atencion_Controler::Listar_Casos_Estados");
+
+     //RUTAS PARA EL MAPA DE AYUDA 
+       $routes->get('/Listar_Casos_Ayuda', "Mapa_Ayuda_Controler::Listar_Casos_Ayuda");
 
 
 

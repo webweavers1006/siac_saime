@@ -41,7 +41,7 @@ class Red_Social_Model extends BaseModel
         $db = \Config\Database::connect();
         $builder = $db->table('public.sgc_red_social');
         $builder->select('red_s_id, red_s_nom, CASE WHEN red_s_borrado = \'f\' THEN \'Activo\' ELSE \'Inactivo\' END AS borrado');
-        $builder->where('red_s_borrado', false);
+        //$builder->where('red_s_borrado', false);
         $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;

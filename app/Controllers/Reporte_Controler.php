@@ -47,22 +47,84 @@ class Reporte_Controler extends BaseController
 			return redirect()->to('/');
 		}
 	}
-	//Metodo queo obtiene  los todos los casos disponibles
-	public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0,$org_id=0)
-	{
-		
-		
-		$model = new Casos();
-		$query = $model->reporte_consolidado($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $via_atencion, $direcciones_caso, $tipo_beneficiario, $atencion_cuidadano, $estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$detalle_atencion,$org_id);
-		
-		
-		if (empty($query)) {
-			$casos = [];
-		} else {
-			$casos = $query;
-		}
-		echo json_encode($casos);
-	}
+// Método que obtiene todos los casos disponibles para el reporte consolidado
+public function reporte_consolidado()
+{
+    $request = $this->request;
+
+    // Captura todos los parámetros de DataTables y los filtros del reporte en un solo array.
+    // Usamos el operador de fusión nula (??) para asegurarnos de que el valor sea null si no se envía.
+    $params = [
+        'draw' => $request->getVar('draw') ?? null,
+        'start' => $request->getVar('start') ?? 0,
+        'length' => $request->getVar('length') ?? 10,
+        'search' => $request->getVar('search')['value'] ?? null,
+        'order' => $request->getVar('order') ?? [],
+        'desde' => $request->getVar('desde') ?? null,
+        'hasta' => $request->getVar('hasta') ?? null,
+        'tipo_pi' => $request->getVar('tipo_pi') ?? null,
+        'tipo_atencion_usu' => $request->getVar('tipo_atencion_usu') ?? null,
+        'sexo' => $request->getVar('sexo') ?? null,
+        'via_atencion' => $request->getVar('via_atencion') ?? null,
+        'direcciones_caso' => $request->getVar('direcciones_caso') ?? null,
+        'tipo_beneficiario' => $request->getVar('tipo_beneficiario') ?? null,
+        'atencion_cuidadano' => $request->getVar('atencion_cuidadano') ?? null,
+        'estatus' => $request->getVar('estatus') ?? null,
+        'id_pais' => $request->getVar('id_pais') ?? null,
+        'id_estado' => $request->getVar('id_estado') ?? null,
+        'id_municipio' => $request->getVar('id_municipio') ?? null,
+        'id_parroquia' => $request->getVar('id_parroquia') ?? null,
+        'edad_min' => $request->getVar('edad_min') ?? null,
+        'edad_max' => $request->getVar('edad_max') ?? null,
+        'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
+        'org_id' => $request->getVar('org_id') ?? null
+    ];
+
+    // Mapea el índice de la columna al alias de la columna en tu consulta.
+    $columns = [
+        'a.idcaso', 
+        'a.casofec', 
+        'nombre',
+        'b.estnom', 
+        't_antusu.tipo_aten_nombre', 
+        'tpinte.tipo_prop_nombre', 
+        't_bene.tipo_beneficiario_nombre', 
+        'a.sexo'
+    ];
+
+    // Asegúrate de que la columna de ordenación exista antes de usarla.
+    if (isset($params['order'][0]['column'])) {
+        $order_index = $params['order'][0]['column'];
+        if (isset($columns[$order_index])) {
+            $params['order_column'] = $columns[$order_index];
+            $params['order_direction'] = $params['order'][0]['dir'];
+        } else {
+            // Establece un ordenamiento por defecto si la columna no se encuentra.
+            $params['order_column'] = 'a.idcaso';
+            $params['order_direction'] = 'DESC';
+        }
+    } else {
+        // Establece un ordenamiento por defecto si no se especifica.
+        $params['order_column'] = 'a.idcaso';
+        $params['order_direction'] = 'DESC';
+    }
+
+    // Llama al modelo con un único array de parámetros.
+    $model = new Casos();
+    $data = $model->getReporteData($params);
+
+    // Prepara y devuelve la respuesta JSON.
+    $output = [
+        "draw" => $params['draw'],
+        "recordsTotal" => $data['recordsTotal'],
+        "recordsFiltered" => $data['recordsFiltered'],
+        "data" => $data['data']
+    ];
+
+    return $this->response->setJSON($output);
+}
+
+	
 
 	public function vista_operador()
 	{
@@ -119,17 +181,81 @@ class Reporte_Controler extends BaseController
 		}
 	}
 	//Metodo queo obtiene  los todos los casos disponibles POR USUARIO
-	public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=0,$id_pais=0,$id_estado=0,$id_municipio=0,$id_parroquia=0,$edad_min=null,$edad_max=null,$org_id=0)
+	public function reporte_operador()
 	{
-		$model = new Casos();
-		$idusuopr   = $this->session->get('iduser');
-		$query = $model->reporte_operador($desde, $hasta, $tipo_pi, $tipo_atencion_usu, $sexo, $idusuopr, $via_atencion, $direcciones_caso, $tipo_beneficiario, $usuarios,$estatus,$id_pais,$id_estado,$id_municipio,$id_parroquia,$edad_min,$edad_max,$org_id);
-		if (empty($query)) {
-			$casos = [];
-		} else {
-			$casos = $query;
-		}
-		echo json_encode($casos);
+		 $request = $this->request;
+
+    // Captura todos los parámetros de DataTables y los filtros del reporte en un solo array.
+    // Usamos el operador de fusión nula (??) para asegurarnos de que el valor sea null si no se envía.
+    $params = [
+        'draw' => $request->getVar('draw') ?? null,
+        'start' => $request->getVar('start') ?? 0,
+        'length' => $request->getVar('length') ?? 10,
+        'search' => $request->getVar('search')['value'] ?? null,
+        'order' => $request->getVar('order') ?? [],
+        'desde' => $request->getVar('desde') ?? null,
+        'hasta' => $request->getVar('hasta') ?? null,
+        'tipo_pi' => $request->getVar('tipo_pi') ?? null,
+        'tipo_atencion_usu' => $request->getVar('tipo_atencion_usu') ?? null,
+        'sexo' => $request->getVar('sexo') ?? null,
+        'via_atencion' => $request->getVar('via_atencion') ?? null,
+        'direcciones_caso' => $request->getVar('direcciones_caso') ?? null,
+        'tipo_beneficiario' => $request->getVar('tipo_beneficiario') ?? null,
+        'atencion_cuidadano' => $request->getVar('atencion_cuidadano') ?? null,
+        'estatus' => $request->getVar('estatus') ?? null,
+        'id_pais' => $request->getVar('id_pais') ?? null,
+        'id_estado' => $request->getVar('id_estado') ?? null,
+        'id_municipio' => $request->getVar('id_municipio') ?? null,
+        'id_parroquia' => $request->getVar('id_parroquia') ?? null,
+        'edad_min' => $request->getVar('edad_min') ?? null,
+        'edad_max' => $request->getVar('edad_max') ?? null,
+        'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
+        'org_id' => $request->getVar('org_id') ?? null,
+		'usuarios' => $request->getVar('usuarios') ?? null
+    ];
+
+    // Mapea el índice de la columna al alias de la columna en tu consulta.
+    $columns = [
+        'a.idcaso', 
+        'a.casofec', 
+        'nombre',
+        'b.estnom', 
+        't_antusu.tipo_aten_nombre', 
+        'tpinte.tipo_prop_nombre', 
+        't_bene.tipo_beneficiario_nombre', 
+        'a.sexo'
+    ];
+
+    // Asegúrate de que la columna de ordenación exista antes de usarla.
+    if (isset($params['order'][0]['column'])) {
+        $order_index = $params['order'][0]['column'];
+        if (isset($columns[$order_index])) {
+            $params['order_column'] = $columns[$order_index];
+            $params['order_direction'] = $params['order'][0]['dir'];
+        } else {
+            // Establece un ordenamiento por defecto si la columna no se encuentra.
+            $params['order_column'] = 'a.idcaso';
+            $params['order_direction'] = 'DESC';
+        }
+    } else {
+        // Establece un ordenamiento por defecto si no se especifica.
+        $params['order_column'] = 'a.idcaso';
+        $params['order_direction'] = 'DESC';
+    }
+
+    // Llama al modelo con un único array de parámetros.
+    $model = new Casos();
+    $data = $model->getReporteOperadorData($params);
+
+    // Prepara y devuelve la respuesta JSON.
+    $output = [
+        "draw" => $params['draw'],
+        "recordsTotal" => $data['recordsTotal'],
+        "recordsFiltered" => $data['recordsFiltered'],
+        "data" => $data['data']
+    ];
+
+    return $this->response->setJSON($output);
 	}
 
 	public function vista_estadisticas()
@@ -143,10 +269,11 @@ class Reporte_Controler extends BaseController
 			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO USUARIO
 			$estadisticas["usuario"] = 0;
 			$beneficiarios = $model->contarCasos_Tipo_Beneficiario($desde, $hasta,$id_estado);
-					
+				
 			$data = [
 				'beneficiarios' => $beneficiarios
 			];
+			
 			if (empty($beneficiarios)) 
 			{
 				echo view('template/header');
@@ -157,6 +284,7 @@ class Reporte_Controler extends BaseController
 			{
 				//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
 				$query_casos_atendidos = $model->contarCasosAtendidos();
+				
 				
 				$data = [
 					'beneficiarios' => $beneficiarios,
@@ -213,7 +341,7 @@ class Reporte_Controler extends BaseController
 				//	BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION
 				$query_casos_solicitud = $model->contarCasosAtencionCiudadano();
 
-						
+					
 				//BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO DE SOLICITUD PARA LA GRAFICA
 				$count_solicitud = [];
 				$nombres_solicitud = [];
@@ -778,80 +906,104 @@ class Reporte_Controler extends BaseController
 	}
 
 
+public function vista_estadisticas_tipo_atencion($estado = null, $desde = null, $hasta = null)
+{
+	
+    // Redirects if the user is not logged in.
+    if (!$this->session->get('logged')) {
+        return redirect()->to('/');
+    }
 
-	public function vista_estadisticas_tipo_atencion($desde = null, $hasta = null)
-	{
-		
-		
-		
-		if ($this->session->get('logged')) {
-			$model = new Casos();
-			//BUSCAMOS LOS CASOS POR ESTADOS
-			$query_consultar_estados = $model->consultar_estados($desde, $hasta);
-			
-			$count_estados = [];		
-			$nombres_estados = [];
-			
+    $model = new Casos();
 
-			// Verificamos si el resultado de la consulta no está vacío
-			if (!empty($query_consultar_estados))
-			{
-				foreach ($query_consultar_estados as $estados) 
-				{
-					$nombres_estados[] = $estados->estadonom;
-					$count_estados[] = $estados->count;	
-				}
-			}
-			$data = [
-				'nombres_estados' => $nombres_estados, 
-				'count_estados' => $count_estados,
-			];
+	  
+    // Use the correct variable name: $query_result
+    $query_result = $model->ContarCasosPorMunicipioYTipoAtencion($estado, $desde, $hasta);
+    
+    // Check if the query returned results before proceeding
+    if (empty($query_result)) {
+        // Handle the case where there are no results, maybe return an empty data set or an error message.
+        $data = [
+            'nombres_municipios' => [],
+            'tipos_atencion_unicos' => [],
+            'series_data' => [],
+			'desde' => $desde,
+			'hasta' => $hasta,
+			'estado' => $estado,
+        ];
+        
+        $json_data = json_encode($data);
 
-			// //BUSCAMOS LOS CASOS ESTADALES POR TIPO DE TIPO DE SOLICITUD
-			$query_Tipo_solicitud = $model->ContarasosTipoSolicitud_Estadal($desde, $hasta);
+        echo view('template/header');
+        echo view('template/nav_bar');
+        echo view('reportes/estadisticas/tipo_atencion/content.php', [
+        'json_data' => $json_data,
+        'desde' => $desde,
+        'hasta' => $hasta,
+		'estado' => $estado,
+    ]);
+        echo view('template/footer');
+        echo view('reportes/estadisticas/tipo_atencion/footer.php');
+        return;
+    }
+    
+    $datos_agrupados = [];
 
-			$nombre_tipo_solicitud = [];		
-			$count_solicitud = [];
-			$nombre_estado_solicitud = [];
-			
-			if (!empty($query_Tipo_solicitud)) {
-				foreach ($query_Tipo_solicitud as $solicitud) {
-					$nombre_tipo_solicitud[] = $solicitud->tipo_aten_nombre;
-					$count_solicitud[] = $solicitud->count;
-					$nombre_estado_solicitud[] = $solicitud->estadonom;
-				}
-			}
-			
-			$data = [
-				'nombres_estados' => $nombres_estados, 
-				'count_estados' => $count_estados,
-				'nombre_tipo_solicitud' => $nombre_tipo_solicitud, 
-				'count_solicitud' => $count_solicitud, 
-				'nombre_estado_solicitud' => $nombre_estado_solicitud,
-			];
-			
-			
-			$json_data = json_encode($data);
+    // Correct the variable name from $query_atencion_municipio to $query_result
+    foreach ($query_result as $item) {
+        $municipio = $item->municipionom;
+        $tipo_atencion = $item->tipo_aten_nombre;
+        $count = (int)$item->count; // Convert string to integer.
 
-			
+        if (!isset($datos_agrupados[$municipio])) {
+            $datos_agrupados[$municipio] = [];
+        }
 
-			echo view('template/header');
-			echo view('template/nav_bar');
-			echo view('reportes/estadisticas/tipo_atencion/content.php', array('json_data' => $json_data));
-			echo view('template/footer');
-			echo view('reportes/estadisticas/tipo_atencion/footer.php');
-		} else {
-			return redirect()->to('/');
-		}
-		
-		
-		
-	}
+        $datos_agrupados[$municipio][$tipo_atencion] = $count;
+    }
 
+    $nombres_municipios = array_keys($datos_agrupados);
+    $tipos_atencion_unicos = [];
+    $series_data = [];
 
+    // Collect all unique attention types
+    foreach ($datos_agrupados as $tipos_atencion) {
+        $tipos_atencion_unicos = array_unique(array_merge($tipos_atencion_unicos, array_keys($tipos_atencion)));
+    }
 
+    // Prepare data for the chart series
+    foreach ($tipos_atencion_unicos as $tipo) {
+        $series_data[$tipo] = [];
+        foreach ($nombres_municipios as $municipio) {
+            $series_data[$tipo][] = $datos_agrupados[$municipio][$tipo] ?? 0;
+        }
+    }
+    
+    // Now, your variables are ready to be used in the view
+    $data = [
+        'nombres_municipios' => $nombres_municipios,
+        'tipos_atencion_unicos' => array_values($tipos_atencion_unicos),
+        'series_data' => array_values($series_data),
+		'desde' => $desde,
+		'hasta' => $hasta,
+		'estado' => $estado,
+		 // Convert to indexed array for clean JSON
+    ];
 
+	
+    $json_data = json_encode($data);
 
+    echo view('template/header');
+    echo view('template/nav_bar');
+   echo view('reportes/estadisticas/tipo_atencion/content.php', [
+        'json_data' => $json_data,
+        'desde' => $desde,
+        'hasta' => $hasta,
+		'estado' => $estado,
+    ]);
+    echo view('template/footer');
+    echo view('reportes/estadisticas/tipo_atencion/footer.php');
+}
 	public function vista_Detalle_tipo_atencion($desde = null, $hasta = null)
 	{
 		

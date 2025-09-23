@@ -1,6 +1,6 @@
 <!-- Content Wrapper. Contains page content -->
 
-<script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/Chart.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>/dist/chart.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/jspdf.debug.js"></script>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/estadisticas.css">
 <div class="content-wrapper">
@@ -18,9 +18,9 @@
       
         <div class="col-sm-6">
           &nbsp;&nbsp; <label for="min">Desde</label>&nbsp;
-          <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="desde" id="desde">&nbsp;&nbsp;
+          <input type="date" class="bodersueve" style="width:140px;"  name="desde" id="desde">&nbsp;&nbsp;
           <label for="hasta">Hasta</label>&nbsp;&nbsp;
-          <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="hasta" id="hasta">&nbsp;
+          <input type="date" class="bodersueve" style="width:140px;"  name="hasta" id="hasta">&nbsp;
           &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary consultar">Consultar</button>
           &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-secondary limpiar">Limpiar</button>
         </div>
@@ -30,25 +30,13 @@
   </section>
 
 
-  <style>
-
-.card {
-
-max-width: auto;
-
-margin: auto;
-
+<style>
+  .chart-container {
+    position: relative;
+    height: 60vh; 
+    width: 80vw;  
+   
 }
-
-
-canvas {
-
-max-width: auto;
-
-height: auto;
-
-}
-
 </style>
 
 
@@ -192,7 +180,7 @@ foreach ($estados as $estado) {
   var ctx = document.getElementById('estatus').getContext('2d');
 
   // Extrae los nombres de estatus sin repetirlos
-  const estatusNombres = Array.from(new Set(Object.keys(datosEstatus).map(estado => Object.keys(datosEstatus[estado]).filter(est => est!== 'total')).flat()));
+  const estatusNombres = Array.from(new Set(Object.keys(datosEstatus).map(estado => Object.keys(datosEstatus[estado]).filter(est => est !== 'total')).flat()));
 
   // Ordena los datos por total descendente
   const sortedData = Object.keys(datosEstatus).sort((a, b) => totalesPorEstado[b] - totalesPorEstado[a]);
@@ -210,7 +198,7 @@ foreach ($estados as $estado) {
     'rgba(255, 206, 86, 0.5)',
     'rgba(153, 102, 255, 0.5)',
     'rgba(255, 159, 64, 0.5)',
-    'rgba(0, 0, 0, 0.5)' // Agrega más colores según sea necesario
+    'rgba(0, 0, 0, 0.5)'
   ];
 
   // Crea la gráfica
@@ -219,44 +207,37 @@ foreach ($estados as $estado) {
     data: {
       labels: sortedData,
       datasets: [
-        {
-          label: 'Total',
-          data: sortedData.map(estado => totalesPorEstado[estado]),
-          backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-          borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-          borderWidth: 1
-        },
         ...estatusNombres.map((estatus, index) => ({
           label: estatus,
           data: sortedData.map(estado => datosEstatus[estado][estatus] || 0),
-          backgroundColor: estatusColors[estatus] || additionalColors[index % additionalColors.length], // Asigna un color específico o uno adicional
-          borderColor: estatusColors[estatus] || additionalColors[index % additionalColors.length], // Asigna un color específico o uno adicional
+          backgroundColor: estatusColors[estatus] || additionalColors[index % additionalColors.length],
+          borderColor: estatusColors[estatus] || additionalColors[index % additionalColors.length],
           borderWidth: 1
         }))
       ]
     },
     options: {
-      tooltips: {
-        callbacks: {
-          label: function(tooltipItem, data) {
-            const estado = data.labels[tooltipItem.index];
-            const estatusInfo = estatusNombres.map(estatus => `${estatus}: ${datosEstatus[estado][estatus] || 0}`);
-            return [...estatusInfo, `Total: (${totalesPorEstado[estado]})`];
-          },
-          labelColor: function(tooltipItem, data) {
-            return {
-              backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-              borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-              borderWidth: 1
-            };
+      plugins: {
+        tooltip: {
+          // This is the key. It groups all datasets at a specific index into a single tooltip.
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            title: function(tooltipItems) {
+              return tooltipItems[0].label;
+            },
+            afterBody: function(tooltipItems) {
+              let lines = [];
+              const estado = tooltipItems[0].label;
+              lines.push(`Total: ${totalesPorEstado[estado]}`);
+              return lines;
+            }
           }
         }
       }
     }
   });
 </script>
-
-
 
 
 

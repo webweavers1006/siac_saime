@@ -42,6 +42,26 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 	}
 
 	/*
+      // METODO PARA VERIFICAR SI EL TIPO DE ATENCION TIENE ACCESO A COORDENADAS
+    */
+	public function Listar_Tipo_Atencion_act_coordenadas($idTipoAtencion=null)
+
+	{
+		
+		
+		$model = new Tipo_Atencion_Usu_Model();
+		$query = $model->Listar_Tipo_Atencion_act_coordenadas($idTipoAtencion);
+		
+
+		if (empty($query)) {
+			$atencion = [];
+		} else {
+			$atencion = $query;
+		}
+		echo json_encode($atencion);
+	}
+
+	/*
        FUNCION PARA OBTENER LOS TIPOS DE ATENCION ACTIVOS
     */
 	public function Listar_Tipo_Atencion_filtro()
@@ -87,6 +107,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			$atencion["env_correo"]     = $datos["env_correo"];
 			$atencion["organismo_pp"]     = $datos["organismo_pp"];
+			$atencion["act_coordenadas"]     = $datos["act_coordenadas"];
 			//Realizamos la insercion en la tabla
 			$query_insertar_atencion = $model->add_Atencion($atencion);
 			if (isset($query_insertar_atencion)) {
@@ -120,6 +141,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["acc_participantes"]     = $datos["acc_participantes"];
 			$atencion["env_correo"]     = $datos["env_correo"];
 			$atencion["organismo_pp"]     = $datos["organismo_pp"];
+			$atencion["act_coordenadas"]     = $datos["act_coordenadas"];
 			//Realizamos la actualizacion en la tabla
 			$query_editar_atencion = $model->editTipoAtencion($atencion);
 			if (isset($query_editar_atencion)) {

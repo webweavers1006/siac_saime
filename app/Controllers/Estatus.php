@@ -6,6 +6,9 @@ use App\Models\Estatus as Status;
 use App\Models\Seguimientos;
 use App\Models\Casos;
 use CodeIgniter\API\ResponseTrait;
+use App\Models\Auditoria_sistema_Model;
+
+
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';

@@ -35,8 +35,9 @@ class Encuesta_sastifaccion_Controler extends BaseController
     
             // Obtener los datos de la encuesta
             $comentario = json_decode(file_get_contents("{$url_encuestas}/api/encuesta"), true);
-            $detalle_encuesta = json_decode(file_get_contents("{$url_encuestas}/api/respuesta/byPresFunc/1/{$id_participante}/1/10000"), true);
             
+            $detalle_encuesta = json_decode(file_get_contents("{$url_encuestas}/api/respuesta/byPresFunc/1/{$id_participante}/1/10000"), true);
+           
             // Agrupar todos los datos en un solo array
             $data = [
                 'id_participante' => $id_participante,
@@ -57,12 +58,13 @@ class Encuesta_sastifaccion_Controler extends BaseController
         }
     }
 
-    public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null)
+    public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null,$id_participante = null)
     {
 
     
         if ($this->session->get('logged')) {
             $url_encuestas = URL_ENCUESTAS; 
+            
             
           
             // Establecer la fecha actual si las fechas son null o vacías
@@ -74,7 +76,6 @@ class Encuesta_sastifaccion_Controler extends BaseController
             }
     
 
-        
             
             // Construir la URL con los parámetros
             $url = "{$url_encuestas}/api/estadisticas/respuestas?" . http_build_query([
@@ -101,6 +102,7 @@ class Encuesta_sastifaccion_Controler extends BaseController
 
             ];
     
+           
             // Cargar las vistas
             echo view('template/header');
             echo view('template/nav_bar');

@@ -527,6 +527,7 @@ function llenar_pais(e, id) {
  
  // Evento change para el select de tipo de atención
  $("#tipo-atencion-usu").on('change', function(e) {
+     $("#ayudas").modal("show");
     document.getElementById("detalles_atencion").disabled = false;
     $("#hijos_tipoatencion").val('NO');
     let idTipoAtencion = $(this).val(); 
@@ -549,9 +550,48 @@ function llenar_pais(e, id) {
         $(".org_pp").toggle(organismoPp === 't');
         document.getElementById("organismo-caso").disabled = (organismoPp !== 't');
     }
+
+   $.ajax({
+    url: `/Listar_Tipo_Atencion_act_coordenadas/${idTipoAtencion}`,
+    method: 'GET',
+    dataType: 'json',
+   
+    })
+    .done((response) => {
+        // La petición se completó con éxito
+       const tipoAtencion = response[0]; 
+
+    if (tipoAtencion && tipoAtencion.act_coordenadas === 't') {
+    $(".mapa_ayuda").show();
+    $("#actcoordenadas").val('t');
+    
+      map.invalidateSize();
+    } else {
+    $(".mapa_ayuda").hide();
+     $("#actcoordenadas").val('f');
+    }
+    })
+    .fail((xhr, status, error) => {
+        // La petición falló o devolvió un error
+        let errorMessage = 'Error al cargar datos.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+        }
+        Swal.fire('Error', errorMessage, 'error');
+    });
+
     // Llama a la función para llenar detalles de atención
     llenar_detalle_atencion(e, idTipoAtencion);
+
+
+
+
+
 });
+
+
+
+
 
 
 
@@ -741,6 +781,8 @@ error:function(xhr, status, errorThrown)
      let red_social = $("#red-social").val();
      let estado = $("#estado-caso").val();
      let org_id = $("#organismo-caso").val();
+    
+
         if (org_id == null || org_id == '') {
             org_id = 1; 
         }
@@ -1187,7 +1229,14 @@ error:function(xhr, status, errorThrown)
                  "edad": $("#edad").val(),
                  "fecha_nacimiento": $("#fecha-nacimiento").val(),
                  "profesion": $("#profesion").val(),
-                 "organismo-caso": org_id,
+                "act_coordenadas": $("#actcoordenadas").val(),
+                "latitud": $("#latitude").val(),
+                "longitud": $("#longitude").val(),
+                "nombre": $("#locationName").val(),
+                "organismo-caso": org_id,
+
+
+
              }
              $.ajax({
                  url: "/registrarCaso",

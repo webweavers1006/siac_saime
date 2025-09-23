@@ -41,7 +41,144 @@ class Casos extends BaseModel
        // echo $db->getLastQuery(); 
         return $query->getResult();
     }
+public function obtenerCasosServerSide($start, $length, $search, $order_column, $order_direction)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
+    
+    // Construir la consulta base para el conteo total
+    $this->buildBaseQuery($builder);
+  
 
+    // 4. Imprime la consulta para verla
+    //  $sql = $builder->getCompiledSelect();
+    // echo $sql;
+    // die();
+    // Obtener el total de registros sin filtrar (recordsTotal)
+    // Usamos clone para no modificar el builder original
+    $tempBuilder = clone $builder; 
+    $recordsTotal = $tempBuilder->countAllResults();
+
+    // Resetear el builder para el siguiente paso (countAllResults lo limpia)
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
+    $this->buildBaseQuery($builder);
+
+    // Aplicar el filtro de búsqueda si existe
+    if (!empty($search)) {
+        $builder->groupStart();
+        // Busca en los campos relevantes
+        $builder->like('CAST(a.idcaso AS TEXT)', $search); // Usar CAST para buscar números como texto
+        $builder->orLike('a.casoced', $search);
+        $builder->orLike('a.casonom', $search);
+        $builder->orLike('a.casoape', $search);
+        $builder->orLike('b.estnom', $search);
+        $builder->groupEnd();
+    }
+    
+    // Obtener el total de registros filtrados (recordsFiltered)
+    // Usamos clone para no modificar el builder de nuevo
+    $tempBuilder2 = clone $builder;
+    $recordsFiltered = $tempBuilder2->countAllResults();
+    
+    // Aplicar la ordenación y paginación al builder final
+    $builder->orderBy($order_column, $order_direction);
+    $builder->limit($length, $start);
+    
+    // Obtener los datos paginados
+    $query = $builder->get();
+    $data = $query->getResult();
+    
+    return [
+        'recordsTotal' => $recordsTotal,
+        'recordsFiltered' => $recordsFiltered,
+        'data' => $data
+    ];
+}
+public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $length, $search, $order_column, $order_direction)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
+    
+    // Construir la consulta base para el conteo total
+    $this->buildBaseQuery($builder);
+    
+    // Aplicar el filtro por usuario
+    $builder->where('a.idusuopr', $idusur);
+
+    // Obtener el total de registros filtrados por usuario (recordsTotal)
+    $tempBuilder = clone $builder; 
+    $recordsTotal = $tempBuilder->countAllResults();
+
+    // Reconstruir el builder para aplicar la búsqueda de texto
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
+    $this->buildBaseQuery($builder);
+    $builder->where('a.idusuopr', $idusur);
+
+    // Aplicar el filtro de búsqueda si existe
+    if (!empty($search)) {
+        $builder->groupStart();
+        // Usamos CAST para buscar por ID de forma precisa con LIKE
+        $builder->like('CAST(a.idcaso AS TEXT)', $search);
+        // Luego, mantenemos la búsqueda flexible para otros campos
+        $builder->orLike('a.casoced', $search);
+        $builder->orLike('a.casonom', $search);
+        $builder->orLike('a.casoape', $search);
+        $builder->orLike('b.estnom', $search);
+        $builder->groupEnd();
+    }
+    
+    // Obtener el total de registros filtrados (recordsFiltered)
+    $tempBuilder2 = clone $builder;
+    $recordsFiltered = $tempBuilder2->countAllResults();
+    
+    // Aplicar la ordenación y paginación
+    $builder->orderBy($order_column, $order_direction);
+    $builder->limit($length, $start);
+    
+    // Obtener los datos paginados
+    $query = $builder->get();
+    $data = $query->getResult();
+    
+    return [
+        'recordsTotal' => $recordsTotal,
+        'recordsFiltered' => $recordsFiltered,
+        'data' => $data
+    ];
+}
+
+private function buildBaseQuery($builder)
+{
+    // Tu código actual de SELECT y JOIN
+    $builder->select('d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario,a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+    $builder->select('a.pais,a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+    $builder->select('a.caso_org_id,a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
+    $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, a.profesion');
+    $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+    $builder->select('cgr.competencia_cgr, cgr.asume_cgr');
+    $builder->select('denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+    $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular');
+    $builder->select('denu.denu_rif_instancia, denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado');
+    $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+    $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+    $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+    $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+    $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
+    $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
+    $builder->join('sgc_estatus b', 'b.idest = a.idest');
+    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+    $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+    $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+    $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+    $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+    $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
+    $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+    $builder->where('a.borrado', 'false');
+    // NO SE ORDENA NI SE PONE EL LIMIT, eso lo maneja el método principal.
+}
 
     //Metodo para obtener todos los casos por usuario
     public function obtenerCasos_filtrados_por_usuario($idusur)
@@ -297,206 +434,296 @@ class Casos extends BaseModel
          return $resultado ? [$resultado] : []; 
      }
 
-     //Metodo para obtener todos los casos para el reporte consolidado 
+     //Metodo para obtener todos los casos para el reporte consolidado    
+ // Método que obtiene todos los casos disponibles para el reporte consolidado
+// Método que obtiene todos los casos disponibles para el reporte consolidado
+public function getReporteData($params)
+{
+    $db = \Config\Database::connect();
 
-     public function reporte_consolidado($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null, $edad_min = null, $edad_max = null, $detalle_atencion = 0,$org_id = 0)
-     {
-
-       
-         $db = \Config\Database::connect();
-         $builder = $db->table('sgc_casos as a');
-         $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
-         $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
-         $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
-         $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
-         $builder->select('a.municipioid, a.parroquiaid');
-         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
-         $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
-         $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
-         $builder->select("CASE WHEN sexo='1' THEN 'M' ELSE 'F' END as sexo");
-         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
-         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
-         $builder->join('sgc_estatus b', 'b.idest = a.idest');
-         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'left');
-         $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-         $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
-         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
-         $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-         $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
-         $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
-         $builder->where('a.borrado', false); // Cambiar 'false' a false sin comillas
-         $builder->groupStart();
-         $builder->where('caso_r.vigencia', true); // Cambiar 'TRUE' a true sin comillas
-         $builder->orWhere('caso_r.vigencia IS NULL');
-         $builder->groupEnd();
-         if ($desde != 'null' && $hasta != 'null') {
-             $builder->where('a.casofec >=', $desde);
-             $builder->where('a.casofec <=', $hasta);
-         }
-
-        
-
-         if ($edad_min != 'null' && $edad_max != 'null') {
-            $builder->where('edad >=', $edad_min);
-            $builder->where('edad <=', $edad_max);
+    // 1. Convertir la cadena "null" en valores nulos (null).
+    // Esto es crucial para evitar errores de sintaxis en la base de datos.
+    foreach ($params as $key => $value) {
+        if ($value === 'null') {
+            $params[$key] = null;
         }
-
-        if ($tipo_pi != 0) {
-         $builder->where('tpinte.tipo_prop_id', $tipo_pi);
-        }
-        if ($tipo_atencion_usu != 0) {
-            $builder->where('t_antusu.tipo_aten_id', $tipo_atencion_usu);
-        }
-        
-        if ($sexo != 0) {
-            $builder->where('a.sexo', $sexo);
-        }
-        
-        if ($via_atencion != 'null') {
-            $builder->where('a.idrrss', $via_atencion);
-        }
-        
-        if ($direcciones_caso != 'null') {
-            $builder->where('caso_r.direccion_id', $direcciones_caso);
-            if ($desde != 'null' && $hasta != 'null') {
-                $builder->where('caso_r.fecha >=', $desde);
-                $builder->where('caso_r.fecha <=', $hasta);
-            }
-        }
-        
-        if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
-            $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
-        }
-        
-        if ($atencion_cuidadano != '0' && $atencion_cuidadano != 'null') {
-            $builder->where('a.ofiid', $atencion_cuidadano);
-        }
-        
-        if ($estatus != '0' && $estatus != 'null') {
-            $builder->where('a.idest', $estatus);
-        }
-        
-       
-        if ($id_pais != '0' && $id_pais != 'null') {
-            $builder->where('a.pais', $id_pais);
-        }
-        if ($id_estado != '0' && $id_estado != 'null'&& $id_estado != '26') {
-            $builder->where('a.estadoid', $id_estado);
-        }
-        if ($id_municipio != '0' && $id_municipio != 'null' && $id_municipio != '336') {
-            $builder->where('a.municipioid', $id_municipio);
-        }
-
-        if ($id_parroquia != '0' && $id_parroquia != 'null'&& $id_parroquia != '1135') {
-            $builder->where('a.parroquiaid', $id_parroquia);
-        }
-
-        if ($org_id != '0' && $org_id != 'null') {
-            $builder->where('a.caso_org_id', $org_id);
-        }
-        
-        $builder->orderBy('a.idcaso', 'desc');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        //echo $db->getLastQuery(); 
-        return $resultado;
     }
-        
-  public function reporte_operador($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $idusuopr, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $usuarios = null,$estatus=null,$id_pais=null,$id_estado=null,$id_municipio=null,$id_parroquia=null,$edad_min=null,$edad_max=null,$org_id = 0)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos as a');
-        $builder->select('a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
-        $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
-        $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
-        $builder->select('a.municipioid, a.parroquiaid');
-        $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
-        $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
-        $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
-        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
-        $builder->select("CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END as sexo");
-        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
-        $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'left');
-        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-        $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
-        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
-        $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
-        $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
-        $builder->where('a.borrado', false); 
-        $builder->groupStart();
-        $builder->where('caso_r.vigencia', true);
-        $builder->orWhere('caso_r.vigencia IS NULL');
-        $builder->groupEnd();
-        // Condiciones adicionales
-        if ($usuarios != 'null') {
-            $builder->where('u_ope.idusuopr', $usuarios);
-        }
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('a.casofec >=', $desde);
-            $builder->where('a.casofec <=', $hasta);
-        }
-        if ($edad_min != 'null' && $edad_max != 'null') {
-            $builder->where('edad >=', $edad_min);
-            $builder->where('edad <=', $edad_max);
-        }
-        if ($tipo_pi != 0) {
-            $builder->where('tpinte.tipo_prop_id', $tipo_pi);
-        }
-        if ($tipo_atencion_usu != 0) {
-            $builder->where('t_antusu.tipo_aten_id', $tipo_atencion_usu);
-        }
-        if ($sexo != 0) {
-            $builder->where('a.sexo', $sexo);
-        }
-        if ($via_atencion != 'null') {
-            $builder->where('a.idrrss', $via_atencion);
-        }
-        if ($direcciones_caso != 'null') {
-            $builder->where('caso_r.direccion_id', $direcciones_caso);
-            if ($desde != 'null' && $hasta != 'null') {
-                $builder->where('caso_r.fecha >=', $desde);
-                $builder->where('caso_r.fecha <=', $hasta);
-            }
-        }
-        if ($tipo_beneficiario != '0' && $tipo_beneficiario != 'null') {
-            $builder->where('a.tipo_beneficiario', $tipo_beneficiario);
-        }
 
-        if ($estatus != '0' && $estatus != 'null') {
-            $builder->where('a.idest', $estatus);
-        }
-        
+    // --- Paso 1: Construir la consulta base ---
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
 
-        if ($id_pais != '0' && $id_pais != 'null') {
-            $builder->where('a.pais', $id_pais);
-        }
-        if ($id_estado != '0' && $id_estado != 'null'&& $id_estado != '26') {
-            $builder->where('a.estadoid', $id_estado);
-        }
-        if ($id_municipio != '0' && $id_municipio != 'null' && $id_municipio != '336') {
-            $builder->where('a.municipioid', $id_municipio);
-        }
+    // Sentencias SELECT
+    $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+    $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+    $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
+    $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
+    $builder->select('a.municipioid, a.parroquiaid');
+    $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+    $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+    $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+    $builder->select("CASE WHEN a.sexo='1' THEN 'M' ELSE 'F' END as sexo");
+    $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+    $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+    
+    // Joins
+    $builder->join('sgc_estatus b', 'b.idest = a.idest', 'inner');
+    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'inner');
+    $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+    $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
+    $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
+    $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+    $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
+    $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
 
-        if ($id_parroquia != '0' && $id_parroquia != 'null'&& $id_parroquia != '1135') {
-            $builder->where('a.parroquiaid', $id_parroquia);
+    // Cláusulas WHERE
+    $builder->where('a.borrado', false);
+    $builder->groupStart();
+    $builder->where('caso_r.vigencia', true);
+    $builder->orWhere('caso_r.vigencia IS NULL');
+    $builder->groupEnd();
+
+    // --- Paso 2: Aplicar los filtros dinámicamente ---
+    // El operador !empty() ahora funciona correctamente.
+    if (!empty($params['desde']) && !empty($params['hasta'])) {
+        $builder->where('a.casofec >=', $params['desde']);
+        $builder->where('a.casofec <=', $params['hasta']);
+    }
+    
+    if (!empty($params['edad_min']) && !empty($params['edad_max'])) {
+        $builder->where('a.edad >=', $params['edad_min']);
+        $builder->where('a.edad <=', $params['edad_max']);
+    }
+    
+    if (!empty($params['tipo_pi'])) {
+        $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
+    }
+
+    if (!empty($params['tipo_atencion_usu'])) {
+        $builder->where('t_antusu.tipo_aten_id', $params['tipo_atencion_usu']);
+    }
+    
+    if (!empty($params['sexo'])) {
+        $builder->where('a.sexo', $params['sexo']);
+    }
+    
+    if (!empty($params['via_atencion'])) {
+        $builder->where('a.idrrss', $params['via_atencion']);
+    }
+
+    if (!empty($params['direcciones_caso'])) {
+        $builder->where('caso_r.direccion_id', $params['direcciones_caso']);
+    }
+    
+    if (!empty($params['tipo_beneficiario'])) {
+        $builder->where('a.tipo_beneficiario', $params['tipo_beneficiario']);
+    }
+    
+    if (!empty($params['atencion_cuidadano'])) {
+        $builder->where('a.ofiid', $params['atencion_cuidadano']);
+    }
+    
+    if (!empty($params['estatus'])) {
+        $builder->where('a.idest', $params['estatus']);
+    }
+    
+    if (!empty($params['id_pais'])) {
+        $builder->where('a.pais', $params['id_pais']);
+    }
+
+    // Filtros para id_estado, id_municipio y id_parroquia.
+    if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
+        $builder->where('a.estadoid', $params['id_estado']);
+    }
+    
+    if (!empty($params['id_municipio']) && $params['id_municipio'] != '336') {
+        $builder->where('a.municipioid', $params['id_municipio']);
+    }
+
+    if (!empty($params['id_parroquia']) && $params['id_parroquia'] != '1135') {
+        $builder->where('a.parroquiaid', $params['id_parroquia']);
+    }
+
+    if (!empty($params['org_id'])) {
+        $builder->where('a.caso_org_id', $params['org_id']);
+    }
+    
+    // --- Paso 3: Obtener el conteo de registros filtrados ---
+    $filteredBuilder = clone $builder;
+    $recordsFiltered = $filteredBuilder->countAllResults();
+
+    // --- Paso 4: Aplicar orden y límites para la paginación ---
+    if (!empty($params['order_column']) && !empty($params['order_direction'])) {
+        $builder->orderBy($params['order_column'], $params['order_direction']);
+    } else {
+        $builder->orderBy('a.idcaso', 'DESC');
+    }
+    // 💡 SOLUCIÓN: Si length es -1, no se aplica el límite.
+    if ($params['length'] != -1) {
+        $builder->limit($params['length'], $params['start']);
+    }
+    
+    // --- Paso 5: Obtener los datos ---
+    $query = $builder->get();
+    $data = $query->getResultArray();
+    
+    // --- Paso 6: Obtener el conteo total de registros sin filtro ---
+    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+
+    return [
+        "recordsTotal" => $recordsTotal,
+        "recordsFiltered" => $recordsFiltered,
+        "data" => $data
+    ];
+}
+   
+
+
+  public function getReporteOperadorData(array $params)
+{
+      
+   
+    $db = \Config\Database::connect();
+
+    // 1. Convertir la cadena "null" en valores nulos (null).
+    // Esto es crucial para evitar errores de sintaxis en la base de datos.
+    foreach ($params as $key => $value) {
+        if ($value === 'null') {
+            $params[$key] = null;
         }
-        if ($org_id != '0' && $org_id != 'null') {
-            $builder->where('a.caso_org_id', $org_id);
-        }
-        
+    }
 
-        $builder->orderBy('a.idcaso', 'desc');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-       // echo $db->getLastQuery(); 
-        return $resultado;
+    // --- Paso 1: Construir la consulta base ---
+    $builder = $db->table('sgc_casos as a');
+    $builder->distinct();
 
-        }
+    // Sentencias SELECT
+    $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+    $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+    $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
+    $builder->select('t_bene.tipo_beneficiario_nombre as tipo_beneficiario');
+    $builder->select('a.municipioid, a.parroquiaid');
+    $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
+    $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+    $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
+    $builder->select("CASE WHEN a.sexo='1' THEN 'M' ELSE 'F' END as sexo");
+    $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
+    $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+    
+    // Joins
+    $builder->join('sgc_estatus b', 'b.idest = a.idest', 'inner');
+    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'inner');
+    $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+    $builder->join('sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
+    $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id', 'left');
+    $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+    $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
+    $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
 
+    // Cláusulas WHERE
+    $builder->where('a.borrado', false);
+    $builder->groupStart();
+    $builder->where('caso_r.vigencia', true);
+    $builder->orWhere('caso_r.vigencia IS NULL');
+    $builder->groupEnd();
 
+    // --- Paso 2: Aplicar los filtros dinámicamente ---
+    // El operador !empty() ahora funciona correctamente.
+    if (!empty($params['desde']) && !empty($params['hasta'])) {
+        $builder->where('a.casofec >=', $params['desde']);
+        $builder->where('a.casofec <=', $params['hasta']);
+    }
+    
+    if (!empty($params['edad_min']) && !empty($params['edad_max'])) {
+        $builder->where('a.edad >=', $params['edad_min']);
+        $builder->where('a.edad <=', $params['edad_max']);
+    }
+    
+    if (!empty($params['tipo_pi'])) {
+        $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
+    }
+
+    if (!empty($params['tipo_atencion_usu'])) {
+        $builder->where('t_antusu.tipo_aten_id', $params['tipo_atencion_usu']);
+    }
+    
+    if (!empty($params['sexo'])) {
+        $builder->where('a.sexo', $params['sexo']);
+    }
+    
+    if (!empty($params['via_atencion'])) {
+        $builder->where('a.idrrss', $params['via_atencion']);
+    }
+
+    if (!empty($params['direcciones_caso'])) {
+        $builder->where('caso_r.direccion_id', $params['direcciones_caso']);
+    }
+    
+    if (!empty($params['tipo_beneficiario'])) {
+        $builder->where('a.tipo_beneficiario', $params['tipo_beneficiario']);
+    }
+    
+    if (!empty($params['atencion_cuidadano'])) {
+        $builder->where('a.ofiid', $params['atencion_cuidadano']);
+    }
+    
+    if (!empty($params['estatus'])) {
+        $builder->where('a.idest', $params['estatus']);
+    }
+    
+    if (!empty($params['id_pais'])) {
+        $builder->where('a.pais', $params['id_pais']);
+    }
+
+    // Filtros para id_estado, id_municipio y id_parroquia.
+    if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
+        $builder->where('a.estadoid', $params['id_estado']);
+    }
+    
+    if (!empty($params['id_municipio']) && $params['id_municipio'] != '336') {
+        $builder->where('a.municipioid', $params['id_municipio']);
+    }
+
+    if (!empty($params['id_parroquia']) && $params['id_parroquia'] != '1135') {
+        $builder->where('a.parroquiaid', $params['id_parroquia']);
+    }
+
+   if (!empty($params['usuarios'])) {
+        $builder->where('a.idusuopr', $params['usuarios']);
+    }
+
+    if (!empty($params['org_id'])) {
+        $builder->where('a.caso_org_id', $params['org_id']);
+    }
+    
+    // --- Paso 3: Obtener el conteo de registros filtrados ---
+    $filteredBuilder = clone $builder;
+    $recordsFiltered = $filteredBuilder->countAllResults();
+
+    // --- Paso 4: Aplicar orden y límites para la paginación ---
+    if (!empty($params['order_column']) && !empty($params['order_direction'])) {
+        $builder->orderBy($params['order_column'], $params['order_direction']);
+    } else {
+        $builder->orderBy('a.idcaso', 'DESC');
+    }
+    
+   // 💡 SOLUCIÓN: Si length es -1, no se aplica el límite.
+    if ($params['length'] != -1) {
+        $builder->limit($params['length'], $params['start']);
+    }
+    // --- Paso 5: Obtener los datos ---
+    $query = $builder->get();
+    $data = $query->getResultArray();
+    
+    // --- Paso 6: Obtener el conteo total de registros sin filtro ---
+    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+
+    return [
+        "recordsTotal" => $recordsTotal,
+        "recordsFiltered" => $recordsFiltered,
+        "data" => $data
+    ];
+}
     //Metodo para obtener los casos para los reportes
     public function obtenerCasosConsolidados(String $endDate, String $initDate)
     {
@@ -570,6 +797,95 @@ class Casos extends BaseModel
 
         return $resultado;
     }
+
+
+
+    public function ContarCasosPorMunicipioYTipoAtencion($estado = null, $desde = null, $hasta = null)
+{
+   
+   
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos AS c');
+
+    $builder->select('
+        m.municipionom, 
+        aten.tipo_aten_nombre, 
+        COUNT(c.idcaso) as count
+    ');
+    
+    // Unimos las tablas necesarias
+    $builder->join('sgc_municipio AS m', 'c.municipioid = m.municipioid', 'left');
+    $builder->join('sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'left');
+
+    // Filtramos los casos borrados
+    $builder->where('c.borrado', false);
+    
+    // Filtramos por estado si se proporciona el valor
+    if ($estado != 'null' && $estado != '0') {
+        $builder->where('m.estadoid', $estado);
+    }
+    
+    // Filtramos por el rango de fechas si se proporciona
+    if ($desde != 'null' && $hasta != 'null') {
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
+    }
+
+    // Agrupamos para obtener el conteo por cada combinación de municipio y tipo de atención
+    $builder->groupBy('m.municipionom, aten.tipo_aten_nombre');
+    $builder->orderBy('m.municipionom, aten.tipo_aten_nombre');
+
+    $query = $builder->get();
+    return $query->getResult();
+}
+
+     // Método que consulta los estados con filtro de estado
+    public function consultar_estados_filtro($estado = null, $desde = null, $hasta = null)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('public.sgc_estados AS estados');
+    $builder->select('estados.estadoid, estados.estadonom, COUNT(c.estadoid) AS count');
+    $builder->join('sgc_casos AS c', 'estados.estadoid = c.estadoid', 'left');
+    $builder->where('c.borrado', false);
+    if ($estado != 'null' && $estado != '0') {
+        $builder->where('c.estadoid', $estado);
+    }
+    if ($desde != 'null' && $hasta != 'null') {
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
+    }
+    $builder->groupBy('estados.estadoid, estados.estadonom');
+    $builder->orderBy('estados.estadonom');
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
+
+
+// Método que cuenta los casos atendidos por tipo de atención estadales con filtro de estado
+   public function ContarasosTipoSolicitud_Estadal_filtro($estado = null, $desde = null, $hasta = null)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos AS c');
+    $builder->select('COALESCE(COUNT(c.id_tipo_atencion), 0) AS count, COALESCE(aten.tipo_aten_nombre, \'No Aplica\') AS tipo_aten_nombre, estados.estadonom');
+    $builder->join('sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'left');
+    $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'left');
+    $builder->where('c.borrado', false);
+    $builder->where('aten.tipo_aten_borrado', false);
+    if ($estado != 'null' && $estado != '0') {
+        $builder->where('c.estadoid', $estado);
+    }
+    if ($desde != 'null' && $hasta != 'null') {
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
+    }
+    $builder->groupBy('aten.tipo_aten_nombre, estados.estadonom');
+    $builder->orderBy('estados.estadonom', 'ASC');
+    $query = $builder->get();
+    $resultado = $query->getResult();
+    return $resultado;
+}
+
 
     // Método que cuenta los Casos Atendidos
     public function contarCasosAtendidos()
@@ -1029,30 +1345,40 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
     }
 
     // Método que cuenta los casos por tipo de beneficiario
-    public function contarCasos_Tipo_Beneficiario($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_tipo_beneficiarios AS tb');
-        $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, tb.tipo_beneficiario_nombre');
-        $builder->join('sgc_casos AS c', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
-        $builder->where('c.borrado', 'false');
-        $builder->orWhere('c.tipo_beneficiario IS NULL');
-        $builder->where('tb.tipo_beneficiario_borrado', 'false');
-        // Agregamos condiciones de fecha si están presentes
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
-        }
-        // Agregamos condición de estado si está presente
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
-        }
-        $builder->groupBy('tb.tipo_beneficiario_nombre');
-        $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
+   public function contarCasos_Tipo_Beneficiario($desde = null, $hasta = null, $id_estado = null)
+{
+    
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_tipo_beneficiarios AS tb');
+    $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, tb.tipo_beneficiario_nombre');
+    $builder->join('sgc_casos AS c', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
+    
+   
+    $builder->groupStart();
+    $builder->where('c.borrado', 'false');
+    if ($desde != 'null' && $hasta != 'null') {
+        $builder->where('c.casofec >=', $desde);
+        $builder->where('c.casofec <=', $hasta);
     }
+    if ($id_estado != 'null' && $id_estado != null) {
+        $builder->where('c.estadoid', $id_estado);
+    }
+    $builder->groupEnd();
+    
+   
+    
+    // Esta condición se aplica a la tabla de beneficiarios
+    $builder->where('tb.tipo_beneficiario_borrado', 'false');
+    
+    $builder->groupBy('tb.tipo_beneficiario_nombre');
+    $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
+   
+    $query = $builder->get();
+    // echo $db->getLastQuery(); 
+    //die();
+    $resultado = $query->getResult();
+    return $resultado;
+}
 
 
     // Método que cuenta los casos por tipo de beneficiario en función de la fecha

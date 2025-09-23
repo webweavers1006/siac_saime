@@ -16,7 +16,11 @@
     });
 </script>
 
-
+<!-- footer_encuesta.php -->
+<script>
+    var url_encuestas = "<?php echo $url_encuestas; ?>";
+  
+</script>
 
 </body>
 

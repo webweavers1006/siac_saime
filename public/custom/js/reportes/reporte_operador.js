@@ -146,67 +146,50 @@ function llenar_Organismos_PP(e, id) {
         },
     });
 }
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, usuarios = null,estatus=0,id_pais=0,id_estado=0,id_municipio=0,id_parroquia=0,edad_min=null,edad_max=null,org_id=0, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_usuario,nombre_estatus=null,nombre_estado=null,nombre_org_id=null) {
+function listar_reportes(
+    desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null,
+    direcciones_caso = null, tipo_beneficiario = 0, usuarios = null, estatus = 0, id_pais = 0,
+    id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, org_id = 0,
+    nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario,
+    nombre_direccion_remi, nombre_usuario, nombre_estatus = null, nombre_estado = null, nombre_org_id = null
+) {
+    // Si la tabla ya está inicializada, la destruimos para evitar errores de re-inicialización
+    if ($.fn.DataTable.isDataTable('#table_casos')) {
+        $('#table_casos').DataTable().destroy();
+    }
 
-    // Convertir la fecha
-    var fechaOriginal = desde;
-    var dataFormatada_desde = moment(fechaOriginal).format("DD-MM-YYYY");
-    var fechaOriginal2 = hasta;
-    var dataFormatada_hasta = moment(fechaOriginal2).format("DD-MM-YYYY");
+    // Convertir la fecha y construir el encabezado para el PDF
     var encabezado = '';
-    if (dataFormatada_desde != 'Invalid date' && dataFormatada_hasta != 'Invalid date') {
-        encabezado = encabezado + 'Desde:' + ' ' + dataFormatada_desde + ' ' + ' ' + 'hasta' + ' ' + ' ' + dataFormatada_hasta + ' ' + ' ';
+    // La validación de fechas ahora es más robusta
+    if (desde && hasta && moment(desde).isValid() && moment(hasta).isValid()) {
+        const dataFormatada_desde = moment(desde).format("DD-MM-YYYY");
+        const dataFormatada_hasta = moment(hasta).format("DD-MM-YYYY");
+        encabezado += `Desde: ${dataFormatada_desde} hasta ${dataFormatada_hasta} `;
     }
-    if (tipo_pi != null) {
-        encabezado = encabezado + 'Tipo de Propiedad:' + ' ' + nombre_propiedad + ' ';
-    }
-    if (usuarios != null) {
-        encabezado = encabezado + 'Usuario:' + ' ' + nombre_usuario + ' ';
-    }
+    if (usuarios) { encabezado += `Usuario: ${nombre_usuario} `; }
+    if (tipo_pi) { encabezado += `Tipo de Propiedad: ${nombre_propiedad} `; }
+    if (tipo_atencion_usu) { encabezado += `Tipo de Atencion: ${nombre_atencion} `; }
+    if (sexo) { encabezado += `Sexo: ${nombresexo} `; }
+    if (via_atencion && via_atencion !== 'null') { encabezado += `Vía de atencion: ${nombre_via_atencion} `; }
+    if (direcciones_caso && direcciones_caso !== 'null') { encabezado += `Remitido a: ${nombre_direccion_remi} `; }
+    if (tipo_beneficiario && tipo_beneficiario !== 0) { encabezado += `Tipo beneficiario: ${nombre_tipo_beneficiario} `; }
+    if (estatus && estatus !== 0) { encabezado += `Estatus: ${nombre_estatus} `; }
+    if (org_id && org_id !== 0) { encabezado += `Organismo del poder popular: ${nombre_org_id} `; }
+    if (edad_min && edad_max) { encabezado += `Edad: Entre ${edad_min} y ${edad_max} `; }
 
-    if (tipo_atencion_usu != null) {
-        encabezado = encabezado + 'Tipo de Atencion:' + ' ' + nombre_atencion + ' ';
-    }
-
-    if (sexo != null) {
-        encabezado = encabezado + 'Sexo:' + ' ' + nombresexo + ' ';
-    }
-    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) {
-        encabezado = encabezado + 'Via de atencion:' + ' ' + nombre_via_atencion + ' ';
-    }
-
-    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) {
-        encabezado = encabezado + 'Remitido a:' + ' ' + nombre_direccion_remi + ' ';
-    }
-
-    if (tipo_beneficiario != null && tipo_beneficiario != 0) {
-        encabezado = encabezado + 'Tipo beneficiario :' + ' ' + nombre_tipo_beneficiario + ' ';
-    }
-    if (estatus != null && estatus != 0) {
-        encabezado = encabezado + 'Estatus :' + ' ' + nombre_estatus+ ' ';
-    }
-
-
-    if (org_id != null && org_id != 0) {
-        encabezado = encabezado + 'Organismo del poder popular  :' + ' ' + nombre_org_id+ ' ';
-    }
-
-    if (edad_min !='null'&& edad_max!='null'&& edad_min !=null&& edad_max!=null ) {
-        encabezado = encabezado + 'Edad:' + ' '+'Entre'+' '+edad_min+' '+'y'+' '+edad_max+' ';
-    }
-    console.log("/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max+'/'+org_id)
     let ruta_imagen = rootpath;
+    
+    // Inicialización de DataTables
     var table = $('#table_casos').DataTable({
         responsive: true,
-        dom: "Bfrtip",
+        dom: "lBfrtip", // <--- Se agregó la 'l' para el lengthMenu
         buttons: {
             dom: {
-                button: {
-                    className: 'btn-xs-xs'
-                },
+                button: { className: 'btn-xs-xs' },
             },
-            buttons: [{
-                    //definimos estilos del boton de pd
+            buttons: [
+                // Botón PDF
+                {
                     extend: "pdf",
                     text: 'PDF',
                     className: 'btn-xs btn-dark',
@@ -216,117 +199,84 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     footer: true,
                     download: 'open',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                     },
                     alignment: 'center',
-
                     customize: function(doc) {
-                        //Remove the title created by datatTables
                         doc.content.splice(0, 1);
-                        doc.styles.title = {
-                            color: '#4c8aa0',
-                            fontSize: '18',
-                            alignment: 'center'
-                        }
-                        doc.styles['td:nth-child(2)'] = {
-                                width: '130px',
-                                'max-width': '130px'
-                            },
-                            doc.styles.tableHeader = {
-                                fillColor: '#4c8aa0',
-                                color: 'white',
-                                alignment: 'center'
-                            },
-                            // Create a header
-                            doc.pageMargins = [10, 95, 0, 70];
-                        doc['header'] = (function(page, pages) {
-                            doc.styles.title = {
-                                color: '#4c8aa0',
-                                fontSize: '18',
-                                alignment: 'center',
-                            }
+                        doc.styles.title = { color: '#4c8aa0', fontSize: '18', alignment: 'center' };
+                        doc.styles['td:nth-child(2)'] = { width: '130px', 'max-width': '130px' };
+                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
+                        doc.pageMargins = [10, 95, 0, 70];
+                        doc['header'] = (function() {
                             return {
-                                columns: [{
-                                        margin: [10, 3, 40, 40],
-                                        image: ruta_imagen,
-                                        width: 780,
-                                        height: 46,
-
-                                    },
-                                    {
-                                        margin: [-800, 50, -25, 0],
-                                        color: '#4c8aa0',
-                                        fontSize: '18',
-                                        alignment: 'center',
-                                        text: 'Consolidado de Casos',
-                                        fontSize: 18,
-                                    },
-                                    {
-                                        margin: [-700, 80, -25, 0],
-                                        text: encabezado = insertarSaltoDeLinea(encabezado, 100),
-                                    },
+                                columns: [
+                                    { margin: [10, 3, 40, 40], image: ruta_imagen, width: 780, height: 46 },
+                                    { margin: [-800, 50, -25, 0], color: '#4c8aa0', fontSize: '18', alignment: 'center', text: 'Consolidado de Casos', fontSize: 18 },
+                                    { margin: [-700, 80, -25, 0], text: insertarSaltoDeLinea(encabezado, 100) },
                                 ],
-                            }
+                            };
                         });
-                        // Create a footer
                         doc['footer'] = (function(page, pages) {
                             return {
-                                columns: [{
-                                    alignment: 'center',
-                                    text: ['pagina ', { text: page.toString() }, ' of ', { text: pages.toString() }]
-                                }],
-                            }
+                                columns: [
+                                    { alignment: 'center', text: ['Página ', { text: page.toString() }, ' de ', { text: pages.toString() }] }
+                                ],
+                            };
                         });
-
                     },
                 },
-
+                // Botón Excel
                 {
-                    //definimos estilos del boton de excel
                     extend: "excel",
                     text: 'Excel',
                     className: 'btn-xs btn-dark',
                     title: 'Consolidado de Casos',
-
                     download: 'open',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                     },
                     excelStyles: {
-                        "template": [
-                            "blue_medium",
-                            "header_blue",
-                            "title_medium"
-                        ]
+                        "template": ["blue_medium", "header_blue", "title_medium"]
                     },
-
                 }
             ]
         },
-        "order": [
-            [0, "desc"]
-        ],
+        "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,
-
-        dom: 'Blfrtip',
+        "processing": true,
+        "serverSide": true,
         "searching": true,
-        "lengthMenu": [
-            [10, 25, 50, -1],
-            ['10', '25', '50', 'Todos']
-        ],
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
         "ordering": true,
         "info": true,
         "autoWidth": true,
-        //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
         "ajax": {
-            "url": "/reporte_operador/" + desde + '/' + hasta + '/' + tipo_pi + '/' + tipo_atencion_usu + '/' + sexo + '/' + via_atencion + '/' + direcciones_caso + '/' + tipo_beneficiario + '/' + usuarios+'/'+estatus+'/' +id_pais+'/'+id_estado+'/'+id_municipio+'/'+id_parroquia+'/'+ edad_min+'/'+edad_max+'/'+org_id,
+            "url": "reporte_operador", // La URL base
             "type": "GET",
-            dataSrc: ''
+            "data": function(d) {
+                // Envía todos los filtros como parte de la data del request
+                d.desde = desde;
+                d.hasta = hasta;
+                d.tipo_pi = tipo_pi;
+                d.tipo_atencion_usu = tipo_atencion_usu;
+                d.sexo = sexo;
+                d.via_atencion = via_atencion;
+                d.direcciones_caso = direcciones_caso;
+                d.tipo_beneficiario = tipo_beneficiario;
+                d.usuarios = usuarios;
+                d.estatus = estatus;
+                d.id_pais = id_pais;
+                d.id_estado = id_estado;
+                d.id_municipio = id_municipio;
+                d.id_parroquia = id_parroquia;
+                d.edad_min = edad_min;
+                d.edad_max = edad_max;
+                d.org_id = org_id;
+            }
         },
-        
         "columns": [
-            //{data:'cedula_beneficiario'},
             { data: 'cedula' },
             { data: 'tipo_beneficiario' },
             { data: 'nombre' },
@@ -337,10 +287,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             { data: 'estnom' },
             { data: 'descripcion' },
             { data: 'user_name' },
-
         ],
-
-        "language": {
+       "language": {
             "sProcessing": "Procesando...",
             "sLengthMenu": "Mostrar _MENU_ registros",
             "sZeroRecords": "No se encontraron resultados",
@@ -368,19 +316,17 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                 "visible": false,
                 "searchable": false
             }, ]
-
         },
-        initComplete: function(settings, json) {
-            // Recuperar el estado de la paginación
-            let savedPage = localStorage.getItem('datatable_page');
-            if (savedPage !== null) {
-                table.page(parseInt(savedPage)).draw(false);
-                localStorage.removeItem('datatable_page');
-            }
+    initComplete: function(settings, json) {
+        let savedPage = localStorage.getItem('datatable_page');
+        if (savedPage !== null) {
+            table.page(parseInt(savedPage)).draw(false);
+            localStorage.removeItem('datatable_page');
         }
+    }
     });
-     // Guardar el estado de la paginación antes de recargar la página
-     table.on('page.dt', function () {
+
+    table.on('page.dt', function () {
         let info = table.page.info();
         localStorage.setItem('datatable_page', info.page);
     });

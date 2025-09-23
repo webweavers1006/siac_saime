@@ -17,6 +17,9 @@ use App\Models\Casos_denuncias_Model;
 use App\Models\Documentos_casos_Model;
 use App\Models\Roles_Model;
 use App\Models\Tipo_Atencion_Usu_Model;
+use App\Models\Coordenadas_Model;
+
+
 use App\Models\NizaClasses;
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
@@ -174,10 +177,16 @@ curl_close($ch);
 		$reqModel = new RequerimientoUsuario();
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		$segModel = new Seguimientos();
+		$Casos_coordenadas = new Coordenadas_Model();
 		$Registro_cgr_Model = new Registro_cgr_Model();
 		$Casos_denuncias = new Casos_denuncias_Model();
 		//Arreglo para añadir el nuevo caso
 		$newCase = array();
+
+		$coodenadas = array();
+		$act_coordenadas = array();
+
+
 
 		$casos_existentes = array();
 		//Arreglo de direccion de casos
@@ -234,6 +243,9 @@ curl_close($ch);
 				$newCase["casonumsol"] = $datos["record-work"];
 			}
 
+	$act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
+	
+
 			//VERIFICO SI EXISTEN CASOS ANTERIOSRES EN FUNCION DE LA CEDULA , PARA ACTUALIZAR LA FECHA DE NACIMIENTO Y LA PROFECION
 			$query_BuscarCasosExistentes= $casoModel->BuscarCasosExistentes($casos_existentes);
 			if ($query_BuscarCasosExistentes)
@@ -243,7 +255,8 @@ curl_close($ch);
 			}
 
 				$query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
-				if (isset($query_insertar_caso)) {
+				if (isset($query_insertar_caso)) 
+				{
 					//Obtenemos el id insertado
 					$_obtener_utimo_id = $casoModel->obtener_utimo_id();
 					//Armamos el arreglo para insertar el tipo de propiedad intelectual del caso
@@ -255,6 +268,23 @@ curl_close($ch);
 							$tipoPI['idtippropint']  = $pi_type;
 						}
 					}
+
+				//SI TIENE COORDENADAS INSERTAMOS LOS VALORES EN LA TABLA
+
+				// El arreglo de entrada es $act_coordenadas
+				if ($act_coordenadas["act_coordenadas"] == 't') 
+				{
+				$coordenadas["idcaso"] = $tipoPI['idcaso'];
+				$coordenadas["nombre"] = $datos["nombre"];
+				$coordenadas["latitud"] = $datos["latitud"];
+				$coordenadas["longitud"] = $datos["longitud"];
+
+				// Asigna el ID del usuario
+				$coordenadas['idusuopr'] = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
+
+				//Hacemos la inserción
+				$query_Inset_coordenadas = $Casos_coordenadas->insertarCoordenadas($coordenadas);
+				}
 
 					//HACEMOS EL INSERT DE CREACION EN EL SEGUIMIENTO DEL CASO
 					$datosSeguimiento['idcaso']      = $tipoPI['idcaso'];
@@ -989,42 +1019,75 @@ curl_close($ch);
 	}
 
 	//Metodo queo obtiene  los todos los casos disponibles
-	public function listar_Casos_Usuarios()
+	// public function listar_Casos_Usuarios()
 
-	{
-		$idrol = (session('userrol'));
-		$idusur = (session('iduser'));
-		$model = new Casos();
-		if($idrol==1 or  $idrol ==3 or  $idrol ==5)
-		{ 
+	// {
+	// 	$idrol = (session('userrol'));
+	// 	$idusur = (session('iduser'));
+	// 	$model = new Casos();
+	// 	if($idrol==1 or  $idrol ==3 or  $idrol ==5)
+	// 	{ 
 		
-			$query = $model->obtenerCasos();
+	// 		$query = $model->obtenerCasos();
 			
 			
-		if (empty($query)) {
-				$casos = [];
-			} else {
-				$casos = $query;
-			}
-			echo json_encode($casos);
-		}
-		else
-		{
-			$query = $model->obtenerCasos_filtrados_por_usuario($idusur);
+	// 	if (empty($query)) {
+	// 			$casos = [];
+	// 		} else {
+	// 			$casos = $query;
+	// 		}
+	// 		echo json_encode($casos);
+	// 	}
+	// 	else
+	// 	{
+	// 		$query = $model->obtenerCasos_filtrados_por_usuario($idusur);
 			
-			if (empty($query)) {
-				$casos = [];
-			} else {
-				$casos = $query;
-			}
-			echo json_encode($casos);
-		}
+	// 		if (empty($query)) {
+	// 			$casos = [];
+	// 		} else {
+	// 			$casos = $query;
+	// 		}
+	// 		echo json_encode($casos);
+	// 	}
 		
-	}
+	// }
 
 	
+public function listar_Casos_Usuarios()
+{
+    // Obtener los parámetros enviados por DataTables
+    $draw   = $this->request->getVar('draw');
+    $start  = $this->request->getVar('start');
+    $length = $this->request->getVar('length');
+    $search = $this->request->getVar('search')['value'];
+    $order  = $this->request->getVar('order');
 
+    $model = new Casos();
+    $idrol = (session('userrol'));
+    $idusur = (session('iduser'));
+    
+    // Obtener el nombre de la columna por la que se ordenará
+    $columns = ['a.idcaso', 'a.casofec', 'CONCAT(a.casonom, " ", a.casoape)', 'b.estnom', 'd.tipo_atend_borrado']; // Asegúrate de que los nombres de las columnas coincidan con las de tu consulta SQL
+    $order_column = $columns[$order[0]['column']];
+    $order_direction = $order[0]['dir'];
 
+    // Lógica para obtener los datos según el rol del usuario
+    if ($idrol == 1 || $idrol == 3 || $idrol == 5) { 
+        $data = $model->obtenerCasosServerSide($start, $length, $search, $order_column, $order_direction);
+    } else {
+        $data = $model->obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $length, $search, $order_column, $order_direction);
+    }
+    
+    // Preparar el array para la respuesta de DataTables
+    $output = [
+        "draw" => $draw,
+        "recordsTotal" => $data['recordsTotal'],
+        "recordsFiltered" => $data['recordsFiltered'],
+        "data" => $data['data']
+    ];
+
+    echo json_encode($output);
+}
 
 
 

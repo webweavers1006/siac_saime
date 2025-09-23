@@ -1,61 +1,52 @@
 <!-- Content Wrapper. Contains page content -->
 
-<script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/Chart.min.js"></script>
+
+<script type="text/javascript" src="<?php echo base_url(); ?>/dist/chart.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/jspdf.debug.js"></script>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/estadisticas.css">
 <div class="content-wrapper">
 
-  <!-- Content Header (Page header) -->
   <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-
-
-          <h1>Estadísticas - Tipo de Atención</h1>
-        </div>
-     
-      
-        <div class="col-sm-6">
-          &nbsp;&nbsp; <label for="min">Desde</label>&nbsp;
-          <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="desde" id="desde">&nbsp;&nbsp;
-          <label for="hasta">Hasta</label>&nbsp;&nbsp;
-          <input type="date" class="bodersueve" style="width:140px;" value="<?php echo date('YY-MM-DD'); ?>" name="hasta" id="hasta">&nbsp;
-          &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary consultar">Consultar</button>
-          &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-secondary limpiar">Limpiar</button>
-      
-      <div class="col-lg-4 col-sm-4 col-md-4">
-                            <label for="estado-caso">Estado</label>
-                            <select id="estado-caso" name="estado-caso" class="form-control">
-                                <option value="0" disabled>Seleccione Estado</option>
-                            </select>
-                        </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="mb-4">Estadísticas - Tipo de Atención</h1>
+      </div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-md-3 mb-3">
+        <div class="d-flex align-items-center">
+          <label for="desde" class="form-label mb-0 me-2">Desde</label>
+          <input type="date" class="form-control form-control-sm" value="<?= $desde ?>" name="desde" id="desde">
         </div>
       </div>
-    </div><!-- /.container-fluid -->
-   
-  </section>
+      
+      <div class="col-md-3 mb-3">
+        <div class="d-flex align-items-center">
+          <label for="hasta" class="form-label mb-0 me-2">Hasta</label>&nbsp;&nbsp;&nbsp;
+          <input type="date" class="form-control form-control-sm" value="<?= $hasta ?>" name="hasta" id="hasta">
+        </div>
+      </div>
+      <input type="hidden" id="estado" value="<?= $estado ?>">
 
+     
+      <div class="col-md-3 mb-3">
+        <div class="d-flex align-items-center">
+          <label for="estado-caso" class="form-label mb-0 me-2">Estado</label>&nbsp;&nbsp;&nbsp;
+          <select id="estado-caso" name="estado-caso" class="form-control form-control-sm">
+            <option value="0" disabled selected>Seleccione Estado</option>
+          </select>
+        </div>
+      </div>
 
-  <style>
+      <div class="col-md-3 mb-3 d-flex justify-content-md-end align-items-center">
+        <button type="button" class="btn btn-primary me-2 consultar">Consultar</button>
+        <button type="button" class="btn btn-secondary limpiar">Limpiar</button>
+      </div>
+    </div>
+  </div>
+</section>
 
-.card {
-
-max-width: auto;
-
-margin: auto;
-
-}
-
-canvas {
-
-max-width: auto;
-
-height: auto;
-
-}
-
-</style>
 
 
 
@@ -74,151 +65,119 @@ height: auto;
               <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
                 <i class="fas fa-times"></i></button>
             </div>
-            <canvas id="estatus" width="2000" height="600"></canvas>
-            <div id="estatus-totales"></div>
-    
-          </div>
+            <div class="chart-container">
+    <canvas id="estatus"></canvas>
+</div>
         </div>
       </div>
     </div>
   </form>
 </div>
 </section>
-<?php
-$data = json_decode($json_data, true);
-$labels = array();
-$datasets = array();
 
-// Crear el dataset para el total de estados
-$datasets[] = array(
-    'label' => 'Total',
-    'data' => array(),
-    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-    'borderColor' => 'rgba(54, 162, 235, 1)',
-    'borderWidth' => 1
-);
-
-$estados = array();
-foreach ($data['nombres_estados'] as $key => $estado) {
-    $estados[$key] = array(
-        'estado' => $estado,
-        'count_estado' => 0,
-        'tipo_solicitud' => array()
-    );
+<style>
+  .chart-container {
+    position: relative;
+    height: 60vh; /* Ejemplo: 60% de la altura de la ventana del navegador */
+    width: 80vw;  /* Ejemplo: 80% del ancho de la ventana */
+    /* O puedes usar un tamaño fijo */
+    /* height: 400px; */
+    /* width: 800px; */
 }
+</style>
+<?php
+// Mantener la estructura original exactamente igual
+$data = json_decode($json_data, true);
+$nombres_municipios = $data['nombres_municipios'];
+$tipos_atencion_unicos = $data['tipos_atencion_unicos'];
+$series_data = $data['series_data'];
 
-foreach ($data['nombre_estado_solicitud'] as $key => $nombre_estado_solicitud) {
-    $estado_key = array_search(trim($nombre_estado_solicitud), array_map('trim', $data['nombres_estados']));
-    $solicitud = $data['nombre_tipo_solicitud'][$key];
-    $count_solicitud = $data['count_solicitud'][$key];
-    
-    if (isset($estados[$estado_key])) {
-        $estados[$estado_key]['tipo_solicitud'][] = array(
-            'nombre_solicitud' => $solicitud,
-            'count_solicitud' => $count_solicitud
-        );
-        $estados[$estado_key]['count_estado'] += $count_solicitud;
+// Calcular totales acumulados para cada municipio
+$totales_acumulados = array_fill(0, count($nombres_municipios), 0);
+foreach ($tipos_atencion_unicos as $index => $tipo_atencion) {
+    foreach ($series_data[$index] as $municipio_index => $valor) {
+        $totales_acumulados[$municipio_index] += $valor;
     }
 }
 
-// Ordenar el arreglo por count_estado en orden descendente
-usort($estados, function($a, $b) {
-    return $b['count_estado'] - $a['count_estado'];
-});
+// Mantener la estructura original de datasets
+$datasets = [];
+foreach ($tipos_atencion_unicos as $index => $tipo_atencion) {
+    $backgroundColor = sprintf('rgba(%d, %d, %d, 0.6)', rand(0, 255), rand(0, 255), rand(0, 255));
+    $borderColor = str_replace('0.6', '1', $backgroundColor);
+    
+    $datasets[] = [
+        'label' => $tipo_atencion,
+        'data' => $series_data[$index],
+        'backgroundColor' => $backgroundColor,
+        'borderColor' => $borderColor,
+        'borderWidth' => 1,
+    ];
+}
 
+// Agregar el dataset de totales
+$datasets[] = [
+    'label' => 'Total',
+    'data' => $totales_acumulados,
+    'backgroundColor' => 'rgba(75, 192, 192, 0.6)',
+    'borderColor' => 'rgba(75, 192, 192, 1)',
+    'borderWidth' => 2,
+    'borderDash' => [5, 5]  // Línea punteada para el total
+];
 
+// Mantener la estructura original del chart_data
+$chart_data = [
+    'labels' => $nombres_municipios,
+    'datasets' => $datasets,
+];
 
+// Convertir a JSON
+$json_chart_data = json_encode($chart_data);
 ?>
 
 
-
 <style>
- .tooltip-multiline {
-  display: flex;
-  flex-direction: column;
-}
-
-.tooltip-multiline > span:first-child {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-</style>
-<script>
-const informacion = <?php echo json_encode($estados);?>;
-
-var ctx = document.getElementById('estatus').getContext('2d');
-
-const estadosUnicos = Array.from(new Set(informacion.map(obj => obj.estado)));
-const tipossolicitudUnicos = Array.from(new Set(
-  informacion.flatMap(obj => obj.tipo_solicitud.map(solicitud => solicitud.nombre_solicitud))
-));
-
-const conteos = estadosUnicos.map(estado => {
-  const solicitudes = informacion.find(obj => obj.estado === estado)?.tipo_solicitud || [];
-  return tipossolicitudUnicos.map(tipo => {
-    const solicitud = solicitudes.find(solicitud => solicitud.nombre_solicitud === tipo);
-    return solicitud? parseInt(solicitud.count_solicitud) : 0;
-  });
-});
-
-const sortedData = estadosUnicos.map((estado, index) => {
-  const total = conteos[index].reduce((a, b) => a + b, 0) || 0;
-  return { estado, total, index };
-}).sort((a, b) => b.total - a.total);
-
-const sortedLabels = sortedData.map(item => item.estado);
-const sortedCounts = sortedData.map(item => conteos[item.index]);
-
-const colors = [
-  '#52baac', 
-  '#5999c1', 
-  '#09c8f2', 
-  '#ef67f3', 
-  '#42eea5', 
-  '#cbcbcb' 
-];
-
-const chart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: sortedLabels,
-    datasets: [
-      {
-        label: 'Total',
-        data: sortedData.map(item => item.total),
-        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-        borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-        borderWidth: 1
-      },
-      ...tipossolicitudUnicos.map((tipo, index) => ({
-        label: tipo,
-        data: sortedCounts.map(counts => counts[index]),
-        backgroundColor: colors[index % colors.length], // Colores de la paleta
-        borderColor: colors[index % colors.length], // Assign a color from the array
-        borderWidth: 1
-      }))
-    ]
-  },
-  options: {
-    tooltips: {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)', // Color por defecto para los tooltips
-      callbacks: {
-        label: function(tooltipItem, data) {
-          const estado = sortedLabels[tooltipItem.index];
-          const tiposInfo = tipossolicitudUnicos.map((tipo, index) => {
-            const conteo = sortedCounts[tooltipItem.index][index];
-            return `${tipo}: ${conteo > 0 ? conteo : 0}`;
-          });
-          const total = sortedCounts[tooltipItem.index].reduce((a, b) => a + b, 0);
-          return [...tiposInfo, `Total: (${total > 0 ? total : 0})`];
-        },
-        title: function(tooltipItem, data) {
-          const estado = sortedLabels[tooltipItem[0].index];
-          const total = sortedCounts[tooltipItem[0].index].reduce((a, b) => a + b, 0);
-          return total > 0 ? estado : `${estado} (No hay solicitudes)`;
+        .tooltip-multiline {
+            display: flex;
+            flex-direction: column;
         }
-      }
-    }
-  }
+        .tooltip-multiline > span:first-child {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+<script>
+// Los datos para el gráfico se inyectan desde PHP
+const chartData = <?php echo $json_chart_data; ?>;
+// Obtiene el contexto del canvas
+var ctx = document.getElementById('estatus').getContext('2d');
+// Crea el nuevo gráfico de barras
+const myChart = new Chart(ctx, {
+type: 'bar',
+data: chartData,
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+x: {
+stacked: false,
+},
+y: {
+stacked: false
+}
+},
+plugins: {
+title: {
+display: true,
+text: 'Casos por Municipio y Tipo de Atención'
+},
+tooltip: {
+mode: 'index',
+intersect: false
+}
+}
+}
 });
 </script>
+
+

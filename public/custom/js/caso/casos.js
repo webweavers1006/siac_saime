@@ -290,6 +290,7 @@ function Listar_Casos() {
     var encabezado = '';
     let table = $('#table_casos').DataTable({
         responsive: true,
+      
         dom: "Bfrtip",
         buttons: {
             dom: {
@@ -386,11 +387,15 @@ function Listar_Casos() {
         "ordering": true,
         "info": true,
         "autoWidth": true,
+        "serverSide": true,
         "ajax": {
             "url": "/listar_Casos_Usuarios",
             "type": "GET",
-            dataSrc: ''
+           // dataSrc: ''
         },
+
+       
+        
         "columns": [
             { data: 'idcaso' },
             { data: 'cedula' },
@@ -792,6 +797,9 @@ $('#listar_casos').on('click', '.Editar', function(e) {
         
 
     }
+
+
+    
     else  if (id_tipo_atencion == 5)
     {
        

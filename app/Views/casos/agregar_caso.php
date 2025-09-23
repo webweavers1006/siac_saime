@@ -263,7 +263,10 @@ to {
         <div class="form-step form-step-active">
         <div class="col-lg-3 col-sm-3 col-md-3">   
           </div>
-        <div class="row">
+       <div class="row">
+    
+
+
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="nombre-persona">Nombre</label>
               <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-persona" id="nombre-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
@@ -380,8 +383,8 @@ to {
           </div>
         </div>
 
-        <div class="form-step">
-          <div class="row">
+    <div class="form-step">
+      <div class="row">
 
           <div class="col-4">
               <label for="pais-caso">País</label>
@@ -423,10 +426,180 @@ to {
               <option value="0" disabled>Seleccione</option>
               </select>
           </div>
+          <input type="hidden" id="actcoordenadas">
 
-          
+          </div>
+    <div class="row">
+    <div class="col-lg-12 col-sm-12 col-md-12 mapa_ayuda" style="display: none;">
+        <form id="guardar_ayudas" method="POST" role="form">
+            <div class="col-lg-12 col-sm-12 col-md-12 modal-body">
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                      crossorigin=""/>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                        crossorigin=""></script>
 
+                <style>
+                    #map {
+                        width: 100%;
+                        height: 500px;
+                        box-shadow: 5px 5px 5px #888;
+                        margin-bottom: 20px;
+                    }
+                    .form-container {
+                        width: 100%;
+                        padding: 10px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                        border-radius: 8px;
+                        margin-bottom: 20px;
+                    }
+                    .form-container label, .form-container input {
+                        display: block;
+                        margin-bottom: 10px;
+                    }
+                    .form-container input[type="text"] {
+                        width: 90%;
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                    }
+                    .form-container button {
+                        padding: 10px 15px;
+                        background-color: #0078A8;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-right: 5px;
+                    }
+                    .form-container button:hover {
+                        background-color: #005f88;
+                    }
+                </style>
 
+                <div class="form-container">
+                    <h2>Coordenadas de la ubicación</h2>
+                    <div>
+                        <label for="latitude">Latitud:</label>
+                        <input type="text" id="latitude" name="latitude" placeholder="Ej: 10.4806">
+                        <label for="longitude">Longitud:</label>
+                        <input type="text" id="longitude" name="longitude" placeholder="Ej: -66.9036">
+                        <label for="locationName">Nombre del lugar:</label>
+                        <input type="text" id="locationName" name="locationName" placeholder="Ej: La Vega, Los Mangos">
+                        <button id="ubicar-btn" type="button">Ubicar en el mapa</button>
+                        <button id="limpiar-btn" type="button">Limpiar</button>
+                    </div>
+                </div>
+
+                <div id='map'></div>
+
+                <script>
+
+        document.getElementById('locationName').addEventListener('input', function() {
+            // Limpia los campos de latitud y longitud cuando se empieza a escribir en el campo de nombre.
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+        });
+
+                    // ⭐ COORDENADAS INICIALES DE TU UBICACIÓN ACTUAL ⭐
+                    var initialCoords = [10.4806, -66.9036];
+                    
+                    var map = L.map('map').setView(initialCoords, 13);
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+
+                    var currentMarker = L.marker(initialCoords, {draggable: true}).addTo(map);
+
+                    document.getElementById('latitude').value = initialCoords[0].toFixed(6);
+                    document.getElementById('longitude').value = initialCoords[1].toFixed(6);
+                    document.getElementById('locationName').value = 'Caracas, Distrito Capital';
+
+                    function updateFormCoords(lat, lon) {
+                        document.getElementById('latitude').value = lat.toFixed(6);
+                        document.getElementById('longitude').value = lon.toFixed(6);
+                    }
+
+                    function updateMarker(lat, lon, name) {
+                        currentMarker.setLatLng([lat, lon]);
+                        updateFormCoords(lat, lon);
+                        var popupContent = '<b>' + name + '</b><br>Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lon.toFixed(6);
+                        currentMarker.bindPopup(popupContent).openPopup();
+                        map.setView([lat, lon], 12);
+                    }
+
+                    currentMarker.on('dragend', function() {
+                        var newLatLng = currentMarker.getLatLng();
+                        var name = document.getElementById('locationName').value;
+                        var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
+                        updateFormCoords(newLatLng.lat, newLatLng.lng);
+                        var newPopupContent = '<b>' + displayName + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
+                        currentMarker.setPopupContent(newPopupContent).openPopup();
+                    });
+
+                    document.getElementById('ubicar-btn').addEventListener('click', function() {
+                        var lat = parseFloat(document.getElementById('latitude').value);
+                        var lon = parseFloat(document.getElementById('longitude').value);
+                        var name = document.getElementById('locationName').value;
+
+                        if (name.trim() !== '' && (isNaN(lat) || isNaN(lon))) {
+                            var url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=' + encodeURIComponent(name);
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.length > 0) {
+                                        var foundLat = parseFloat(data[0].lat);
+                                        var foundLon = parseFloat(data[0].lon);
+                                        var foundName = data[0].display_name;
+                                        updateMarker(foundLat, foundLon, foundName);
+                                        document.getElementById('locationName').value = foundName; 
+                                        if (data[0].boundingbox) {
+                                            var bbox = data[0].boundingbox;
+                                            map.fitBounds([[bbox[0], bbox[2]], [bbox[1], bbox[3]]]);
+                                        }
+                                    } else {
+                                        alert('No se encontraron resultados para "' + name + '" en Venezuela. Intenta ser más específico.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error en la búsqueda:', error);
+                                    alert('Ocurrió un error al buscar el lugar.');
+                                });
+                        } else if (!isNaN(lat) && !isNaN(lon)) {
+                            var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+                            fetch(reverseGeocodeUrl)
+                                .then(response => response.json())
+                                .then(data => {
+                                    var foundName = data.display_name || 'Ubicación seleccionada';
+                                    updateMarker(lat, lon, foundName);
+                                    document.getElementById('locationName').value = foundName; 
+                                })
+                                .catch(error => {
+                                    console.error('Error en la búsqueda inversa:', error);
+                                    var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
+                                    updateMarker(lat, lon, displayName);
+                                    alert('No se pudo encontrar un nombre para las coordenadas. El mapa se ha actualizado.');
+                                });
+                            map.setView([lat, lon], 12);
+                        } else {
+                            alert('Por favor, ingresa al menos un nombre o coordenadas para ubicar.');
+                        }
+                    });
+
+                    document.getElementById('limpiar-btn').addEventListener('click', function() {
+                        document.getElementById('latitude').value = '';
+                        document.getElementById('longitude').value = '';
+                        document.getElementById('locationName').value = '';
+                    });
+
+                </script>
+            </div>
+        </form>
+    </div>
+</div>
+ <div class="row">
           <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
               <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
@@ -445,14 +618,8 @@ to {
           <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >
 
 
-
-
-
-
-
-
-
-          </div>
+</div>
+         
           <!-- FORMULARIO PARA EL CASO DE ASESORIA -->
           <div class="row" id="cgr" style="display: none;">
 
@@ -611,7 +778,8 @@ nextBtns.forEach((btn) => {
     let tipo_atencion = $("#tipo-atencion-usu").val();
     let tipo_prop_intelec = $("#tipo-pi").val();
     let fecha_recivido=$("#fecha-recibido").val();
-
+     let actcoordenadas=$("#actcoordenadas").val();
+     let detalles_atencion=$("#detalles_atencion").val();
     if (fecha_recivido>getFormattedDate()) 
     {
      alert('La fecha de creación no debe ser mayor al dia de hoy ')
@@ -762,7 +930,28 @@ nextBtns.forEach((btn) => {
                   timer: 3500,
               });
 
-        }else  if (tipo_atencion === '5') 
+        }
+
+        else if (actcoordenadas =='t' && detalles_atencion==null) 
+        {
+            $("#tipo-atencion-usu").removeClass('is-invalid');
+              $("#detalles_atencion").addClass('is-invalid');
+              Swal.fire({
+                  icon: "success",
+                  type: 'error',
+                  html: '<strong>DEBE SELECCIONAR UN DETALLE DE ATENCION.</strong>',
+                  toast: true,
+                  position: "center",
+                  showConfirmButton: false,
+                  timer: 3500,
+              });
+
+        }
+        
+        
+        
+        
+        else  if (tipo_atencion === '5') 
           {
             let denu_involucrados = $('#denu-involucrados').val();
             let fecha_hechos = $('#fecha-hechos').val();

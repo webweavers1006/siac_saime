@@ -1,10 +1,16 @@
 
 $(function() {
-llenar_Estados(Event);
+
+ let estado=$('#estado').val();
+
+ llenar_Estados(Event,estado);
 });
 
+
+
 // FUNCION PARA LLENAR EL COMBO ESTADOS
-function llenar_Estados(e, id) {
+function llenar_Estados(e, estado) {
+   
     const url = "/llenar_Estados"; // Usar const para variables que no cambian
     $.ajax({
         url: url,
@@ -19,17 +25,17 @@ function llenar_Estados(e, id) {
             if (data.length >= 1) {
                 $("#estado-caso").empty(); // Limpiar el combo
                 $("#estado-caso").append(
-                    "<option value='0' selected disabled>Seleccione</option>"
+                    "<option value='0' selected disabled>Seleccione Estado</option>"
                 );
                 $.each(data, function(i, item) {
                     // Agregar las opciones al combo
-                    if (id === undefined) {
+                    if (estado === undefined) {
                         $("#estado-caso").append(
                             "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
                         );
                     } else {
                        
-                        if (item.estadoid === id) {
+                        if (item.estadoid === estado) {
                             $("#estado-caso").append(
                                 "<option value='" + item.estadoid + "' selected>" + item.estadonom + "</option>"
                             );
@@ -52,26 +58,60 @@ $(document).on('click', '.consultar', function(e) {
     e.preventDefault();
     let desde = $('#desde').val();
     let hasta = $('#hasta').val();
+    let estado=$('#estado-caso').val();
+    llenar_Estados(Event,estado);
     if (desde == '') {
         desde = 'null'
     }
     if (hasta == '') {
         hasta = 'null'
     }
-    if (desde == 'null' && hasta == 'null') {
-        alert('DEBE INGRESAR EL RANGO DE FECHA ')
-    } else if (desde == 'null' && hasta != 'null') {} else if (hasta == 'null' && desde != 'null') {
-        alert('DEDE INDICAR EL CAMPO HASTA');
-    } else if (hasta < desde) {
-        alert('EL CAMPO DESDE ES MAYOR AL CAMPO HASTA')
-    } else {
 
-        // $('#fecha_desde').val(desde);
-        // $('#fecha_hasta').val(hasta);
-        window.location = "/estadisticas_tipo_atencion/" + desde + '/' + hasta;
+     
+     
+       if (desde == 'null' && hasta != 'null') {} else if (hasta == 'null' && desde != 'null') {
+         alert('DEDE INDICAR EL CAMPO HASTA');
+     } else if (hasta < desde) {
+         alert('EL CAMPO DESDE ES MAYOR AL CAMPO HASTA')
+          }
+      else {
+
+      
+        window.location = "/estadisticas_tipo_atencion/"+estado+'/' + desde + '/' + hasta;
     }
 })
 	
+
+// Vincula la misma lógica al evento change del campo de estado
+$(document).on('change', '#estado-caso', function(e) {
+    e.preventDefault();
+   let desde = $('#desde').val();
+    let hasta = $('#hasta').val();
+    let estado = $('#estado-caso').val();
+llenar_Estados(Event,estado) ;
+    if (desde === '') {
+        desde = 'null';
+    }
+    if (hasta === '') {
+        hasta = 'null';
+    }
+    
+  
+
+    if (desde === 'null' && hasta !== 'null') {
+        // La condición original estaba vacía, se puede mejorar para evitar problemas
+        alert('DEBE INDICAR EL CAMPO DESDE');
+    } else if (hasta === 'null' && desde !== 'null') {
+        alert('DEBE INDICAR EL CAMPO HASTA');
+    } else if (hasta < desde) {
+        alert('EL CAMPO DESDE ES MAYOR AL CAMPO HASTA');
+    } else {
+        window.location = "/estadisticas_tipo_atencion/" + estado + '/' + desde + '/' + hasta;
+    }
+
+});
+
+
 //Generacion de archivo csv 
 $(document).on('click', "#generaArchivoExcel", function(e) {
 	e.preventDefault();
@@ -88,6 +128,7 @@ $(document).on('click', "#generaArchivoExcel", function(e) {
 $(document).on('click', '.limpiar', function(e) {
     e.preventDefault();
 
-    window.location = "/estadisticas_tipo_atencion/null/null";
+    window.location = "/estadisticas_tipo_atencion/null/null/null";
 
 })
+
