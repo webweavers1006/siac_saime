@@ -284,7 +284,7 @@ $session = session();
                         <option value="0">Seleccione Organismo</option>
                         </select>
                       </div>
-
+<input type="hidden" id="actcoordenadas">
                       <div class="col-lg-4 col-sm-4 col-md-4 detalle_atencion oculto">
                           <label for="tipo-pi">Detalle Atencion</label>
                           <select disabled class="form-control" id="edit_detelle_atencion" name="detalles_atencion">
@@ -296,6 +296,81 @@ $session = session();
                         <input type="hidden"  class="form-control"  id="id_hijos_detalle_atencion" >
                       </div>
                     </div>
+
+                    
+
+          </div>
+<div class="row">
+    <div class="col-lg-12 col-sm-12 col-md-12 mapa_ayuda" style="display: none;">
+        <form id="guardar_ayudas" method="POST" role="form">
+            <div class="col-lg-12 col-sm-12 col-md-12 modal-body">
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                      crossorigin=""/>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                        crossorigin=""></script>
+
+                <style>
+                    #map {
+                        width: 100%;
+                        height: 500px;
+                        box-shadow: 5px 5px 5px #888;
+                        margin-bottom: 20px;
+                    }
+                    .form-container {
+                        width: 100%;
+                        padding: 10px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                        border-radius: 8px;
+                        margin-bottom: 20px;
+                    }
+                    .form-container label, .form-container input {
+                        display: block;
+                        margin-bottom: 10px;
+                    }
+                    .form-container input[type="text"] {
+                        width: 90%;
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                    }
+                    .form-container button {
+                        padding: 10px 15px;
+                        background-color: #0078A8;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-right: 5px;
+                    }
+                    .form-container button:hover {
+                        background-color: #005f88;
+                    }
+                </style>
+
+                <div class="form-container">
+                    <h2>Coordenadas de la ubicación</h2>
+                    <div>
+                        <label for="latitude">Latitud:</label>
+                        <input type="text" id="latitude" name="latitude" placeholder="Ej: 10.4806">
+                        <label for="longitude">Longitud:</label>
+                        <input type="text" id="longitude" name="longitude" placeholder="Ej: -66.9036">
+                        <label for="locationName">Nombre del lugar:</label>
+                        <input type="text" id="locationName" name="locationName" placeholder="Ej: La Vega, Los Mangos">
+                        <button id="ubicar-btn" type="button">Ubicar en el mapa</button>
+                        <button id="limpiar-btn" type="button">Limpiar</button>
+                    </div>
+                </div>
+
+                <div id='map'></div>
+
+               
+            </div>
+        </form>
+    </div>
+</div>
+
                     <!-- FORMULARIO PARA EL CASO DE ASESORIA -->
                     <div class="row" id="cgr" style="display: block;">
 

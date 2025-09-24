@@ -40,4 +40,26 @@ class Mapa_Ayuda_Controler extends BaseController
         return $this->response->setJSON($response);
     }
 
+
+
+/*
+   ///busco si el caso tiene corrdenadas
+*/
+ public function buscar_caso_cordenada($idcaso=null)
+    {
+      $model = new Mapa_Ayuda_Model();
+        $casos = $model->buscar_caso_cordenada($idcaso);
+       
+
+        if (empty($casos)) {
+            $response = [];
+        } else {
+            $response = $casos;
+        }
+
+        return $this->response->setJSON($response);
+    }
+
+
+
 }

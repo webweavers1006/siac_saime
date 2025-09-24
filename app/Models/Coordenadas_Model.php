@@ -16,15 +16,42 @@ class Coordenadas_Model extends BaseModel
         return $query;
     }
 
-    /* //Metodo para actualizar seguimientos del caso
-    public function actualizarSeguimiento(array $datosSeguimiento)
+
+   // Método para buscar las coordenadas
+
+public function buscar_caso_coordenadas(array $coordenadas)
     {
-        $builder = $this->dbconn("sgc_seguimiento_caso");
-        $query = $builder->update($datosSeguimiento, 'idsegcas = ' . $datosSeguimiento["idsegcas"]);
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos_coordenadas AS c');
+        $builder->select('*');
+        $builder->where('c.docu_id_caso', $coordenadas["idcaso"]);
+        $query = $builder->get();
+        $resultado = $query->getResult();
+        return $resultado;
+}
+
+
+
+    //Metodo para actualizar las coordenadas 
+    public function Actualizar_coordenadas(array $coordenadas)
+    {
+        $builder = $this->dbconn("sgc_casos_coordenadas");
+        $query = $builder->update($coordenadas, 'idcaso = ' . $coordenadas["idcaso"]);
         return $query;
     }
 
-    //Metodo para Eliminar  seguimientos del caso
+     //Metodo para borrar las coordenadas 
+    public function borrar_coordenadas(array $coordenadas)
+    {
+        $builder = $this->dbconn("sgc_casos_coordenadas");
+        $query = $builder->update($coordenadas, 'idcaso = ' . $coordenadas["idcaso"]);
+        return $query;
+    }
+
+
+
+
+   /*  //Metodo para Eliminar  seguimientos del caso
     public function eliminarSeguimiento(array $datosSeguimiento)
     {
         $builder = $this->dbconn("sgc_seguimiento_caso");

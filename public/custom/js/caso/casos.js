@@ -490,13 +490,172 @@ let denu_nombre_proyecto = '';
 let denu_monto_aprovado = '';
 
 
+// =========================================================================
+// VARIABLES GLOBALES Y CONFIGURACIÓN INICIAL
+// =========================================================================
+let map = null;
+let currentMarker = null;
+const defaultVenezuelaCoords = [10.4806, -66.9036];
 
+// =========================================================================
+// FUNCIONES REUTILIZABLES
+// =========================================================================
 
+/**
+ * Función que actualiza los campos de latitud y longitud.
+ */
+function updateFormCoords(lat, lon) {
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lon.toFixed(6);
+}
+
+document.getElementById('locationName').addEventListener('input', function() {
+    // Limpia los campos de latitud y longitud cuando se empieza a escribir en el campo de nombre.
+    document.getElementById('latitude').value = '';
+    document.getElementById('longitude').value = '';
+});
+
+/**
+ * Función central para manejar la visualización del mapa.
+ */
+function handleMapDisplay(shouldShow, coords = null, name = 'Ubicación') {
+    if (shouldShow) {
+        // ⭐ PASO 1: Muestra el contenedor del mapa.
+        $(".mapa_ayuda").show();
+
+        if (map) {
+            map.remove();
+            map = null;
+        }
+
+        const mapCoords = coords || defaultVenezuelaCoords;
+        const initialName = name || 'Ubicación';
+
+        // ⭐ PASO 2: Inicializa el mapa.
+        map = L.map('map').setView(mapCoords, 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        currentMarker = L.marker(mapCoords, { draggable: true }).addTo(map);
+        currentMarker.bindPopup(`<b>${initialName}</b><br>Latitud: ${mapCoords[0].toFixed(6)}<br>Longitud: ${mapCoords[1].toFixed(6)}`);
+
+        updateFormCoords(mapCoords[0], mapCoords[1]);
+        if (name) {
+            document.getElementById('locationName').value = initialName;
+        }
+
+        // ⭐ PASO 3: Llama a invalidateSize con un pequeño retraso
+        // para asegurarte de que el mapa se redimensione correctamente
+        // una vez que el div sea visible.
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        }, 100);
+
+        setupMapEvents();
+    } else {
+        $(".mapa_ayuda").hide();
+        if (map) {
+            map.remove();
+            map = null;
+        }
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+        document.getElementById('locationName').value = '';
+    }
+}
+
+/**
+ * Función que contiene todos los eventos del mapa, para evitar duplicación de código.
+ */
+function setupMapEvents() {
+   currentMarker.on('dragend', function() {
+        var newLatLng = currentMarker.getLatLng();
+        updateFormCoords(newLatLng.lat, newLatLng.lng);
+
+        var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`;
+        
+        fetch(reverseGeocodeUrl)
+            .then(response => response.json())
+            .then(data => {
+                var foundName = data.display_name || 'Ubicación seleccionada';
+                document.getElementById('locationName').value = foundName;
+                var newPopupContent = `<b>${foundName}</b><br>Latitud: ${newLatLng.lat.toFixed(6)}<br>Longitud: ${newLatLng.lng.toFixed(6)}`;
+                currentMarker.setPopupContent(newPopupContent).openPopup();
+            })
+            .catch(error => {
+                console.error('Error en la búsqueda inversa:', error);
+                var newPopupContent = `<b>Ubicación seleccionada</b><br>Latitud: ${newLatLng.lat.toFixed(6)}<br>Longitud: ${newLatLng.lng.toFixed(6)}`;
+                currentMarker.setPopupContent(newPopupContent).openPopup();
+                document.getElementById('locationName').value = 'No se encontró nombre';
+            });
+    });
+
+    document.getElementById('ubicar-btn').addEventListener('click', function() {
+        var lat = parseFloat(document.getElementById('latitude').value);
+        var lon = parseFloat(document.getElementById('longitude').value);
+        var name = document.getElementById('locationName').value;
+
+        if (name.trim() !== '' && (isNaN(lat) || isNaN(lon))) {
+            var url = `https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(name)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        var foundLat = parseFloat(data[0].lat);
+                        var foundLon = parseFloat(data[0].lon);
+                        var foundName = data[0].display_name;
+                        
+                        updateMarker(foundLat, foundLon, foundName);
+                    } else {
+                        alert('No se encontraron resultados para "' + name + '".');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                    alert('Ocurrió un error al buscar el lugar.');
+                });
+        } else if (!isNaN(lat) && !isNaN(lon)) {
+            var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
+            updateMarker(lat, lon, displayName);
+        } else {
+            alert('Por favor, ingresa al menos un nombre o coordenadas para ubicar.');
+        }
+    });
+
+    document.getElementById('limpiar-btn').addEventListener('click', function() {
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+        document.getElementById('locationName').value = '';
+        if (currentMarker) {
+            currentMarker.setLatLng(defaultVenezuelaCoords);
+            map.setView(defaultVenezuelaCoords, 13);
+        }
+    });
+}
+
+/**
+ * Función para centralizar la actualización del marcador, los campos y el mapa.
+ */
+function updateMarker(lat, lon, name) {
+    if (currentMarker) {
+        currentMarker.setLatLng([lat, lon]);
+        currentMarker.setPopupContent(`<b>${name}</b><br>Latitud: ${lat.toFixed(6)}<br>Longitud: ${lon.toFixed(6)}`).openPopup();
+    }
+    updateFormCoords(lat, lon);
+    document.getElementById('locationName').value = name;
+    if (map) {
+        map.setView([lat, lon], 12);
+    }
+}
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION DEL CASO
 $('#listar_casos').on('click', '.Editar', function(e) {
     e.preventDefault();
 
-   
+  
     let idrol=$('#id_rol').val();
     // valore anteriores para luego comparar
     let nombre = $(this).attr('casonom');
@@ -891,9 +1050,40 @@ $('#listar_casos').on('click', '.Editar', function(e) {
            
     }
 
+   
+    ///////
+ loadCaseData(idcaso);
+/**
+ * Función para cargar los datos del caso al presionar el botón de edición.
+ * @param {number} idcaso El ID del caso a editar.
+ */
+function loadCaseData(idcaso) {
+    $.ajax({
+        url: "/buscar_caso_cordenada/" + idcaso,
+        method: "get",
+        dataType: "JSON",
+    })
+    .then((response) => {
+        if (response && response.length > 0) {
+            const coordenadas = response[0];
+            const initialCoords = [parseFloat(coordenadas.latitud), parseFloat(coordenadas.longitud)];
+            const initialName = coordenadas.nombre;
 
-
-
+            $("#actcoordenadas").val('t');
+            handleMapDisplay(true, initialCoords, initialName);
+        } else {
+            $("#actcoordenadas").val('f');
+            handleMapDisplay(false);
+            console.log("No se encontró información de coordenadas.");
+        }
+    })
+    .catch(() => {
+        Swal.fire("Error", "Error al cargar los datos.", "error");
+        $("#actcoordenadas").val('f');
+        handleMapDisplay(false);
+        console.log("Error en la solicitud. El mapa no se muestra.");
+    });
+}
 
 
     $("#editCase").modal("show");
@@ -991,72 +1181,55 @@ $('#listar_casos').on('click', '.Editar', function(e) {
    document.getElementById("edit_detelle_atencion").disabled = false;
 })
 
-
-
-
-
 $("#tipo-atencion-usu").on('change', function(e) {
     document.getElementById("edit_detelle_atencion").disabled = false;
     let id_tipo_atencion = $('#tipo-atencion-usu option:selected').val();
+    let act_pro_int = $(this).find('option:selected').data('act-pro-int');
     let tipo_atend_id = $('#id_hijos_detalle_atencion').val();
-    var selectedOption = $(this).find('option:selected');
-    var act_pro_int = selectedOption.data('act-pro-int');
-
     let hijos_detalle_atencion;
-    if (id_tipo_atencion == 5) 
-        {
-            if (act_pro_int=='t') 
-                {
-                   
-                    $(".prop_int").show();
-                    document.getElementById("tipo-pi").disabled = false;
-                    
-                }else
-                {
-                    $(".prop_int").hide();
-                }
-            $("#cgr").hide();
-            $("#denuncias").show();
-            llenar_detalle_atencion(Event,id_tipo_atencion,tipo_atend_id,hijos_detalle_atencion);
-        }
-    else  if (id_tipo_atencion == 1) 
-        {            
-           
-                     $("#denuncias").hide();
-                    // $(".detalle_atencion").hide();
-                     if (act_pro_int=='t') 
-                        {
-                           
-                            $(".prop_int").show();
-                            document.getElementById("tipo-pi").disabled = false;
-                            
-                        }else
-                        {
-                            $(".prop_int").hide();
-                        }
-                         
-                        llenar_detalle_atencion(Event,id_tipo_atencion,tipo_atend_id,hijos_detalle_atencion);
-        }         
-    else
-        {
-            if (act_pro_int=='t') 
-                {
-                   
-                    $(".prop_int").show();
-                    document.getElementById("tipo-pi").disabled = false;
-                    
-                }else
-                {
-                    $(".prop_int").hide();
-                }
-            $("#cgr").hide();
-            $("#denuncias").hide();
-           // $(".detalle_atencion").show();
-        }
 
-    // Llama a la función para llenar detalles de atención
-    llenar_detalle_atencion(Event,id_tipo_atencion,tipo_atend_id,hijos_detalle_atencion);
-   
+    if (act_pro_int == 't') {
+        $(".prop_int").show();
+        document.getElementById("tipo-pi").disabled = false;
+    } else {
+        $(".prop_int").hide();
+    }
+    
+    if (id_tipo_atencion == 5) {
+        $("#cgr").hide();
+        $("#denuncias").show();
+    } else if (id_tipo_atencion == 1) {
+        $("#denuncias").hide();
+    } else {
+        $("#cgr").hide();
+        $("#denuncias").hide();
+    }
+
+    $.ajax({
+        url: `/Listar_Tipo_Atencion_act_coordenadas/${id_tipo_atencion}`,
+        method: 'GET',
+        dataType: 'json',
+    })
+    .done((response) => {
+        const tipoAtencion = response[0];
+        if (tipoAtencion && tipoAtencion.act_coordenadas === 't') {
+            handleMapDisplay(true);
+            $("#actcoordenadas").val('t');
+        } else {
+            handleMapDisplay(false);
+            $("#actcoordenadas").val('f');
+        }
+    })
+    .fail((xhr, status, error) => {
+        let errorMessage = 'Error al cargar datos.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+        }
+        Swal.fire('Error', errorMessage, 'error');
+        handleMapDisplay(false);
+    });
+
+    llenar_detalle_atencion(e, id_tipo_atencion, tipo_atend_id, hijos_detalle_atencion);
 });
 
 
@@ -2096,6 +2269,10 @@ $(document).on("click", "#editar_caso", function(e) {
                 "caso_org_id": caso_org_id,
                 "fecha_nacimiento": $("#fecha-nacimiento").val(),
                 "profesion": $("#profesion").val(),
+                "act_coordenadas": $("#actcoordenadas").val(),
+                "latitud": $("#latitude").val(),
+                "longitud": $("#longitude").val(),
+                "nombre": $("#locationName").val(),
             }
 
 

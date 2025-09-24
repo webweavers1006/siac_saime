@@ -30,11 +30,40 @@ public function Listar_Casos_Ayuda()
 
     $builder->where('c.borrado', FALSE);
     $builder->where('t_usu.act_coordenadas', TRUE);
+   // $builder->where('coor.borrado', FALSE);
+
+    $query = $builder->get();
+
+     //echo $db->getLastQuery(); 
+      
+    return $query->getResultArray();
+}
+public function buscar_caso_cordenada($idcaso=null)
+{
+  
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos AS c');
+
+    // Selecciona explícitamente las columnas para evitar conflictos y ambigüedad.
+    $builder->select([
+   
+        'coor.id_coord', 'coor.nombre', 'coor.latitud', 'coor.longitud', 'coor.fecha_creacion'
+    ]);
+
+    // Las uniones ahora tienen el 'left' como tercer parámetro.
+    $builder->join('sgc_documentos_casos AS docu', 'c.idcaso = docu.docu_id_caso', 'left');
+    $builder->join('sgc_tipoatencion_usu AS t_usu', 'c.id_tipo_atencion = t_usu.tipo_aten_id', 'left');
+    $builder->join('sgc_casos_coordenadas AS coor', 'c.idcaso = coor.idcaso', 'left');
+
+    $builder->where('c.borrado', FALSE);
+    $builder->where('t_usu.act_coordenadas', TRUE);
+     $builder->where('coor.idcaso', $idcaso);
 
     $query = $builder->get();
 
      //echo $db->getLastQuery(); 
     return $query->getResultArray();
 }
+
 }
 

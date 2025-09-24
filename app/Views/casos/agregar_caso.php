@@ -494,107 +494,119 @@ to {
 
                 <div id='map'></div>
 
-                <script>
+               <script>
+    document.getElementById('locationName').addEventListener('input', function() {
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+    });
 
-        document.getElementById('locationName').addEventListener('input', function() {
-            // Limpia los campos de latitud y longitud cuando se empieza a escribir en el campo de nombre.
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-        });
+    // ⭐ COORDENADAS INICIALES DE TU UBICACIÓN ACTUAL ⭐
+    var initialCoords = [10.4806, -66.9036];
+    
+    var map = L.map('map').setView(initialCoords, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-                    // ⭐ COORDENADAS INICIALES DE TU UBICACIÓN ACTUAL ⭐
-                    var initialCoords = [10.4806, -66.9036];
-                    
-                    var map = L.map('map').setView(initialCoords, 13);
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }).addTo(map);
+    var currentMarker = L.marker(initialCoords, {draggable: true}).addTo(map);
 
-                    var currentMarker = L.marker(initialCoords, {draggable: true}).addTo(map);
+    document.getElementById('latitude').value = initialCoords[0].toFixed(6);
+    document.getElementById('longitude').value = initialCoords[1].toFixed(6);
+    document.getElementById('locationName').value = 'Caracas, Distrito Capital';
 
-                    document.getElementById('latitude').value = initialCoords[0].toFixed(6);
-                    document.getElementById('longitude').value = initialCoords[1].toFixed(6);
-                    document.getElementById('locationName').value = 'Caracas, Distrito Capital';
+    function updateFormCoords(lat, lon) {
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lon.toFixed(6);
+    }
 
-                    function updateFormCoords(lat, lon) {
-                        document.getElementById('latitude').value = lat.toFixed(6);
-                        document.getElementById('longitude').value = lon.toFixed(6);
-                    }
+    function updateMarker(lat, lon, name) {
+        currentMarker.setLatLng([lat, lon]);
+        updateFormCoords(lat, lon);
+        var popupContent = '<b>' + name + '</b><br>Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lon.toFixed(6);
+        currentMarker.bindPopup(popupContent).openPopup();
+        map.setView([lat, lon], 12);
+    }
 
-                    function updateMarker(lat, lon, name) {
-                        currentMarker.setLatLng([lat, lon]);
-                        updateFormCoords(lat, lon);
-                        var popupContent = '<b>' + name + '</b><br>Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lon.toFixed(6);
-                        currentMarker.bindPopup(popupContent).openPopup();
-                        map.setView([lat, lon], 12);
-                    }
+    currentMarker.on('dragend', function() {
+        var newLatLng = currentMarker.getLatLng();
+        updateFormCoords(newLatLng.lat, newLatLng.lng);
 
-                    currentMarker.on('dragend', function() {
-                        var newLatLng = currentMarker.getLatLng();
-                        var name = document.getElementById('locationName').value;
-                        var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
-                        updateFormCoords(newLatLng.lat, newLatLng.lng);
-                        var newPopupContent = '<b>' + displayName + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
-                        currentMarker.setPopupContent(newPopupContent).openPopup();
-                    });
+        // Realiza la geocodificación inversa aquí
+        var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`;
+        
+        fetch(reverseGeocodeUrl)
+            .then(response => response.json())
+            .then(data => {
+                var foundName = data.display_name || 'Ubicación seleccionada';
+                document.getElementById('locationName').value = foundName;
+                var newPopupContent = '<b>' + foundName + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
+                currentMarker.setPopupContent(newPopupContent).openPopup();
+            })
+            .catch(error => {
+                console.error('Error en la búsqueda inversa:', error);
+                var newPopupContent = '<b>' + 'Ubicación seleccionada' + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
+                currentMarker.setPopupContent(newPopupContent).openPopup();
+                document.getElementById('locationName').value = 'No se encontró nombre';
+            });
+    });
 
-                    document.getElementById('ubicar-btn').addEventListener('click', function() {
-                        var lat = parseFloat(document.getElementById('latitude').value);
-                        var lon = parseFloat(document.getElementById('longitude').value);
-                        var name = document.getElementById('locationName').value;
+    document.getElementById('ubicar-btn').addEventListener('click', function() {
+        var lat = parseFloat(document.getElementById('latitude').value);
+        var lon = parseFloat(document.getElementById('longitude').value);
+        var name = document.getElementById('locationName').value;
 
-                        if (name.trim() !== '' && (isNaN(lat) || isNaN(lon))) {
-                            var url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=' + encodeURIComponent(name);
-                            fetch(url)
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.length > 0) {
-                                        var foundLat = parseFloat(data[0].lat);
-                                        var foundLon = parseFloat(data[0].lon);
-                                        var foundName = data[0].display_name;
-                                        updateMarker(foundLat, foundLon, foundName);
-                                        document.getElementById('locationName').value = foundName; 
-                                        if (data[0].boundingbox) {
-                                            var bbox = data[0].boundingbox;
-                                            map.fitBounds([[bbox[0], bbox[2]], [bbox[1], bbox[3]]]);
-                                        }
-                                    } else {
-                                        alert('No se encontraron resultados para "' + name + '" en Venezuela. Intenta ser más específico.');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error en la búsqueda:', error);
-                                    alert('Ocurrió un error al buscar el lugar.');
-                                });
-                        } else if (!isNaN(lat) && !isNaN(lon)) {
-                            var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-                            fetch(reverseGeocodeUrl)
-                                .then(response => response.json())
-                                .then(data => {
-                                    var foundName = data.display_name || 'Ubicación seleccionada';
-                                    updateMarker(lat, lon, foundName);
-                                    document.getElementById('locationName').value = foundName; 
-                                })
-                                .catch(error => {
-                                    console.error('Error en la búsqueda inversa:', error);
-                                    var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
-                                    updateMarker(lat, lon, displayName);
-                                    alert('No se pudo encontrar un nombre para las coordenadas. El mapa se ha actualizado.');
-                                });
-                            map.setView([lat, lon], 12);
-                        } else {
-                            alert('Por favor, ingresa al menos un nombre o coordenadas para ubicar.');
+        if (name.trim() !== '' && (isNaN(lat) || isNaN(lon))) {
+            var url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=' + encodeURIComponent(name);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        var foundLat = parseFloat(data[0].lat);
+                        var foundLon = parseFloat(data[0].lon);
+                        var foundName = data[0].display_name;
+                        updateMarker(foundLat, foundLon, foundName);
+                        document.getElementById('locationName').value = foundName; 
+                        if (data[0].boundingbox) {
+                            var bbox = data[0].boundingbox;
+                            map.fitBounds([[bbox[0], bbox[2]], [bbox[1], bbox[3]]]);
                         }
-                    });
+                    } else {
+                        alert('No se encontraron resultados para "' + name + '" en Venezuela. Intenta ser más específico.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                    alert('Ocurrió un error al buscar el lugar.');
+                });
+        } else if (!isNaN(lat) && !isNaN(lon)) {
+            var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+            fetch(reverseGeocodeUrl)
+                .then(response => response.json())
+                .then(data => {
+                    var foundName = data.display_name || 'Ubicación seleccionada';
+                    updateMarker(lat, lon, foundName);
+                    document.getElementById('locationName').value = foundName; 
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda inversa:', error);
+                    var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
+                    updateMarker(lat, lon, displayName);
+                    alert('No se pudo encontrar un nombre para las coordenadas. El mapa se ha actualizado.');
+                });
+            map.setView([lat, lon], 12);
+        } else {
+            alert('Por favor, ingresa al menos un nombre o coordenadas para ubicar.');
+        }
+    });
 
-                    document.getElementById('limpiar-btn').addEventListener('click', function() {
-                        document.getElementById('latitude').value = '';
-                        document.getElementById('longitude').value = '';
-                        document.getElementById('locationName').value = '';
-                    });
+    document.getElementById('limpiar-btn').addEventListener('click', function() {
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+        document.getElementById('locationName').value = '';
+    });
 
-                </script>
+</script>
             </div>
         </form>
     </div>

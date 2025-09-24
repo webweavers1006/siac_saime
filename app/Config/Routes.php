@@ -236,8 +236,8 @@ $routes->setAutoRoute(false);
 
      //RUTAS PARA EL MAPA DE AYUDA 
        $routes->get('/Listar_Casos_Ayuda', "Mapa_Ayuda_Controler::Listar_Casos_Ayuda");
-
-
+       $routes->get('/buscar_caso_cordenada/(:any)', "Mapa_Ayuda_Controler::buscar_caso_cordenada/$1");
+       
 
 
 

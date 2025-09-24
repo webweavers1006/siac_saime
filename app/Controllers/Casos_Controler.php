@@ -434,11 +434,14 @@ curl_close($ch);
 		$oficina = new Oficinas();
 		$reqModel = new RequerimientoUsuario();
 		$segModel = new Seguimientos();
+		$Casos_coordenadas = new Coordenadas_Model();
 		$Registro_cgr_Model = new Registro_cgr_Model();
 		$Casos_denuncias = new Casos_denuncias_Model();
 		//Arreglo para añadir el nuevo caso
 		$newCase = array();
 		$denuncia = array();
+		$coodenadas = array();
+		$act_coordenadas = array();
 		//Arreglo de direccion de casos
 		$dirCaso = array();
 		//Arreglo con el tipo de propiedad intelectual
@@ -486,6 +489,51 @@ curl_close($ch);
 				} else {
 					$newCase["casonumsol"] = $datos["record-work"];
 				}
+  				$act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
+				// El arreglo de entrada es $act_coordenadas
+				if ($act_coordenadas["act_coordenadas"] == 't') 
+				{
+					$coordenadas["idcaso"] = $tipoPI['idcaso'];
+					$coordenadas["nombre"] = $datos["nombre"];
+					$coordenadas["latitud"] = $datos["latitud"];
+					$coordenadas["longitud"] = $datos["longitud"];
+					$coordenadas["borrado"] = false;
+					// Asigna el ID del usuario
+					$coordenadas['idusuopr'] = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
+					
+					// Verificamos si existe el caso en coordenadas
+					$caso_existente = $Casos_coordenadas->buscar_caso_coordenadas($coordenadas);
+					
+					// Si la búsqueda devuelve un objeto, significa que el caso ya existe
+					if ($caso_existente) 
+					{
+						// Hacemos la actualización de la coordenadas
+						$query_Actualizar_coordenadas = $Casos_coordenadas->Actualizar_coordenadas($coordenadas);
+					} 
+					else 
+					{
+						$coordenadas["idcaso"] = $tipoPI['idcaso'];
+						$coordenadas["nombre"] = $datos["nombre"];
+						$coordenadas["latitud"] = $datos["latitud"];
+						$coordenadas["longitud"] = $datos["longitud"];
+						$coordenadas["borrado"] = false;
+						// Hacemos el insert de la coordenadas
+						$query_Inset_coordenadas = $Casos_coordenadas->insertarCoordenadas($coordenadas);
+					}
+									
+					
+
+
+					
+				}else
+				{
+					$coordenadas["idcaso"] = $tipoPI['idcaso'];
+					$coordenadas["borrado"] = true;
+					//Hacemos el borrado  de la coordenadas
+					$query_borrar_coordenadas = $Casos_coordenadas->borrar_coordenadas($coordenadas);
+				}
+
+
 				//REALIZAMOS LA ACTUALIZACION EN LA TABLA
 				$query_actualizar_caso = $casoModel->actualizarCaso($newCase);
 
