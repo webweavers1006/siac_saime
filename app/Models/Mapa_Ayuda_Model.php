@@ -30,7 +30,7 @@ public function Listar_Casos_Ayuda()
 
     $builder->where('c.borrado', FALSE);
     $builder->where('t_usu.act_coordenadas', TRUE);
-   // $builder->where('coor.borrado', FALSE);
+    $builder->where('coor.borrado', FALSE);
 
     $query = $builder->get();
 
