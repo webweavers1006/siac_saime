@@ -494,70 +494,118 @@ to {
 
                 <div id='map'></div>
 
-               <script>
+              <script>
     document.getElementById('locationName').addEventListener('input', function() {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
     });
 
-    // ⭐ COORDENADAS INICIALES DE TU UBICACIÓN ACTUAL ⭐
-    var initialCoords = [10.4806, -66.9036];
+    var map = L.map('map');
+    var currentMarker = null;
+
+    // ⭐ FUNCIÓN PARA OBTENER LA UBICACIÓN POR DIRECCIÓN IP (ALTERNATIVA) ⭐
+    function getLocationFromIP() {
+        fetch('https://ipinfo.io/json')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loc) {
+                    var coords = data.loc.split(',');
+                    var lat = parseFloat(coords[0]);
+                    var lon = parseFloat(coords[1]);
+                    var name = data.city + ', ' + data.region + ', ' + data.country;
+                    updateMarkerAndMap([lat, lon], name, true);
+                } else {
+                    console.error("No se pudo obtener la ubicación desde la IP.");
+                    showErrorAndSetDefault();
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener la ubicación por IP:', error);
+                showErrorAndSetDefault();
+            });
+    }
+
+    // ⭐ FUNCIÓN PRINCIPAL PARA INICIAR EL MAPA ⭐
+    function startMap() {
+        // 1. Intenta usar la geolocalización del navegador (más precisa)
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lon = position.coords.longitude;
+                // Si tiene éxito, actualiza el mapa con la ubicación real
+                updateMarkerAndMap([lat, lon], 'Tu Ubicación Actual', false);
+            }, function(error) {
+                console.warn("Geolocalización del navegador denegada. Usando geolocalización por IP.");
+                // Si el usuario deniega, usa la ubicación por IP como alternativa
+                getLocationFromIP();
+            });
+        } else {
+            console.warn("Geolocalización no soportada. Usando geolocalización por IP.");
+            // Si el navegador no lo soporta, también usa la ubicación por IP
+            getLocationFromIP();
+        }
+    }
+
+    // ⭐ FUNCIÓN PARA ACTUALIZAR MARCADOR Y MAPA ⭐
+    function updateMarkerAndMap(coords, name, isIPLocation) {
+        if (currentMarker) {
+            map.removeLayer(currentMarker);
+        }
+        currentMarker = L.marker(coords, { draggable: true }).addTo(map);
+        map.setView(coords, 13);
+        
+        var popupText = isIPLocation ? name + ' (Ubicación IP)' : '<b>' + name + '</b>';
+        currentMarker.bindPopup(popupText).openPopup();
+        document.getElementById('locationName').value = name;
+        updateFormCoords(coords[0], coords[1]);
+
+        addDragEndEventToMarker();
+    }
     
-    var map = L.map('map').setView(initialCoords, 13);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-
-    var currentMarker = L.marker(initialCoords, {draggable: true}).addTo(map);
-
-    document.getElementById('latitude').value = initialCoords[0].toFixed(6);
-    document.getElementById('longitude').value = initialCoords[1].toFixed(6);
-    document.getElementById('locationName').value = 'Caracas, Distrito Capital';
+    // ⭐ FUNCIONES AUXILIARES ⭐
+    function addDragEndEventToMarker() {
+        if (currentMarker) {
+            currentMarker.on('dragend', function() {
+                var newLatLng = currentMarker.getLatLng();
+                updateFormCoords(newLatLng.lat, newLatLng.lng);
+                
+                var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`;
+                
+                fetch(reverseGeocodeUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        var foundName = data.display_name || 'Ubicación seleccionada';
+                        document.getElementById('locationName').value = foundName;
+                        var newPopupContent = '<b>' + foundName + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
+                        currentMarker.setPopupContent(newPopupContent).openPopup();
+                    })
+                    .catch(error => {
+                        console.error('Error en la búsqueda inversa:', error);
+                        document.getElementById('locationName').value = 'No se encontró nombre';
+                    });
+            });
+        }
+    }
 
     function updateFormCoords(lat, lon) {
         document.getElementById('latitude').value = lat.toFixed(6);
         document.getElementById('longitude').value = lon.toFixed(6);
     }
 
-    function updateMarker(lat, lon, name) {
-        currentMarker.setLatLng([lat, lon]);
-        updateFormCoords(lat, lon);
-        var popupContent = '<b>' + name + '</b><br>Latitud: ' + lat.toFixed(6) + '<br>Longitud: ' + lon.toFixed(6);
-        currentMarker.bindPopup(popupContent).openPopup();
-        map.setView([lat, lon], 12);
+    function showErrorAndSetDefault() {
+        alert("No se pudo obtener tu ubicación automáticamente. El mapa se centrará en un punto por defecto.");
+        var defaultCoords = [10.4806, -66.9036]; // Caracas, Venezuela
+        updateMarkerAndMap(defaultCoords, 'Ubicación por defecto: Caracas', true);
     }
 
-    currentMarker.on('dragend', function() {
-        var newLatLng = currentMarker.getLatLng();
-        updateFormCoords(newLatLng.lat, newLatLng.lng);
-
-        // Realiza la geocodificación inversa aquí
-        var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`;
-        
-        fetch(reverseGeocodeUrl)
-            .then(response => response.json())
-            .then(data => {
-                var foundName = data.display_name || 'Ubicación seleccionada';
-                document.getElementById('locationName').value = foundName;
-                var newPopupContent = '<b>' + foundName + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
-                currentMarker.setPopupContent(newPopupContent).openPopup();
-            })
-            .catch(error => {
-                console.error('Error en la búsqueda inversa:', error);
-                var newPopupContent = '<b>' + 'Ubicación seleccionada' + '</b><br>Latitud: ' + newLatLng.lat.toFixed(6) + '<br>Longitud: ' + newLatLng.lng.toFixed(6);
-                currentMarker.setPopupContent(newPopupContent).openPopup();
-                document.getElementById('locationName').value = 'No se encontró nombre';
-            });
-    });
-
+    // ⭐ LÓGICA DE BÚSQUEDA DEL BOTÓN ⭐
     document.getElementById('ubicar-btn').addEventListener('click', function() {
         var lat = parseFloat(document.getElementById('latitude').value);
         var lon = parseFloat(document.getElementById('longitude').value);
         var name = document.getElementById('locationName').value;
 
         if (name.trim() !== '' && (isNaN(lat) || isNaN(lon))) {
-            var url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=' + encodeURIComponent(name);
+            var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(name);
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -565,14 +613,13 @@ to {
                         var foundLat = parseFloat(data[0].lat);
                         var foundLon = parseFloat(data[0].lon);
                         var foundName = data[0].display_name;
-                        updateMarker(foundLat, foundLon, foundName);
-                        document.getElementById('locationName').value = foundName; 
+                        updateMarkerAndMap([foundLat, foundLon], foundName, false);
                         if (data[0].boundingbox) {
                             var bbox = data[0].boundingbox;
                             map.fitBounds([[bbox[0], bbox[2]], [bbox[1], bbox[3]]]);
                         }
                     } else {
-                        alert('No se encontraron resultados para "' + name + '" en Venezuela. Intenta ser más específico.');
+                        alert('No se encontraron resultados para "' + name + '".');
                     }
                 })
                 .catch(error => {
@@ -585,16 +632,13 @@ to {
                 .then(response => response.json())
                 .then(data => {
                     var foundName = data.display_name || 'Ubicación seleccionada';
-                    updateMarker(lat, lon, foundName);
-                    document.getElementById('locationName').value = foundName; 
+                    updateMarkerAndMap([lat, lon], foundName, false);
                 })
                 .catch(error => {
                     console.error('Error en la búsqueda inversa:', error);
                     var displayName = name && name.trim() !== '' ? name : 'Ubicación seleccionada';
-                    updateMarker(lat, lon, displayName);
-                    alert('No se pudo encontrar un nombre para las coordenadas. El mapa se ha actualizado.');
+                    updateMarkerAndMap([lat, lon], displayName, false);
                 });
-            map.setView([lat, lon], 12);
         } else {
             alert('Por favor, ingresa al menos un nombre o coordenadas para ubicar.');
         }
@@ -604,9 +648,22 @@ to {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
         document.getElementById('locationName').value = '';
+        if (currentMarker) {
+            map.removeLayer(currentMarker);
+            currentMarker = null;
+        }
     });
 
+    // Añade la capa de fondo de OpenStreetMap
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Llama a la función principal para iniciar el mapa
+    startMap();
 </script>
+
             </div>
         </form>
     </div>
