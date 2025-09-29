@@ -20,6 +20,7 @@ $(function() {
 function listar_participantes_encuestas(fecha_inicio, fecha_fin, tramite) {
     
     let url = `${url_encuestas}/api/encuesta`;
+    console.log(url);
     let params = [];
     if (fecha_inicio && fecha_inicio !== 'null') {
         params.push(`fecha_inicio=${encodeURIComponent(fecha_inicio)}`);

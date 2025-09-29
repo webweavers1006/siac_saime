@@ -57,26 +57,19 @@ class Encuesta_sastifaccion_Controler extends BaseController
             return redirect()->to('/');
         }
     }
-
-    public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null,$id_participante = null)
+ public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null, $id_participante = null)
     {
-
-    
         if ($this->session->get('logged')) {
             $url_encuestas = URL_ENCUESTAS; 
-            
-            
-          
-            // Establecer la fecha actual si las fechas son null o vacías
-            if ($fecha_inicio=='null') {
-                $fecha_inicio='2025-01-01';
+
+            // Una forma más robusta de manejar los parámetros nulos
+            if (is_null($fecha_inicio) || $fecha_inicio === 'null') {
+                $fecha_inicio = '2025-01-01';
             }
-            if ($fecha_fin=='null') {
+            if (is_null($fecha_fin) || $fecha_fin === 'null') {
                 $fecha_fin = date('Y-m-d'); // Fecha actual en formato YYYY-MM-DD
             }
     
-
-            
             // Construir la URL con los parámetros
             $url = "{$url_encuestas}/api/estadisticas/respuestas?" . http_build_query([
                 'fecha_inicio' => $fecha_inicio,
@@ -88,31 +81,32 @@ class Encuesta_sastifaccion_Controler extends BaseController
     
             if ($response === FALSE) {
                 log_message('error', 'Error al obtener datos de la API: ' . $url);
-                return redirect()->to('/error'); // Cambia esto según tu lógica
+                return redirect()->to('/error');
             }
     
             $grafica = json_decode($response, true);
-    
-          
     
             $data = [
                 'graficos' => $grafica,
                 'fecha_inicio' => $fecha_inicio,
                 'fecha_fin' => $fecha_fin,
-
             ];
     
+            // Pasar la variable $url_encuestas a la vista del pie de página
+            $footer_data = [
+                'url_encuestas' => $url_encuestas
+            ];
            
             // Cargar las vistas
             echo view('template/header');
             echo view('template/nav_bar');
             echo view('estadisticas_encuestas/content.php', $data);
             echo view('template/footer');
-            echo view('estadisticas_encuestas/footer_encuesta', $data);
+            echo view('estadisticas_encuestas/footer_encuesta', $footer_data);
         } else {
             return redirect()->to('/');
         }
     }
+}
 
     
-}

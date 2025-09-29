@@ -124,7 +124,15 @@ $routes->setAutoRoute(false);
       
       
 
-     
+       //PUNTO DE CUENTA 
+      $routes->get('/punto_cuenta', 'Punto_Cuenta_Controler::vista_Punto_Cuenta');
+      $routes->get('/Listar_Punto_Cuenta', "Punto_Cuenta_Controler::Listar_Punto_Cuenta");
+      $routes->post('/add_Punto_Cuenta', "Punto_Cuenta_Controler::add_Punto_Cuenta");
+      $routes->post('/edit_Punto_Cuenta', "Punto_Cuenta_Controler::edit_Punto_Cuenta");
+      $routes->get('/cargarCasosAsociados/(:any)',"Punto_Cuenta_Controler::cargarCasosAsociados/$1");
+      $routes->get('/verificar_caso/(:any)',"Punto_Cuenta_Controler::verificar_caso/$1");
+      $routes->POST('/asociar_casos',"Punto_Cuenta_Controler::asociar_casos");
+      
 
      
 
@@ -262,7 +270,7 @@ $routes->setAutoRoute(false);
  
        
      //RUTAS PARA  GRAFICAS DE ENCUESTAS DE SASTIFACION
-     $routes->get('/vista_Grafica_Encuestas/(:any)/(:any)', "Encuesta_sastifaccion_Controler::vista_Grafica_Encuestas/$1/$2");
+     $routes->get('/vista_Grafica_Encuestas/(:any)/(:any)/(:any)', "Encuesta_sastifaccion_Controler::vista_Grafica_Encuestas/$1/$2/$3");
      
  
 
