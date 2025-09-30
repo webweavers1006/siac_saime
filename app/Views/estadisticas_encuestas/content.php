@@ -120,8 +120,10 @@ table.dataTable tfoot {
                             </a>
                         </div>
 
+                         <label for="fecha_inicio" class="date-label">MES / DIA / AÑO</label>
                         
-                        <div class="date-input-group mb-3">
+                         <div class="date-input-group mb-3">
+                           
                             <label for="fecha_inicio" class="date-label">Desde:</label>
                             <input type="date" 
                                 class="form-control" 

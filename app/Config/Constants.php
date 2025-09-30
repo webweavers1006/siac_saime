@@ -18,7 +18,7 @@ defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
 // app/Config/Constants.php
 
 defined('URL_ENCUESTAS') || define('URL_ENCUESTAS', 'https://siac.sapi.gob.ve');
-
+defined('PUNTO_CUENTA_PATH') || define('PUNTO_CUENTA_PATH', realpath($paths->puntoCuentaDirectory)); 
 
 /*
 |--------------------------------------------------------------------------

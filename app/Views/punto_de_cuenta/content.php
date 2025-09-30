@@ -150,47 +150,7 @@ $session = session();
             </div>
           </div>
           
-          <!-- Separador de Sección: Documentación -->
-          <div class="d-flex align-items-center mb-3">
-              <div class="flex-grow-1"><hr class="m-0"></div>
-              <h6 class="text-secondary fw-bold text-uppercase text-center mx-3 mb-0">Documentación</h6>
-              <div class="flex-grow-1"><hr class="m-0"></div>
-          </div>
-          
-          <!-- Sección 3: Subida y Selección de Archivos (Integrada y Compacta) -->
-          <div class="row align-items-center g-3"> 
-              
-              <!-- Columna de Subida de Archivos -->
-              <div class="col-md-6">
-                  <form id="miFormulario" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center">
-                      <label class="btn btn-outline-secondary btn-sm mb-0 me-2 shadow-sm">
-                          <input type="file" id="archivo" name="archivo" style="display: none;">
-                          <i class="fas fa-paperclip me-1"></i> Seleccionar archivo
-                      </label>
-                      &nbsp;&nbsp;
-                      <input 
-                          type="button" 
-                          id="subir_archivos" 
-                          class="btn btn-sm btn-primary mb-0 shadow-sm" 
-                          value="Subir archivo"
-                      >
-                      <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">
-                  </form>
-              </div>
-              
-              <!-- Columna de Selector de Documentos -->
-              <div class="col-md-6">
-                  <div class="d-flex align-items-center">
-                      <label for="docu-casos" class="col-form-label fw-bold me-3 mb-0 text-uppercase text-nowrap">
-                          Documentos Caso
-                      </label>&nbsp;&nbsp;
-                      <!-- form-select-sm para reducir altura -->
-                      <select class="form-select form-select-sm w-auto shadow-sm" id="docu-casos" name="docu-casos">
-                          <option value="0" selected disabled>Seleccione</option>
-                      </select>
-                  </div>
-              </div>
-          </div>
+      
           <!-- Fin Sección 3 -->
 
         </div>
@@ -214,91 +174,142 @@ $session = session();
       <!-- /.modal -->
       <!-- Modal para editar punto de cuenta -->
 
-      <div class="modal fade" id="editar">
-        <div class="modal-dialog modal-dialog-centered  modal-md">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Editar punto de cuenta </h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-             <input type="hidden" name="id_punto_cuenta_editar" id="id_punto_cuenta_editar" class="form-control">
-            <form id="form-edit-punto-cuenta" method="POST" role="form"> 
-        
-        <div class="modal-body">
-          
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="numero_punto_cuenta">Número de Punto de Cuenta</label>
-                <input type="text" name="numero_punto_cuenta" id="edit_numero_punto_cuenta" class="form-control" autocomplete="off" required>
-              </div>
+ 
+<div class="modal fade" id="editar" tabindex="-1" role="dialog" aria-labelledby="editarPuntoCuentaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editarPuntoCuentaTitulo">
+                    <i class="fas fa-edit me-2"></i> Editar Punto de Cuenta
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="fecha_punto_cuenta">Fecha de Punto de Cuenta</label>
-                <input type="date" name="fecha_punto_cuenta" id="edit_fecha_punto_cuenta" class="form-control" autocomplete="off" required> 
-              </div>
-            </div>
-          </div>
-          
-          <hr>
-          <h6>Datos del Aprobador</h6>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="nombre_beneficiario">Nombre</label>
-                <input type="text" name="nombre_beneficiario" id="edit_nombre_beneficiario" class="form-control" autocomplete="off" required>
-              </div>
-            </div>
+            <form id="form-edit-punto-cuenta" method="POST" role="form">
+                <input type="hidden" name="id_punto_cuenta_editar" id="id_punto_cuenta_editar" class="form-control">
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="apellido_beneficiario">Apellido</label>
-                <input type="text" name="apellido_beneficiario" id="edit_apellido_beneficiario" class="form-control" autocomplete="off" required>
-              </div>
-            </div>
-          </div>
+                <div class="modal-body">
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="monto_aprobado">Monto Aprobado</label>
-                <input type="text" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required>
-              </div>
-            </div>
-            
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="causa_beneficiario">Causa del Beneficiario</label>
-                <input type="text" name="causa_beneficiario" id="edit_causa_beneficiario" class="form-control" autocomplete="off" required>
-              </div>
-            </div>
-          </div>
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h6 class="mb-0 text-primary">
+                                <i class="fas fa-file-invoice me-2"></i> Información Principal
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_numero_punto_cuenta" class="form-label">Número de Punto de Cuenta</label>
+                                        <input type="text" name="numero_punto_cuenta" id="edit_numero_punto_cuenta" class="form-control" autocomplete="off" required placeholder="Escribe el número aquí">
+                                    </div>
+                                </div>
 
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input borrado" id="borrado" name="borrado" value='false'>
-            <label class="form-check-label" for="borrado">Activo</label>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_fecha_punto_cuenta" class="form-label">Fecha de Punto de Cuenta</label>
+                                        <input type="date" name="fecha_punto_cuenta" id="edit_fecha_punto_cuenta" class="form-control" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h6 class="mb-0 text-primary">
+                                <i class="fas fa-user-tie me-2"></i> Datos del Aprobador y Monto
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_nombre_beneficiario" class="form-label">Nombre del Aprobador</label>
+                                        <input type="text" name="nombre_beneficiario" id="edit_nombre_beneficiario" class="form-control" autocomplete="off" required placeholder="Nombre">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_apellido_beneficiario" class="form-label">Apellido del Aprobador</label>
+                                        <input type="text" name="apellido_beneficiario" id="edit_apellido_beneficiario" class="form-control" autocomplete="off" required placeholder="Apellido">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_monto_aprobado" class="form-label">Monto Aprobado</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                            <input type="number" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_causa_beneficiario" class="form-label">Causa/Motivo</label>
+                                        <input type="text" name="causa_beneficiario" id="edit_causa_beneficiario" class="form-control" autocomplete="off" required placeholder="Breve descripción de la causa">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-paperclip me-2"></i> Gestión de Documentos
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Subir Nuevo Documento</h6>
+                            <div class="input-group mb-4">
+                                <input type="file" class="form-control" id="archivo" name="archivo" aria-describedby="btn_subir_archivos">
+                                <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">
+                                <button type="button" id="subir_archivos" class="btn btn-info">
+                                    <i class="fas fa-cloud-upload-alt me-1"></i> Subir Archivo
+                                </button>
+                            </div>
+                            
+                            <h6 class="card-subtitle mb-2 text-muted">Documentos Existentes del Caso</h6>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-12">
+                                    <select class="form-control" id="docu-punto" name="docu-punto">
+                                        <option value="0" selected disabled>Seleccione un documento adjunto...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mt-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="borrado" name="borrado" value='false'>
+                        <label class="form-check-label fw-bold" for="borrado">Punto de Cuenta Activo</label>
+                        <small class="text-muted d-block">Desactivar para marcar como inactivo o borrado.</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" type="reset">
+                        <i class="fas fa-eraser me-1"></i> Limpiar Campos
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-danger me-2" data-dismiss="modal">
+                            <i class="fas fa-times-circle me-1"></i> Cerrar
+                        </button>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fas fa-save me-1"></i> Actualizar Punto
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-
         </div>
-        
-        <div class="modal-footer">
-          <button class="btn btn-sm btn-secondary" type="reset">Limpiar</button>
-          
-          <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
-
-          <button class="btn btn-sm btn-primary" type="submit">Actualizar</button>
-        </div>
-      </form>
-          </div>
-          <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-      </div>
-
+    </div>
 
 
      <style>

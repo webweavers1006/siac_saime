@@ -57,7 +57,7 @@ class Encuesta_sastifaccion_Controler extends BaseController
             return redirect()->to('/');
         }
     }
- public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null, $id_participante = null)
+ public function vista_Grafica_Encuestas($fecha_inicio = null, $fecha_fin = null)
     {
         if ($this->session->get('logged')) {
             $url_encuestas = URL_ENCUESTAS; 

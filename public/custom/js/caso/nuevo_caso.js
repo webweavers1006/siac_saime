@@ -938,6 +938,7 @@ error:function(xhr, status, errorThrown)
                       "profesion": $("#profesion").val(),
                       "ente_adscrito": 0,
                       "organismo-caso": org_id,
+                       "act_coordenadas": $("#actcoordenadas").val(),
                       //"ente_adscrito": $("#ente-adscrito").val(0),
                   }
                   
@@ -1106,6 +1107,7 @@ error:function(xhr, status, errorThrown)
                                 "fecha_nacimiento": $("#fecha-nacimiento").val(),
                                 "profesion": $("#profesion").val(),
                                 "organismo-caso": org_id,
+                                 "act_coordenadas": $("#actcoordenadas").val(),
                                 
                             }
                             $.ajax({

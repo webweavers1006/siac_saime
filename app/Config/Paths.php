@@ -51,6 +51,7 @@ class Paths
 	 * system directories.
 	 */
 	public $writableDirectory = __DIR__ . '/../../public/documentos_casos/';
+	public $puntoCuentaDirectory = __DIR__ . '/../../public/documentos_punto_cuenta/'; 
 
 
 	/*

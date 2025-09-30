@@ -180,6 +180,49 @@ $('#listar_punto_cuenta').on('click', '.Editar', function(e) {
     const partes_nombre = nombre_completo.split(' ');
     const nombre = partes_nombre.shift() || ''; 
     const apellido = partes_nombre.join(' ') || ''; 
+
+
+
+    let datos = {
+        id: id,
+    };
+
+    $.ajax({
+        url: "/buscar_documentos_punto",
+        method: "POST",
+        dataType: "JSON",
+        // Codifica los datos para enviarlos de forma segura
+        data: {
+            data: btoa(JSON.stringify(datos)),
+        },
+    })
+    .done(function(response) {
+        // Asume que el servidor devuelve { message: "success", data: "<option>...</option>" }
+        // Se usa .html() para reemplazar el contenido del select
+        if (response.message === "success" && response.data) {
+            $("#docu-punto").html(response.data);
+        } else {
+            // Manejo de caso en el que no hay documentos
+            $("#docu-punto").html('<option value="0" selected disabled>No se encontraron documentos</option>');
+        }
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        // jqXHR contiene la respuesta del servidor (status, responseText, etc.)
+        console.error("Error al buscar documentos:", textStatus, errorThrown, jqXHR.responseJSON);
+        // Muestra un mensaje de error al usuario
+        let errorMessage = "Error desconocido";
+        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+             errorMessage = jqXHR.responseJSON.message;
+        } else if (errorThrown) {
+             errorMessage = errorThrown;
+        }
+
+        $("#docu-punto").html('<option value="0" selected disabled>No hay documentos asociados</option>');
+       
+    });
+
+$('#archivo').val(''); 
+
     $("#editar").modal("show"); 
     $('#edit_numero_punto_cuenta').val(numero_cuenta);
     $('#edit_fecha_punto_cuenta').val(fecha_cuenta);
@@ -557,3 +600,185 @@ $(document).on('submit', "#form-asociar-caso", function(e) {
             }
         });
     });
+
+
+  
+
+//Evento para subir archivos
+$(document).on("click", "#subir_archivos", (e) => {
+    e.preventDefault();
+    var archivo = document.getElementById("archivo").files[0]; // Obtiene el archivo seleccionado
+    var id_punto_cuenta = document.getElementById("id_punto_cuenta_editar").value;
+    var formData = new FormData(); // Crea un objeto FormData
+    formData.append("archivo", archivo);
+    formData.append("id_punto_cuenta", id_punto_cuenta); // Agrega el archivo al objeto FormData
+    $.ajax({
+        url: "/upload_docu_punto_cuenta",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            if (data == 0) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>ERROR EL ARCHIVO YA EXISTE.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                // setTimeout(function() {
+                //     window.location = "/casos";
+                // }, 1600);
+            } else if (data == 1) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>ERROR EL ARCHIVO ES DEMASIADO GRANDE.</strong>',
+
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                setTimeout(function() {
+
+                }, 1600);
+            }
+
+            if (data == 2) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'success',
+                    html: '<strong>ARCHIVO CARGADO EXITOSAMENTE.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                setTimeout(function() {
+                    let datos = {
+        id: id_punto_cuenta,
+    };
+
+    $.ajax({
+        url: "/buscar_documentos_punto",
+        method: "POST",
+        dataType: "JSON",
+        // Codifica los datos para enviarlos de forma segura
+        data: {
+            data: btoa(JSON.stringify(datos)),
+        },
+    })
+    .done(function(response) {
+        // Asume que el servidor devuelve { message: "success", data: "<option>...</option>" }
+        // Se usa .html() para reemplazar el contenido del select
+        if (response.message === "success" && response.data) {
+            $("#docu-punto").html(response.data);
+        } else {
+            // Manejo de caso en el que no hay documentos
+            $("#docu-punto").html('<option value="0" selected disabled>No se encontraron documentos</option>');
+        }
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        // jqXHR contiene la respuesta del servidor (status, responseText, etc.)
+        console.error("Error al buscar documentos:", textStatus, errorThrown, jqXHR.responseJSON);
+        // Muestra un mensaje de error al usuario
+        let errorMessage = "Error desconocido";
+        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+             errorMessage = jqXHR.responseJSON.message;
+        } else if (errorThrown) {
+             errorMessage = errorThrown;
+        }
+
+        $("#docu-punto").html('<option value="0" selected disabled>No hay documentos asociados</option>');
+       
+    });
+                   
+                }, 1600);
+            } else if (data == 3) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>HUBO UN ERROR AL CAGAR EL ARCHIVO.</strong>',
+
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            } else if (data == 4) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>DEBE SELECCIONAR UN ARCHIVO.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }else if (data == 5) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Tipo de archivo no permitido.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 6) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Tipo de archivo no coincide con el contenido.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 7) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Error al agregar a la base de datos.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 8) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>Nombre de archivo inválido. Las extensiones dobles no están permitidas.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+            else if (data == 9) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'error',
+                    html: '<strong>El archivo no es una imagen válida.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+
+
+        },
+        error: function(xhr, status, error) {
+            // Aquí puedes manejar los errores
+        }
+    });
+});

@@ -133,6 +133,48 @@ public function cargarCasosAsociados($id_punto_cuenta)
     }
 
 
+ //Metodo para agregar  el nombre de los cocumentos de asosciados a los casos
+    public function agregar_docu_punto_cuenta(array $documentos_punto)
+    {
+        
+        $db = \Config\Database::connect();
+        $builder = $this->dbconn('sgc_documentos_punto_cuenta');
+        $query = $builder->insert($documentos_punto);
+        return $query;
+    }
 
 
+
+public function buscar_documentos_por_punto($punto_id) // Recibe el ID del punto/caso
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_documentos_punto_cuenta AS p');
+    $builder->select('p.docu_id_punto_cuenta, p.docu_ruta');
+    $builder->where('p.docu_id_punto_cuenta', $punto_id);
+    $query = $builder->get();
+    // Retorna los resultados como un array de objetos para manejarlo fácilmente en el controlador.
+    return $query->getResult(); 
+}
+
+
+
+public function verificar_caso_punto_cuenta($idcaso)
+{
+    
+    $db = \Config\Database::connect();
+    $idcaso = (int)$idcaso; 
+    $builder = $this->db->table('public.sgc_caso_punto_cuenta p');
+    $builder->select('p.id_punto_cuenta,p.id_caso,p.borrado');
+    $builder->select('pc.numero_punto_cuenta');
+    $builder->select('CONCAT(pc.nombre, \' \', pc.apellido) AS nombre');
+    $builder->select('docu.docu_id_punto_cuenta,docu.docu_ruta');
+    $builder->join('sgc_punto_cuenta pc', 'p.id_punto_cuenta = pc.id', 'left');
+    $builder->join('sgc_documentos_punto_cuenta docu', 'p.id_punto_cuenta = docu.docu_id_punto_cuenta', 'left');
+    $builder->where('id_caso', $idcaso);
+    // $query = $builder->get();
+    // echo $db->getLastQuery(); 
+    //   die();
+    return $builder->get()->getResult(); 
+
+}
 }

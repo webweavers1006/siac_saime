@@ -81,6 +81,13 @@ $routes->setAutoRoute(false);
      $routes->post('/upload', 'Casos_Controler::upload');
      $routes->post('/buscar_documentos_casos', "Documentos_casos_Controler::buscar_documentos_casos");
      $routes->post('/ver_documentos/(:any)', "Documentos_casos_Controler::ver_documentos/$1");
+     
+
+   
+   
+   
+   
+   
      //Rutas para la consulta de los casos en el pool de casos
      $routes->get('/verCaso/(:num)', "Casos_Controler::vercaso/$1");
      $routes->get('/casosActivos', "Casos_Controler::listadoCasosActivos");
@@ -132,11 +139,13 @@ $routes->setAutoRoute(false);
       $routes->get('/cargarCasosAsociados/(:any)',"Punto_Cuenta_Controler::cargarCasosAsociados/$1");
       $routes->get('/verificar_caso/(:any)',"Punto_Cuenta_Controler::verificar_caso/$1");
       $routes->POST('/asociar_casos',"Punto_Cuenta_Controler::asociar_casos");
+      $routes->POST('/upload_docu_punto_cuenta',"Punto_Cuenta_Controler::upload_docu_punto_cuenta");
+      $routes->post('/buscar_documentos_punto', "Punto_Cuenta_Controler::buscar_documentos_punto");
+      $routes->post('/verificar_caso_punto_cuenta', "Punto_Cuenta_Controler::verificar_caso_punto_cuenta");
       
 
+//$routes->post('/ver_documentos/(:any)', "Documentos_casos_Controler::ver_documentos/$1");
      
-
-
 
 
 
@@ -270,7 +279,7 @@ $routes->setAutoRoute(false);
  
        
      //RUTAS PARA  GRAFICAS DE ENCUESTAS DE SASTIFACION
-     $routes->get('/vista_Grafica_Encuestas/(:any)/(:any)/(:any)', "Encuesta_sastifaccion_Controler::vista_Grafica_Encuestas/$1/$2/$3");
+     $routes->get('/vista_Grafica_Encuestas/(:any)/(:any)', "Encuesta_sastifaccion_Controler::vista_Grafica_Encuestas/$1/$2");
      
  
 

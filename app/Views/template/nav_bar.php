@@ -189,7 +189,7 @@ $userdata = $session->get();
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null/null" class="nav-link">
+            <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
               <i class="nav-icon fas fa-users" style='font-size:20px'></i>
               <p>Graficas Encuestas</p>
             </a>

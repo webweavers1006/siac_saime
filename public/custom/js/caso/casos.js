@@ -7,7 +7,51 @@ $(function() {
     
 });
 
+$(document).ready(function() {
+    // 1. Seleccionamos el modal por su ID
+    var $editCaseModal = $('#editCase');
 
+    // 2. Escuchamos el evento 'hidden.bs.modal'
+    // Este evento se dispara cuando el modal ha terminado de ocultarse
+    $editCaseModal.on('hidden.bs.modal', function () {
+        // 3. Dentro de la función, reseteamos el formulario
+        // La mejor manera de limpiar todos los campos (inputs, selects, textareas)
+        // dentro del modal es seleccionar el elemento <form> y usar el método .trigger('reset')
+        
+        // Asumiendo que todo el contenido del modal es para ser enviado en un solo formulario
+        // o que quieres limpiar todo el contenido.
+
+        // Opción A: Resetear un formulario específico (RECOMENDADO si tienes un <form> principal)
+        // Si tu modal contiene un <form> con un ID, por ejemplo, 'formulario-edicion', úsalo:
+        // $('#formulario-edicion').trigger('reset');
+
+        // Opción B: Resetear todos los elementos de formulario dentro del modal (Más general)
+        $editCaseModal.find('input:text, input:file, textarea').val(''); // Limpia inputs de texto/file y textareas
+        $editCaseModal.find('input:email').val(''); // Limpia inputs de email
+        $editCaseModal.find('input:date').val(''); // Limpia inputs de fecha
+        $editCaseModal.find('input:checkbox, input:radio').prop('checked', false).trigger('change'); // Desmarca checkboxes y radios
+        
+        // Resetear selectores a su primera opción o la que tenga el atributo 'selected'
+        $editCaseModal.find('select').each(function() {
+            var $this = $(this);
+            // Busca la opción que tiene el atributo 'selected' o selecciona la primera
+            var selectedOption = $this.find('option[selected]').val() || $this.find('option:first').val();
+            $this.val(selectedOption).trigger('change');
+        });
+
+        // 4. Lógica Adicional (Opcional, pero útil para tu caso)
+        // Si tienes divs que muestras/ocultas, como 'denuncias', puedes ocultarlos de nuevo:
+        $('#denuncias').hide();
+        $('#cgr').show(); // Si 'cgr' es la vista por defecto
+        
+        // También puedes limpiar el mapa si estás usando una librería como Leaflet
+        // y necesitas reinicializarlo o limpiar marcadores.
+        $('#latitude').val('');
+        $('#longitude').val('');
+        $('#locationName').val('');
+        // *Aquí iría la lógica específica para limpiar el mapa si aplica*
+    });
+});
 
 //FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
 function llenar_Organismos_PP(e, caso_org_id) {
@@ -911,13 +955,24 @@ $('#listar_casos').on('click', '.Editar', function(e) {
             Swal.fire("Error", response.JSONmessage, "Error");
         });
     /////////////////////////////////////////////////////////
- 
+ // Variable global para almacenar los datos agrupados, accesible desde otros ámbitos
+let datosAgrupadosPorPunto = {};
+/**
+ * Función que realiza la llamada AJAX para verificar el caso y obtener los puntos de cuenta asociados,
+ * y luego llena el selector principal.
+ * @param {string} idcaso - El ID del caso a verificar.
+ */
+cargarPuntosDeCuenta(idcaso);
+   
+
 
 
 
     if (id_tipo_atencion == 1)
     {
-       
+        $("#denuncias").hide();
+
+
         if (act_pro_int=='t') 
             {
                 $(".prop_int").show();
@@ -953,7 +1008,7 @@ $('#listar_casos').on('click', '.Editar', function(e) {
                         $("#cgr").hide();
                     }
                 
-        
+       
 
     }
 
@@ -1068,10 +1123,12 @@ function loadCaseData(idcaso) {
             const coordenadas = response[0];
             const initialCoords = [parseFloat(coordenadas.latitud), parseFloat(coordenadas.longitud)];
             const initialName = coordenadas.nombre;
-
+            $(".coordenadas").show();
             $("#actcoordenadas").val('t');
             handleMapDisplay(true, initialCoords, initialName);
         } else {
+
+            $(".coordenadas").hide();
             $("#actcoordenadas").val('f');
             handleMapDisplay(false);
             console.log("No se encontró información de coordenadas.");
@@ -1250,6 +1307,15 @@ selectElement.addEventListener('change', function() {
     var ruta = 'documentos_casos/' + url; // Reemplaza "
     window.open(ruta, "_blank");
 });
+
+var selectElement = document.getElementById('documentos-select');
+selectElement.addEventListener('change', function() {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var url = selectedOption.text;
+    var ruta = 'documentos_punto_cuenta/' + url; // Reemplaza "
+    window.open(ruta, "_blank");
+});
+
 
 
 //FUNCION PARA LLENAR EL COMBO DE LOS ESTADOS
@@ -2840,5 +2906,123 @@ $("#pais-caso").on('change', function() {
             Swal.fire("Error", request.responseJSON.message || "Error al cargar datos", "error");
         });
 
+    }
+});
+
+
+function cargarPuntosDeCuenta(idcaso) {
+    // 1. Resetear la variable global antes de cada nueva carga
+    datosAgrupadosPorPunto = {};
+    const selectElement = $("#punto-cuenta-select");
+    const documentosSelect = $("#documentos-select");
+    
+    // Texto de la opción por defecto (placeholder)
+    const defaultOptionText = "Seleccione un Punto de Cuenta";
+    const defaultDocOptionText = "Seleccione un Documento";
+
+    // 2. Limpiar selects y deshabilitar el selector de documentos
+    // Usamos .html() para establecer la opción por defecto fácilmente
+    selectElement.html(`<option value="">${defaultOptionText}</option>`);
+    documentosSelect.html(`<option value="">${defaultDocOptionText}</option>`).prop('disabled', true);
+    
+    // Validar el ID del caso antes de la llamada
+    if (!idcaso) {
+        console.warn("ID del caso no proporcionado. No se realizará la llamada AJAX.");
+        return;
+    }
+
+    // Datos a enviar (usando la convención de btoa/JSON)
+    const dataToSend = { idcaso: idcaso };
+
+    // 3. Llamada AJAX
+    $.ajax({
+        url: "/verificar_caso_punto_cuenta",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            data: btoa(JSON.stringify(dataToSend)),
+        },
+    })
+    .then((response) => {
+        const datos = response; 
+        
+        // Validación: asegurar que es un array con datos
+        if (!Array.isArray(datos) || datos.length === 0) {
+                    $(".punto").hide();
+            console.warn("La respuesta es un array vacío o no hay puntos de cuenta asociados.");
+            // No hacemos nada, los selects ya tienen el mensaje por defecto.
+            return; 
+        }
+        $(".punto").show();
+        const puntosCuentaUnicos = new Map();
+        const opcionesHTML = [];
+        
+        datos.forEach(item => {
+            const id = item.id_punto_cuenta;
+            
+            // A. Lógica para el select ÚNICO de Puntos de Cuenta
+            if (!puntosCuentaUnicos.has(id)) {
+                const text = `(${item.numero_punto_cuenta}) ${item.nombre}`;
+                puntosCuentaUnicos.set(id, { value: id, text: text });
+                opcionesHTML.push(`<option value="${id}">${text}</option>`);
+            }
+            
+            // B. Lógica para la AGRUPACIÓN DE DOCUMENTOS
+            if (!datosAgrupadosPorPunto[id]) {
+                datosAgrupadosPorPunto[id] = [];
+            }
+            datosAgrupadosPorPunto[id].push({
+                docu_ruta: item.docu_ruta,
+                // Usar nombre_doc si existe, sino la ruta. Se mantiene tu lógica original.
+                nombre_doc: item.nombre_doc || item.docu_ruta 
+            });
+        });
+        
+        // 4. Llenar el select principal de manera eficiente
+        selectElement.append(opcionesHTML.join(''));
+        
+        console.log("Datos agrupados listos para usar:", datosAgrupadosPorPunto);
+    })
+    .catch((jqXHR, textStatus, errorThrown) => {
+        console.error("Error al cargar puntos de cuenta:", textStatus, errorThrown, jqXHR);
+        // Opcional: Notificar al usuario sobre el error.
+    }); 
+}
+//---------------------------------------------------------------------
+// --- MANEJO DEL EVENTO DE CAMBIO DEL PUNTO DE CUENTA ---
+//---------------------------------------------------------------------
+
+/**
+ * Evento 'change' que se dispara cuando el usuario selecciona un Punto de Cuenta.
+ */
+$("#punto-cuenta-select").on('change', function() {
+    const puntoCuentaSeleccionado = $(this).val();
+    const documentosSelect = $("#documentos-select");
+    const defaultDocOptionText = "Seleccione un Documento";
+
+    // 1. Limpiar y establecer la opción por defecto
+    documentosSelect.html(`<option value="">${defaultDocOptionText}</option>`);
+    documentosSelect.prop('disabled', true);
+    
+    // 2. Verificar si hay un ID válido seleccionado
+    if (puntoCuentaSeleccionado) {
+        // Obtener la lista de documentos para el ID seleccionado
+        const documentos = datosAgrupadosPorPunto[puntoCuentaSeleccionado];
+        const opcionesDocHTML = [];
+
+        if (documentos && documentos.length > 0) {
+            documentos.forEach(doc => {
+                // Usar docu_ruta como valor y nombre_doc/docu_ruta como texto visible
+                opcionesDocHTML.push(`<option value="${doc.docu_ruta}">${doc.nombre_doc}</option>`);
+            });
+            
+            // Llenar el select de Documentos
+            documentosSelect.append(opcionesDocHTML.join(''));
+            
+            // Habilitar el selector de documentos
+            documentosSelect.prop('disabled', false);
+        } else {
+            console.warn(`No se encontraron documentos para el punto de cuenta ID: ${puntoCuentaSeleccionado}`);
+        }
     }
 });

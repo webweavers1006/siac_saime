@@ -548,6 +548,11 @@ public function getReporteData($params)
         $builder->where('a.caso_org_id', $params['org_id']);
     }
     
+
+    if (!empty($params['detalle_atencion'])) {
+        $builder->where('a.tipo_atend_id', $params['detalle_atencion']);
+    }
+
     // --- Paso 3: Obtener el conteo de registros filtrados ---
     $filteredBuilder = clone $builder;
     $recordsFiltered = $filteredBuilder->countAllResults();
