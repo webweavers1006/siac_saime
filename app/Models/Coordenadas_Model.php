@@ -24,7 +24,7 @@ public function buscar_caso_coordenadas(array $coordenadas)
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos_coordenadas AS c');
         $builder->select('*');
-        $builder->where('c.docu_id_caso', $coordenadas["idcaso"]);
+        $builder->where('c.idcaso', $coordenadas["idcaso"]);
         $query = $builder->get();
         $resultado = $query->getResult();
         return $resultado;

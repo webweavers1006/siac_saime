@@ -44,45 +44,47 @@ class Casos extends BaseModel
 public function obtenerCasosServerSide($start, $length, $search, $order_column, $order_direction)
 {
     $db = \Config\Database::connect();
-    $builder = $db->table('sgc_casos as a');
-    $builder->distinct();
     
-    // Construir la consulta base para el conteo total
-    $this->buildBaseQuery($builder);
-  
-
-    // 4. Imprime la consulta para verla
-    //  $sql = $builder->getCompiledSelect();
-    // echo $sql;
-    // die();
-    // Obtener el total de registros sin filtrar (recordsTotal)
-    // Usamos clone para no modificar el builder original
-    $tempBuilder = clone $builder; 
-    $recordsTotal = $tempBuilder->countAllResults();
-
-    // Resetear el builder para el siguiente paso (countAllResults lo limpia)
+    // --- 1. CONTEO TOTAL DE REGISTROS (recordsTotal) ---
+    $builderTotal = $db->table('sgc_casos as a');
+    $builderTotal->distinct();
+    $this->buildBaseQuery($builderTotal);
+    $recordsTotal = $builderTotal->countAllResults();
+    
+    // --- 2. INICIALIZACIÓN DEL BUILDER PARA FILTRO Y PÁGINA ---
     $builder = $db->table('sgc_casos as a');
     $builder->distinct();
     $this->buildBaseQuery($builder);
 
-    // Aplicar el filtro de búsqueda si existe
+    // --- 3. APLICACIÓN DEL FILTRO DE BÚSQUEDA ---
     if (!empty($search)) {
-        $builder->groupStart();
-        // Busca en los campos relevantes
-        $builder->like('CAST(a.idcaso AS TEXT)', $search); // Usar CAST para buscar números como texto
-        $builder->orLike('a.casoced', $search);
-        $builder->orLike('a.casonom', $search);
-        $builder->orLike('a.casoape', $search);
-        $builder->orLike('b.estnom', $search);
-        $builder->groupEnd();
+        // Preparamos el término de búsqueda para LIKE: minúsculas y comodines (%)
+        $searchEscaped = $db->escapeLikeString($search);
+        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        
+        // Construimos la cláusula WHERE compleja de forma literal
+        $whereClause = "
+            CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            
+            -- Filtros Clave para Tipo de Atención (COALESCE/LOWER/CAST aplicado)
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CAST(d.tipo_atend_borrado AS TEXT)), '') LIKE '{$searchPattern}' OR 
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}'
+        ";
+        
+        // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
+        $builder->where("({$whereClause})", NULL, FALSE);
     }
     
-    // Obtener el total de registros filtrados (recordsFiltered)
-    // Usamos clone para no modificar el builder de nuevo
-    $tempBuilder2 = clone $builder;
-    $recordsFiltered = $tempBuilder2->countAllResults();
+    // --- 4. CONTEO DE REGISTROS FILTRADOS ---
+    $tempBuilderFiltered = clone $builder;
+    $recordsFiltered = $tempBuilderFiltered->countAllResults();
     
-    // Aplicar la ordenación y paginación al builder final
+    // --- 5. ORDENACIÓN Y PAGINACIÓN ---
     $builder->orderBy($order_column, $order_direction);
     $builder->limit($length, $start);
     
@@ -99,43 +101,48 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
 public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $length, $search, $order_column, $order_direction)
 {
     $db = \Config\Database::connect();
-    $builder = $db->table('sgc_casos as a');
-    $builder->distinct();
     
-    // Construir la consulta base para el conteo total
-    $this->buildBaseQuery($builder);
-    
-    // Aplicar el filtro por usuario
-    $builder->where('a.idusuopr', $idusur);
+    // --- 1. INICIALIZACIÓN DEL BUILDER PARA CONTEOS (con filtro de usuario) ---
+    $builderTotal = $db->table('sgc_casos as a');
+    $builderTotal->distinct();
+    $this->buildBaseQuery($builderTotal);
+    $builderTotal->where('a.idusuopr', $idusur); 
+    $recordsTotal = $builderTotal->countAllResults();
 
-    // Obtener el total de registros filtrados por usuario (recordsTotal)
-    $tempBuilder = clone $builder; 
-    $recordsTotal = $tempBuilder->countAllResults();
-
-    // Reconstruir el builder para aplicar la búsqueda de texto
+    // --- 2. INICIALIZACIÓN DEL BUILDER PARA FILTRO Y PÁGINA ---
     $builder = $db->table('sgc_casos as a');
     $builder->distinct();
     $this->buildBaseQuery($builder);
-    $builder->where('a.idusuopr', $idusur);
+    $builder->where('a.idusuopr', $idusur); // Filtro por usuario permanente
 
-    // Aplicar el filtro de búsqueda si existe
+    // --- 3. APLICACIÓN DEL FILTRO DE BÚSQUEDA ---
     if (!empty($search)) {
-        $builder->groupStart();
-        // Usamos CAST para buscar por ID de forma precisa con LIKE
-        $builder->like('CAST(a.idcaso AS TEXT)', $search);
-        // Luego, mantenemos la búsqueda flexible para otros campos
-        $builder->orLike('a.casoced', $search);
-        $builder->orLike('a.casonom', $search);
-        $builder->orLike('a.casoape', $search);
-        $builder->orLike('b.estnom', $search);
-        $builder->groupEnd();
+        $searchEscaped = $db->escapeLikeString($search);
+        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        
+        // Construimos la cláusula WHERE compleja de forma literal
+        $whereClause = "
+            CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            
+            -- Filtros Clave para Tipo de Atención (COALESCE/LOWER/CAST aplicado)
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CAST(d.tipo_atend_borrado AS TEXT)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}'
+        ";
+        
+        // Aplicamos la cláusula WHERE de forma literal
+        $builder->where("({$whereClause})", NULL, FALSE);
     }
     
-    // Obtener el total de registros filtrados (recordsFiltered)
-    $tempBuilder2 = clone $builder;
-    $recordsFiltered = $tempBuilder2->countAllResults();
+    // --- 4. CONTEO DE REGISTROS FILTRADOS ---
+    $tempBuilderFiltered = clone $builder;
+    $recordsFiltered = $tempBuilderFiltered->countAllResults();
     
-    // Aplicar la ordenación y paginación
+    // --- 5. ORDENACIÓN Y PAGINACIÓN ---
     $builder->orderBy($order_column, $order_direction);
     $builder->limit($length, $start);
     
@@ -149,7 +156,6 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
         'data' => $data
     ];
 }
-
 private function buildBaseQuery($builder)
 {
     // Tu código actual de SELECT y JOIN
@@ -397,6 +403,7 @@ private function buildBaseQuery($builder)
     //Metodo para   actualizar  us Caso en la BD
     public function actualizarCaso(array $datos)
     {
+        
         $builder = $this->dbconn('sgc_casos');
         $query = $builder->update($datos, 'idcaso = ' . $datos["idcaso"]);
         return $query;
@@ -435,25 +442,26 @@ private function buildBaseQuery($builder)
      }
 
      //Metodo para obtener todos los casos para el reporte consolidado    
- // Método que obtiene todos los casos disponibles para el reporte consolidado
-// Método que obtiene todos los casos disponibles para el reporte consolidado
+
 public function getReporteData($params)
 {
     $db = \Config\Database::connect();
 
     // 1. Convertir la cadena "null" en valores nulos (null).
-    // Esto es crucial para evitar errores de sintaxis en la base de datos.
     foreach ($params as $key => $value) {
         if ($value === 'null') {
             $params[$key] = null;
         }
     }
 
-    // --- Paso 1: Construir la consulta base ---
+    // --- Paso 1: Inicialización y Conteo Total ---
+    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+    
+    // --- Paso 2: Construir la consulta base (SELECTS y JOINs) ---
     $builder = $db->table('sgc_casos as a');
     $builder->distinct();
-
-    // Sentencias SELECT
+    
+    // Sentencias SELECT (Se mantienen)
     $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
     $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
     $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'No aplica' ELSE ubi.descripcion END as descripcion");
@@ -466,7 +474,7 @@ public function getReporteData($params)
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
     
-    // Joins
+    // Joins (Se mantienen)
     $builder->join('sgc_estatus b', 'b.idest = a.idest', 'inner');
     $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'inner');
     $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
@@ -476,15 +484,16 @@ public function getReporteData($params)
     $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
     $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
 
-    // Cláusulas WHERE
+    // Cláusulas WHERE Base
     $builder->where('a.borrado', false);
     $builder->groupStart();
     $builder->where('caso_r.vigencia', true);
     $builder->orWhere('caso_r.vigencia IS NULL');
     $builder->groupEnd();
 
-    // --- Paso 2: Aplicar los filtros dinámicamente ---
-    // El operador !empty() ahora funciona correctamente.
+    // --- Paso 3: Aplicar los filtros dinámicamente (Filtros del Formulario) ---
+    // (Tu código de filtros de fecha, edad, tipo_pi, etc. va aquí)
+    
     if (!empty($params['desde']) && !empty($params['hasta'])) {
         $builder->where('a.casofec >=', $params['desde']);
         $builder->where('a.casofec <=', $params['hasta']);
@@ -498,6 +507,7 @@ public function getReporteData($params)
     if (!empty($params['tipo_pi'])) {
         $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
     }
+    // ... (El resto de tus filtros dinámicos se mantienen igual) ...
 
     if (!empty($params['tipo_atencion_usu'])) {
         $builder->where('t_antusu.tipo_aten_id', $params['tipo_atencion_usu']);
@@ -531,7 +541,7 @@ public function getReporteData($params)
         $builder->where('a.pais', $params['id_pais']);
     }
 
-    // Filtros para id_estado, id_municipio y id_parroquia.
+    // Filtros de ubicación
     if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
         $builder->where('a.estadoid', $params['id_estado']);
     }
@@ -553,52 +563,72 @@ public function getReporteData($params)
         $builder->where('a.tipo_atend_id', $params['detalle_atencion']);
     }
 
-    // --- Paso 3: Obtener el conteo de registros filtrados ---
+
+    // --- 3.5: Aplicar el filtro de búsqueda global de DataTables (CORRECCIÓN) ---
+    if (!empty($params['search'])) {
+        $search = $params['search'];
+        $searchEscaped = $db->escapeLikeString($search);
+        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        
+        // Creamos una CLÁUSULA WHERE COMPUESTA para la búsqueda parcial, insensible al caso y con manejo de NULL/CAST.
+        $whereClause = "
+            CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}'
+            -- Nota: Excluímos 'd.tipo_atend_borrado' ya que esa columna no está en este SELECT/JOIN del reporte.
+        ";
+        
+        // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
+        $builder->where("({$whereClause})", NULL, FALSE);
+    }
+    
+    // --- Paso 4: Obtener el conteo de registros filtrados ---
     $filteredBuilder = clone $builder;
     $recordsFiltered = $filteredBuilder->countAllResults();
 
-    // --- Paso 4: Aplicar orden y límites para la paginación ---
+    // --- Paso 5: Aplicar orden y límites para la paginación ---
     if (!empty($params['order_column']) && !empty($params['order_direction'])) {
         $builder->orderBy($params['order_column'], $params['order_direction']);
     } else {
         $builder->orderBy('a.idcaso', 'DESC');
     }
-    // 💡 SOLUCIÓN: Si length es -1, no se aplica el límite.
+    
     if ($params['length'] != -1) {
         $builder->limit($params['length'], $params['start']);
     }
     
-    // --- Paso 5: Obtener los datos ---
+    // --- Paso 6: Obtener los datos ---
     $query = $builder->get();
     $data = $query->getResultArray();
     
-    // --- Paso 6: Obtener el conteo total de registros sin filtro ---
-    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
-
     return [
         "recordsTotal" => $recordsTotal,
         "recordsFiltered" => $recordsFiltered,
         "data" => $data
     ];
 }
-   
 
-
-  public function getReporteOperadorData(array $params)
+ public function getReporteOperadorData(array $params)
 {
-      
-   
     $db = \Config\Database::connect();
 
     // 1. Convertir la cadena "null" en valores nulos (null).
-    // Esto es crucial para evitar errores de sintaxis en la base de datos.
     foreach ($params as $key => $value) {
         if ($value === 'null') {
             $params[$key] = null;
         }
     }
 
-    // --- Paso 1: Construir la consulta base ---
+    // --- Paso 1: Inicialización y Conteo Total ---
+    // Obtenemos el total de registros no borrados de la tabla principal de forma eficiente.
+    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+    
+    // --- Paso 2: Construir la consulta base (SELECTS y JOINs) ---
     $builder = $db->table('sgc_casos as a');
     $builder->distinct();
 
@@ -625,15 +655,20 @@ public function getReporteData($params)
     $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
     $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
 
-    // Cláusulas WHERE
+    // Cláusulas WHERE Base
     $builder->where('a.borrado', false);
     $builder->groupStart();
     $builder->where('caso_r.vigencia', true);
     $builder->orWhere('caso_r.vigencia IS NULL');
     $builder->groupEnd();
 
-    // --- Paso 2: Aplicar los filtros dinámicamente ---
-    // El operador !empty() ahora funciona correctamente.
+    // --- Paso 3: Aplicar los filtros dinámicamente (Filtros del Formulario) ---
+    
+    // Filtro por Usuario/Operador (nuevo en este reporte)
+    if (!empty($params['usuarios'])) {
+        $builder->where('a.idusuopr', $params['usuarios']);
+    }
+    
     if (!empty($params['desde']) && !empty($params['hasta'])) {
         $builder->where('a.casofec >=', $params['desde']);
         $builder->where('a.casofec <=', $params['hasta']);
@@ -680,7 +715,7 @@ public function getReporteData($params)
         $builder->where('a.pais', $params['id_pais']);
     }
 
-    // Filtros para id_estado, id_municipio y id_parroquia.
+    // Filtros de ubicación
     if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
         $builder->where('a.estadoid', $params['id_estado']);
     }
@@ -693,36 +728,56 @@ public function getReporteData($params)
         $builder->where('a.parroquiaid', $params['id_parroquia']);
     }
 
-   if (!empty($params['usuarios'])) {
-        $builder->where('a.idusuopr', $params['usuarios']);
-    }
-
     if (!empty($params['org_id'])) {
         $builder->where('a.caso_org_id', $params['org_id']);
     }
     
-    // --- Paso 3: Obtener el conteo de registros filtrados ---
+    if (!empty($params['detalle_atencion'])) {
+        $builder->where('a.tipo_atend_id', $params['detalle_atencion']);
+    }
+
+    // --- 3.5: Aplicar el filtro de búsqueda global de DataTables (CORRECCIÓN) ---
+    if (!empty($params['search'])) {
+        $search = $params['search'];
+        $searchEscaped = $db->escapeLikeString($search);
+        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        
+        // Creamos una CLÁUSULA WHERE COMPUESTA para la búsqueda parcial, insensible al caso y con manejo de NULL.
+        $whereClause = "
+            CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}'
+        ";
+        
+        // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
+        $builder->where("({$whereClause})", NULL, FALSE);
+    }
+    
+    // --- Paso 4: Obtener el conteo de registros filtrados ---
     $filteredBuilder = clone $builder;
     $recordsFiltered = $filteredBuilder->countAllResults();
 
-    // --- Paso 4: Aplicar orden y límites para la paginación ---
+    // --- Paso 5: Aplicar orden y límites para la paginación ---
     if (!empty($params['order_column']) && !empty($params['order_direction'])) {
         $builder->orderBy($params['order_column'], $params['order_direction']);
     } else {
         $builder->orderBy('a.idcaso', 'DESC');
     }
     
-   // 💡 SOLUCIÓN: Si length es -1, no se aplica el límite.
     if ($params['length'] != -1) {
         $builder->limit($params['length'], $params['start']);
     }
-    // --- Paso 5: Obtener los datos ---
+    
+    // --- Paso 6: Obtener los datos ---
     $query = $builder->get();
     $data = $query->getResultArray();
     
-    // --- Paso 6: Obtener el conteo total de registros sin filtro ---
-    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
-
     return [
         "recordsTotal" => $recordsTotal,
         "recordsFiltered" => $recordsFiltered,

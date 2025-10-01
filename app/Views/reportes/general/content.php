@@ -32,6 +32,22 @@
         padding-left: 5px;
     }
     
+    /* Reduce el tamaño del campo de texto de BÚSQUEDA (Search) de DataTables */
+div.dataTables_wrapper div.dataTables_filter input {
+    /* 1. Reduce la altura del campo */
+    height: calc(1.9rem + 2px) !important; 
+    /* 2. Hace el texto y el relleno más compactos */
+    padding: .25rem .5rem !important;
+    font-size: .875rem !important;
+    /* 3. Opcional: Limita el ancho máximo para que no ocupe demasiado */
+    max-width: 200px; 
+    display: inline-block; /* Asegura el correcto flujo */
+}
+
+/* Opcional: Alinea verticalmente la etiqueta "Search:" y el campo */
+div.dataTables_wrapper div.dataTables_filter label {
+    font-size: 0.9rem;
+}
   </style>
   
   <div class="content">

@@ -4,48 +4,81 @@ $session = session();
 
 <div class="content-wrapper">
 
-
-  <style>
+<style>
     /* Estilos existentes para la tabla */
     table.dataTable thead,
     table.dataTable tfoot {
       background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
     }
     
-    /* ⭐ ESTILOS AGREGADOS/AJUSTADOS: Hacen los campos más compactos y visibles ⭐ */
+    /* ⭐ ESTILOS COMPACTOS Y GENERALES ⭐ */
+    
+    /* Controles de formulario (input, select) */
     .compact-form-control {
-        height: calc(1.9rem + 2px) !important; /* Ligeramente más alto */
+        height: calc(1.9rem + 2px) !important; 
         padding: .25rem .5rem !important;     
         font-size: .875rem !important;        
         width: 100% !important; 
     }
+    
+    /* Etiquetas (Label): Optimizado para compacidad vertical */
     .card-body label {
-        font-size: 0.9rem;
-        margin-bottom: .15rem; /* Margen inferior muy reducido */
-        display: block; /* Asegura que la etiqueta use su propia línea */
+        font-size: 0.85rem; /* Ligeramente más pequeño para ahorrar espacio */
+        margin-bottom: .1rem !important; /* Margen muy reducido para pegar al input */
+        display: block; 
+        font-weight: 500; /* Hace que la etiqueta sea más visible */
     }
+    
+    /* Inputs de Edad */
     .compact-input-edad {
         width: 65px !important; 
         height: calc(1.9rem + 2px) !important;
         padding: .25rem .5rem !important;
         font-size: .875rem !important;
         display: inline-block;
+        text-align: center; /* Centrar texto/números */
     }
-    /* Ajuste de padding en columnas para evitar el corte de texto */
-    .card-body .row > [class*="col-"] {
+    
+    /* Ajuste de padding en columnas (evita el corte de texto en filas) */
+    .row > [class*="col-"] { /* Se simplificó el selector, aplica a todas las filas */
         padding-right: 5px; 
         padding-left: 5px;
     }
-    /* Ajuste para el select de Analistas */
+    
+    /* Ajuste específico para el select de Analistas (si se usa fuera de col-*) */
     .custom-select-compact {
         height: calc(1.9rem + 2px) !important; 
-        padding: .25rem 1.75rem .25rem .75rem !important; /* Se ajusta el padding para la flecha */
+        padding: .25rem 1.75rem .25rem .75rem !important; 
         font-size: .875rem !important;
         width: 300px !important;
         display: inline-block !important;
         vertical-align: middle;
     }
-  </style>
+
+    /* --- ESTILOS DATATABLES (Búsqueda y Botones) --- */
+    
+    /* 1. Reducir y alinear el campo de búsqueda (Search) de DataTables */
+    div.dataTables_wrapper div.dataTables_filter input {
+        height: calc(1.9rem + 2px) !important; 
+        padding: .25rem .5rem !important;
+        font-size: .875rem !important;
+        max-width: 200px; /* Limita el ancho del campo */
+        display: inline-block;
+    }
+
+    /* 2. Compactar y alinear los botones de exportación (btn-xs-xs) */
+    div.dt-buttons .btn {
+        padding: 0.1rem 0.3rem !important; /* Relleno ultra-compacto */
+        font-size: 0.75rem !important;      /* Fuente muy pequeña */
+        line-height: 1.5 !important;
+        margin-right: 5px !important;    /* Espacio entre botones */
+    }
+
+    /* 3. Alinear verticalmente el contenedor de botones y el filtro de búsqueda */
+    div.dataTables_wrapper div.row:first-child {
+        align-items: center; /* Alineación vertical central */
+    }
+</style>
   
   <div class="content">
     <div class="container-fluid">
@@ -190,6 +223,7 @@ $session = session();
               <table class="display table-responsive table-striped table-hover" id="table_casos" style="width:100%" style="margin-top: 20px">
                 <thead>
                   <tr>
+                    <td class="text-center" style="width: 1%;">N-Caso</td>
                     <td class="text-center" style="width: 1%;">Cédula</td>
                     <td class="text-center" style="width: 1%;">Tipo de Beneficiario</td>
                     <td class="text-center" style="width: 12%;">Beneficiario</td>

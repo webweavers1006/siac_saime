@@ -455,7 +455,8 @@ curl_close($ch);
 			$tipoPI["idtippropint"]    = $datos["pi-type"];
 			$tipoPI["idcaso"]    = $datos["idcaso"];
 			//llenamos los datos iniciales del caso
-			if ($newCase["id_tipo_atencion"] !== 5 && $newCase["id_tipo_atencion"] !== 1) {
+			if ($newCase["id_tipo_atencion"] !== 5 && $newCase["id_tipo_atencion"] !== 1)
+		 {
 				$newCase["idcaso"]    = $datos["idcaso"];
 				$newCase["casofec"]     = $datos["date-entry"];
 				$newCase["casoced"]     = $datos["person-id"];
@@ -483,6 +484,7 @@ curl_close($ch);
 				$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
 				$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
 				$newCase["profesion"]    = $datos["profesion"];
+
 				//$newCase["campos_modificados"]    = $datos["campos_modificados"];
 				if (empty($datos["record-work"])) {
 					$newCase["casonumsol"] = 'No Aplica';
@@ -592,6 +594,9 @@ curl_close($ch);
 						$newCase["casonumsol"] = $datos["record-work"];
 					}
 					//REALIZAMOS LA ACTUALIZACION EN LA TABLA
+
+					var_dump($newCase);
+					die();
 					$query_actualizar_caso = $casoModel->actualizarCaso($newCase);
 					$auditoria['audi_user_id']   = session('iduser');
 					$auditoria['audi_accion']   = 'REGISTRO EN LA TABLA DE denunciaS EL CASO 	Nª' . $datos["idcaso"];

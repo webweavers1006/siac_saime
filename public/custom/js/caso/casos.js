@@ -8,22 +8,10 @@ $(function() {
 });
 
 $(document).ready(function() {
-    // 1. Seleccionamos el modal por su ID
+
     var $editCaseModal = $('#editCase');
-
-    // 2. Escuchamos el evento 'hidden.bs.modal'
-    // Este evento se dispara cuando el modal ha terminado de ocultarse
     $editCaseModal.on('hidden.bs.modal', function () {
-        // 3. Dentro de la función, reseteamos el formulario
-        // La mejor manera de limpiar todos los campos (inputs, selects, textareas)
-        // dentro del modal es seleccionar el elemento <form> y usar el método .trigger('reset')
         
-        // Asumiendo que todo el contenido del modal es para ser enviado en un solo formulario
-        // o que quieres limpiar todo el contenido.
-
-        // Opción A: Resetear un formulario específico (RECOMENDADO si tienes un <form> principal)
-        // Si tu modal contiene un <form> con un ID, por ejemplo, 'formulario-edicion', úsalo:
-        // $('#formulario-edicion').trigger('reset');
 
         // Opción B: Resetear todos los elementos de formulario dentro del modal (Más general)
         $editCaseModal.find('input:text, input:file, textarea').val(''); // Limpia inputs de texto/file y textareas
@@ -1677,7 +1665,7 @@ $(document).on("click", "#editar_caso", function(e) {
     let caso_org_id = $("#organismo-caso").val();
    
 
-    // let idcaso = $("#idcaso").val();
+    let idcaso = $("#idcaso").val();
     requerimiento_user = requerimiento_user.trim();
     if (red_social == null) {
         $("#red-social").addClass('is-invalid');
@@ -1760,7 +1748,8 @@ $(document).on("click", "#editar_caso", function(e) {
         let ente_adscrito = $("#ente_adscrito_id").val(0);
         let involucrados = $("#denu-involucrados").val();
         //PREGUNTO SI ES UN CASO DE ASESORIA 
-        if (tipo_atencion == 1) {
+        if (tipo_atencion == 1) 
+        {
 
             if (tipo_prop_intelec == null) 
             {
@@ -1908,6 +1897,7 @@ $(document).on("click", "#editar_caso", function(e) {
                     "edad": $("#edad").val(),
                     "fecha_nacimiento": $("#fecha-nacimiento").val(),
                     "profesion": $("#profesion").val(),
+                  
                 }
                 $.ajax({
                     url: "/actualizarCaso",
@@ -1967,7 +1957,8 @@ $(document).on("click", "#editar_caso", function(e) {
            
             
             //PREGUNTO SI ES UN CASO DE DENUNCIA
-        } else if (tipo_atencion == 5) {
+        } else if (tipo_atencion == 5)
+         {
 
             if (denu_afecta_persona == false && denu_afecta_comunidad == false && denu_afecta_terceros == false) {
                 alert('DEBE INDICAR A QUIEN AFECTA EL HECHO');
@@ -2209,8 +2200,10 @@ $(document).on("click", "#editar_caso", function(e) {
 
                 }
             }
-            //ES UN CASO NORMAL 
-        } else {
+            
+        } 
+        //********************ES UN CASO NORMAL ***********
+        else {
             //let datos_modificados = '';
             /// Coloco los datos del formulario en objeto_anterior para comparlo con los datos modificados en objeto_actual 
             /// OBJETO ANTERIOR

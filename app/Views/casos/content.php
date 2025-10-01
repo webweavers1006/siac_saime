@@ -90,13 +90,45 @@ $session = session();
                 <h4 class="text-secondary"><i class="fas fa-angle-double-right"></i> EDICION DE CASO</h4>
             </div>
             <div class="modal-body">
-                
+                <input type="hidden" id="id_caso">
                 <div class="card card-section">
                     <div class="card-header">
                         <h5 class="mb-0 text-primary">
                             <i class="fas fa-user-tie"></i> Información del Beneficiario
                         </h5>
                     </div>
+                    <input type="hidden" id="nombre_anterior" name="" value="">
+<input type="hidden" id="tipo_atend_borrado" name="" value="">
+<input type="hidden" id="apellido_anterior" name="" value="">
+<input type="hidden" id="tipo_persona_anterior" name="" value="">
+<input type="hidden" id="cedula_anterior" name="" value="">
+<input type="hidden" id="t_beneficiario_anterior" name="" value="">
+<input type="hidden" id="genero_anterior" name="" value="">
+<input type="hidden" id="telefono_anterior" name="" value="">
+<input type="hidden" id="fecha_anterior" name="" value="">
+<input type="hidden" id="via_atencion_anterior" name="" value="">
+<input type="hidden" id="ofiid_anterior" name="" value="">
+<input type="hidden" id="correo_anterior" name="" value="">
+<input type="hidden" id="direccion_anterior" name="" value="">
+<input type="hidden" id="estado_anterior" name="" value="">
+<input type="hidden" id="municipio_anterior" name="" value="">
+<input type="hidden" id="parroquia_anterior" name="" value="">
+<input type="hidden" id="descripcion_anterior" name="" value="">
+<input type="hidden" id="Tipo_prop_anterior" name="" value="">
+<input type="hidden" id="Tipo_antenc_anterior" name="" value="">
+<input type="hidden" id="ente_anterior" name="" value="">
+<input type="hidden" id="cgr_anterior" name="" value="">
+<input type="hidden" id="azume_anterior" name="" value="">
+<input type="hidden" id="afecta_hechos_anterior" name="" value="" autocomplete="off">
+<input type="hidden" id="fecha_hechos_anterior" name="" value="">
+<input type="hidden" id="involucrados_anterior" name="" value="">
+<input type="hidden" id="nombre_instancia_anterior" name="" value="">
+<input type="hidden" id="rif_instancia_anterior" name="" value="">
+<input type="hidden" id="ente_financiador_anterior" name="" value="">
+<input type="hidden" id="nombre_proyecto_anterior" name="" value="">
+<input type="hidden" id="monto_aprobado_anterior" name="" value="">
+<input type="hidden" id="actcoordenadas">
+<input type="hidden" class="form-control" id="id_hijos_detalle_atencion">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
@@ -456,6 +488,7 @@ $session = session();
                                                     <label for="locationName">Nombre del lugar:</label>
                                                     <input type="text" id="locationName" name="locationName" class="form-control" placeholder="Ej: La Vega, Los Mangos">
                                                 </div>
+                                                <br>
                                                 <div class="col-lg-2 col-md-4 mb-2 d-flex justify-content-end">
                                                      <button id="ubicar-btn" type="button" class="btn btn-sm btn-primary mr-1"><i class="fas fa-map-marker-alt"></i></button>
                                                     <button id="limpiar-btn" type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eraser"></i></button>
@@ -479,7 +512,7 @@ $session = session();
             </div>
             
             <div class="modal-footer">
-                <button class="btn btn-sm btn-primary" id="editar_caso" type="submit"><i class="fas fa-save"></i> Guardar</button>
+                <button class="btn btn-sm btn-primary" id="editar_caso" type="button"><i class="fas fa-save"></i> Actualizar</button>
                 <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cerrar</button>
             </div>
         </div>
@@ -572,43 +605,9 @@ $session = session();
 
 </style>
 
-<input type="hidden" id="id_caso">
-<input type="hidden" id="nombre_anterior" name="" value="">
-<input type="hidden" id="tipo_atend_borrado" name="" value="">
-<input type="hidden" id="apellido_anterior" name="" value="">
-<input type="hidden" id="tipo_persona_anterior" name="" value="">
-<input type="hidden" id="cedula_anterior" name="" value="">
-<input type="hidden" id="t_beneficiario_anterior" name="" value="">
-<input type="hidden" id="genero_anterior" name="" value="">
-<input type="hidden" id="telefono_anterior" name="" value="">
-<input type="hidden" id="fecha_anterior" name="" value="">
-<input type="hidden" id="via_atencion_anterior" name="" value="">
-<input type="hidden" id="ofiid_anterior" name="" value="">
-<input type="hidden" id="correo_anterior" name="" value="">
-<input type="hidden" id="direccion_anterior" name="" value="">
-<input type="hidden" id="estado_anterior" name="" value="">
-<input type="hidden" id="municipio_anterior" name="" value="">
-<input type="hidden" id="parroquia_anterior" name="" value="">
-<input type="hidden" id="descripcion_anterior" name="" value="">
-<input type="hidden" id="Tipo_prop_anterior" name="" value="">
-<input type="hidden" id="Tipo_antenc_anterior" name="" value="">
-<input type="hidden" id="ente_anterior" name="" value="">
-<input type="hidden" id="cgr_anterior" name="" value="">
-<input type="hidden" id="azume_anterior" name="" value="">
-<input type="hidden" id="afecta_hechos_anterior" name="" value="" autocomplete="off">
-<input type="hidden" id="fecha_hechos_anterior" name="" value="">
-<input type="hidden" id="involucrados_anterior" name="" value="">
-<input type="hidden" id="nombre_instancia_anterior" name="" value="">
-<input type="hidden" id="rif_instancia_anterior" name="" value="">
-<input type="hidden" id="ente_financiador_anterior" name="" value="">
-<input type="hidden" id="nombre_proyecto_anterior" name="" value="">
-<input type="hidden" id="monto_aprobado_anterior" name="" value="">
-<input type="hidden" id="actcoordenadas">
-<input type="hidden" class="form-control" id="id_hijos_detalle_atencion">
-<div class="modal-footer ">
-    <button class="btn btn-sm btn-primary" id="editar_caso" type="submit">Guardar</button>
-    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
-</div>
+
+
+
         <!-- /.modal-content -->
       </div>
       <!-- /.modal-dialog -->

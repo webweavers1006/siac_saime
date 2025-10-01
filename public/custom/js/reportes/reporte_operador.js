@@ -160,7 +160,7 @@ function listar_reportes(
 
     // Convertir la fecha y construir el encabezado para el PDF
     var encabezado = '';
-    // La validación de fechas ahora es más robusta
+    // ... (Tu lógica de encabezado se mantiene sin cambios)
     if (desde && hasta && moment(desde).isValid() && moment(hasta).isValid()) {
         const dataFormatada_desde = moment(desde).format("DD-MM-YYYY");
         const dataFormatada_hasta = moment(hasta).format("DD-MM-YYYY");
@@ -182,17 +182,25 @@ function listar_reportes(
     // Inicialización de DataTables
     var table = $('#table_casos').DataTable({
         responsive: true,
-        dom: "lBfrtip", // <--- Se agregó la 'l' para el lengthMenu
+        
+        // *******************************************************************
+        // CORRECCIÓN CLAVE: CAMBIO EN LA OPCIÓN 'dom'
+        // 'l' = lengthMenu (Mostrar X registros)
+        // '<"row"<"col-md-6"B><"col-md-6"f>>' = Botones (B) y Filtro (f) en la misma fila.
+        // *******************************************************************
+        dom: 'l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip', 
+
         buttons: {
             dom: {
-                button: { className: 'btn-xs-xs' },
+                // Se corrigió el uso de 'btn-xs-xs' para que se aplique correctamente a los botones generados
+                button: { className: 'btn-xs-xs btn-dark' }, 
             },
             buttons: [
                 // Botón PDF
                 {
                     extend: "pdf",
                     text: 'PDF',
-                    className: 'btn-xs btn-dark',
+                    // className: 'btn-xs btn-dark', // Ya se aplica por defecto en dom.button
                     orientation: 'landscape',
                     pageSize: 'LETTER',
                     header: true,
@@ -230,7 +238,7 @@ function listar_reportes(
                 {
                     extend: "excel",
                     text: 'Excel',
-                    className: 'btn-xs btn-dark',
+                    // className: 'btn-xs btn-dark', // Ya se aplica por defecto en dom.button
                     title: 'Consolidado de Casos',
                     download: 'open',
                     exportOptions: {
@@ -240,8 +248,10 @@ function listar_reportes(
                         "template": ["blue_medium", "header_blue", "title_medium"]
                     },
                 }
+                // Si quieres más botones (copiar, imprimir, etc.) añádelos aquí.
             ]
         },
+        // ... (El resto de tu configuración se mantiene igual)
         "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,
@@ -257,39 +267,20 @@ function listar_reportes(
             "type": "GET",
             "data": function(d) {
                 // Envía todos los filtros como parte de la data del request
-                d.desde = desde;
-                d.hasta = hasta;
-                d.tipo_pi = tipo_pi;
-                d.tipo_atencion_usu = tipo_atencion_usu;
-                d.sexo = sexo;
-                d.via_atencion = via_atencion;
-                d.direcciones_caso = direcciones_caso;
-                d.tipo_beneficiario = tipo_beneficiario;
-                d.usuarios = usuarios;
-                d.estatus = estatus;
-                d.id_pais = id_pais;
-                d.id_estado = id_estado;
-                d.id_municipio = id_municipio;
-                d.id_parroquia = id_parroquia;
-                d.edad_min = edad_min;
-                d.edad_max = edad_max;
+                d.desde = desde; d.hasta = hasta; d.tipo_pi = tipo_pi; d.tipo_atencion_usu = tipo_atencion_usu;
+                d.sexo = sexo; d.via_atencion = via_atencion; d.direcciones_caso = direcciones_caso;
+                d.tipo_beneficiario = tipo_beneficiario; d.usuarios = usuarios; d.estatus = estatus;
+                d.id_pais = id_pais; d.id_estado = id_estado; d.id_municipio = id_municipio;
+                d.id_parroquia = id_parroquia; d.edad_min = edad_min; d.edad_max = edad_max;
                 d.org_id = org_id;
             }
         },
         "columns": [
-            { data: 'cedula' },
-            { data: 'tipo_beneficiario' },
-            { data: 'nombre' },
-            { data: 'casotel' },
-            { data: 'tipo_prop_nombre' },
-            { data: 'tipo_aten_nombre' },
-            { data: 'casofec' },
-            { data: 'estnom' },
-            { data: 'descripcion' },
-            { data: 'user_name' },
+            { data: 'idcaso' }, { data: 'cedula' }, { data: 'tipo_beneficiario' }, { data: 'nombre' },
+            { data: 'casotel' }, { data: 'tipo_prop_nombre' }, { data: 'tipo_aten_nombre' }, { data: 'casofec' },
+            { data: 'estnom' }, { data: 'descripcion' }, { data: 'user_name' },
         ],
        "language": {
-            "sProcessing": "Procesando...",
             "sLengthMenu": "Mostrar _MENU_ registros",
             "sZeroRecords": "No se encontraron resultados",
             "sEmptyTable": "Ningún dato disponible en esta tabla",
@@ -302,19 +293,14 @@ function listar_reportes(
             "sInfoThousands": ",",
             "sLoadingRecords": "Cargando...",
             "oPaginate": {
-                "sFirst": "Primero",
-                "sLast": "Último",
-                "sNext": "Siguiente",
-                "sPrevious": "Anterior"
+                "sFirst": "Primero", "sLast": "Último", "sNext": "Siguiente", "sPrevious": "Anterior"
             },
             "oAria": {
                 "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                 "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             },
             "columnDefs": [{
-                "targets": [0],
-                "visible": false,
-                "searchable": false
+                "targets": [0], "visible": false, "searchable": false
             }, ]
         },
     initComplete: function(settings, json) {

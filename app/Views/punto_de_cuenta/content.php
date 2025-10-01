@@ -245,7 +245,7 @@ $session = session();
                                         <label for="edit_monto_aprobado" class="form-label">Monto Aprobado</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                            <input type="number" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
+                                            <input type="text" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
                                         </div>
                                     </div>
                                 </div>
