@@ -64,48 +64,67 @@ $session = session();
           </div>
         </div>
       </div>
-      <!-- /.content-wrapper -->
-      <!-- Modal -->
-      <div class="modal fade" id="add-tipo-atencion">
-        <div class="modal-dialog modal-dialog-centered  modal-md">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Tipo de Atencion</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <form id="new-atencion" method="POST" role="form">
-              <div class="modal-body">
-                <div class="form-group">
-                  <label for="user-name">Nombre</label>
-                  <input type="text" name="name-atencion"  id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
-                </div>
-              </div>
-              &nbsp; <label for="user-pass">Propiedad Intelectual</label>&nbsp;&nbsp;
-              <input type="checkbox" class="borrado" id="acceso_pro_int" name="borrado" value='false'>
-              
-              &nbsp; <label for="user-pass">Acceso a participantes</label>&nbsp;&nbsp;
-              <input type="checkbox" class="participantes" id="participantes" name="participantes" value='false'>
-              &nbsp; <label for="user-pass"> Correo</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="correo" name="correo" value='false'>
-              &nbsp; &nbsp; <label for="user-pass"> Organismos del poder popular</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="organismo_pp" name="correo" value='false'>
-              &nbsp; &nbsp; <label for="user-pass"> Coodenadas</label>&nbsp;&nbsp;
-              <input type="checkbox" class="correo" id="coordenadas" name="coordenadas" value='false'>
-
-
-              <div class="modal-footer ">
-                <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
-                <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>
-                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
-              </div>
-            </form>
-          </div>
-          <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
+   <div class="modal fade" id="add-tipo-atencion">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Tipo de Atencion</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <form id="new-atencion" method="POST" role="form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="name-atencion">Nombre</label>
+            <input type="text" name="name-atencion" id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
+          </div>
+
+          <div class="form-group">
+            <label>Permisos:</label>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input borrado" id="acceso_pro_int" name="borrado" value='false'>
+              <label class="form-check-label" for="acceso_pro_int">Propiedad Intelectual</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input participantes" id="participantes" name="participantes" value='false'>
+              <label class="form-check-label" for="participantes">Acceso a participantes</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input correo" id="correo" name="correo" value='false'>
+              <label class="form-check-label" for="correo">Correo</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input correo" id="organismo_pp" name="correo" value='false'>
+              <label class="form-check-label" for="organismo_pp">Org del poder popular</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input correo" id="coordenadas" name="coordenadas" value='false'>
+              <label class="form-check-label" for="coordenadas">Coordenadas</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input correo" id="punto_cuenta" name="punto_cuenta" value='false'>
+              <label class="form-check-label" for="punto_cuenta">Punto de Cuenta</label>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer ">
+          <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
+          <button class="btn btn-sm btn-primary" type="submit">Guardar</button>
+          <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
+        </div>
+      </form>
+    </div>
+    </div>
+  </div>
       <!-- /.modal -->
       <!-- Modal para editar usuarios-->
 
@@ -128,10 +147,7 @@ $session = session();
 
     <div class="form-group">
         <label>Permisos:</label>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input borrado" id="borrado" name="borrado" value='false'>
-            <label class="form-check-label" for="borrado">Activo</label>
-        </div>
+        
         <div class="form-check">
             <input type="checkbox" class="form-check-input borrado" id="edit_acceso_pro_int" name="borrado" value='false'>
             <label class="form-check-label" for="edit_acceso_pro_int">Propiedad Intelectual</label>
@@ -150,10 +166,19 @@ $session = session();
         </div>
         <div class="form-check">
             <input type="checkbox" class="form-check-input correo" id="edit_coordenadas" name="coordenadas" value='false'>
-            <label class="form-check-label" for="edit_coordenadas">Coordenadas</label>
+            <label class="form-check-label" for="edit_coordenadas">  Coordenadas</label>
         </div>
+        <div class="form-check">
+              <input type="checkbox" class="form-check-input correo" id="edit_punto_cuenta" name="punto_cuenta" value='false'>
+              <label for="user-pass">  Punto de Cuenta</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input borrado" id="borrado" name="borrado" value='false'>
+            <label class="form-check-label" for="borrado">Activo</label>
+        </div>
+
+      </div>
     </div>
-</div>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
                 <button class="btn  btn-sm btn-primary" type="submit">Guardar</button>

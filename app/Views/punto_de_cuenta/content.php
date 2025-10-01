@@ -360,7 +360,7 @@ $session = session();
                         </h6>
                          <span id="detalle-numero-cuenta" class="badge badge-info ml-2 font-weight-bold p-2"></span>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body p-3 informacion">
                         <dl class="row mb-0"> 
                             <dt class="col-sm-3 text-secondary">Nombre Aprobador:</dt>
                             <dd class="col-sm-9 font-weight-bold text-dark"><span id="detalle-nombre-completo"></span></dd>
@@ -422,9 +422,9 @@ $session = session();
                     <div class="card shadow-lg border-0 border-top-success mt-3" id="card-detalle-caso" style="display: none;">
     
     <div class="card-header bg-white p-2">
-        <h6 class="text-success m-0 font-weight-bold small">
-            <i class="fas fa-check-circle mr-2"></i> Caso Verificado
-        </h6>
+        <h3 class="text-success m-0 font-weight-bold small">
+            <i class="fas fa-check-circle mr-2"></i> Informacion del Caso
+        </h3>
     </div>
     
     <div class="card-body p-3 pt-2">
@@ -454,14 +454,14 @@ $session = session();
     </div>
 </div>
 
-<style>
-/* Estilo adicional para un borde superior más grueso y colorido,
-   dando un efecto "pill" o "ribbon" sutil de éxito */
-#card-detalle-caso {
-    border-top: 3px solid #28a745 !important; /* success color */
-}
-</style>
-
+                <style>
+                /* Estilo adicional para un borde superior más grueso y colorido,
+                  dando un efecto "pill" o "ribbon" sutil de éxito */
+                #card-detalle-caso {
+                    border-top: 3px solid #28a745 !important; /* success color */
+                }
+                </style>
+                  <div id="mensaje-punto-cuenta" class="mt-2" style="display: none;"></div> 
                     <button type="submit" id="btn-asociar-caso" class="btn btn-success btn-block mt-3 py-2 shadow-sm" disabled>
                         <i class="fas fa-plus-circle mr-2"></i> Asociar Caso
                     </button>
@@ -507,3 +507,6 @@ $session = session();
 
 
 
+<style>
+
+</style>

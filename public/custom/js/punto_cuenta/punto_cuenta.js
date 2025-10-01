@@ -7,18 +7,14 @@ $(function() {
     // --- 1. FUNCIÓN DE LIMPIEZA CENTRALIZADA ---
     // Creamos una función que oculta la tarjeta y limpia los campos.
     function resetearFormularioAsociacion() {
-        // Oculta la tarjeta de detalles
         $("#card-detalle-caso").hide(); 
-        
-        // Limpia los campos de entrada
-        
         $("#campo-nombre").val('');
         $("#campo-cedula").val('');
         $("#campo-telefono").val('');
         $("#campo-tipo-atencion").val('');
-        
-        // Deshabilita el botón de asociación
         $("#btn-asociar-caso").prop('disabled', true);
+         $("#mensaje-punto-cuenta").html(""); // Limpiar el mensaje
+        $("#mensaje-punto-cuenta").hide();
     }
 
     // --- 2. MANEJAR EVENTO DE CIERRE DEL MODAL ---
@@ -221,7 +217,7 @@ $('#listar_punto_cuenta').on('click', '.Editar', function(e) {
        
     });
 
-$('#archivo').val(''); 
+    $('#archivo').val(''); 
 
     $("#editar").modal("show"); 
     $('#edit_numero_punto_cuenta').val(numero_cuenta);
@@ -379,43 +375,60 @@ $('#listar_punto_cuenta').on('click', '.Casos', function(e) {
     cargarCasosAsociados(id); 
 });
 /**
- 
+ * Carga y muestra los casos asociados a un punto de cuenta en una tabla DataTables, 
+ * incluyendo la configuración de botones de exportación con diseño personalizado y estético en PDF/Excel.
  * @param {string} id_punto_cuenta ID del punto de cuenta.
-
  */
+// **Función toUnicodeBold ELIMINADA **
+
 function cargarCasosAsociados(id_punto_cuenta) {
+    
+    // 1. CAPTURA DE INFORMACIÓN DE DETALLE
+    const numero_cuenta = $('#detalle-numero-cuenta').text();
+    const nombre_completo = $('#detalle-nombre-completo').text();
+    const fecha = $('#detalle-fecha').text();
+    const monto = $('#detalle-monto').text();
+    const causa = $('#detalle-causa').text();
+    const detalleExportacion = [
+        { label: 'Nombre Aprobador:', value: nombre_completo }, 
+        { label: 'Causa:', value: causa },
+        { label: 'Fecha:', value: fecha },
+        { label: 'Monto Aprobado:', value: monto }
+    ];
+    
+    // Lista de los nombres de columna como STRINGS SIMPLES.
+    const nombresColumnas = [
+        'Número de Caso', 
+        'Nombre', 
+        'Tipo de Atención', 
+        'Detalle de Atención'
+    ];
+
+    
+    let ruta_imagen = rootpath; 
     const $contenedorTabla = $("#lista-casos-asociados");
-
-    // 1. Contenedor y estado de carga inicial
     $contenedorTabla.html('<p class="text-muted m-0 p-4 border rounded"><i class="fas fa-sync fa-spin mr-2 text-primary"></i> Cargando casos asociados...</p>');
-
-    // 2. Destruir DataTables preexistente (¡Importante!)
     if ($.fn.DataTable.isDataTable('#tabla-casos-data')) {
         $('#tabla-casos-data').DataTable().destroy();
     }
-
+    
     $.ajax({
         url: "/cargarCasosAsociados/" + id_punto_cuenta,
         method: "GET",
         dataType: "JSON",
     })
     .then((response) => {
-        
-        // Lógica de éxito: Renderizar la tabla.
         if (response && response.length > 0) {
-            console.log(response);
             
-            // ✅ 1. Incluir las nuevas propiedades en el mapeo de datos
             const dataTableData = response.map(caso => {
                 return {
                     'id_caso': caso.id_caso,
                     'nombre': caso.nombre,
-                    'tipo_aten_nombre': caso.tipo_aten_nombre,  // Agregado
-                    'tipo_atend_nombre': caso.tipo_atend_nombre, // Agregado
+                    'tipo_aten_nombre': caso.tipo_aten_nombre || 'N/A',  
+                    'tipo_atend_nombre': caso.tipo_atend_nombre || 'N/A', 
                 };
             });
             
-            // --- 3A. Generar la estructura de la tabla HTML (Cabecera con 4 columnas) ---
             let htmlTabla = `
                 <div class="table-responsive">
                     <table class="table table-striped table-hover w-100" id="tabla-casos-data">
@@ -432,39 +445,301 @@ function cargarCasosAsociados(id_punto_cuenta) {
                     </table>
                 </div>
             `;
-            
-            // Reemplazamos el contenido de carga con la tabla
             $contenedorTabla.html(htmlTabla);
-
-
-            // --- 6. Inicialización de DataTables (Configuración con 4 columnas) ---
+            
             $('#tabla-casos-data').DataTable({
                 data: dataTableData, 
-                // ✅ 2. Añadir las nuevas columnas a la configuración de DataTables
+                dom: "<'row mb-3'<'col-sm-12'B>>" + 
+                      "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                      "<'row'<'col-sm-12'tr>>" +
+                      "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>", 
+                responsive: true,
+                order: [[0, 'asc']], 
+                buttons: [
+                    // --- Configuración del Botón PDF (Omitida por brevedad) ---
+                    // ... (El bloque PDF permanece igual) ...
+                    {
+                        extend: "pdf",
+                        text: '<i class="fas fa-file-pdf"></i> PDF',
+                        className: 'btn-xs btn-dark mr-2', 
+                        orientation: 'landscape',
+                        pageSize: 'LETTER',
+                        header: true,
+                        footer: true,
+                        download: 'open',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3],
+                        },
+                        alignment: 'center',
+                        customize: function(doc) {
+                            
+                            let detailBody = [];
+                            const ROW_HEIGHT_PDF = 25; 
+                            const CELL_MARGIN = [10, 5, 0, 5]; 
+                            const LIGHT_FILL = '#F5F5F5';
+                            const FONT_SIZE = 9;
+
+                            detailBody.push([
+                                { text: detalleExportacion[0].label, bold: false, fontSize: FONT_SIZE, color: '#555555', margin: CELL_MARGIN, fillColor: LIGHT_FILL }, 
+                                { text: detalleExportacion[0].value, fontSize: FONT_SIZE, bold: true, margin: CELL_MARGIN },
+                                { text: detalleExportacion[1].label, bold: false, fontSize: FONT_SIZE, color: '#555555', margin: CELL_MARGIN, fillColor: LIGHT_FILL }, 
+                                { text: detalleExportacion[1].value, fontSize: FONT_SIZE, bold: true, margin: CELL_MARGIN } 
+                            ]);
+                            
+                            detailBody.push([
+                                { text: detalleExportacion[2].label, bold: false, fontSize: FONT_SIZE, color: '#555555', margin: CELL_MARGIN, fillColor: LIGHT_FILL }, 
+                                { text: detalleExportacion[2].value, fontSize: FONT_SIZE, bold: true, margin: CELL_MARGIN },
+                                { text: detalleExportacion[3].label, bold: false, fontSize: FONT_SIZE, color: '#555555', margin: CELL_MARGIN, fillColor: LIGHT_FILL }, 
+                                { text: detalleExportacion[3].value, fontSize: FONT_SIZE, bold: true, margin: CELL_MARGIN }
+                            ]);
+                            
+                            const LOGO_MARGIN_TOP = 40; 
+                            const FORM_TITLE_Y = LOGO_MARGIN_TOP + 60; 
+                            const FORM_BODY_Y = FORM_TITLE_Y + 25; 
+                            
+                            const SEPARATOR_Y = FORM_BODY_Y + (2 * ROW_HEIGHT_PDF) + 10; 
+                            const TABLE_TITLE_Y = SEPARATOR_Y + 15; 
+                            
+                            
+                            const detailTableStructure = {
+                                layout: {
+                                    defaultBorder: false, 
+                                    paddingLeft: function(i, node) { return 0; },
+                                    paddingRight: function(i, node) { return 0; },
+                                    paddingTop: function(i, node) { return 0; },
+                                    paddingBottom: function(i, node) { return 0; },
+                                },
+                                table: {
+                                    widths: [100, 220, 120, '*'], 
+                                    body: detailBody
+                                },
+                                absolutePosition: { x: 40, y: FORM_BODY_Y } 
+                            };
+                            
+                            const detailTitleStructure = {
+                                columns: [
+                                    {
+                                        text: [{ text: '  Punto de Cuenta', color: '#1a75ff', fontSize: 10, bold: true, background: 'white' }],
+                                        width: 'auto'
+                                    },
+                                    {
+                                        text: numero_cuenta,
+                                        alignment: 'right',
+                                        color: 'white',
+                                        background: '#17a2b8', 
+                                        fontSize: 9,
+                                        bold: true,
+                                        margin: [0, 0, 5, 0], 
+                                        width: 100
+                                    }
+                                ],
+                                columnGap: 10,
+                                absolutePosition: { x: 40, y: FORM_TITLE_Y } 
+                            };
+                            
+                            const mainTitleStructure = {
+                                text: 'Casos Asociados ',
+                                color: '#4c8aa0',
+                                fontSize: 14,
+                                bold: true,
+                                alignment: 'center', 
+                                absolutePosition: { x: 0, y: TABLE_TITLE_Y } 
+                            };
+
+                            const finalSeparatorStructure = {
+                                canvas: [{
+                                    type: 'line',
+                                    x1: 40, y1: 0,
+                                    x2: 790, y2: 0, 
+                                    lineWidth: 0.5,
+                                    lineColor: '#CCCCCC'
+                                }],
+                                absolutePosition: { x: 0, y: SEPARATOR_Y }
+                            };
+
+                            doc.content.splice(0, 1);
+                            doc.styles.title = { color: '#4c8aa0', fontSize: '18', alignment: 'center' };
+                            doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
+                            
+                            doc.pageMargins = [40, TABLE_TITLE_Y + 20, 0, 70]; 
+                            
+                            doc['header'] = (function(page, pages) {
+                                return {
+                                    stack: [ 
+                                        { columns: [{ margin: [10, LOGO_MARGIN_TOP, 40, 40], image: ruta_imagen, width: 780, height: 50 }] },
+                                        
+                                        detailTitleStructure, 
+                                        detailTableStructure, 
+                                        finalSeparatorStructure,
+                                        mainTitleStructure
+                                    ], 
+                                }
+                            });
+                            
+                            doc['footer'] = (function(page, pages) {
+                                return {
+                                    columns: [{
+                                        alignment: 'center',
+                                        text: ['pagina ', { text: page.toString() }, ' of ', { text: pages.toString() }]
+                                    }],
+                                }
+                            });
+                        }
+                    },
+                    // --------------------------------------------------------------------------------------
+                    // ** CONFIGURACIÓN DEL BOTÓN EXCEL (CON ORDEN Y COLORES ESTABLES) **
+                    // --------------------------------------------------------------------------------------
+                    {
+                        extend: "excel",
+                        text: '<i class="fas fa-file-excel"></i> Excel', 
+                        className: 'btn-xs btn-dark',
+                        title: null, 
+                        download: 'open',
+                        exportOptions: { columns: [0, 1, 2, 3] },
+                        // Nombre de Archivo FIJO
+                        filename: 'Casos asociados', 
+           customizeData: function(data) {
+    var numColumns = data.header.length; 
+    const rowsToPrepend = []; // Array que almacena las filas a insertar
+    
+    // A. Insertamos el TÍTULO (Fila 1)
+    const titleRow = ['Casos Asociados'].concat(Array(numColumns - 1).fill(null));
+    rowsToPrepend.push(titleRow);
+    
+    // B. Insertamos los DETALLES (Filas 2-5)
+    detalleExportacion.forEach(item => {
+        // Texto simple
+        const styledLabel = item.label; 
+        const detailRow = [styledLabel, item.value].concat(Array(numColumns - 2).fill(null));
+        rowsToPrepend.push(detailRow); 
+    });
+    
+    // C. Insertamos UNA FILA VACÍA para separación (Fila 6).
+    const emptyRow = Array(numColumns).fill(null);
+    rowsToPrepend.push(emptyRow); 
+    
+    // D. Insertamos los NOMBRES DE COLUMNA (Fila 7)
+    const styledNombresColumnas = nombresColumnas; // Texto simple
+    rowsToPrepend.push(styledNombresColumnas); 
+
+    // E. Insertamos UNA FILA VACÍA de separación final (Fila 8)
+    rowsToPrepend.push(emptyRow); 
+    
+    // 2. Insertamos el bloque completo al inicio del data.body.
+    data.body.splice(0, 0, ...rowsToPrepend);
+    
+    // 3. Eliminamos el encabezado original.
+    data.header = [];
+},
+
+                        
+                        customize: function(xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            var r = $('sheetData', sheet);
+                            
+                            // 1. Configuración de Autoajuste de Ancho de Columna
+                            var cols = $('cols', sheet);
+                            if (!cols.length) {
+                                cols = sheet.createElement('cols');
+                                $(cols).insertBefore(r[0]);
+                            }
+                            for (var i = 0; i < nombresColumnas.length; i++) {
+                                $(cols).append('<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="20" customWidth="1" autoWidth="1"/>');
+                            }
+                        },
+
+                        // ** ESTILOS: Aplicación de color y negrita con RGB directo **
+                        excelStyles: [
+                            // Estilo BASE: Fuente general (más pequeño)
+                            {
+                                "cells": "A1:D1000",
+                                "style": { "font": { "sz": 10 } }
+                            },
+                            // Estilo para el TÍTULO (Fila 1) - Azul atractivo
+                            {
+                                "cells": "A1:D1",
+                                "style": {
+                                    "fill": { "patternType": "solid", "fgColor": { "rgb": "1E90FF" } }, // Azul
+                                    "font": { "color": { "rgb": "FFFFFF" }, "bold": true, "sz": 14 }, // Blanco, negrita, grande
+                                    "alignment": { "horizontal": "center" },
+                                    "border": { "top": { "style": "medium" }, "bottom": { "style": "medium" }, "left": { "style": "medium" }, "right": { "style": "medium" } }
+                                }
+                            },
+                            // Estilo para el área de DETALLES (Filas 2-5)
+                            {
+                                "cells": "A2:D5",
+                                "style": {
+                                    // FONDO GRIS CLARO - Usamos RGB directo para más estabilidad
+                                    "fill": { "patternType": "solid", "fgColor": { "rgb": "E0E0E0" } },
+                                    "font": { "bold": true }, // Negrita para las etiquetas
+                                    "border": { "top": { "style": "thin" }, "bottom": { "style": "thin" }, "left": { "style": "thin" }, "right": { "style": "thin" } }
+                                }
+                            },
+                            // Estilo para los VALORES DE DETALLE (Columna B, Filas 2-5) - Quitamos la negrita en los valores
+                            {
+                                "cells": "B2:B5",
+                                "style": {
+                                    "font": { "bold": false }
+                                }
+                            },
+                            // Estilo para la fila de ENCABEZADOS DE COLUMNA (Fila 7)
+                            {
+                                "cells": "A7:D7",
+                                "style": {
+                                    // FONDO GRIS MÁS OSCURO - Usamos RGB directo para más estabilidad
+                                    "fill": { "patternType": "solid", "fgColor": { "rgb": "C8C8C8" } },
+                                    "font": { "bold": true },
+                                    "alignment": { "horizontal": "center" },
+                                    "border": { "top": { "style": "medium" }, "bottom": { "style": "medium" } }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                // --- Definición de Columnas y Opciones ---
                 columns: [
                     { data: 'id_caso', title: 'Número de Caso' },
                     { data: 'nombre', title: 'Nombre' }, 
-                    { data: 'tipo_aten_nombre', title: 'Tipo de Atención' },   // Agregado
-                    { data: 'tipo_atend_nombre', title: 'Detalle de Atención' }, // Agregado
+                    { data: 'tipo_aten_nombre', title: 'Tipo de Atención' },
+                    { data: 'tipo_atend_nombre', title: 'Detalle de Atención' },
                 ],
-                // Opciones de configuración de DataTables
-                paging: true,              // 👈 ACTIVADO PARA MOSTRAR LA PAGINACIÓN
-                pageLength: 5,             // Mostrar solo 5 filas por página por defecto (más compacto)
+                paging: true,
+                pageLength: 10,
                 searching: true,
                 info: true,
-                responsive: true,
-                order: [[0, 'asc']], // Ordenar por la columna 0 (ID de Caso)
-                dom: 'lfrtip',            // DOM clásico para incluir: length (l), filter (f), table (t), info (i), processing (p)
+                order: [[0, 'asc']], 
+
                 language: {
-                    url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json'
-                }
+                     "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            },
+           
+                },
+                columnDefs: [
+                    { "targets": [0], "visible": true, "searchable": true }
+                ],
             });
-
-
          }
         else {
-            // Lógica para cuando no hay casos.
-
             $contenedorTabla.html(`
                 <div class="alert alert-success p-4 m-0 shadow-sm" role="alert">
                     <i class="fas fa-check-circle mr-2 fa-lg"></i> 
@@ -473,8 +748,14 @@ function cargarCasosAsociados(id_punto_cuenta) {
             `);
         }
     })
-    .catch((xhr, status, errorThrown) => {
-        // Lógica de error...
+    .catch((jqXHR, textStatus, errorThrown) => {
+        console.error("Error al cargar casos asociados:", textStatus, errorThrown, jqXHR);
+        $contenedorTabla.html(`
+            <div class="alert alert-danger p-4 m-0 shadow-sm" role="alert">
+                <i class="fas fa-times-circle mr-2 fa-lg"></i> 
+                Ocurrió un error al intentar cargar los casos. Intente de nuevo.
+            </div>
+        `);
     });
 }
 $(document).on('submit', "#form-asociar-caso", function(e) {
@@ -537,71 +818,85 @@ $(document).on('submit', "#form-asociar-caso", function(e) {
        
     });
 });
-/ // //EVENTO PARA VERIFICAR UN CASO (Lógica adaptada)
-    $(document).on('click', "#btnverificarcaso", function(e) {
-        e.preventDefault();
-        let inputnuevocaso = $("#inputnuevocaso").val();
-        inputnuevocaso = inputnuevocaso.trim();
-        
-        // Referencias a elementos clave
-        const $cardDetalle = $("#card-detalle-caso");
-        const $btnAsociar = $("#btn-asociar-caso");
-        const $btnVerificar = $(this); 
-    
-        // Si el campo está vacío
-        if (inputnuevocaso === "") {
-            // Usamos el reset centralizado para limpiar todo
-            resetearFormularioAsociacion(); 
-            alert("Por favor, ingrese un número de caso para verificar.");
-            return; 
-        }
-       
-        // Limpiamos los detalles antes de iniciar la nueva búsqueda (por si se cambió el número)
+ // ... (Código anterior)
+
+// EVENTO PARA VERIFICAR UN CASO (Lógica adaptada)
+$(document).on('click', "#btnverificarcaso", function(e) {
+    e.preventDefault();
+    let inputnuevocaso = $("#inputnuevocaso").val();
+    inputnuevocaso = inputnuevocaso.trim();
+    const $cardDetalle = $("#card-detalle-caso");
+    const $btnAsociar = $("#btn-asociar-caso");
+    const $btnVerificar = $(this); 
+    const $mensajePuntoCuenta = $("#mensaje-punto-cuenta");
+
+   
+
+    // Si el campo está vacío
+    if (inputnuevocaso === "") {
+        // Usamos el reset centralizado para limpiar todo
         resetearFormularioAsociacion(); 
-    
-        // 1. Mostrar estado de carga
-        $btnVerificar.html('<i class="fas fa-spinner fa-spin"></i>');
-        $btnVerificar.prop('disabled', true);
-    
-        $.ajax({
-            url: 'verificar_caso/'+inputnuevocaso,
-            type: 'get',
-            dataType: 'json',
-            success: function(response) {
+        alert("Por favor, ingrese un número de caso para verificar.");
+        return; 
+    }
+   
+    // Limpiamos los detalles antes de iniciar la nueva búsqueda (por si se cambió el número)
+    resetearFormularioAsociacion(); 
+
+    // 1. Mostrar estado de carga
+    $btnVerificar.html('<i class="fas fa-spinner fa-spin"></i>');
+    $btnVerificar.prop('disabled', true);
+
+    $.ajax({
+        url: 'verificar_caso/'+inputnuevocaso,
+        type: 'get',
+        dataType: 'json',
+        success: function(response) {
+            console.log(response);
+            if (response && response.length > 0) {
+                const caso = response[0];
+
+                // POBLAR LOS CAMPOS (usando .val() correctamente)
+                $("#campo-nombre").val(caso.nombre); 
+                $("#campo-telefono").val(caso.casotel); 
+                $("#campo-cedula").val(caso.cedula);
+                $("#campo-tipo-atencion").val(caso.tipo_aten_nombre);
                 
-                if (response && response.length > 0) {
-                    const caso = response[0];
-    
-                    // POBLAR LOS CAMPOS (usando .val() correctamente)
-                    $("#campo-nombre").val(caso.nombre); 
-                    $("#campo-telefono").val(caso.casotel); 
-                    $("#campo-cedula").val(caso.cedula);
-                    $("#campo-tipo-atencion").val(caso.tipo_aten_nombre);
-                    
-                    // MOSTRAR la tarjeta de detalles
-                    $cardDetalle.slideDown(); 
-    
-                    // HABILITAR el botón de asociar caso
-                    $btnAsociar.prop('disabled', false);
-                    $btnVerificar.html('<i class="fas fa-search"></i>').prop('disabled', false); // Restaurar botón
-                    
+                // MOSTRAR la tarjeta de detalles
+                $cardDetalle.slideDown(); 
+                
+                // ----------------------------------------------------
+                // ✨ LÓGICA DE PUNTO DE CUENTA AÑADIDA ✨
+                // ----------------------------------------------------
+                if (caso.act_punto_cuenta === "f") {
+                    // Deshabilitar botón y mostrar mensaje
+                    $btnAsociar.prop('disabled', true);
+                    $("#mensaje-punto-cuenta").show();
+                    $mensajePuntoCuenta.html('<span class="text-danger font-weight-bold"><i class="fas fa-ban"></i> Este tipo de atención no tiene acceso al punto de cuenta.</span>');
                 } else {
-                    // Caso no encontrado: Llama al reset centralizado
-                    resetearFormularioAsociacion(); 
-                    alert("Error al verificar el caso: La id_caso no se encontró o es inválida.");
-                    $btnVerificar.html('<i class="fas fa-search"></i>').prop('disabled', false); // Restaurar botón
+                    // Habilitar el botón y limpiar mensaje (si existe)
+                    $btnAsociar.prop('disabled', false);
+                    $mensajePuntoCuenta.html(''); // Limpiar el mensaje si estaba antes
                 }
-            },
-            error: function(xhr, status, error) {
-                // Error: Llama al reset centralizado
+                // ----------------------------------------------------
+                
+                $btnVerificar.html('<i class="fas fa-search"></i>').prop('disabled', false); // Restaurar botón
+                
+            } else {
+                // Caso no encontrado: Llama al reset centralizado
                 resetearFormularioAsociacion(); 
-                alert("Ocurrió un error de conexión con el servidor. Por favor, intente de nuevo. Código: " + xhr.status);
-                $btnVerificar.html('<i class="fas fa-exclamation-triangle"></i>').prop('disabled', false); // Restaurar botón con error
+                alert("Error al verificar el caso: La id_caso no se encontró o es inválida.");
+                $btnVerificar.html('<i class="fas fa-search"></i>').prop('disabled', false); // Restaurar botón
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            // Error: Llama al reset centralizado
+            resetearFormularioAsociacion(); 
+            alert("Ocurrió un error de conexión con el servidor. Por favor, intente de nuevo. Código: " + xhr.status);
+            $btnVerificar.html('<i class="fas fa-exclamation-triangle"></i>').prop('disabled', false); // Restaurar botón con error
+        }
     });
-
-
+});
   
 
 //Evento para subir archivos

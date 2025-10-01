@@ -108,6 +108,8 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["env_correo"]     = $datos["env_correo"];
 			$atencion["organismo_pp"]     = $datos["organismo_pp"];
 			$atencion["act_coordenadas"]     = $datos["act_coordenadas"];
+			$atencion["act_punto_cuenta"]     = $datos["act_punto_cuenta"];
+			
 			//Realizamos la insercion en la tabla
 			$query_insertar_atencion = $model->add_Atencion($atencion);
 			if (isset($query_insertar_atencion)) {
@@ -142,6 +144,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 			$atencion["env_correo"]     = $datos["env_correo"];
 			$atencion["organismo_pp"]     = $datos["organismo_pp"];
 			$atencion["act_coordenadas"]     = $datos["act_coordenadas"];
+			$atencion["act_punto_cuenta"]     = $datos["act_punto_cuenta"];
 			//Realizamos la actualizacion en la tabla
 			$query_editar_atencion = $model->editTipoAtencion($atencion);
 			if (isset($query_editar_atencion)) {

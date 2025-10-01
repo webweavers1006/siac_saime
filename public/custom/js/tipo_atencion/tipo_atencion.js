@@ -31,7 +31,7 @@ function listar_Direcciones_Administra() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" act_coordenadas=' + row.act_coordenadas + '  organismo_pp=' + row.organismo_pp + ' env_correo=' + row.env_correo + ' taller=' + row.acc_participantes + '  act_pro_int=' + row.act_pro_int + '   tipo_aten_id=' + row.tipo_aten_id + '    tipo_aten_nombre="' + row.tipo_aten_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar" act_punto_cuenta=' + row.act_punto_cuenta + '  act_coordenadas=' + row.act_coordenadas + '  organismo_pp=' + row.organismo_pp + ' env_correo=' + row.env_correo + ' taller=' + row.acc_participantes + '  act_pro_int=' + row.act_pro_int + '   tipo_aten_id=' + row.tipo_aten_id + '    tipo_aten_nombre="' + row.tipo_aten_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
 
                 }
             }
@@ -79,6 +79,7 @@ $(document).on('submit', "#new-atencion", function(e) {
     let env_correo = $("#correo").is(':checked') ? "true" : "false";
     let organismo_pp = $("#organismo_pp").is(':checked') ? "true" : "false";
     let act_coordenadas = $("#coordenadas").is(':checked') ? "true" : "false";
+    let act_punto_cuenta = $("#punto_cuenta").is(':checked') ? "true" : "false";
     descripcion = descripcion.trim();
     let datos = {
         "descripcion": descripcion,
@@ -87,6 +88,7 @@ $(document).on('submit', "#new-atencion", function(e) {
         "env_correo": env_correo,
         "organismo_pp": organismo_pp,
         "act_coordenadas": act_coordenadas,
+        "act_punto_cuenta": act_punto_cuenta,
     }
 
 
@@ -145,6 +147,7 @@ $('#listar_tipo_atencion').on('click', '.Editar', function(e) {
     var env_correo = $(this).attr('env_correo');
     var organismo_pp = $(this).attr('organismo_pp');
     var act_coordenadas = $(this).attr('act_coordenadas');
+    var act_punto_cuenta = $(this).attr('act_punto_cuenta');
 
     $("#editar").modal("show");
     $('#editar').find('#editar-atencion').val(descripcion);
@@ -168,6 +171,15 @@ $('#listar_tipo_atencion').on('click', '.Editar', function(e) {
     if (act_coordenadas == 'f') {
         $('#edit_coordenadas').removeAttr('checked')
         $('#edit_coordenadas').val('false')
+    }
+
+      if (act_punto_cuenta == 't') {
+        $('#edit_punto_cuenta').attr('checked', 'checked');
+        $('#edit_punto_cuenta').val('true');
+    }
+    if (act_punto_cuenta == 'f') {
+        $('#edit_punto_cuenta').removeAttr('checked')
+        $('#edit_punto_cuenta').val('false')
     }
 
 
@@ -226,6 +238,8 @@ $(document).on('submit', "#edit-atencion", function(e) {
     let env_correo = $("#edit_correo").val();
     let organismo_pp = $("#edit_organismo_pp").val();
     let act_coordenadas = $("#edit_coordenadas").val();
+    let act_punto_cuenta = $("#edit_punto_cuenta").val();
+    
     if ($('#borrado').is(':checked')) {
         borrado = 'false';
 
@@ -259,6 +273,17 @@ $(document).on('submit', "#edit-atencion", function(e) {
     } else {
         acc_participantes = 'false';
     }
+    if ($('#edit_punto_cuenta').is(':checked')) {
+
+            act_punto_cuenta = 'true';
+
+        } else {
+            act_punto_cuenta = 'false';
+        }
+
+
+
+
 
 
     if ($('#edit_organismo_pp').is(':checked')) {
@@ -292,6 +317,8 @@ $(document).on('submit', "#edit-atencion", function(e) {
         "env_correo": env_correo,
         "organismo_pp": organismo_pp,
         "act_coordenadas": act_coordenadas,
+        "act_punto_cuenta": act_punto_cuenta,
+        
         
     }
    

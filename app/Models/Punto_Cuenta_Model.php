@@ -63,7 +63,7 @@ class Punto_Cuenta_Model extends BaseModel
         $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
-        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
+        $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp,t_antusu.act_coordenadas,t_antusu.act_punto_cuenta ');
         $builder->join('sgc_estatus b', 'b.idest = a.idest');
         $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');

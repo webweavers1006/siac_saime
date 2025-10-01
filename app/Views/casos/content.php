@@ -390,40 +390,40 @@ $session = session();
             </div>
 
 
-<div class="card mt-3 shadow-xs punto  "style="display: none">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">
-            <i class="fas fa-file-upload me-2"></i> Punto de Cuenta
-        </h5>
-    </div>
-    <div class="card-body">
-        
-        <div class="row">
+    <div class="card mt-3 shadow-xs punto  "style="display: none">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-file-upload me-2"></i> Punto de Cuenta
+            </h5>
+        </div>
+        <div class="card-body">
             
-            <div class="col-md-5">
-                <div class="mb-3">
-                    
-                    <select class="form-control" id="punto-cuenta-select" name="id_punto_cuenta">
-                        <option value="" selected disabled>-- Elija una opción --</option>
-                        </select>
+            <div class="row">
+                
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        
+                        <select class="form-control" id="punto-cuenta-select" name="id_punto_cuenta">
+                            <option value="" selected disabled>-- Elija una opción --</option>
+                            </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-5">
-                <div class="mb-3">
-                    
-                    <select class="form-control" id="documentos-select" name="docu_ruta" disabled>
-                        <option value="" selected disabled>-- Documento no disponible --</option>
-                        </select>
+                <div class="col-md-1">
                 </div>
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        
+                        <select class="form-control" id="documentos-select" name="docu_ruta" disabled>
+                            <option value="" selected disabled>-- Documento no disponible --</option>
+                            </select>
+                    </div>
+                </div>
+                
             </div>
+            
             
         </div>
-        
-        
     </div>
-</div>
 
 
 
