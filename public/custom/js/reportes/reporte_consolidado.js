@@ -15,16 +15,16 @@ $(function() {
     let edad_min = $('#edad_min').val();
     let edad_max = $('#edad_max').val();
     let sexo = $('#sexo').val();
-    if (desde == '' && hasta == '') {
-
-        desde = 'null'
-        hasta = 'null'
-    }
-    if (edad_min == '' && edad_max == '') {
-
-        edad_min = 'null'
-        edad_max = 'null'
-    }
+ if (desde === '' && hasta === '') {
+    desde = null; // ¡Sin comillas!
+    hasta = null; // ¡Sin comillas!
+}
+// Las edades (edad_min, edad_max) pueden seguir siendo 'null' como cadena,
+// si no las pasas a moment() u otra función de fecha.
+if (edad_min === '' && edad_max === '') {
+    edad_min = 'null';
+    edad_max = 'null';
+}
     listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,detalle_atencion,org_id);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
@@ -202,67 +202,96 @@ function llenar_pais(e, id) {
 }
 
 
-
 function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_aten_cuidadano, nombre_estatus = null, nombre_estado = null, nombre_org_id) {
 
-    // Convertir la fecha
-    var fechaOriginal = desde;
-    var dataFormatada_desde = moment(fechaOriginal).format("DD-MM-YYYY");
-    var fechaOriginal2 = hasta;
-    var dataFormatada_hasta = moment(fechaOriginal2).format("DD-MM-YYYY");
-    var encabezado = '';
-    if (dataFormatada_desde != 'Invalid date' && dataFormatada_hasta != 'Invalid date') {
-        encabezado = encabezado + 'Desde:' + ' ' + dataFormatada_desde + ' ' + ' ' + 'hasta' + ' ' + ' ' + dataFormatada_hasta + ' ' + ' ';
+    // *******************************************************************
+    // 🚩 CORRECCIÓN CLAVE PARA MOMENT.JS: Especificar el formato de entrada.
+    // Usamos 'MM/DD/YY' según lo confirmado.
+    // *******************************************************************
+    const FORMATO_ENTRADA = "MM/DD/YY";
+    
+    // 1. Crear los objetos Moment con el formato de entrada
+    const m_desde = moment(desde, FORMATO_ENTRADA);
+    const m_hasta = moment(hasta, FORMATO_ENTRADA);
+
+    // 2. Formatear solo si son fechas válidas
+    let dataFormatada_desde = 'Invalid date';
+    let dataFormatada_hasta = 'Invalid date';
+
+    if (m_desde.isValid()) {
+        dataFormatada_desde = m_desde.format("DD-MM-YYYY");
     }
+    if (m_hasta.isValid()) {
+        dataFormatada_hasta = m_hasta.format("DD-MM-YYYY");
+    }
+
+    var encabezado = '';
+
+    // 3. Validar si AMBAS fechas son válidas para incluir en el encabezado
+    if (m_desde.isValid() && m_hasta.isValid()) {
+        encabezado += `Desde: ${dataFormatada_desde} hasta ${dataFormatada_hasta} `;
+    }
+
+    // -------------------------------------------------------------
+    // El resto de tu lógica de encabezado (sin cambios mayores)
+    // -------------------------------------------------------------
     if (tipo_pi != null) {
-        encabezado = encabezado + 'Tipo de Propiedad:' + ' ' + nombre_propiedad + ' ';
+        encabezado += 'Tipo de Propiedad: ' + nombre_propiedad + ' ';
     }
 
     if (tipo_atencion_usu != null) {
-        encabezado = encabezado + 'Tipo de Atencion:' + ' ' + nombre_atencion + ' ';
+        encabezado += 'Tipo de Atencion: ' + nombre_atencion + ' ';
     }
 
     if (sexo != null) {
-        encabezado = encabezado + 'Sexo:' + ' ' + nombresexo + ' ';
+        encabezado += 'Sexo: ' + nombresexo + ' ';
     }
 
     if (nombre_estado != null && nombre_estado != '' && nombre_estado != 'Seleccione') {
-        encabezado = encabezado + 'Estado:' + ' ' + nombre_estado + ' ';
+        encabezado += 'Estado: ' + nombre_estado + ' ';
     }
 
     if (edad_min != 'null' && edad_max != 'null' && edad_min != null && edad_max != null) {
-        encabezado = encabezado + 'Edad:' + ' ' + 'Entre' + ' ' + edad_min + ' ' + 'y' + ' ' + edad_max + ' ';
+        encabezado += 'Edad: Entre ' + edad_min + ' y ' + edad_max + ' ';
     }
     if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) {
-        encabezado = encabezado + 'Via de atencion:' + ' ' + nombre_via_atencion + ' ';
+        encabezado += 'Via de atencion: ' + nombre_via_atencion + ' ';
     }
 
     if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) {
-        encabezado = encabezado + 'Remitido a:' + ' ' + nombre_direccion_remi + ' ';
+        encabezado += 'Remitido a: ' + nombre_direccion_remi + ' ';
     }
 
     if (tipo_beneficiario != null && tipo_beneficiario != 0) {
-        encabezado = encabezado + 'Tipo beneficiario :' + ' ' + nombre_tipo_beneficiario + ' ';
+        encabezado += 'Tipo beneficiario : ' + nombre_tipo_beneficiario + ' ';
     }
     if (atencion_cuidadano != null && atencion_cuidadano != 0) {
-        encabezado = encabezado + 'Atencion Cuidadano :' + ' ' + nombre_aten_cuidadano + ' ';
+        encabezado += 'Atencion Cuidadano : ' + nombre_aten_cuidadano + ' ';
     }
 
     if (org_id != null && org_id != 0) {
-        encabezado = encabezado + 'Organismo del poder popular  :' + ' ' + nombre_org_id + ' ';
+        encabezado += 'Organismo del poder popular : ' + nombre_org_id + ' ';
     } else {
         org_id = 0;
     }
 
 
     if (estatus != null && estatus != 0) {
-        encabezado = encabezado + 'Estatus :' + ' ' + nombre_estatus + ' ';
+        encabezado += 'Estatus : ' + nombre_estatus + ' ';
     }
 
     let ruta_imagen = rootpath;
+    // Si la tabla ya está inicializada, la destruimos para evitar errores de re-inicialización
+    if ($.fn.DataTable.isDataTable('#table_casos')) {
+        $('#table_casos').DataTable().destroy();
+    }
+    
     var table = $('#table_casos').DataTable({
         responsive: true,
-        dom: "Bfrtip",
+        
+        // Uso de 'dom' mejorado y consistente
+        dom: 'l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip', 
+        
         buttons: {
             dom: {
                 button: {
@@ -327,7 +356,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                 },
                                 {
                                     margin: [-700, 80, -25, 0],
-                                    text: encabezado = insertarSaltoDeLinea(encabezado, 100),
+                                    // Se corrigió la asignación dentro del texto, usando el valor de 'encabezado'
+                                    text: insertarSaltoDeLinea(encabezado, 100), 
                                 },
                             ],
                         }
@@ -369,7 +399,9 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                 },
 
             }
-        ]
+        ],
+        // Se consolidaron las opciones de 'dom' aquí, eliminando la duplicidad
+        // y usando la opción simplificada arriba 'dom: "l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip"'
     },
     "order": [
         [0, "desc"]
@@ -377,7 +409,6 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     "paging": true,
     "lengthChange": true,
 
-    dom: 'Blfrtip',
     "searching": true,
     "lengthMenu": [
         [10, 25, 50, -1],
@@ -412,7 +443,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             org_id: org_id
         }
     },
-    // **AQUÍ SE AGREGA EL BLOQUE DE COLUMNAS**
+    // **COLUMNAS**
     "columns": [
         { data: 'idcaso' },
         { data: 'cedula' },
@@ -433,7 +464,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         sEmptyTable: "Ningún dato disponible en esta tabla",
         sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
         sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-        sInfoFiltered: "", // <-- This is the change
+        sInfoFiltered: "(filtrado de un total de _MAX_ registros)", // Se agregó el placeholder de filtrado
         sInfoPostFix: "",
         sSearch: "Buscar:",
         sUrl: "",
@@ -448,7 +479,10 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         oAria: {
             sSortAscending: ": Activar para ordenar la columna de manera ascendente",
             sSortDescending: ": Activar para ordenar la columna de manera descendente"
-        }
+        },
+        "columnDefs": [{
+            "targets": [0], "visible": false, "searchable": false
+        }, ]
     },
     initComplete: function(settings, json) {
         // Recuperar el estado de la paginación

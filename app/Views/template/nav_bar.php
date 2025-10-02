@@ -20,7 +20,10 @@ $userdata = $session->get();
     </li>
   </ul>
   <input type="text" name="" disabled="disabled" style="width: 350px; background-color: transparent; border: none;" value="">
-  <img src="<?php echo base_url(); ?>/img/cintillo_tradicional.png" height="60" class="d-none d-lg-block">
+  <img src="http://siac_v2.com/img/cintillo_tradicional.png" 
+     height="60" 
+     width="auto" 
+     class="cintillo-compacto">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>

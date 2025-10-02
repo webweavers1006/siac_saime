@@ -15,17 +15,17 @@ $(function() {
     let edad_max = $('#edad_max').val();
     let org_id = $('#organismo-caso').val();
     let sexo = $('#sexo').val();
-    if (desde == '' && hasta == '') {
-
-        desde = 'null'
-        hasta = 'null'
-    }
-
-    if (edad_min == '' && edad_max == '') {
-
-        edad_min = 'null'
-        edad_max = 'null'
-    }
+    // APLICA SOLO A 'desde' y 'hasta'
+if (desde === '' && hasta === '') {
+    desde = null; // ¡Sin comillas!
+    hasta = null; // ¡Sin comillas!
+}
+// Las edades (edad_min, edad_max) pueden seguir siendo 'null' como cadena,
+// si no las pasas a moment() u otra función de fecha.
+if (edad_min === '' && edad_max === '') {
+    edad_min = 'null';
+    edad_max = 'null';
+}
     listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,org_id);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
@@ -146,6 +146,7 @@ function llenar_Organismos_PP(e, id) {
         },
     });
 }
+// FUNCION PARA LISTAR REPORTES Y CREAR LA DATATABLE
 function listar_reportes(
     desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null,
     direcciones_caso = null, tipo_beneficiario = 0, usuarios = null, estatus = 0, id_pais = 0,
@@ -158,14 +159,28 @@ function listar_reportes(
         $('#table_casos').DataTable().destroy();
     }
 
+    // *******************************************************************
+    // 🚩 CORRECCIÓN CLAVE PARA MOMENT.JS: Especificar el formato de entrada 
+    // Asegúrate de que este formato coincida con el formato real de tus campos de fecha.
+    // *******************************************************************
+      const FORMATO_ENTRADA = "MM/DD/YY"; 
+
     // Convertir la fecha y construir el encabezado para el PDF
     var encabezado = '';
-    // ... (Tu lógica de encabezado se mantiene sin cambios)
-    if (desde && hasta && moment(desde).isValid() && moment(hasta).isValid()) {
-        const dataFormatada_desde = moment(desde).format("DD-MM-YYYY");
-        const dataFormatada_hasta = moment(hasta).format("DD-MM-YYYY");
+    
+    // Usamos el formato de entrada al llamar a moment() y isValid()
+    if (
+        desde && 
+        hasta && 
+        moment(desde, FORMATO_ENTRADA).isValid() && 
+        moment(hasta, FORMATO_ENTRADA).isValid()
+    ) {
+        // Formateamos las fechas para el encabezado
+        const dataFormatada_desde = moment(desde, FORMATO_ENTRADA).format("DD-MM-YYYY");
+        const dataFormatada_hasta = moment(hasta, FORMATO_ENTRADA).format("DD-MM-YYYY");
         encabezado += `Desde: ${dataFormatada_desde} hasta ${dataFormatada_hasta} `;
     }
+
     if (usuarios) { encabezado += `Usuario: ${nombre_usuario} `; }
     if (tipo_pi) { encabezado += `Tipo de Propiedad: ${nombre_propiedad} `; }
     if (tipo_atencion_usu) { encabezado += `Tipo de Atencion: ${nombre_atencion} `; }
@@ -183,16 +198,11 @@ function listar_reportes(
     var table = $('#table_casos').DataTable({
         responsive: true,
         
-        // *******************************************************************
         // CORRECCIÓN CLAVE: CAMBIO EN LA OPCIÓN 'dom'
-        // 'l' = lengthMenu (Mostrar X registros)
-        // '<"row"<"col-md-6"B><"col-md-6"f>>' = Botones (B) y Filtro (f) en la misma fila.
-        // *******************************************************************
         dom: 'l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip', 
 
         buttons: {
             dom: {
-                // Se corrigió el uso de 'btn-xs-xs' para que se aplique correctamente a los botones generados
                 button: { className: 'btn-xs-xs btn-dark' }, 
             },
             buttons: [
@@ -200,7 +210,6 @@ function listar_reportes(
                 {
                     extend: "pdf",
                     text: 'PDF',
-                    // className: 'btn-xs btn-dark', // Ya se aplica por defecto en dom.button
                     orientation: 'landscape',
                     pageSize: 'LETTER',
                     header: true,
@@ -238,7 +247,6 @@ function listar_reportes(
                 {
                     extend: "excel",
                     text: 'Excel',
-                    // className: 'btn-xs btn-dark', // Ya se aplica por defecto en dom.button
                     title: 'Consolidado de Casos',
                     download: 'open',
                     exportOptions: {
@@ -248,10 +256,8 @@ function listar_reportes(
                         "template": ["blue_medium", "header_blue", "title_medium"]
                     },
                 }
-                // Si quieres más botones (copiar, imprimir, etc.) añádelos aquí.
             ]
         },
-        // ... (El resto de tu configuración se mantiene igual)
         "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,

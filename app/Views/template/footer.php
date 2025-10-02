@@ -33,4 +33,3 @@
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/cdn/buttons.html5.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/cdn/buttons.print.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/cdn/buttons.html5.styles.templates.min.js"></script>
-
