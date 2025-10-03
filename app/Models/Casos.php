@@ -249,11 +249,7 @@ private function buildBaseQuery($builder)
         $query = $builder->get();
         return $query->getResult();
     }
-// if ($estatus =='1' || $estatus === 'null') {
-        //     $builder->orderBy('b.estnom', 'asc');
-        // } else {
-        //     $builder->orderBy('b.estnom', 'desc');   
-        // }
+
 
     //Metodo para obtener toda la informacion del caso para la web 
     public function Informacion_Usuarios($casoced)
@@ -491,8 +487,7 @@ public function getReporteData($params)
     $builder->orWhere('caso_r.vigencia IS NULL');
     $builder->groupEnd();
 
-    // --- Paso 3: Aplicar los filtros dinámicamente (Filtros del Formulario) ---
-    // (Tu código de filtros de fecha, edad, tipo_pi, etc. va aquí)
+   
     
     if (!empty($params['desde']) && !empty($params['hasta'])) {
         $builder->where('a.casofec >=', $params['desde']);
@@ -815,27 +810,97 @@ public function getReporteData($params)
         return $result;
     }
 
-   // Método que cuenta los Casos Atendidos por fecha (RED SOCIAL)
-    public function contarCasosAtendidos_Fecha($desde, $hasta, $id_estado=null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_red_social AS red');
-        $builder->select('red.red_s_id, red.red_s_nom, COALESCE(tot.count, 0) AS count');
-        $subquery = '(SELECT cas.idrrss, COUNT(cas.idrrss) AS count
-                    FROM sgc_casos AS cas
-                    WHERE NOT cas.borrado';
-        if ($desde !== null && $hasta !== null) {
-            $subquery .= ' AND cas.casofec BETWEEN ' . $db->escape($desde) . ' AND ' . $db->escape($hasta);
-        }
-        $subquery .= ' GROUP BY cas.idrrss) AS tot';
-        $builder->join($subquery, 'red.red_s_id = tot.idrrss', 'left');
-        $builder->where('red.red_s_borrado', 'false');
-        $builder->orderBy('red.red_s_nom', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
-    }
 
+/**
+ * Cuenta los casos agrupados por fecha dentro de un rango opcionalmente filtrado por estado.
+ *
+ * @param string $startDate Fecha de inicio (puede ser 'null' como string).
+ * @param string $endDate   Fecha de fin (puede ser 'null' como string).
+ * @param string|int|null $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return \CodeIgniter\Database\Result|CI_DB_result Retorna el objeto resultado de la consulta.
+ */
+public function contarCasosPorFecha_filtro(string $startDate, string $endDate, $id_estado = 'null')
+{
+     $db = \Config\Database::connect();
+    $builder = $this->dbconn('sgc_casos');
+    
+    $builder->select('casofec');
+    $builder->selectCount('casofec', 'cantCases');
+    
+    // CORRECCIÓN/MEJORA: Aseguramos que solo se cuenten los casos NO borrados
+    $builder->where('borrado', false);
+    
+    // Filtro de fecha
+    if ($startDate !== 'null' && $endDate !== 'null') {
+        $builder->where('casofec >=', $startDate);
+        $builder->where('casofec <=', $endDate);
+    } 
+  
+    // Filtro de estado
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $builder->where('estadoid', $id_estado);
+    }
+    
+    $builder->groupBy('casofec');
+    $builder->orderBy('casofec', 'ASC');
+    
+    $result = $builder->get();
+   
+    return $result;
+}
+    
+
+   /**
+ * Cuenta los Casos Atendidos por Vía de Atención (Red Social) dentro de un rango de fechas y estado opcional.
+ * * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por red social.
+ */
+public function contarCasosAtendidos_Fecha(string $desde, string $hasta, $id_estado = 'null')
+{
+    
+    $db = \Config\Database::connect();
+ 
+    $subBuilder = $db->table('sgc_casos');
+    $subBuilder->select('idrrss');
+    $subBuilder->selectCount('*', 'count');
+    $subBuilder->where('borrado', false);
+    
+    // Aplicar filtros de fecha a la subconsulta de casos
+    if ($desde !== 'null' && $hasta !== 'null') {
+        $subBuilder->where('casofec >=', $desde);
+        $subBuilder->where('casofec <=', $hasta);
+    }
+    
+    // Aplicar filtro de estado a la subconsulta de casos
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $subBuilder->where('estadoid', $id_estado);
+    }
+    
+    $subBuilder->groupBy('idrrss');
+    // Generar la cadena SQL de la subconsulta y aliñarla como 'tot'
+    $subquery = $subBuilder->getCompiledSelect();
+    
+    // --- 2. Construcción de la Consulta Principal ---
+    $builder = $db->table('sgc_red_social AS red');
+    $builder->select('red.red_s_id, red.red_s_nom');
+    
+    // COALESCE para mostrar 0 si no hay coincidencias
+    $builder->select('COALESCE(tot.count, 0) AS count');
+
+    // Realizar el LEFT JOIN usando la subconsulta generada
+    // IMPORTANTE: El JOIN debe pasar el SQL de la subconsulta y el alias 'tot'
+    $builder->join("($subquery) AS tot", 'red.red_s_id = tot.idrrss', 'left');
+    
+    // Filtrar solo las redes sociales que no están borradas
+    $builder->where('red.red_s_borrado', 'false');
+    
+    $builder->orderBy('red.red_s_nom', 'ASC');
+    
+    $query = $builder->get();
+    return $query->getResult();
+}
 
 
     // Método que consulta los estados
@@ -860,41 +925,35 @@ public function getReporteData($params)
 
 
 
-    public function ContarCasosPorMunicipioYTipoAtencion($estado = null, $desde = null, $hasta = null)
+   public function ContarCasosPorMunicipioYTipoAtencion($estado = null, $desde = null, $hasta = null)
 {
-   
-   
     $db = \Config\Database::connect();
     $builder = $db->table('sgc_casos AS c');
 
+    // Mantenemos los nombres de columna tal cual los necesitas en tu vista
     $builder->select('
         m.municipionom, 
         aten.tipo_aten_nombre, 
-        COUNT(c.idcaso) as count
+        COUNT(c.idcaso) AS count 
     ');
     
-    // Unimos las tablas necesarias
+    // Unimos las tablas con LEFT JOIN tal como en tu SQL
     $builder->join('sgc_municipio AS m', 'c.municipioid = m.municipioid', 'left');
     $builder->join('sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'left');
-
-    // Filtramos los casos borrados
+    // Filtro obligatorio: casos no borrados ("c"."borrado" = FALSE)
     $builder->where('c.borrado', false);
-    
-    // Filtramos por estado si se proporciona el valor
-    if ($estado != 'null' && $estado != '0') {
-        $builder->where('m.estadoid', $estado);
+    if ($estado != 'null' && $estado != '0' && $estado !== null) {
+        $builder->where('c.estadoid', $estado);
     }
-    
-    // Filtramos por el rango de fechas si se proporciona
-    if ($desde != 'null' && $hasta != 'null') {
+    // Filtro condicional por el rango de fechas (replicando la lógica existente de tu función)
+    if ($desde != 'null' && $hasta != 'null' && $desde !== null && $hasta !== null) {
         $builder->where('c.casofec >=', $desde);
         $builder->where('c.casofec <=', $hasta);
     }
-
-    // Agrupamos para obtener el conteo por cada combinación de municipio y tipo de atención
+    // Agrupamos por municipio y tipo de atención (GROUP BY)
     $builder->groupBy('m.municipionom, aten.tipo_aten_nombre');
+    // Ordenamos por municipio y tipo de atención (ORDER BY)
     $builder->orderBy('m.municipionom, aten.tipo_aten_nombre');
-
     $query = $builder->get();
     return $query->getResult();
 }
@@ -966,73 +1025,149 @@ public function getReporteData($params)
 
 
 
-    // Método que cuenta los casos ATENDIDOS GENERO MASCULINO
-    public function contarCasosAtendidos_MASCULINO($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('public.sgc_red_social AS rs');
-        $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
-        $builder->join('public.sgc_casos AS c', 'rs.red_s_id = c.idrrss', 'left');
-        $builder->where('c.borrado', false);
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
-        }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
-        }
-        $builder->where('c.sexo', '1');
-        $builder->groupBy('rs.red_s_id, rs.red_s_nom');
-        $builder->orderBy('rs.red_s_nom', 'desc');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+   /**
+ * Cuenta los Casos Atendidos por Vía de Atención (Red Social) para el GÉNERO MASCULINO.
+ *
+ * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por red social.
+ */
+public function contarCasosAtendidos_MASCULINO($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('public.sgc_red_social AS rs');
 
-    // Método que cuenta los casos ATENDIDOS GENERO FEMENINO
-    public function contarCasosAtendidos_FEMENINO($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('public.sgc_red_social AS rs');
-        $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
-        $builder->join('public.sgc_casos AS c', 'rs.red_s_id = c.idrrss', 'left');
-        $builder->where('c.borrado', false);
-        $builder->where('c.sexo', '2');
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
-        }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
-        }
-        $builder->groupBy('rs.red_s_id, rs.red_s_nom');
-        $builder->orderBy('rs.red_s_nom', 'desc');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
-    }
+    // 1. SELECT: COALESCE(COUNT(c.idrrss), 0) garantiza que se muestre 0 si no hay coincidencias.
+    $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
 
+    // --- 2. LEFT JOIN con todas las condiciones de CASOS ---
     
-    // Método que cuenta los Casos Atendidos por tipo de Solicitud por Fecha
-    public function contarCasosTipoSolicitudFecha($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_tipoatencion_usu AS tip');
-        $builder->select('tip.tipo_aten_id, tip.tipo_aten_nombre, COALESCE(tot.count, 0) AS count');
-        $subquery = '(SELECT cas.id_tipo_atencion, COUNT(cas.id_tipo_atencion) AS count
-                    FROM sgc_casos AS cas
-                    WHERE NOT cas.borrado';
-        if ($desde !== null && $hasta !== null) {
-            $subquery .= ' AND cas.casofec BETWEEN ' . $db->escape($desde) . ' AND ' . $db->escape($hasta);
-        }
-        $subquery .= ' GROUP BY cas.id_tipo_atencion) AS tot';
-        $builder->join($subquery, 'tip.tipo_aten_id = tot.id_tipo_atencion', 'left');
-        $builder->where('tip.tipo_aten_borrado', 'false');
-        $builder->orderBy('tip.tipo_aten_nombre', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
+    // Construir la condición base del JOIN
+    $join_condition = 'rs.red_s_id = c.idrrss AND c.borrado = false AND c.sexo = 1';
+
+    // Agregar filtros de fecha a la condición del JOIN
+    if ($desde !== 'null' && $hasta !== 'null') {
+        // Usamos la sintaxis estándar de SQL sin el escape,
+        // confiando en que CodeIgniter lo maneje en el JOIN (CI3/4 pueden requerir adaptaciones)
+        // Para mayor seguridad, es mejor usar la técnica de Subconsulta en el JOIN (ejemplo anterior).
+        $join_condition .= " AND c.casofec >= " . $db->escape($desde);
+        $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
     }
+
+    // Agregar filtro de estado a la condición del JOIN
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
+    }
+    
+    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+
+    // 3. Agrupación y Orden:
+    // Asegurarse de que rs.red_s_id se agrupe para obtener un conteo por cada red social.
+    $builder->groupBy('rs.red_s_id, rs.red_s_nom');
+    $builder->orderBy('rs.red_s_nom', 'ASC');
+
+    $query = $builder->get();
+    return $query->getResult();
+}
+
+   /**
+ * Cuenta los Casos Atendidos por Vía de Atención (Red Social) para el GÉNERO FEMENINO.
+ *
+ * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por red social.
+ */
+public function contarCasosAtendidos_FEMENINO($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('public.sgc_red_social AS rs');
+
+    // 1. SELECT: COALESCE(COUNT(c.idrrss), 0) garantiza que se muestre 0 si no hay coincidencias.
+    $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
+
+    // --- 2. LEFT JOIN con todas las condiciones de CASOS (para preservar el 0 count) ---
+    
+    // Construir la condición base del JOIN. La condición de género Femenino es 'c.sexo = 2'.
+    $join_condition = 'rs.red_s_id = c.idrrss AND c.borrado = false AND c.sexo = 2';
+
+    // Agregar filtros de fecha a la condición del JOIN
+    if ($desde !== 'null' && $hasta !== 'null') {
+        // Usar escape explícito para seguridad en la concatenación de la cláusula ON.
+        $join_condition .= " AND c.casofec >= " . $db->escape($desde);
+        $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
+    }
+
+    // Agregar filtro de estado a la condición del JOIN
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
+    }
+    
+    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+
+    // 3. Agrupación y Orden:
+    $builder->groupBy('rs.red_s_id, rs.red_s_nom');
+    // Se recomienda 'ASC' para listar en orden alfabético, como se hizo en otros métodos.
+    $builder->orderBy('rs.red_s_nom', 'ASC'); 
+
+    $query = $builder->get();
+    return $query->getResult();
+}
+    
+  /**
+ * Cuenta los Casos Atendidos por Tipo de Solicitud dentro de un rango de fechas y estado opcional.
+ * * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por tipo de solicitud.
+ */
+public function contarCasosTipoSolicitudFecha($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+    $db = \Config\Database::connect();
+
+    // --- 1. Construcción de la Subconsulta (Conteo de Casos) ---
+    // Usamos un Query Builder separado para asegurar el escape de variables
+    $subBuilder = $db->table('sgc_casos AS cas');
+    $subBuilder->select('id_tipo_atencion');
+    $subBuilder->selectCount('*', 'count');
+    
+    // Asumiendo que 'borrado' es un booleano o 0/1, usamos la forma CI idiomática
+    $subBuilder->where('cas.borrado', false);
+
+    // Aplicar filtros de fecha de forma segura
+    if ($desde !== 'null' && $hasta !== 'null') {
+        $subBuilder->where('cas.casofec >=', $desde);
+        $subBuilder->where('cas.casofec <=', $hasta);
+    }
+
+    // APLICACIÓN DEL FILTRO DE ESTADO (CORRECCIÓN CLAVE)
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $subBuilder->where('cas.estadoid', $id_estado);
+    }
+    
+    $subBuilder->groupBy('cas.id_tipo_atencion');
+    // Obtenemos la cadena SQL de la subconsulta ya compilada y escapada
+    $subquery = $subBuilder->getCompiledSelect();
+
+    // --- 2. Construcción de la Consulta Principal ---
+    $builder = $db->table('sgc_tipoatencion_usu AS tip');
+    $builder->select('tip.tipo_aten_id, tip.tipo_aten_nombre');
+    
+    // COALESCE para mostrar 0 si no hay coincidencias
+    $builder->select('COALESCE(tot.count, 0) AS count');
+
+    // Realizar el LEFT JOIN usando la subconsulta generada de forma segura
+    $builder->join("($subquery) AS tot", 'tip.tipo_aten_id = tot.id_tipo_atencion', 'left');
+
+    $builder->where('tip.tipo_aten_borrado', 'false');
+    $builder->orderBy('tip.tipo_aten_nombre', 'ASC');
+    
+    $query = $builder->get();
+    return $query->getResult();
+}
     
     // Método que cuenta los casos por propiedad Intelectual
     public function contarCasosPorPI()
@@ -1082,53 +1217,93 @@ public function getReporteData($params)
     }
 
 
-    // Método que cuenta los Casos Atendidos por tipo de Solicitud Masculino
-    public function contarCasosTipoSolicitudMasculino($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
-        $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
-        $builder->join('public.sgc_casos AS c', 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'1\'', 'left');
-        $builder->where('c.borrado', false);
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
-        }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
-        }
-        $builder->where('tip_ate.tipo_aten_borrado', false);
-        $builder->groupBy('tip_ate.tipo_aten_nombre');
-        $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado; 
+   /**
+ * Cuenta los Casos Atendidos por Tipo de Solicitud para GÉNERO MASCULINO, aplicando filtros de fecha y estado.
+ *
+ * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por tipo de solicitud.
+ */
+public function contarCasosTipoSolicitudMasculino($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
+    
+    $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
+
+    // --- CONSTRUCCIÓN DE LA CONDICIÓN ON DEL JOIN ---
+    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'1\' AND c.borrado = false';
+    
+    // 1. Agregar filtro de Fecha
+    if ($desde !== 'null' && $hasta !== 'null') {
+        // Usamos $db->escape() para asegurar que las fechas se traten como valores seguros dentro de la cadena SQL
+        $join_condition .= " AND c.casofec >= " . $db->escape($desde);
+        $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
     }
-
-    // Método que cuenta los Casos Atendidos por tipo de Solicitud Femenino
-    public function contarCasosTipoSolicitudFemenino($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
-        $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
-        $builder->join('public.sgc_casos AS c', 'c.id_tipo_atencion = tip_ate.tipo_aten_id  AND c.sexo = \'2\'', 'left');
-        $builder->where('c.borrado', false);
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
-        }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
-        }
-        $builder->where('tip_ate.tipo_aten_borrado', false);
-        $builder->groupBy('tip_ate.tipo_aten_nombre');
-        $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado; 
+    
+    // 2. Agregar filtro de Estado
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
     }
+    
+    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    
+    // La única condición WHERE global debe ser para la tabla principal (tip_ate)
+    // El resto de filtros ya están en el JOIN.
+    $builder->where('tip_ate.tipo_aten_borrado', false); // No es necesario el string 'false' si es un booleano
+
+    $builder->groupBy('tip_ate.tipo_aten_nombre');
+    $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
+    
+    $query = $builder->get();
+    return $query->getResult(); 
+}
 
 
+/**
+ * Cuenta los Casos Atendidos por Tipo de Solicitud para GÉNERO FEMENINO, aplicando filtros de fecha y estado.
+ *
+ * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por tipo de solicitud.
+ */
+public function contarCasosTipoSolicitudFemenino($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
+    
+    $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
+
+    // --- CONSTRUCCIÓN DE LA CONDICIÓN ON DEL JOIN ---
+    // La única diferencia es c.sexo = '2'
+    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'2\' AND c.borrado = false';
+    
+    // 1. Agregar filtro de Fecha
+    if ($desde !== 'null' && $hasta !== 'null') {
+        $join_condition .= " AND c.casofec >= " . $db->escape($desde);
+        $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
+    }
+    
+    // 2. Agregar filtro de Estado
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
+    }
+    
+    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    
+    // La única condición WHERE global debe ser para la tabla principal (tip_ate)
+    $builder->where('tip_ate.tipo_aten_borrado', false);
+
+    $builder->groupBy('tip_ate.tipo_aten_nombre');
+    $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
+    
+    $query = $builder->get();
+    return $query->getResult(); 
+}
     // Método que cuenta los Casos POR ESTATUS
     public function contarCasosEstatus()
     {
@@ -1155,6 +1330,7 @@ public function getReporteData($params)
         $builder->select('COALESCE(estatus.estnom, \'No Aplica\') AS estnom, estados.estadonom, estados.estadoid, casos.casofec, COALESCE(casos.veces, 0) AS count');
         $builder->join('(SELECT COUNT(c.idcaso) AS veces, c.idest, c.estadoid, c.casofec 
                         FROM sgc_casos c 
+                        where c.borrado=false
                         GROUP BY c.idest, c.estadoid, c.casofec) AS casos', 'casos.idest = estatus.idest', 'left');
         $builder->join('public.sgc_estados AS estados', 'casos.estadoid = estados.estadoid', 'right');
         $builder->where('estatus.borrado', false);
@@ -1164,6 +1340,8 @@ public function getReporteData($params)
         }
         $builder->orderBy('estados.estadonom', 'ASC');
         $query = $builder->get();
+        //echo $db->getLastQuery(); 
+        //die();
         $resultado = $query->getResult();
         return $resultado;
     }
@@ -1314,25 +1492,62 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
     }
 
     
-    // Método que cuenta los casos por estatus y por fecha
-    public function contarCasosEstatusFecha($desde = null, $hasta = null, $id_estado = null)
+  /**
+     * Cuenta los Casos agrupados por Estatus (sgc_estatus) dentro de un rango de fechas y estado opcional.
+     *
+     * @param string $desde Fecha de inicio (puede ser 'null' como string).
+     * @param string $hasta Fecha de fin (puede ser 'null' como string).
+     * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+     * @return array Retorna un array de objetos con el conteo por estatus.
+     */
+    public function contarCasosEstatusFecha($desde = 'null', $hasta = 'null', $id_estado = 'null')
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_estatus AS est');
-        $builder->select('COALESCE(COUNT(c.idest), 0) AS count, est.estnom');
-        $builder->join('public.sgc_casos AS c', 'c.idest = est.idest ', 'left');
-        $builder->where('c.borrado', false);
-        if ($desde != 'null' && $hasta != 'null') {
-            $builder->where('c.casofec >=', $desde);
-            $builder->where('c.casofec <=', $hasta);
+        
+        // El SELECT usa COALESCE para mostrar 0 si no hay casos para ese estatus después del LEFT JOIN
+        $builder->select('est.idest, est.estnom, COALESCE(SUM(casos_totales.count), 0) AS count');
+
+        // --- 1. Construcción de la Subconsulta (Conteo total por estatus con filtros) ---
+        $subQuery = $db->table('sgc_casos AS c')
+            // Seleccionamos solo el campo de unión (idest) y el conteo
+            ->select('c.idest, COUNT(c.idest) AS count');
+
+        // **Filtro Clave:** Excluir casos borrados
+        $subQuery->where('c.borrado', false); 
+        // También puedes usar: ->where('LOWER(TRIM(c.borrado))', 'false'); si el tipo de dato es un texto que almacena 'true'/'false'
+
+        // 2. Aplicar filtros de fecha de forma segura
+        if ($desde !== 'null' && $hasta !== 'null') {
+            $subQuery->where('c.casofec >=', $desde);
+            $subQuery->where('c.casofec <=', $hasta);
         }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $builder->where('c.estadoid', $id_estado);
+        
+        // 3. Aplicar filtro de estado
+        if ($id_estado !== 'null' && $id_estado !== null) {
+            $subQuery->where('c.estadoid', $id_estado);
         }
-        $builder->groupBy('est.estnom');
+        
+        // **Agrupar SOLAMENTE por el campo de unión (idest)**
+        $subQuery->groupBy('c.idest');
+        
+        // Compilar la subconsulta
+        $subQueryString = $subQuery->getCompiledSelect();
+        
+        // --- 2. JOIN con la consulta principal ---
+        // Hacemos LEFT JOIN para que todos los Estatus aparezcan.
+        $builder->join("($subQueryString) AS casos_totales", 'est.idest = casos_totales.idest', 'left');
+        
+        // El GROUP BY de la consulta principal está bien (agrupa por el Estatus)
+        $builder->groupBy('est.idest, est.estnom');
+        $builder->orderBy('est.estnom', 'ASC');
+        
         $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
+        
+        // La instrucción `echo $db->getLastQuery(); die();` no se incluye en el resultado final,
+        // pero puedes descomentarla para depurar la consulta generada.
+        
+        return $query->getResult();
     }
 
 
@@ -1441,30 +1656,61 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
 }
 
 
-    // Método que cuenta los casos por tipo de beneficiario en función de la fecha
-    public function contarCasos_Tipo_Beneficiario_fecha($desde = null, $hasta = null, $id_estado = null)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_tipo_beneficiarios AS tb');
-        $builder->select('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre, COALESCE(SUM(casos_fecha.count), 0) AS total_fecha_tipo, COALESCE(SUM(casos_fecha.count), 0) AS count');
-        $subQuery = $db->table('sgc_casos AS c')
-            ->select('c.casofec, c.tipo_beneficiario, COUNT(c.tipo_beneficiario) AS count');
-        if ($desde != 'null' && $hasta != 'null') {
-            $subQuery->where('c.casofec >=', $desde);
-            $subQuery->where('c.casofec <=', $hasta);
-        }
-        if ($id_estado != 'null' && $id_estado != null) {
-            $subQuery->where('c.estadoid', $id_estado);
-        }
-        $subQuery->groupBy('c.tipo_beneficiario, c.casofec');
-        $subQueryString = $subQuery->getCompiledSelect();
-        $builder->join("($subQueryString) AS casos_fecha", 'tb.tipo_beneficiario_id = casos_fecha.tipo_beneficiario', 'left');
-        $builder->groupBy('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre');
-        $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
-        $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
+    /**
+ * Cuenta los Casos agrupados por Tipo de Beneficiario (tb) aplicando filtros de fecha y estado.
+ *
+ * @param string $desde Fecha de inicio (puede ser 'null' como string).
+ * @param string $hasta Fecha de fin (puede ser 'null' como string).
+ * @param string|int $id_estado ID del estado del caso, o 'null' como string si no se filtra.
+ * @return array Retorna un array de objetos con el conteo por tipo de beneficiario.
+ */
+public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'null', $id_estado = 'null')
+{
+
+   
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_tipo_beneficiarios AS tb');
+    
+    // El SELECT ya está bien: COALESCE(SUM)
+    $builder->select('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre, COALESCE(SUM(casos_totales.count), 0) AS total_fecha_tipo, COALESCE(SUM(casos_totales.count), 0) AS count');
+
+    // --- 1. Construcción de la Subconsulta (Conteo total por beneficiario) ---
+    $subQuery = $db->table('sgc_casos AS c')
+        // Seleccionamos solo el campo de unión y el conteo
+        ->select('c.tipo_beneficiario, COUNT(c.tipo_beneficiario) AS count');
+
+    // **CORRECCIÓN CLAVE 1:** Excluir casos borrados
+    $subQuery->where('c.borrado', false); 
+
+    // 2. Aplicar filtros de fecha de forma segura
+    if ($desde !== 'null' && $hasta !== 'null') {
+        $subQuery->where('c.casofec >=', $desde);
+        $subQuery->where('c.casofec <=', $hasta);
     }
+    
+    // 3. Aplicar filtro de estado
+    if ($id_estado !== 'null' && $id_estado !== null) {
+        $subQuery->where('c.estadoid', $id_estado);
+    }
+    
+    // **CORRECCIÓN CLAVE 2:** Agrupar SOLAMENTE por el campo de unión (tipo_beneficiario)
+    // No necesitamos agrupar por casofec si luego vamos a SUMAR todos los conteos.
+    $subQuery->groupBy('c.tipo_beneficiario');
+    
+    $subQueryString = $subQuery->getCompiledSelect();
+    
+    // --- 2. JOIN con la consulta principal ---
+    // Cambiado el alias a 'casos_totales' para reflejar que contiene el conteo total por tipo
+    $builder->join("($subQueryString) AS casos_totales", 'tb.tipo_beneficiario_id = casos_totales.tipo_beneficiario', 'left');
+    
+    // El GROUP BY de la consulta principal está bien (agrupa por el tipo de beneficiario)
+    $builder->groupBy('tb.tipo_beneficiario_id, tb.tipo_beneficiario_nombre');
+    $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
+    
+    $query = $builder->get();
+   
+    return $query->getResult();
+}
 
    
     // Método que cuenta los casos por ATENCION CIUDADANO filtro

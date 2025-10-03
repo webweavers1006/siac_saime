@@ -225,7 +225,7 @@ $routes->setAutoRoute(false);
      $routes->get('/estadisticas_pp/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_pp/$1/$2");
      $routes->get('/estadisticas_propiedad_intelectual/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_prop_intelectual/$1/$2");
      $routes->get('/estadisticas_tipo_atencion/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_tipo_atencion/$1/$2/$3");
-     $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
+     $routes->get('/estadisticas_con_filtro/(:any)/(:any)/(:any)', "Reporte_Controler::vista_estadisticas_filtros/$1/$2/$3");
      $routes->get('/estadisticas2', "Reporte_Controler::vista_estadisticas2");
      $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");

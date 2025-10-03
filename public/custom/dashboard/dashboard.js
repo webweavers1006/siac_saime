@@ -4,10 +4,10 @@
 //     window.location = "/inicio";
 // }, 2500);
 
-window.addEventListener('load', function() {
-    var imagen = document.querySelector('.form-login_imagen');
-    imagen.style.opacity = 1;
-});
+// window.addEventListener('load', function() {
+//     var imagen = document.querySelector('.form-login_imagen');
+//     imagen.style.opacity = 1;
+// });
 
 
 

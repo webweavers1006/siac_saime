@@ -17,7 +17,7 @@ function listarAuditoria(direccion_ip, dispositivo) {
     var encabezado = '';
     var table = $('#table_auditoria_sistema').DataTable({
         responsive: true,
-        dom: "Bfrtip",
+        
         buttons: {
             dom: {
                 button: {
@@ -128,7 +128,7 @@ function listarAuditoria(direccion_ip, dispositivo) {
         "paging": true,
         "lengthChange": true,
 
-        dom: 'Blfrtip',
+        dom: 'lfrBtip',
         "searching": true,
         "lengthMenu": [
             [10, 25, 50, -1],

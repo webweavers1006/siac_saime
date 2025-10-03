@@ -88,7 +88,7 @@ $(document).on('change', '#estado-caso', function(e) {
    let desde = $('#desde').val();
     let hasta = $('#hasta').val();
     let estado = $('#estado-caso').val();
-llenar_Estados(Event,estado) ;
+    //llenar_Estados(Event,estado) ;
     if (desde === '') {
         desde = 'null';
     }

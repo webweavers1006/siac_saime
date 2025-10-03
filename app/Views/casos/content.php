@@ -3,7 +3,86 @@
 $session = session();
 ?>
 
+<style>
 
+
+/* 3. COMPACTAR EL LOGO/CINTILLO (AJUSTADO) */
+.navbar img, 
+.cintillo-compacto { 
+    /* Altura final ya establecida en el HTML (height="75"), esto solo la refuerza */
+    height: 60px; 
+    /* Elimina cualquier margen residual para compactación vertical */
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    /* Asegura que el contenedor de la imagen no afecte el layout horizontal */
+    display: block; 
+}
+
+
+
+</style>
+<script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>
+
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], 
+                    },
+                    colors: {
+                        'primary-blue': '#007bff', 
+                        'primary-dark': '#0056b3',
+                        'theme-gray': '#a9b6c2', 
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ⭐ Estilos que hacen los campos más compactos y visibles (AJUSTADOS) ⭐ */
+        .compact-form-control {
+            height: calc(1.9rem + 2px) !important; /* Altura compacta */
+            padding: .25rem .5rem !important;     
+            font-size: .875rem !important;        
+            width: 100% !important; 
+        }
+        /* Etiqueta con margen inferior más reducido */
+        .card-body label {
+            font-size: 0.9rem;
+            margin-bottom: .1rem; /* Margen inferior muy reducido: de .15rem a .1rem */
+            display: block; 
+        }
+        .compact-input-edad {
+            width: 65px !important; 
+            height: calc(1.9rem + 2px) !important;
+            padding: .25rem .5rem !important;
+            font-size: .875rem !important;
+            display: inline-block;
+        }
+        /* Ajuste de padding de columna para layout compacto, reemplaza el padding de Bootstrap */
+        .col-compact {
+            padding-right: 5px; 
+            padding-left: 5px;
+        }
+        
+        /* Reduce el tamaño del campo de texto de BÚSQUEDA (Search) de DataTables */
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: calc(1.9rem + 2px) !important; 
+            padding: .25rem .5rem !important;
+            font-size: .875rem !important;
+            max-width: 200px; 
+            display: inline-block; 
+        }
+        /* Alinea verticalmente la etiqueta "Search:" */
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: 0.9rem;
+        }
+
+
+    </style>
 
 <!-- <link rel="stylesheet" href="<php echo base_url(); ?>/datatable_responsive/css/responsive.bootstrap4.css"> -->
 <style>
@@ -141,7 +220,7 @@ $session = session();
                             </div>
                             <div class="col-lg-3 col-sm-6 col-md-6 mb-2">
                                 <label for="tipo-persona">Tipo Persona</label>
-                                <select class="form-control" id="tipo-persona" name="tipo-persona">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-persona" name="tipo-persona">
                                     <option value="V">V - Venezolano</option>
                                     <option value="E">E - Extranjero</option>
                                     <option value="J">J - Juridico</option>
@@ -166,14 +245,14 @@ $session = session();
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
                                 <label for="sexo">Genero</label>
-                                <select class="form-control" id="sexo" name="sexo">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="sexo" name="sexo">
                                     <option value="1">Masculino</option>
                                     <option value="2">Femenino</option>
                                 </select>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
                                 <label for="t-beneficiario">Tipo de Beneficiario</label>
-                                <select class="form-control" id="t-beneficiario" name="t-beneficiario">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="t-beneficiario" name="t-beneficiario">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
@@ -203,13 +282,13 @@ $session = session();
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
                                 <label for="red-social">Via de Atencion</label>
-                                <select class="form-control" name="red-social" id="red-social">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" name="red-social" id="red-social">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-9 col-md-6 col-sm-12 mb-2">
                                 <label for="office">Atención al Ciudadano</label>
-                                <select class="form-control" name="office" id="office">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" name="office" id="office">
                                     <option value="1">Dirección de Atención al Ciudadano</option>
                                     <option value="2">Coordinador Estadal</option>
                                 </select>
@@ -232,25 +311,25 @@ $session = session();
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
                                 <label for="pais-caso">País</label>
-                                <select id="pais-caso" name="pais-caso" class="form-control">
+                                <select  id="pais-caso" name="pais-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="1" selected>Venezuela</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
                                 <label for="estado-caso">Estado</label>
-                                <select id="estado-caso" name="estado-caso" class="form-control">
+                                <select id="estado-caso" name="estado-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0" disabled>Seleccione Estado</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
                                 <label for="municipio-caso">Municipio</label>
-                                <select id="municipio-caso" name="municipio-caso" class="form-control">
+                                <select id="municipio-caso" name="municipio-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Municipio</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
                                 <label for="parroquia-caso">Parroquia</label>
-                                <select id="parroquia-caso" name="parroquia-caso" class="form-control">
+                                <select id="parroquia-caso" name="parroquia-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Parroquia</option>
                                 </select>
                             </div>
@@ -268,25 +347,25 @@ $session = session();
                         <div class="row">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
                                 <label for="tipo-atencion-usu">Tipo de Atención</label>
-                                <select class="form-control" id="tipo-atencion-usu" name="tipo-atencion-usu">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-atencion-usu" name="tipo-atencion-usu">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2 prop_int oculto">
                                 <label for="tipo-pi">Tipo de Propiedad Intelectual</label>
-                                <select disabled class="form-control" id="tipo-pi" name="tipo-pi">
+                                <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-pi" name="tipo-pi">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2 org_pp">
                                 <label for="organismo-caso">Organismo del Poder Popular</label>
-                                <select id="organismo-caso" name="organismo-caso" class="form-control">
+                                <select id="organismo-caso" name="organismo-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Organismo</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2 detalle_atencion oculto">
                                 <label for="edit_detelle_atencion">Detalle Atencion</label>
-                                <select disabled class="form-control" id="edit_detelle_atencion" name="detalles_atencion">
+                                <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="edit_detelle_atencion" name="detalles_atencion">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
@@ -310,13 +389,13 @@ $session = session();
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                                 <label for="ente_adscrito_id">Ente adscrito</label>
-                                <select class="form-control" id="ente_adscrito_id" name="competencia-cgr" value="0">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="ente_adscrito_id" name="competencia-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                                 <label for="competencia-cgr">Competencia de CGR</label>
-                                <select class="form-control" id="competencia-cgr" name="competencia-cgr" value="0">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="competencia-cgr" name="competencia-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <option value="1">Si</option>
                                     <option value="2">No</option>
@@ -324,7 +403,7 @@ $session = session();
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                                 <label for="asume-cgr">Asume CGR</label>
-                                <select class="form-control" id="asume-cgr" name="asume-cgr" value="0">
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="asume-cgr" name="asume-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <option value="1">Si</option>
                                     <option value="2">No</option>
@@ -413,7 +492,7 @@ $session = session();
                         <label for="docu-casos" class="col-form-label fw-bold">Documentos del Caso</label>
                     </div>
                     <div class="col-md-5 col-lg-4"> 
-                            <select class="form-control" style="width: 350px;" id="docu-casos" name="docu-casos">
+                            <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" style="width: 350px;" id="docu-casos" name="docu-casos">
                                 <option value="0" selected disabled>Seleccione</option>
                                 </select>
                     </div>
@@ -435,7 +514,7 @@ $session = session();
                 <div class="col-md-5">
                     <div class="mb-3">
                         
-                        <select class="form-control" id="punto-cuenta-select" name="id_punto_cuenta">
+                        <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="punto-cuenta-select" name="id_punto_cuenta">
                             <option value="" selected disabled>-- Elija una opción --</option>
                             </select>
                     </div>
@@ -445,7 +524,7 @@ $session = session();
                 <div class="col-md-5">
                     <div class="mb-3">
                         
-                        <select class="form-control" id="documentos-select" name="docu_ruta" disabled>
+                        <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="documentos-select" name="docu_ruta" disabled>
                             <option value="" selected disabled>-- Documento no disponible --</option>
                             </select>
                     </div>

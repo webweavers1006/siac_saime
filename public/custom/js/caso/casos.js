@@ -323,7 +323,7 @@ function Listar_Casos() {
     let table = $('#table_casos').DataTable({
         responsive: true,
       
-        dom: "Bfrtip",
+      
         buttons: {
             dom: {
                 button: {
@@ -413,7 +413,7 @@ function Listar_Casos() {
         "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,
-        dom: 'Blfrtip',
+        dom: 'lfrBtip',
         "searching": true,
         "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
         "ordering": true,

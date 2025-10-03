@@ -52,8 +52,7 @@ public function reporte_consolidado()
 {
     $request = $this->request;
 
-    // Captura todos los parámetros de DataTables y los filtros del reporte en un solo array.
-    // Usamos el operador de fusión nula (??) para asegurarnos de que el valor sea null si no se envía.
+    
     $params = [
         'draw' => $request->getVar('draw') ?? null,
         'start' => $request->getVar('start') ?? 0,
@@ -439,12 +438,14 @@ public function reporte_consolidado()
 	}
 	public function vista_estadisticas_filtros($desde = null, $hasta = null, $id_estado = null)
 	{
+
+		
 		if ($this->session->get('logged')) {
 			$model = new Casos();
 			//VERIFICAMOS SI HAY CASOS PARA LA FECHA INGRESADA
-			$querybuscarcasos = $model->contarCasosPorFecha($desde, $hasta);
+			$querybuscarcasos = $model->contarCasosPorFecha_filtro($desde, $hasta,$id_estado);
 			
-			
+
 			if (empty($querybuscarcasos->getResult())) {
 				echo view('template/header');
 				echo view('template/nav_bar');
@@ -453,8 +454,9 @@ public function reporte_consolidado()
 			} else {
 				
 			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE  BENEFICIARIO
-			$beneficiarios = $model->contarCasos_Tipo_Beneficiario_fecha($desde, $hasta,$id_estado=null);
-			
+			$beneficiarios = $model->contarCasos_Tipo_Beneficiario_fecha($desde, $hasta,$id_estado);
+			//var_dump($beneficiarios);
+			//die();
 			
 			
 			$data = [
@@ -463,7 +465,7 @@ public function reporte_consolidado()
 
 
 			//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
-				$query_casos_atendidos = $model->contarCasosAtendidos_Fecha($desde, $hasta,$id_estado=null);
+				$query_casos_atendidos = $model->contarCasosAtendidos_Fecha($desde, $hasta,$id_estado);
 				
 				$data = [
 					'beneficiarios' => $beneficiarios,
@@ -485,7 +487,7 @@ public function reporte_consolidado()
 
 
 				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO MASCULINO
-				$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado=null);
+				$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado);
 				$count_atencion_Masculino = [];
 				// Verificamos si el resultado de la consulta no está vacío
 				if (!empty($query_casos_atendidos_Masculino)) {
@@ -497,7 +499,7 @@ public function reporte_consolidado()
 				}
 
 				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO FEMENINO
-				$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado=null);
+				$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado);
 				$count_atencion_Femenino = [];
 				// Verificamos si el resultado de la consulta no está vacío
 				if (!empty($query_casos_atendidos_Femenino)) {
@@ -576,7 +578,7 @@ public function reporte_consolidado()
 
 			//	BUSCAMOS LOS CASOS POR ESTATUS
 			$query_casos_EstatusCasos = $model->contarCasosEstatusFecha($desde, $hasta,$id_estado);
-							
+				
 			$data = [
 				'beneficiarios' => $beneficiarios,
 				'via_atencion' => $query_casos_atendidos,
@@ -908,98 +910,81 @@ public function reporte_consolidado()
 
 public function vista_estadisticas_tipo_atencion($estado = null, $desde = null, $hasta = null)
 {
-	
-    // Redirects if the user is not logged in.
+    // 1. SEGURIDAD: Redirige si el usuario no está logueado.
     if (!$this->session->get('logged')) {
         return redirect()->to('/');
     }
 
     $model = new Casos();
-
-	  
-    // Use the correct variable name: $query_result
+      
+    // 2. OBTENER DATOS: Llama al método del modelo.
     $query_result = $model->ContarCasosPorMunicipioYTipoAtencion($estado, $desde, $hasta);
     
-    // Check if the query returned results before proceeding
-    if (empty($query_result)) {
-        // Handle the case where there are no results, maybe return an empty data set or an error message.
-        $data = [
-            'nombres_municipios' => [],
-            'tipos_atencion_unicos' => [],
-            'series_data' => [],
-			'desde' => $desde,
-			'hasta' => $hasta,
-			'estado' => $estado,
-        ];
-        
-        $json_data = json_encode($data);
-
-        echo view('template/header');
-        echo view('template/nav_bar');
-        echo view('reportes/estadisticas/tipo_atencion/content.php', [
-        'json_data' => $json_data,
-        'desde' => $desde,
-        'hasta' => $hasta,
-		'estado' => $estado,
-    ]);
-        echo view('template/footer');
-        echo view('reportes/estadisticas/tipo_atencion/footer.php');
-        return;
-    }
-    
+    // 3. PROCESAMIENTO INICIAL Y AGRUPACIÓN
     $datos_agrupados = [];
+    $tipos_atencion_unicos_set = []; // Usamos un array auxiliar para recolectar únicos rápidamente
 
-    // Correct the variable name from $query_atencion_municipio to $query_result
     foreach ($query_result as $item) {
         $municipio = $item->municipionom;
         $tipo_atencion = $item->tipo_aten_nombre;
-        $count = (int)$item->count; // Convert string to integer.
+        $count = (int)$item->count; // Convertir a entero
 
+        // Aseguramos que el municipio exista en el array principal
         if (!isset($datos_agrupados[$municipio])) {
             $datos_agrupados[$municipio] = [];
         }
 
+        // Almacenamos el conteo por Tipo de Atención dentro del Municipio
         $datos_agrupados[$municipio][$tipo_atencion] = $count;
+        
+        // Recolectamos el tipo de atención para el listado único
+        $tipos_atencion_unicos_set[$tipo_atencion] = true;
     }
 
+    // 4. ESTRUCTURACIÓN DE DATOS PARA el GRÁFICO
     $nombres_municipios = array_keys($datos_agrupados);
-    $tipos_atencion_unicos = [];
+    // Ordenamos los tipos de atención alfabéticamente para consistencia
+    $tipos_atencion_unicos = array_keys($tipos_atencion_unicos_set);
+    sort($tipos_atencion_unicos);
+    
     $series_data = [];
 
-    // Collect all unique attention types
-    foreach ($datos_agrupados as $tipos_atencion) {
-        $tipos_atencion_unicos = array_unique(array_merge($tipos_atencion_unicos, array_keys($tipos_atencion)));
-    }
-
-    // Prepare data for the chart series
+    // Iteramos sobre los Tipos de Atención Únicos para construir cada SERIE del gráfico
     foreach ($tipos_atencion_unicos as $tipo) {
-        $series_data[$tipo] = [];
+        $datos_serie = [];
+        
+        // Por cada tipo de atención, obtenemos su valor para CADA municipio
         foreach ($nombres_municipios as $municipio) {
-            $series_data[$tipo][] = $datos_agrupados[$municipio][$tipo] ?? 0;
+            // Si el municipio no tiene conteos para ese tipo, usamos 0 (cero), sino usamos el conteo.
+            $datos_serie[] = $datos_agrupados[$municipio][$tipo] ?? 0;
         }
+        
+        // Agregamos la serie completa (array de conteos) al array final
+        $series_data[] = $datos_serie;
     }
     
-    // Now, your variables are ready to be used in the view
+    // 5. PREPARACIÓN FINAL DE DATOS y VISTA
+    
+    // El 'data' ya tiene el formato final que mostraste en el ejemplo anterior
     $data = [
         'nombres_municipios' => $nombres_municipios,
-        'tipos_atencion_unicos' => array_values($tipos_atencion_unicos),
-        'series_data' => array_values($series_data),
-		'desde' => $desde,
-		'hasta' => $hasta,
-		'estado' => $estado,
-		 // Convert to indexed array for clean JSON
+        'tipos_atencion_unicos' => $tipos_atencion_unicos, // Ya está ordenado
+        'series_data' => $series_data, // Ya es un array indexado de arrays
+        'desde' => $desde,
+        'hasta' => $hasta,
+        'estado' => $estado,
     ];
 
-	
     $json_data = json_encode($data);
 
+    // Renderizado de vistas
     echo view('template/header');
     echo view('template/nav_bar');
-   echo view('reportes/estadisticas/tipo_atencion/content.php', [
+    echo view('reportes/estadisticas/tipo_atencion/content.php', [
         'json_data' => $json_data,
         'desde' => $desde,
         'hasta' => $hasta,
-		'estado' => $estado,
+        'estado' => $estado,
     ]);
     echo view('template/footer');
     echo view('reportes/estadisticas/tipo_atencion/footer.php');

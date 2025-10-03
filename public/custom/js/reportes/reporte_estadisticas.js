@@ -63,46 +63,40 @@ function llenar_Estados(e, id) {
 
 $(document).on('click', '.consultar', function(e) {
     e.preventDefault();
-    let desde = $('#desde').val();
-    let hasta = $('#hasta').val();
+    let desde = $('#desde').val() || 'null';
+    let hasta = $('#hasta').val() || 'null';
     let id_estado = $('#estado-caso').val();
+    id_estado = (id_estado === '0' || id_estado === null || id_estado === undefined) ? 'null' : id_estado;
 
-  
-    if (id_estado==='null'||id_estado===null)
-    {
-        if (desde == '') {
-            desde = 'null'
-        }
-        if (hasta == '') {
-            hasta = 'null'
-        }
-        if (desde == 'null' && hasta == 'null') {
-            alert('DEBE INGRESAR EL RANGO DE FECHA ')
-        } else if (desde == 'null' && hasta != 'null') {} else if (hasta == 'null' && desde != 'null') {
-            alert('DEDE INDICAR EL CAMPO HASTA');
-        } else if (hasta < desde) {
-            alert('EL CAMPO DESDE ES MAYOR AL CAMPO HASTA')
-        } else {
-          ;
-     
-            window.location = "/estadisticas_con_filtro/" + desde + '/' + hasta+'/'+ id_estado;
+    if (id_estado === 'null') {
+        if (desde === 'null' && hasta === 'null') {
+            alert('DEBE INGRESAR AL MENOS EL RANGO DE FECHA.');
+            return; // Detiene la ejecución si hay error.
         }
         
-    }else
-    {
-        id_estado=null;
-        if (desde == '') {
-            desde = 'null'
+        // 3. Validar si solo se ingresó una fecha
+        if (desde === 'null' && hasta !== 'null') {
+            alert('DEBE INDICAR LA FECHA DE INICIO (DESDE).');
+            return;
         }
-        if (hasta == '') {
-            hasta = 'null'
+        if (hasta === 'null' && desde !== 'null') {
+            alert('DEBE INDICAR LA FECHA DE FIN (HASTA).');
+            return;
         }
-        window.location = "/estadisticas_con_filtro/" + desde + '/' + hasta+'/'+ id_estado;
-    }
 
-  
+        // 4. Validar que la fecha 'DESDE' no sea mayor a la fecha 'HASTA'
+        if (desde !== 'null' && hasta !== 'null' && hasta < desde) {
+            alert('LA FECHA DE INICIO (DESDE) ES MAYOR A LA FECHA DE FIN (HASTA).');
+            return;
+        }
+    }
     
-})
+    // --- Ejecución de la Consulta ---
+    
+    // Si la validación pasa, se redirige. Todos los parámetros tendrán un valor (fecha o 'null')
+    window.location = "/estadisticas_con_filtro/" + desde + '/' + hasta + '/' + id_estado;
+
+});
 
 $(document).on('click', '.limpiar', function(e) {
     e.preventDefault();

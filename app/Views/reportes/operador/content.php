@@ -15,6 +15,11 @@ $session = session();
     /* Asegura que el contenedor de la imagen no afecte el layout horizontal */
     display: block; 
 }
+
+.btn-xs-xs
+{
+    font-size: 12px;
+}
 </style>
 <div class="content-wrapper">
 <script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>

@@ -96,12 +96,14 @@ $series_data = $data['series_data'];
 $totales_acumulados = array_fill(0, count($nombres_municipios), 0);
 foreach ($tipos_atencion_unicos as $index => $tipo_atencion) {
     foreach ($series_data[$index] as $municipio_index => $valor) {
-        $totales_acumulados[$municipio_index] += $valor;
+        // CORRECCIÓN: Conversión explícita a entero para asegurar la suma correcta.
+        $totales_acumulados[$municipio_index] += (int)$valor; 
     }
 }
 
 // Mantener la estructura original de datasets
 $datasets = [];
+// ... resto del código de datasets, que ya estaba bien ...
 foreach ($tipos_atencion_unicos as $index => $tipo_atencion) {
     $backgroundColor = sprintf('rgba(%d, %d, %d, 0.6)', rand(0, 255), rand(0, 255), rand(0, 255));
     $borderColor = str_replace('0.6', '1', $backgroundColor);
