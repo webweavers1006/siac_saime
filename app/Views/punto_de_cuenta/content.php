@@ -1,31 +1,75 @@
-<!-- Content Wrapper. Contains page content -->
 <?php
 $session = session();
 ?>
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
 <style>
+  /* Estilo base para DataTables */
   table.dataTable thead,
   table.dataTable tfoot {
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
+
+  /*
+  ==========================================
+  CORRECCIONES PARA SCROLL Y POSICIONAMIENTO DE MODALES 🛠️
+  ==========================================
+  */
+
+  /* 1. Evita que la página salte al abrir el modal (el principal culpable del mal posicionamiento). 
+     Fuerza el scroll del body y elimina el padding-right que añade Bootstrap al ocultar el scrollbar. */
+  .modal-open {
+    overflow: auto !important;
+    padding-right: 0px !important;
+  }
+
+  /* 2. Asegura que el modal siempre use su propio scroll si su contenido es largo,
+     y que se posicione correctamente. */
+  .modal {
+    overflow-y: auto !important;
+    padding: 0 !important;
+    /* Usar 'fade' en el div del modal ayuda a la transición y el cálculo del tamaño */
+  }
+  
+  /* Estilo para hacer que el texto general del modal-body sea ligeramente más grande */
+  .modal-body-lg-text {
+      font-size: 0.95rem; /* Talla ligeramente más grande que el estándar */
+  }
+
+  /* Ajuste para que la tabla y el resumen de casos también tengan un tamaño legible */
+  #lista-casos-asociados, #resumen-financiero {
+      font-size: 0.9rem;
+  }
+
+  /* Asegurar que los detalles del punto de cuenta sean claros */
+  #modal-casos .card-body dl {
+      font-size: 0.95rem; /* Aumenta el texto dentro de la lista de detalles */
+  }
+
+  /* ... Mantener el resto de tu CSS para DataTables ... */
+  #lista-casos-asociados table {
+      width: 100% !important;
+  }
+  #lista-casos-asociados .dataTables_wrapper {
+      padding: 10px;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+  }
+  
+  /* Estilo adicional para un borde superior más grueso y colorido en card-detalle-caso */
+  #card-detalle-caso {
+      border-top: 3px solid #28a745 !important; /* success color */
+  }
 </style>
 
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container">
       <div class="row mb-2">
         <div class="col-sm-6">
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-
-  <!-- Main content  fluid-->
+        </div><div class="col-sm-6">
+        </div></div></div></div>
   <div class="content">
     <div class="container">
       <div class="row">
@@ -67,17 +111,12 @@ $session = session();
           </div>
         </div>
       </div>
-      <!-- /.content-wrapper -->
-      <!-- Modal -->
-<!-- Este modal usa 'role="dialog"' y 'data-dismiss' para mantener la compatibilidad con tu JS de Bootstrap 4/3 -->
-<div class="modal fade" id="add-punto-cuenta" tabindex="-1" role="dialog" aria-labelledby="addPuntoCuentaTitle" aria-hidden="true">
+      <div class="modal fade" id="add-punto-cuenta" tabindex="-1" role="dialog" aria-labelledby="addPuntoCuentaTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content shadow-lg rounded-3">
       
-      <!-- Encabezado del Modal con estilo B5 (bg-light, p-3) -->
       <div class="modal-header bg-light border-bottom p-3">
         <h5 class="modal-title fw-bold" id="addPuntoCuentaTitle">Agregar Punto de Cuenta</h5>
-        <!-- Se mantiene la estructura 'close' y 'data-dismiss' de Bootstrap 4/3 -->
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -85,17 +124,13 @@ $session = session();
       
       <form id="form-add-punto-cuenta" method="POST" role="form"> 
         
-        <!-- Cuerpo del Modal: Compacto (p-4) -->
         <div class="modal-body p-4">
           
-          <!-- Sección 1: Datos principales -->
           <h6 class="text-secondary fw-bold text-uppercase mb-3">Datos del Punto de Cuenta</h6>
-          <!-- g-3 hace la fila más compacta -->
           <div class="row g-3 mb-4">
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="numero_punto_cuenta" class="form-label fw-semibold">Número de Punto de Cuenta</label>
-                <!-- form-control-sm para reducir altura -->
                 <input type="text" name="numero_punto_cuenta" id="numero_punto_cuenta" class="form-control form-control-sm" autocomplete="off" required>
               </div>
             </div>
@@ -103,20 +138,17 @@ $session = session();
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="fecha_punto_cuenta" class="form-label fw-semibold">Fecha de Punto de Cuenta</label>
-                <!-- form-control-sm para reducir altura -->
                 <input type="date" name="fecha_punto_cuenta" id="fecha_punto_cuenta" class="form-control form-control-sm" autocomplete="off" required> 
               </div>
             </div>
           </div>
           
-          <!-- Separador de Sección: Beneficiario (Compacto y estético) -->
           <div class="d-flex align-items-center mb-3">
               <div class="flex-grow-1"><hr class="m-0"></div>
               <h6 class="text-secondary fw-bold text-uppercase text-center mx-3 mb-0">Aprobador</h6>
               <div class="flex-grow-1"><hr class="m-0"></div>
           </div>
           
-          <!-- Sección 2: Datos del Beneficiario -->
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <div class="mb-0">
@@ -137,7 +169,6 @@ $session = session();
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="monto_aprobado" class="form-label">Monto Aprobado</label>
-                <!-- Usamos type="number" para mejor UX y validación -->
                 <input type="text" name="monto_aprobado" id="monto_aprobado" class="form-control form-control-sm" step="0.01" min="0" autocomplete="off" required>
               </div>
             </div>
@@ -151,16 +182,11 @@ $session = session();
           </div>
           
       
-          <!-- Fin Sección 3 -->
-
-        </div>
+          </div>
         
-        <!-- Pie de Modal (Footer) más compacto -->
         <div class="modal-footer d-flex justify-content-end border-top bg-light p-3">
-          <!-- 'type="reset"' funciona con HTML5 y cualquier versión de Bootstrap -->
           <button class="btn btn-sm btn-secondary me-2" type="reset">Limpiar</button>
           
-          <!-- Se mantiene 'data-dismiss="modal"' para asegurar el cierre -->
           <button type="button" class="btn btn-sm btn-danger me-2" data-dismiss="modal">Cerrar</button>
 
           <button class="btn btn-sm btn-success" type="submit">Guardar</button>
@@ -171,11 +197,7 @@ $session = session();
   </div>
 </div>
 
-      <!-- /.modal -->
-      <!-- Modal para editar punto de cuenta -->
-
- 
-<div class="modal fade" id="editar" tabindex="-1" role="dialog" aria-labelledby="editarPuntoCuentaTitulo" aria-hidden="true">
+      <div class="modal fade" id="editar" tabindex="-1" role="dialog" aria-labelledby="editarPuntoCuentaTitulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -312,34 +334,7 @@ $session = session();
     </div>
 
 
-     <style>
-    /* Estilo para hacer que el texto general del modal-body sea ligeramente más grande */
-    .modal-body-lg-text {
-        font-size: 0.95rem; /* Talla ligeramente más grande que el estándar */
-    }
-
-    /* Ajuste para que la tabla y el resumen de casos también tengan un tamaño legible */
-    #lista-casos-asociados, #resumen-financiero {
-        font-size: 0.9rem;
-    }
-
-    /* Asegurar que los detalles del punto de cuenta sean claros */
-    #modal-casos .card-body dl {
-        font-size: 0.95rem; /* Aumenta el texto dentro de la lista de detalles */
-    }
-
-    /* ... Mantener el resto de tu CSS para DataTables ... */
-    #lista-casos-asociados table {
-        width: 100% !important;
-    }
-    #lista-casos-asociados .dataTables_wrapper {
-        padding: 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
-    }
-</style>
-<div class="modal fade" id="modal-casos" tabindex="-1" role="dialog" aria-labelledby="modalCasosTitle" aria-hidden="true">
+     <div class="modal fade" id="modal-casos" tabindex="-1" role="dialog" aria-labelledby="modalCasosTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg rounded-lg">
             <div class="modal-header bg-primary text-white p-3 border-bottom-0 rounded-top-lg">
@@ -454,13 +449,6 @@ $session = session();
     </div>
 </div>
 
-                <style>
-                /* Estilo adicional para un borde superior más grueso y colorido,
-                  dando un efecto "pill" o "ribbon" sutil de éxito */
-                #card-detalle-caso {
-                    border-top: 3px solid #28a745 !important; /* success color */
-                }
-                </style>
                   <div id="mensaje-punto-cuenta" class="mt-2" style="display: none;"></div> 
                     <button type="submit" id="btn-asociar-caso" class="btn btn-success btn-block mt-3 py-2 shadow-sm" disabled>
                         <i class="fas fa-plus-circle mr-2"></i> Asociar Caso
@@ -476,7 +464,6 @@ $session = session();
         </div>
     </div>
 </div>
-      <!-- ***** FUNCION PARA SOLO NUMEROS***-** -->
       <script type="text/javascript">
         function valideKey(evt) {
           var code = (evt.which) ? evt.which : evt.keyCode;
@@ -489,7 +476,6 @@ $session = session();
           }
         }
       </script>
-      <!-- ***** FUNCION PARA SOLO LETRAS***-** -->
       <script>
         function noNumeros(event) {
           const tecla = event.keyCode || event.which;
@@ -498,15 +484,8 @@ $session = session();
           }
         }
       </script>
-      <!-- ***** FUNCION PARA CONVERTIR EN MAYUSCULA***-** -->
       <script>
         function mayus(e) {
           e.value = e.value.toUpperCase();
         }
       </script>
-
-
-
-<style>
-
-</style>

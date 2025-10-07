@@ -521,7 +521,14 @@ let denu_ente_financiador = '';
 let denu_nombre_proyecto = '';
 let denu_monto_aprovado = '';
 
-
+// =========================================================================
+// 🔑 CORRECCIÓN GLOBAL PARA EL ERROR COEP/CORS EN ICONOS (AQUÍ DEBE IR)
+// =========================================================================
+if (L.Icon.Default) {
+    // Esto fuerza a Leaflet a pedir las imágenes de sus marcadores (icon.png)
+    // usando CORS, resolviendo el bloqueo 'NotSameOriginAfterDefaultedToSameOriginByCoep'.
+    L.Icon.Default.prototype.options.crossOrigin = 'anonymous';
+}
 // =========================================================================
 // VARIABLES GLOBALES Y CONFIGURACIÓN INICIAL
 // =========================================================================
@@ -567,7 +574,8 @@ function handleMapDisplay(shouldShow, coords = null, name = 'Ubicación') {
         map = L.map('map').setView(mapCoords, 13);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+         crossOrigin: true 
         }).addTo(map);
 
         currentMarker = L.marker(mapCoords, { draggable: true }).addTo(map);

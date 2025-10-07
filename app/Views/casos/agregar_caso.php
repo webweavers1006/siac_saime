@@ -492,9 +492,23 @@ to {
                     </div>
                 </div>
 
-                <div id='map'></div>
+             <div id='map' style="height: 400px;"></div>
 
-              <script>
+<script>
+    // =========================================================================
+    // 🔑 CORRECCIÓN CRÍTICA PARA COEP/CORS EN ICONOS Y TILES
+    // =========================================================================
+
+    // 1. SOLUCIÓN PARA ICONOS: Establece 'crossOrigin' en la configuración global de iconos de Leaflet.
+    // Esto asegura que los iconos del marcador (marker-icon.png) se carguen con CORS.
+    if (L.Icon.Default) {
+        L.Icon.Default.prototype.options.crossOrigin = 'anonymous';
+    }
+
+    // =========================================================================
+    // VARIABLES GLOBALES Y CONFIGURACIÓN INICIAL
+    // =========================================================================
+    
     document.getElementById('locationName').addEventListener('input', function() {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
@@ -503,7 +517,13 @@ to {
     var map = L.map('map');
     var currentMarker = null;
 
-    // ⭐ FUNCIÓN PARA OBTENER LA UBICACIÓN POR DIRECCIÓN IP (ALTERNATIVA) ⭐
+    // =========================================================================
+    // FUNCIONES RELACIONADAS CON LA UBICACIÓN INICIAL
+    // =========================================================================
+
+    /**
+     * Función que obtiene la ubicación por dirección IP.
+     */
     function getLocationFromIP() {
         fetch('https://ipinfo.io/json')
             .then(response => response.json())
@@ -525,28 +545,29 @@ to {
             });
     }
 
-    // ⭐ FUNCIÓN PRINCIPAL PARA INICIAR EL MAPA ⭐
+    /**
+     * Función principal para iniciar el mapa con geolocalización o IP.
+     */
     function startMap() {
         // 1. Intenta usar la geolocalización del navegador (más precisa)
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 var lat = position.coords.latitude;
                 var lon = position.coords.longitude;
-                // Si tiene éxito, actualiza el mapa con la ubicación real
                 updateMarkerAndMap([lat, lon], 'Tu Ubicación Actual', false);
             }, function(error) {
                 console.warn("Geolocalización del navegador denegada. Usando geolocalización por IP.");
-                // Si el usuario deniega, usa la ubicación por IP como alternativa
                 getLocationFromIP();
             });
         } else {
             console.warn("Geolocalización no soportada. Usando geolocalización por IP.");
-            // Si el navegador no lo soporta, también usa la ubicación por IP
             getLocationFromIP();
         }
     }
 
-    // ⭐ FUNCIÓN PARA ACTUALIZAR MARCADOR Y MAPA ⭐
+    /**
+     * Función para actualizar marcador y mapa, centralizando la lógica.
+     */
     function updateMarkerAndMap(coords, name, isIPLocation) {
         if (currentMarker) {
             map.removeLayer(currentMarker);
@@ -562,7 +583,10 @@ to {
         addDragEndEventToMarker();
     }
     
-    // ⭐ FUNCIONES AUXILIARES ⭐
+    // =========================================================================
+    // FUNCIONES AUXILIARES Y EVENTOS
+    // =========================================================================
+
     function addDragEndEventToMarker() {
         if (currentMarker) {
             currentMarker.on('dragend', function() {
@@ -588,6 +612,7 @@ to {
     }
 
     function updateFormCoords(lat, lon) {
+        // Asegúrate de tener campos de input con los IDs 'latitude' y 'longitude'
         document.getElementById('latitude').value = lat.toFixed(6);
         document.getElementById('longitude').value = lon.toFixed(6);
     }
@@ -598,7 +623,7 @@ to {
         updateMarkerAndMap(defaultCoords, 'Ubicación por defecto: Caracas', true);
     }
 
-    // ⭐ LÓGICA DE BÚSQUEDA DEL BOTÓN ⭐
+    // LÓGICA DE BÚSQUEDA DEL BOTÓN
     document.getElementById('ubicar-btn').addEventListener('click', function() {
         var lat = parseFloat(document.getElementById('latitude').value);
         var lon = parseFloat(document.getElementById('longitude').value);
@@ -645,19 +670,24 @@ to {
     });
 
     document.getElementById('limpiar-btn').addEventListener('click', function() {
+        // Asegúrate de tener los botones de limpiar y los inputs de formulario
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
         document.getElementById('locationName').value = '';
         if (currentMarker) {
             map.removeLayer(currentMarker);
             currentMarker = null;
+            // Opcional: Centrar el mapa en la ubicación por defecto al limpiar
+            map.setView([10.4806, -66.9036], 6);
         }
     });
 
-    // Añade la capa de fondo de OpenStreetMap
+    // 2. SOLUCIÓN PARA TILES: Añade la capa de fondo de OpenStreetMap
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        // 🔑 AÑADIDO: Fuerza la petición CORS para evitar el bloqueo COEP en los tiles.
+        crossOrigin: true
     }).addTo(map);
 
     // Llama a la función principal para iniciar el mapa

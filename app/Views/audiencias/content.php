@@ -17,6 +17,29 @@ $userdata = $session->get();
   
 </style>
 
+<script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>
+
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], 
+                    },
+                    colors: {
+                        'primary-blue': '#007bff', 
+                        'primary-dark': '#0056b3',
+                        'theme-gray': '#a9b6c2', 
+                    }
+                }
+            }
+        }
+    </script>
+
+ 
+   
+
 <div class="content-wrapper">
   <main class="content">
     <div class="container-fluid ml-0 rounded-pill">
@@ -45,7 +68,7 @@ $userdata = $session->get();
                 <!-- Inputs de fecha inicial y final -->
                 <input type="date" id="fecha_inicial" class="form-control form-control-sm d-inline-block ml-2" style="width: auto; display: inline-block;" placeholder="Fecha inicial" required>
                 <input type="date" id="fecha_final" class="form-control form-control-sm d-inline-block ml-2" style="width: auto; display: inline-block;" placeholder="Fecha final" required>
-                <a href="#" target="_blank" class="btn btn-sm btn-success ml-2" style="vertical-align: middle; pointer-events: none; opacity: 0.6;" id="descargar_excel">Descargar Formato Excel</a>
+                <a href="#" target="_blank" class="btn btn-sm btn-success ml-2" style="vertical-align: middle; pointer-events: none; opacity: 0.6;" id="descargar_excel">Excel</a>
                 <script>
                 // Script para modificar el href del enlace según las fechas seleccionadas y habilitar el botón solo si ambos inputs tienen valor
                 const descargarExcel = document.getElementById('descargar_excel');
