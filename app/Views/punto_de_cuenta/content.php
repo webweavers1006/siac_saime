@@ -131,7 +131,7 @@ $session = session();
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="numero_punto_cuenta" class="form-label fw-semibold">Número de Punto de Cuenta</label>
-                <input type="text" name="numero_punto_cuenta" id="numero_punto_cuenta" class="form-control form-control-sm" autocomplete="off" required>
+                <input type="text" onkeyup="mayus(this);" name="numero_punto_cuenta" id="numero_punto_cuenta" class="form-control form-control-sm" autocomplete="off" required>
               </div>
             </div>
 
@@ -153,14 +153,14 @@ $session = session();
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="nombre_beneficiario" class="form-label">Nombre</label>
-                <input type="text" name="nombre_beneficiario" id="nombre_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
+                <input type="text" onkeyup="mayus(this);" name="nombre_beneficiario" id="nombre_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
               </div>
             </div>
 
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="apellido_beneficiario" class="form-label">Apellido</label>
-                <input type="text" name="apellido_beneficiario" id="apellido_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
+                <input type="text" onkeyup="mayus(this);" name="apellido_beneficiario" id="apellido_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
               </div>
             </div>
           </div>
@@ -169,14 +169,14 @@ $session = session();
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="monto_aprobado" class="form-label">Monto Aprobado</label>
-                <input type="text" name="monto_aprobado" id="monto_aprobado" class="form-control form-control-sm" step="0.01" min="0" autocomplete="off" required>
+                <input type="text" onkeypress="return valideKey(event);" name="monto_aprobado" id="monto_aprobado" class="form-control form-control-sm" step="0.01" min="0" autocomplete="off" required>
               </div>
             </div>
             
             <div class="col-md-6">
               <div class="mb-0">
                 <label for="causa_beneficiario" class="form-label">Causa del Beneficiario</label>
-                <input type="text" name="causa_beneficiario" id="causa_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
+                <input type="text" onkeyup="mayus(this);" name="causa_beneficiario" id="causa_beneficiario" class="form-control form-control-sm" autocomplete="off" required>
               </div>
             </div>
           </div>
@@ -225,7 +225,7 @@ $session = session();
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="edit_numero_punto_cuenta" class="form-label">Número de Punto de Cuenta</label>
-                                        <input type="text" name="numero_punto_cuenta" id="edit_numero_punto_cuenta" class="form-control" autocomplete="off" required placeholder="Escribe el número aquí">
+                                        <input type="text" onkeyup="mayus(this);" name="numero_punto_cuenta" id="edit_numero_punto_cuenta" class="form-control" autocomplete="off" required placeholder="Escribe el número aquí">
                                     </div>
                                 </div>
 
@@ -250,13 +250,13 @@ $session = session();
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="edit_nombre_beneficiario" class="form-label">Nombre del Aprobador</label>
-                                        <input type="text" name="nombre_beneficiario" id="edit_nombre_beneficiario" class="form-control" autocomplete="off" required placeholder="Nombre">
+                                        <input type="text" onkeyup="mayus(this);" name="nombre_beneficiario" id="edit_nombre_beneficiario" class="form-control" autocomplete="off" required placeholder="Nombre">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="edit_apellido_beneficiario" class="form-label">Apellido del Aprobador</label>
-                                        <input type="text" name="apellido_beneficiario" id="edit_apellido_beneficiario" class="form-control" autocomplete="off" required placeholder="Apellido">
+                                        <input type="text"  onkeyup="mayus(this);" name="apellido_beneficiario" id="edit_apellido_beneficiario" class="form-control" autocomplete="off" required placeholder="Apellido">
                                     </div>
                                 </div>
                             </div>
@@ -267,14 +267,14 @@ $session = session();
                                         <label for="edit_monto_aprobado" class="form-label">Monto Aprobado</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                            <input type="text" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
+                                            <input type="text" onkeypress="return valideKey(event);" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="edit_causa_beneficiario" class="form-label">Causa/Motivo</label>
-                                        <input type="text" name="causa_beneficiario" id="edit_causa_beneficiario" class="form-control" autocomplete="off" required placeholder="Breve descripción de la causa">
+                                        <input type="text" onkeyup="mayus(this);" name="causa_beneficiario" id="edit_causa_beneficiario" class="form-control" autocomplete="off" required placeholder="Breve descripción de la causa">
                                     </div>
                                 </div>
                             </div>

@@ -110,8 +110,10 @@
     </form>
     
     <div class="card">
-      <form id="anual-report-tables" name="anual-report-tables" method="POST" class="form-horizontal">
-        <div class="row p-4"> <div class="col-md-3">
+    <form id="anual-report-tables" name="anual-report-tables" method="POST" class="form-horizontal">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4"> <!-- USO DE GRID PARA 4 COLUMNAS RESPONSIVE (CORRECTO) -->
+          
+          <div class="col-span-1"> <!-- USO DE COL-SPAN-1 (CORRECTO) -->
             <div class="card h-full">
               <div class="card-header py-2 bg-blue-50 border-b border-blue-200 rounded-t-lg"> <h5 class="text-blue-600 text-base font-semibold flex items-center">
                   <i class="fas fa-angle-double-right mr-1"></i> Tipo de Beneficiario
@@ -138,9 +140,10 @@
                               </tr>
                           <?php endforeach;
                       } ?>
-                      <tr class="bg-gray-100 font-bold border-t-2 border-gray-300">
-                          <td class="whitespace-nowrap text-gray-900">Total</td>
-                          <td class="whitespace-nowrap text-gray-900"><?php echo $total_casos; ?></td>
+                      <!-- TOTAL ROW - TEXTO CORREGIDO A text-blue-800 -->
+                      <tr class="bg-blue-50 font-bold border-t-2 border-blue-200">
+                          <td class="whitespace-nowrap text-blue-800">Total</td>
+                          <td class="whitespace-nowrap text-blue-800"><?php echo $total_casos; ?></td>
                       </tr>
                   </tbody>
               </table>
@@ -149,7 +152,7 @@
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-span-1"> <!-- USO DE COL-SPAN-1 (CORRECTO) -->
             <div class="card h-full">
               <div class="card-header py-2 bg-blue-50 border-b border-blue-200 rounded-t-lg"> <h5 class="text-blue-600 text-base font-semibold flex items-center">
                   <i class="fas fa-angle-double-right mr-1"></i> Vía de Atención
@@ -176,9 +179,10 @@
                               </tr>
                           <?php endforeach;
                       } ?>
-                      <tr class="bg-gray-100 font-bold border-t-2 border-gray-300">
-                          <td class="whitespace-nowrap text-gray-900">Total</td>
-                          <td class="whitespace-nowrap text-gray-900"><?php echo $total_casos_atencion; ?></td>
+                      <!-- TOTAL ROW - TEXTO CORREGIDO A text-blue-800 -->
+                      <tr class="bg-blue-50 font-bold border-t-2 border-blue-200">
+                          <td class="whitespace-nowrap text-blue-800">Total</td>
+                          <td class="whitespace-nowrap text-blue-800"><?php echo $total_casos_atencion; ?></td>
                       </tr>
                   </tbody>
               </table>
@@ -187,7 +191,7 @@
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-span-1"> <!-- USO DE COL-SPAN-1 (CORRECTO) -->
             <div class="card h-full">
               <div class="card-header py-2 bg-blue-50 border-b border-blue-200 rounded-t-lg"> <h5 class="text-blue-600 text-base font-semibold flex items-center">
                   <i class="fas fa-angle-double-right mr-1"></i> Tipo Atención
@@ -214,9 +218,10 @@
                               </tr>
                           <?php endforeach;
                       } ?>
-                      <tr class="bg-gray-100 font-bold border-t-2 border-gray-300">
-                          <td class="whitespace-nowrap text-gray-900">Total</td>
-                          <td class="whitespace-nowrap text-gray-900"><?php echo $total_casos_tipo_solicitud; ?></td>
+                      <!-- TOTAL ROW - TEXTO CORREGIDO A text-blue-800 -->
+                      <tr class="bg-blue-50 font-bold border-t-2 border-blue-200">
+                          <td class="whitespace-nowrap text-blue-800">Total</td>
+                          <td class="whitespace-nowrap text-blue-800"><?php echo $total_casos_tipo_solicitud; ?></td>
                       </tr>
                   </tbody>
               </table>
@@ -225,7 +230,7 @@
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-span-1"> <!-- USO DE COL-SPAN-1 (CORRECTO) -->
             <div class="card h-full">
               <div class="card-header py-2 bg-blue-50 border-b border-blue-200 rounded-t-lg"> <h5 class="text-blue-600 text-base font-semibold flex items-center">
                   <i class="fas fa-angle-double-right mr-1"></i> Estatus Casos
@@ -252,9 +257,10 @@
                               </tr>
                           <?php endforeach;
                       } ?>
-                      <tr class="bg-gray-100 font-bold border-t-2 border-gray-300">
-                          <td class="whitespace-nowrap text-gray-900">Total</td>
-                          <td class="whitespace-nowrap text-gray-900"><?php echo $total_casos_estatus_casos; ?></td>
+                      <!-- TOTAL ROW - TEXTO CORREGIDO A text-blue-800 -->
+                      <tr class="bg-blue-50 font-bold border-t-2 border-blue-200">
+                          <td class="whitespace-nowrap text-blue-800">Total</td>
+                          <td class="whitespace-nowrap text-blue-800"><?php echo $total_casos_estatus_casos; ?></td>
                       </tr>
                   </tbody>
               </table>

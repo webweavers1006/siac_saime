@@ -7,17 +7,291 @@ $(function() {
     
 });
 
+
+
+// =================================================================
+// 1. DEFINICIONES DE FUNCIONES AUXILIARES (DEBEN ESTAR AL INICIO)
+// =================================================================
+
+/**
+ * Habilita o deshabilita todos los campos dentro de una sección de rol.
+ * (La función toggleCamposEdicion es la única que debe quedar sin cambios aquí)
+ */
+function toggleCamposEdicion(prefix, habilitar) {
+    const selectorContenido = `#${prefix}-content, #${prefix.replace('-apoderado', '')}-content, #mediacion`;
+    const $elementos = $(selectorContenido).find('input, select, textarea, button');
+
+    $elementos.each(function() {
+        const $el = $(this);
+        const id = $el.attr('id');
+        
+        // Excluir el campo de búsqueda, el botón de búsqueda Y el checkbox "aplica".
+        if (
+            (id && id.includes('cedula-existente')) || // Campo de búsqueda
+            (id && id.includes('btn_buscar')) ||       // Botón de búsqueda
+            (id && id.includes('-aplica'))             // Checkbox "Aplica"
+        ) {
+            $el.prop('disabled', false); 
+            $el.removeClass('campo-solo-lectura');
+            return; 
+        }
+        
+        // Bloquear/Desbloquear el elemento
+        $el.prop('disabled', !habilitar);
+
+        // Aplicar/Remover la clase visual
+        if (habilitar) {
+            $el.removeClass('campo-solo-lectura');
+        } else {
+            $el.addClass('campo-solo-lectura');
+        }
+    });
+}
+
+
+/**
+ * 🎯 Mapea la Identificación Principal.
+ * * Asigna la cédula o RIF buscado al campo de identificación del rol.
+ */
+function mapearCedulaFormulario(prefix, cedula) {
+    let ciFieldId;
+    if (prefix === 'contraparte') { ciFieldId = '#contraparte-ident-valor'; } 
+    else if (prefix === 'apoderado-solicitante') { ciFieldId = '#apoderado-solicitante-ci'; } 
+    else { ciFieldId = '#contraparte-apoderado-ci'; }
+    $(ciFieldId).val(cedula);
+}
+
+
+/**
+ * 🧹 Restablece Campos de Datos y Ubicación.
+ * Elimina el contenido de todos los campos de texto del rol y reinicia los selectores.
+ */
+function limpiarCamposTercero(prefix) {
+    let ciFieldId, tipoFieldId, nombreFieldId, impreFieldId;
+
+    if (prefix === 'contraparte') {
+        ciFieldId = '#contraparte-ident-valor'; tipoFieldId = '#contraparte-ident-tipo'; nombreFieldId = '#contraparte-nombre-razon';
+    } else if (prefix === 'apoderado-solicitante') {
+        ciFieldId = '#apoderado-solicitante-ci'; tipoFieldId = '#apo_solicitente-ident-tipo'; nombreFieldId = '#apoderado-solicitante-nombres'; impreFieldId = '#apoderado-solicitante-impre';
+    } else {
+        ciFieldId = '#contraparte-apoderado-ci'; tipoFieldId = '#apo_contraparte-ident-tipo'; nombreFieldId = '#apoderado-contraparte-nombres'; impreFieldId = '#contraparte-apoderado-impre';
+    }
+
+    $(ciFieldId).val(''); 
+    $(tipoFieldId).val('V'); 
+    $(nombreFieldId).val('');
+    $(`#${prefix}-telefono`).val('');
+    $(`#${prefix}-correo`).val('');
+    $(`#${prefix}-direccion`).val('');
+    if (impreFieldId) $(impreFieldId).val('');
+    
+    // Reiniciar selectores de Ubicación
+    $(`#${prefix}-pais-select`).val('0').trigger('change');
+    $(`#${prefix}-estado-select`).empty().append('<option value="0" disabled selected>Seleccione Estado</option>');
+    $(`#${prefix}-municipio-select`).empty().append('<option value="0" disabled selected>Seleccione Municipio</option>');
+    $(`#${prefix}-parroquia-select`).empty().append('<option value="0" disabled selected>Seleccione Parroquia</option>');
+}
+
+/**
+ * 🗺️ Mapeo Integral de Datos de Tercero.
+ * Asigna la información detallada del tercero a los campos e inicia la cascada de ubicación.
+ */
+function mapearDatosTercero(prefix, data) {
+    let ciFieldId, tipoFieldId, nombreFieldId, impreFieldId;
+
+    if (prefix === 'contraparte') {
+        ciFieldId = '#contraparte-ident-valor'; tipoFieldId = '#contraparte-ident-tipo'; nombreFieldId = '#contraparte-nombre-razon';
+    } else if (prefix === 'apoderado-solicitante') {
+        ciFieldId = '#apoderado-solicitante-ci'; tipoFieldId = '#apo_solicitente-ident-tipo'; nombreFieldId = '#apoderado-solicitante-nombres'; impreFieldId = '#apoderado-solicitante-impre';
+    } else { 
+        ciFieldId = '#contraparte-apoderado-ci'; tipoFieldId = '#apo_contraparte-ident-tipo'; nombreFieldId = '#apoderado-contraparte-nombres'; impreFieldId = '#contraparte-apoderado-impre';
+    }
+
+    // 1. Mapeo de campos de texto
+    $(ciFieldId).val(data.ter_identificacion || '');
+    $(tipoFieldId).val(data.ter_tipo_per || 'V');
+    $(nombreFieldId).val(data.ter_nombre ? data.ter_nombre.trim() : '');
+    if (impreFieldId) $(impreFieldId).val(data.ter_impre_abogado || '');
+    $(`#${prefix}-telefono`).val(data.ter_telefono || '');
+    $(`#${prefix}-correo`).val(data.ter_correo || '');
+    $(`#${prefix}-direccion`).val(data.ter_direccion ? data.ter_direccion.trim() : '');
+
+    // 2. Mapeo de Ubicación (Usando tu lógica de inicialización y disparadores)
+    const pais = data.ter_pais;
+    const estado = data.ter_estado;
+    const municipio = data.ter_municipio;
+    const parroquia = data.ter_parroquia;
+    
+    if (pais) {
+        const paisId = `${prefix}-pais-select`;
+        const estadoId = `${prefix}-estado-select`;
+        const municipioId = `${prefix}-municipio-select`;
+        const parroquiaId = `${prefix}-parroquia-select`;
+
+        llenar_Paises_Multiple(paisId, pais); 
+
+        if (pais == 1) {
+            llenar_Estados_Multiple(estadoId, estado); 
+            
+            // Lógica de carga asíncrona simulando el evento change
+            setTimeout(() => {
+                if (estado) {
+                    const datos_m = { id_estado: estado };
+                    $.ajax({
+                        url: "/municipios", method: "POST", dataType: "JSON", data: { data: btoa(JSON.stringify(datos_m)) },
+                    })
+                    .then((response) => {
+                        $(`#${municipioId}`).html(response.data);
+                        if (municipio) {
+                             $(`#${municipioId}`).val(municipio); 
+
+                             const datos_p = { id_municipio: municipio };
+                             return $.ajax({
+                                 url: "/parroquias", method: "POST", dataType: "JSON", data: { data: btoa(JSON.stringify(datos_p)) },
+                             });
+                        }
+                    })
+                    .then((response) => {
+                        if (response) {
+                             $(`#${parroquiaId}`).html(response.data);
+                             if (parroquia) {
+                                $(`#${parroquiaId}`).val(parroquia); 
+                             }
+                        }
+                    })
+                    .catch((request) => {
+                        console.error("Error cargando ubicación en mapeo:", request);
+                    });
+                }
+            }, 100); 
+        } else {
+             llenar_Estados_Multiple(estadoId, 26); 
+             $(`#${municipioId}`).val('336'); 
+             $(`#${parroquiaId}`).val('1135');
+        }
+    }
+}
+
+
+// =================================================================
+// 2. FUNCIÓN MAESTRA DE BÚSQUEDA (buscar_Tercero_Mediacion)
+// =================================================================
+
+function buscar_Tercero_Mediacion(prefix) {
+    
+    let cedulaInputId;
+    let botonId = `#btn_buscar_${prefix.replace('-', '_')}`; 
+
+    if (prefix === 'contraparte') { cedulaInputId = `#cedula-existente-contra`; } 
+    else if (prefix === 'apoderado-solicitante') { cedulaInputId = `#cedula-existente-apo-sol`; } 
+    else { cedulaInputId = `#cedula-existente-apo-contra`; }
+
+    const $input = $(cedulaInputId);
+    const $boton = $(botonId);
+
+    let cedula_existente = ($input.val() || '').trim();
+    
+    if (!cedula_existente) {
+        Swal.fire("Advertencia", `Debe ingresar la cédula o RIF para buscar los datos de ${prefix.replace('-', ' ')}.`, "warning");
+        return;
+    }
+
+    const url = '/buscar_datos_cedula_mediacion/' + cedula_existente;
+    
+    $.ajax({
+        url: url,
+        method: 'GET', 
+        dataType: 'JSON',
+        
+        beforeSend: function() { $boton.prop('disabled', true).text('Buscando...'); },
+        
+        success: function(response) {    
+            $boton.prop('disabled', false).text('Buscar'); 
+            
+            // 1. Lógica de NO ENCONTRADO (El tercero NO existe en la base de datos)
+            if (response.error || !response.ter_identificacion) {
+                Swal.fire("Información", response.error || 'No se encontraron datos para la identificación: ' + cedula_existente, "info");
+                
+                limpiarCamposTercero(prefix); 
+                mapearCedulaFormulario(prefix, cedula_existente);
+
+                // 🚨 LIBERAR campos para agregar la información
+                toggleCamposEdicion(prefix, true); 
+                return;
+            }
+            
+            // 2. Lógica de ENCONTRADO (El tercero SÍ existe en la base de datos)
+            
+            mapearDatosTercero(prefix, response);
+            
+            // 🚨 MANTENER BLOQUEADOS los campos (modo solo lectura)
+            toggleCamposEdicion(prefix, false); 
+            
+            if (prefix.includes('apoderado')) {
+                $(`#${prefix}-aplica`).prop('checked', true);
+                if (typeof toggleApoderado === 'function') {
+                    toggleApoderado(prefix); 
+                }
+            }
+
+            Swal.fire("Éxito", `Datos cargados correctamente.`, "success");
+        },
+        
+        error: function(xhr, status, errorThrown) {
+            $boton.prop('disabled', false).text('Buscar'); 
+            console.error("Error en la solicitud:", status, errorThrown, xhr);
+            Swal.fire("Error", "Ocurrió un error al intentar buscar los datos.", "error");
+        }
+    });
+}
+
+
+// =================================================================
+// 3. INICIALIZACIÓN DEL DOM Y EVENTOS
+// =================================================================
+
+$(function() {
+    
+    // 1. INICIALIZACIÓN DE SELECTORES PARA APODERADO SOLICITANTE
+    llenar_Selectores_Iniciales("apoderado-solicitante");
+
+    // 2. INICIALIZACIÓN DE SELECTORES PARA CONTRAPARTE
+    llenar_Selectores_Iniciales("contraparte");
+
+    // 3. INICIALIZACIÓN DE SELECTORES PARA APODERADO CONTRAPARTE
+    llenar_Selectores_Iniciales("apoderado-contraparte");
+
+    // 🚨 BLOQUEO INICIAL (Modo Solo Lectura)
+    toggleCamposEdicion('apoderado-solicitante', false); 
+    toggleCamposEdicion('contraparte', false); 
+    toggleCamposEdicion('apoderado-contraparte', false);
+
+   // Adjuntar eventos de búsqueda (Click)
+    $('#btn_buscar_apo_sol').on('click', function(e) {
+        e.preventDefault(); 
+        buscar_Tercero_Mediacion('apoderado-solicitante'); 
+    });
+
+    $('#btn_buscar_contra').on('click', function(e) {
+        e.preventDefault(); 
+        buscar_Tercero_Mediacion('contraparte');
+    });
+
+    $('#btn_buscar_apo_contra').on('click', function(e) {
+        e.preventDefault(); 
+        buscar_Tercero_Mediacion('apoderado-contraparte');
+    });
+    
+});
+
+
 $(document).ready(function() {
 
     var $editCaseModal = $('#editCase');
     $editCaseModal.on('hidden.bs.modal', function () {
         
 
-        // Opción B: Resetear todos los elementos de formulario dentro del modal (Más general)
-        $editCaseModal.find('input:text, input:file, textarea').val(''); // Limpia inputs de texto/file y textareas
-        $editCaseModal.find('input:email').val(''); // Limpia inputs de email
-        $editCaseModal.find('input:date').val(''); // Limpia inputs de fecha
-        $editCaseModal.find('input:checkbox, input:radio').prop('checked', false).trigger('change'); // Desmarca checkboxes y radios
+
         
         // Resetear selectores a su primera opción o la que tenga el atributo 'selected'
         $editCaseModal.find('select').each(function() {
@@ -508,7 +782,7 @@ function Listar_Casos() {
     });
 }
 
-                        let competencia_cgr = '';
+let competencia_cgr = '';
 let asume_cgr = '';
 let denu_afecta_persona = '';
 let denu_afecta_comunidad = '';
@@ -724,7 +998,6 @@ $('#listar_casos').on('click', '.Editar', function(e) {
     let apellido_anterior = apellido
     let cedula = $(this).attr('cedula');
     let tipo_atend_id = $(this).attr('tipo_atend_id');
-
 
 
    
@@ -967,6 +1240,7 @@ cargarPuntosDeCuenta(idcaso);
     if (id_tipo_atencion == 1)
     {
         $("#denuncias").hide();
+        $("#mediacion").hide();
 
 
         if (act_pro_int=='t') 
@@ -1022,7 +1296,7 @@ cargarPuntosDeCuenta(idcaso);
                 
             }else
             {
-               
+                $("#mediacion").hide(); 
                 $(".prop_int").hide();
                 $("#denuncias").show();
                 $("#cgr").hide();
@@ -1055,6 +1329,60 @@ cargarPuntosDeCuenta(idcaso);
             
      
     } 
+     
+    else if (id_tipo_atencion == 23)
+{
+    // 1. Mostrar la sección de Mediación y ocultar otras
+    $("#denuncias").hide();
+    $("#cgr").hide();
+    $("#mediacion").show(); 
+    
+    // METODO QUE BUSCA Y CARGA LA INFORMACIÓN DEL CASO DE MEDIACIÓN
+    // Este método maneja el bloqueo inicial de campos de datos.
+    loadDatosMediacion(idcaso);
+
+    // 2. Lógica para Propiedad Intelectual (act_pro_int)
+    if (act_pro_int == 't') 
+    {
+        $(".prop_int").show();
+        // Nota: document.getElementById.disabled = false ya no es necesario
+        // si la sección está bloqueada, pero se mantiene si es un control específico.
+        document.getElementById("tipo-pi").disabled = false;
+        $("#cgr").hide();
+        
+    } else {
+        $(".prop_int").hide();
+        $("#denuncias").hide();
+        $("#cgr").hide();
+    }
+    
+    // 3. Lógica para Detalle de Atención (hijos_detalle_atencion)
+    // 🚨 CORRECCIÓN CLAVE: La doble asignación (hijos_detalle_atencion=='SI') estaba mal.
+    if (hijos_detalle_atencion !== null && hijos_detalle_atencion !== 'null' && tipo_atend_borrado == 'f')
+    {
+        // Se asume que necesitas mostrar la sección si se cumplen las condiciones
+        // La asignación debe ser con un solo = si quieres cambiar el valor de la variable.
+        // hijos_detalle_atencion = 'SI'; // Descomentar si realmente necesitas cambiar la variable
+        $(".detalle_atencion").show();
+    } else {
+        // hijos_detalle_atencion = 'NO'; // Descomentar si realmente necesitas cambiar la variable
+        $(".detalle_atencion").hide();
+    }
+
+
+    // 4. Lógica para Organismos PP (acc_org_pp)
+    if (acc_org_pp == 't') 
+    {
+        $(".org_pp").show();
+        document.getElementById("organismo-caso").disabled = false;
+        $("#cgr").hide();
+        
+    } else {
+        $(".org_pp").hide();
+        $("#cgr").hide();
+    }
+}
+
     else
     {
       
@@ -1139,6 +1467,9 @@ function loadCaseData(idcaso) {
 }
 
 
+
+
+
     $("#editCase").modal("show");
     $('#editCase').find('#id_caso_pdf').val(idcaso);
     $('#editCase').find('#nombre-persona').val(nombre);
@@ -1220,6 +1551,136 @@ function loadCaseData(idcaso) {
     } else {
         $('#editCase').find('#office').val('2');
     }
+
+
+/**
+ * Función para cargar los datos del caso al presionar el botón de edición (Modo Visualización/Bloqueado).
+ * * Configura todos los campos de datos en modo "solo lectura" pero deja libres los campos de búsqueda
+ * y los checkboxes para permitir la edición o la búsqueda de nuevos terceros.
+ * * @param {number} idcaso El ID del caso a editar.
+ */
+function loadDatosMediacion(idcaso) {
+    $.ajax({
+        url: "/buscar_Info_Mediacion/" + idcaso,
+        method: "get",
+        dataType: "JSON",
+    })
+    .then((response) => {
+        if (!response || response.length === 0) {
+            return Swal.fire("Advertencia", "No se encontraron datos de mediación para este caso.", "warning");
+        }
+        
+        const data = response[0];
+        
+        // Estructura de mapeo centralizada de roles (Solo se muestra por referencia)
+        const roles = [
+            {
+                prefix: 'apoderado-solicitante', dataId: data.med_apo_sol_id, nombre: data.nombre_apo_sol, ci: data.id_apo_sol, tipo_per: data.tipo_per_apo_sol,
+                correo: data.correo_apo_sol, telefono: data.telefono_apo_sol, pais: data.pais_apo_sol, estado: data.estado_apo_sol,
+                municipio: data.municipio_apo_sol, parroquia: data.parroquia_apo_sol, direccion: data.direccion_apo_sol, impre_abogado: data.impre_abogado_apo_sol,
+                id_nombre: '#apoderado-solicitante-nombres', id_ci: '#apoderado-solicitante-ci', id_tipo_per: '#apo_solicitente-ident-tipo', id_impre: '#apoderado-solicitante-impre',
+            },
+            {
+                prefix: 'contraparte', dataId: data.med_contra_id, nombre: data.nombre_contra, ci: data.id_contra, tipo_per: data.tipo_per_contra,
+                correo: data.correo_contra, telefono: data.telefono_contra, pais: data.pais_contra, estado: data.estado_contra,
+                municipio: data.municipio_contra, parroquia: data.parroquia_contra, direccion: data.direccion_contra, impre_abogado: data.impre_abogado_contra,
+                id_nombre: '#contraparte-nombre-razon', id_ci: '#contraparte-ident-valor', id_tipo_per: '#contraparte-ident-tipo', id_impre: '',
+            },
+            {
+                prefix: 'apoderado-contraparte', dataId: data.med_apo_contra_id, nombre: data.nombre_apo_contra, ci: data.id_apo_contra, tipo_per: data.tipo_per_apo_contra,
+                correo: data.correo_apo_contra, telefono: data.telefono_apo_contra, pais: data.pais_apo_contra, estado: data.estado_apo_contra,
+                municipio: data.municipio_apo_contra, parroquia: data.parroquia_apo_contra, direccion: data.direccion_apo_contra,
+                impre_abogado: data.impre_abogado_apo_contra, id_nombre: '#apoderado-contraparte-nombres', id_ci: '#contraparte-apoderado-ci',
+                id_tipo_per: '#apo_contraparte-ident-tipo', id_impre: '#contraparte-apoderado-impre',
+            }
+        ];
+
+        // Iterar sobre cada rol y mapear sus campos
+        roles.forEach(rol => {
+            const { 
+                prefix, dataId, nombre, ci, tipo_per, correo, telefono, 
+                pais, estado, municipio, parroquia, direccion, impre_abogado,
+                id_nombre, id_ci, id_tipo_per, id_impre
+            } = rol;
+            
+            const isApoderado = prefix.includes('apoderado');
+
+            // 1. Manejo de Checkbox y Visibilidad
+            if (isApoderado) {
+                const aplica = dataId !== null;
+                $(`#${prefix}-aplica`).prop('checked', aplica);
+                toggleApoderado(prefix); 
+            }
+
+            // 2. Mapeo de campos de texto y selectores sencillos
+            $(id_nombre).val(nombre ? nombre.trim() : '');
+            $(id_ci).val(ci || '');
+            $(id_tipo_per).val(tipo_per || 'V');
+            $(`#${prefix}-telefono`).val(telefono || '');
+            $(`#${prefix}-correo`).val(correo || '');
+            $(`#${prefix}-direccion`).val(direccion ? direccion.trim() : '');
+            
+            if (id_impre) {
+                 $(id_impre).val(impre_abogado || '');
+            }
+
+            // 3. Mapeo de Ubicación Asíncrona (Secuencial con setTimeout)
+            if (pais) {
+                // A. Cargar País
+                llenar_Paises_Multiple(`${prefix}-pais-select`, pais);
+
+                // B. Cargar Estados y secuenciar Municipio/Parroquia
+                llenar_Estados_Multiple(`${prefix}-estado-select`, estado);
+                
+                // Usamos setTimeout para esperar que los datos de Estado carguen antes de llamar a Municipio
+                setTimeout(() => {
+                    if (estado) {
+                         // Cargar y seleccionar el municipio
+                         llenar_municipios_generico(prefix, estado, municipio);
+                    }
+                    
+                    // Retraso adicional para que Parroquia espere al Municipio
+                    setTimeout(() => {
+                        if (municipio) {
+                            // Cargar y seleccionar la parroquia
+                            llenar_parroquias_generico(prefix, municipio, parroquia);
+                        }
+                    }, 200); 
+
+                }, 200);
+            }
+        });
+        
+        // 🚨 CONFIGURACIÓN DE BLOQUEO (Modo Solo Lectura)
+        
+        // 1. Deshabilitar y aplicar estilo campo-solo-lectura a TODOS los campos de datos y botones que no son de búsqueda
+        $("#mediacion").find('input, select, textarea').prop('disabled', true).addClass('campo-solo-lectura');
+        $("#mediacion").find('button:not([id^="btn_buscar"])').prop('disabled', true).addClass('campo-solo-lectura');
+        
+        // 2. 🔓 LIBERACIÓN DE ELEMENTOS CLAVE DE INTERACCIÓN Y BÚSQUEDA
+        
+        // Liberar Checkboxes (Aplica)
+        $("#mediacion").find('input[type="checkbox"]').prop('disabled', false).removeClass('campo-solo-lectura');
+        
+        // Liberar Campos de Cédula de Búsqueda
+        $("#mediacion").find('input[id^="cedula-existente"]').each(function() {
+            $(this).prop('disabled', false).removeClass('campo-solo-lectura');
+        });
+
+        // Liberar Botones de Búsqueda
+        $("#mediacion").find('button[id^="btn_buscar"]').each(function() {
+             $(this).prop('disabled', false).removeClass('campo-solo-lectura');
+             $(this).text('Buscar');
+        });
+
+        // Mostrar el modal
+        $('#editCase').modal('show'); 
+    })
+    .catch((error) => {
+        console.error("Error en la solicitud AJAX general:", error);
+        Swal.fire("Error", "Error al cargar los datos de la mediación. Revise la consola para más detalles.", "error");
+    });
+}
     llenar_pais(Event,paisid);
     llenar_Red_social(Event, idrrss);
     llenar_Estados(Event, estadoid)
@@ -1230,7 +1691,7 @@ function loadCaseData(idcaso) {
     //llenar_Tipo_Atencion(Event, id_tipo_atencion);
     llenar_Tipo_Atencion_filtros(Event,idrrss,id_tipo_atencion);   
     llenar_Entes_asdcritos(Event, ente_adscrito_id);
-    llenar_detalle_atencion(Event,id_tipo_atencion,tipo_atend_id,hijos_detalle_atencion);
+    llenar_detalle_atencion(Event,id_tipo_atencion,tipo_atend_id);
    document.getElementById("edit_detelle_atencion").disabled = false;
 })
 
@@ -1247,15 +1708,27 @@ $("#tipo-atencion-usu").on('change', function(e) {
     } else {
         $(".prop_int").hide();
     }
-    
+   
+   
+
     if (id_tipo_atencion == 5) {
         $("#cgr").hide();
+        $("#mediacion").hide();
         $("#denuncias").show();
     } else if (id_tipo_atencion == 1) {
         $("#denuncias").hide();
-    } else {
+        $("#mediacion").hide();
+        $("#cgr").hide();
+    } else if (id_tipo_atencion == 23) {
+        $("#denuncias").hide();
+        $("#mediacion").show();
+        $("#cgr").hide();
+    }
+    
+    else {
         $("#cgr").hide();
         $("#denuncias").hide();
+         $("#mediacion").hide();
     }
 
     $.ajax({
@@ -1282,7 +1755,7 @@ $("#tipo-atencion-usu").on('change', function(e) {
         handleMapDisplay(false);
     });
 
-    llenar_detalle_atencion(e, id_tipo_atencion, tipo_atend_id, hijos_detalle_atencion);
+    llenar_detalle_atencion(e, id_tipo_atencion,tipo_atend_id);
 });
 
 
@@ -2209,7 +2682,159 @@ $(document).on("click", "#editar_caso", function(e) {
                 }
             }
             
-        } 
+        }   // SI ES UN CASO DE MEDIACION ENTRA AQUI
+         else if (tipo_atencion === '23') 
+
+         {
+         
+           
+        
+            const datos_medicion = obtenerDatosMediacion();
+
+                
+                let bandera_cgr = false;
+                let bandera_denuncia = false;
+                let valor_competencia = ''; 
+                let ente_adscrito = 0
+                let valor_asume = ''; 
+
+             
+                let tipo_atend_id = ''; 
+               
+                let competencia_crg = valor_competencia; // Se iguala a las variables inicializadas
+                let asume_crg = valor_asume;             // Se iguala a las variables inicializadas
+
+
+                // --- Procesamiento de Propiedad Intelectual ---
+                let prop_intelectual = 1; // Inicializamos con el valor por defecto
+                const tipo_prop_intelec = $("#tipo-pi").val();
+
+                // Verifica que el valor no sea nulo, 'null' (como string) o cadena vacía para asignarlo.
+                if (tipo_prop_intelec !== null && tipo_prop_intelec !== 'null' && tipo_prop_intelec !== '') 
+                {
+                    prop_intelectual = tipo_prop_intelec;
+                }
+
+                // --- Procesamiento de Cédula ---
+                let cedula = $("#cedula-persona").val();
+
+                // Verifica si la cédula existe y si el primer carácter es una letra, luego la remueve.
+                if (cedula && cedula.charAt(0).match(/[a-zA-Z]/))
+                {
+                    cedula = cedula.slice(1);
+                }
+
+                // **CORRECCIÓN 4: Se usa 'const' para el objeto de datos final.**
+                const datos = { 
+                    datos_medicion:datos_medicion,
+                    "social_network": $("#red-social").val(),
+                "date-entry": $("#fecha-recibido").val(),
+                "person-name": $("#nombre-persona").val(),
+                "person-lastname": $("#apellido-persona").val(),
+                "person-id": $("#cedula-persona").val(),
+                "nacionalidad": $("#tipo-persona").val(),
+                "telephone": $("#telefono").val(),
+                "country": $("#pais-caso").val(),
+                "state": $("#estado-caso").val(),
+                "county": $("#municipio-caso").val(),
+                "town": $("#parroquia-caso").val(),
+                "record-work": $("#num-tramite").val(),
+                "pi-type": prop_intelectual,
+                "user-requirement": $("#requerimiento-usuario").val(),
+                "office": $("#office").val(),
+                "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
+                "tipo_atend_id": $("#edit_detelle_atencion").val(),
+                "sexo": $("#sexo").val(),
+                "idcaso": $("#id_caso").val(),
+                "tipo_beneficiario": $("#t-beneficiario").val(),
+                "direccion": $("#direccion").val(),
+                "correo": $("#correo").val(),
+                "ente_adscrito_id": ente_adscrito_id,
+                "competencia_cgr": $("#competencia-cgr").val(),
+                "asume_cgr": $("#asume-cgr").val(),
+                "denu_afecta_persona": denu_afecta_persona,
+                "denu_afecta_comunidad": denu_afecta_comunidad,
+                "denu_afecta_terceros": denu_afecta_terceros,
+                "denu_involucrados": $('#denu-involucrados').val(),
+                "denu_fecha_hechos": $('#fecha-hechos').val(),
+                "denu_instancia_popular": $('#nombre-instancia').val(),
+                "denu_rif_instancia": $('#rif-instancia').val(),
+                "denu_ente_financiador": $('#ente-financiador').val(),
+                "denu_nombre_proyecto": $('#nombre-proyecto').val(),
+                "denu_monto_aprovado": $('#monto-aprovado').val(),
+                "nombre_instancia": $('#monto-aprovado').val(),
+                "ente_adscrito_id": ente_adscrito_id,
+                "campos_modificados": datos_modificados,
+                "edad": $("#edad").val(),
+                "caso_org_id": caso_org_id,
+                "fecha_nacimiento": $("#fecha-nacimiento").val(),
+                "profesion": $("#profesion").val(),
+                "act_coordenadas": $("#actcoordenadas").val(),
+                "latitud": $("#latitude").val(),
+                "longitud": $("#longitude").val(),
+                "nombre": $("#locationName").val(),
+                };
+
+                // --- Llamada AJAX ---
+                $.ajax({
+                    url: "/actualizarCaso",
+                    method: "POST",
+                    dataType: "JSON",
+                    // **CORRECCIÓN 5: Se asegura de que el botón se habilite correctamente.**
+                    data: {
+                        "data": btoa(JSON.stringify(datos))
+                    },
+                    beforeSend: function() {
+                        // Opcional: Deshabilitar el botón aquí para evitar envíos múltiples.
+                    },
+                    success: function(data) {
+
+                        if (data == 1) {
+                            Swal.fire({
+                                icon: "success",
+                                type: 'success',
+                                text: 'REGISTRO ACTUALIZADO',
+                                icon: 'success',
+                                toast: true,
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 8000,
+                                timerProgressBar: true,
+                                customClass: {
+                                    container: 'my-toast-container',
+                                    title: 'my-toast-title',
+                                    content: 'my-toast-content',
+                                    progress: 'my-toast-progress',
+                                },
+                                padding: '1rem',
+                                iconHtml: '<i class="fas fa-check-circle"></i>'
+                            });
+                            setTimeout(function() {
+                                window.location = "/casos";
+                            }, 1400);
+
+                        } else if (data == 2) {
+                            Swal.fire({
+                                icon: "error",
+                                type: 'error',
+                                html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
+                                toast: true,
+                                position: "center",
+                                showConfirmButton: false,
+                                timer: 3500,
+                            });
+                        }
+                    }
+                });
+
+        
+         
+
+         }
+
+
+
+
         //********************ES UN CASO NORMAL ***********
         else {
             //let datos_modificados = '';
@@ -2666,81 +3291,104 @@ function llenar_Tipo_Beneficiarios(e, tipo_beneficiario) {
     });
 }
 
+/**
+ * Función para llenar el combo de detalle de atención, filtrando por 'tipo_aten_id' 
+ * y seleccionando una opción inicial si 'tipo_atend_id' es nulo o vacío.
+ *
+ * @param {Event} e - Parámetro de evento (se ignora).
+ * @param {string|number} idTipoAtencion - ID del Tipo de Atención para filtrar (coincide con 'tipo_aten_id').
+ * @param {string|number} [tipo_atend_id] - ID del Detalle de Atención que debe quedar seleccionado.
+ */
+function llenar_detalle_atencion(e, idTipoAtencion, tipo_atend_id) {
+    
+    const url = '/Listar_Detalle_Atencion_filtro';
+    const $selectDetalle = $('#edit_detelle_atencion'); 
+    const $hijosTipoAtencion = $("#hijos_tipoatencion");
+    const $contenedorDetalle = $(".detalle_atencion"); 
+    
+    // Convertimos a String y limpiamos espacios.
+    let idFiltro = String(idTipoAtencion || '').trim();
+    let idSeleccion = String(tipo_atend_id || '').trim(); 
+    
+    // 🚨 CORRECCIÓN CLAVE: Si llega la cadena "null" (que es el problema reportado), 
+    // la convertimos a cadena vacía para que la validación 'if (idSeleccion)' funcione correctamente.
+    if (idSeleccion === 'null' || idSeleccion === 'undefined') {
+        idSeleccion = '';
+    }
 
+    // 1. Limpiamos y preparamos el select con un placeholder de carga.
+    $selectDetalle.empty().append('<option value="" selected disabled>Cargando...</option>'); 
 
+    // Validación de filtro (si idTipoAtencion es nulo/inválido)
+    if (!idFiltro || idFiltro === 'undefined' || idFiltro === '0') {
+         $contenedorDetalle.hide();
+         $hijosTipoAtencion.val('NO');
+         $selectDetalle.find('option').text('Seleccione un Tipo de Atención');
+         return; 
+    }
+    
+    // Si llegamos aquí, idFiltro es válido y procedemos con AJAX.
 
-////FUNCION PARA LLENAR EL COMBO DE DETALLE DE ATENCION
-function  llenar_detalle_atencion(e,id_tipo_atencion,tipo_atend_id,hijos_detalle_atencion)
-{
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'JSON',
+    })
+    .done(function(data) {
+        if (!data || data.length === 0) {
+            $selectDetalle.empty().append('<option value="" disabled>No hay detalles disponibles</option>');
+            $contenedorDetalle.hide();
+            $hijosTipoAtencion.val('NO');
+            return;
+        }
 
+        // 2. Aplicar el filtro por Tipo de Atención ('tipo_aten_id')
+        let datosFiltrados = data.filter(item => item.tipo_aten_id === idFiltro);
 
+        // Mostrar contenedor ya que el filtro es válido.
+        $contenedorDetalle.show();
+        $hijosTipoAtencion.val('SI');
+        
+        // 3. Llenar el Select
+        if (datosFiltrados.length >= 1) {
+             
+             // Creamos la opción "Seleccione" (placeholder en el índice 0)
+             $selectDetalle.empty().append('<option value="" disabled>Seleccione</option>'); 
+             
+             $.each(datosFiltrados, function(i, item) {
+                $selectDetalle.append(
+                    `<option value="${item.tipo_atend_id}">${item.tipo_atend_nombre}</option>`
+                );
+             });
+             
+             // 4. LÓGICA DE SELECCIÓN CONDICIONAL
+             if (idSeleccion) {
+                 // REGLA 1: Si hay un ID de detalle guardado, lo selecciona.
+                 $selectDetalle.val(idSeleccion); 
+             } else {
+                 // REGLA 2: Si idTipoAtencion es válido pero tipo_atend_id es nulo/vacío, 
+                 // forzamos la selección del placeholder.
 
-
-    e.preventDefault;
-      url='/Listar_Detalle_Atencion_filtro';
-       $.ajax
-      ({
-           url:url,
-           method:'GET',
-          dataType:'JSON',
-          beforeSend:function(data)
-          {
-          },
-          success:function(data)
-          {
-          
-            if(data.length>=1)
-            {
-                $('#edit_detelle_atencion').empty();
-                $('#edit_detelle_atencion').append('<option value=0  selected disabled>Seleccione</option>');   
-                
-                
-                if(hijos_detalle_atencion==='NO' || hijos_detalle_atencion==='null')
-                {
-                    $(".detalle_atencion").hide();
-                }else
-                {
-                
-                    if(tipo_atend_id===undefined)
-                        {      
-                            $.each(data, function(i, item)
-                            {
-                                //
-                                $('#edit_detelle_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
-                    
-                            });
-                        }
-                        else
-                        {
-                            $(".detalle_atencion").show();
-                    
-                                // Filtrar datos
-                            const datosFiltrados = data.filter(dato => dato.tipo_aten_id === id_tipo_atencion);
-                    
-                            // Agregar opciones al select
-                            datosFiltrados.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.tipo_atend_id;
-                                option.textContent = item.tipo_atend_nombre;
-                                if (item.tipo_atend_id === tipo_atend_id) {
-                                    option.selected = true; // <-- Aquí se agrega la propiedad 'selected'
-                                }
-                                $('#edit_detelle_atencion').append(option);
-                            });
-                                
-                }   
-                
-                }
-}      
-},
-error:function(xhr, status, errorThrown)
-{
-   // alert(xhr.status);
-   // alert(errorThrown);
+                 // Intento 1: Seleccionar el valor vacío.
+                 $selectDetalle.val(''); 
+                 
+                 // Intento 2: Si el val('') falla, forzamos la selección del índice 0.
+                 if (!$selectDetalle.val()) {
+                     $selectDetalle.prop('selectedIndex', 0);
+                 }
+             }
+             
+        } else {
+            $contenedorDetalle.hide();
+             // Si el filtro se aplicó, pero la lista quedó vacía
+             $selectDetalle.empty().append('<option value="" selected disabled>No se encontraron detalles</option>');
+        }
+    })
+    .fail(function(xhr, status, errorThrown) {
+        console.error("Error al cargar el detalle de atención:", xhr.status, errorThrown);
+        $selectDetalle.empty().append('<option value="" selected disabled>Error al cargar</option>');
+    });
 }
-});
-}
-
 $('#editCase').on('hidden.bs.modal', function () {
 
     // Resetea el formulario cuando el modal se cierra
@@ -3027,3 +3675,409 @@ $("#punto-cuenta-select").on('change', function() {
         }
     }
 });
+
+function llenar_pais_generico(prefix, paisid) {
+    url = "/llenar_pais";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        success: function(data) {
+            const $select = $(`#${prefix}-pais-select`); // Selector dinámico
+            $select.empty();
+
+            if (data.length >= 1) {
+                $.each(data, function(i, item) {
+                    const isSelected = item.paisid == paisid ? 'selected' : '';
+                    $select.append(
+                        `<option value="${item.paisid}" ${isSelected}>${item.paisnom}</option>`
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error(`Error al cargar países para ${prefix}:`, errorThrown);
+        },
+    });
+}
+
+function llenar_estados_generico(prefix, estadoid) {
+    url = "/llenar_Estados";
+    return $.ajax({ // Retornamos la promesa para encadenar
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+    })
+    .then((data) => {
+        const $select = $(`#${prefix}-estado-select`); // Selector dinámico
+        $select.empty().append("<option value=0 selected disabled>Seleccione Estado</option>");
+
+        if (data.length >= 1) {
+            $.each(data, function(i, item) {
+                const isSelected = item.estadoid == estadoid ? 'selected' : '';
+                $select.append(
+                    `<option value="${item.estadoid}" ${isSelected}>${item.estadonom}</option>`
+                );
+            });
+        }
+        return data; // Retornar data para el siguiente .then
+    })
+    .catch((xhr, status, errorThrown) => {
+        console.error(`Error al cargar estados para ${prefix}:`, errorThrown);
+    });
+}
+
+function llenar_municipios_generico(prefix, estadoid, municipioid) {
+    let datos = { id_estado: estadoid };
+    return $.ajax({
+        url: "/municipios",
+        method: "POST",
+        dataType: "JSON",
+        data: { data: btoa(JSON.stringify(datos)) },
+    })
+    .then((response) => {
+        const $select = $(`#${prefix}-municipio-select`); // Selector dinámico
+        $select.html(response.data);
+        $select.val(municipioid).prop("selected", true);
+        return response;
+    })
+    .catch((request) => {
+        console.error(`Error al cargar municipios para ${prefix}:`, request.responseJSON.message || "Error");
+    });
+}
+
+function llenar_parroquias_generico(prefix, municipioid, parroquiaid) {
+    let datos = { id_municipio: municipioid };
+    return $.ajax({
+        url: "/parroquias",
+        method: "POST",
+        dataType: "JSON",
+        data: { data: btoa(JSON.stringify(datos)) },
+    })
+    .then((response) => {
+        const $select = $(`#${prefix}-parroquia-select`); // Selector dinámico
+        $select.html(response.data);
+        $select.val(parroquiaid).prop("selected", true);
+        return response;
+    })
+    .catch((request) => {
+        console.error(`Error al cargar parroquias para ${prefix}:`, request.responseJSON.message || "Error");
+    });
+}
+
+
+
+// =================================================================
+// DEFINICIONES DE FUNCIONES AUXILIARES (CORRECCIÓN)
+// =================================================================
+
+function llenar_Paises_Multiple(selectId, idSeleccionado) {
+    const url = "/llenar_pais";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        success: function(data) {
+            const $select = $(`#${selectId}`);
+            if (data.length >= 1) {
+                $select.empty();
+                $.each(data, function(i, item) {
+                    let selectedAttr = (idSeleccionado !== undefined && item.paisid == idSeleccionado) ? " selected" : "";
+                    $select.append(
+                        `<option value="${item.paisid}"${selectedAttr}>${item.paisnom}</option>`
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar Países:", status, errorThrown);
+        },
+    });
+}
+
+function llenar_Estados_Multiple(selectId, idSeleccionado) {
+    const url = "/llenar_Estados"; 
+
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        success: function(data) {
+            const $select = $(`#${selectId}`);
+            if (data.length >= 1) {
+                $select.empty();
+                $select.append(
+                    "<option value='0' selected disabled>Seleccione</option>"
+                );
+                
+                $.each(data, function(i, item) {
+                    let selectedAttr = (idSeleccionado !== undefined && item.estadoid == idSeleccionado) ? " selected" : "";
+                    $select.append(
+                        `<option value="${item.estadoid}"${selectedAttr}>${item.estadonom}</option>`
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar Estados:", status, errorThrown);
+        },
+    });
+}
+
+
+// =================================================================
+// FUNCIÓN PRINCIPAL DE INICIALIZACIÓN (CÓDIGO CORREGIDO Y REFACTORIZADO)
+// =================================================================
+
+/**
+ * Inicializa los selectores de ubicación y sus eventos de cascada para una sección específica.
+ * @param {string} prefijo - El prefijo del ID (ej: 'apoderado-solicitante').
+ */
+function llenar_Selectores_Iniciales(prefijo) {
+    // Definición de ID's de los selectores
+    const paisId = `${prefijo}-pais-select`;
+    const estadoId = `${prefijo}-estado-select`;
+    const municipioId = `${prefijo}-municipio-select`;
+    const parroquiaId = `${prefijo}-parroquia-select`;
+
+    // --- Funciones Auxiliares para Limpieza y Carga AJAX ---
+    
+    /** Limpia y restablece un selector al valor "Seleccione" (value="0"). */
+    const limpiarSelector = (id) => {
+        const defaultOption = "<option value='0' disabled selected>Seleccione</option>";
+        $(`#${id}`).empty().append(defaultOption).val('0');
+    };
+
+    /** Carga los municipios basados en un ID de estado. */
+    const cargarMunicipios = (id_estado) => {
+        // Limpia los selectores inferiores
+        limpiarSelector(municipioId);
+        limpiarSelector(parroquiaId);
+
+        // Si el estado no es válido o es '0', no hacemos la llamada AJAX
+        if (!id_estado || id_estado == '0') {
+            return Promise.resolve(null);
+        }
+
+        const datos = { id_estado: id_estado };
+        
+        return $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: { data: btoa(JSON.stringify(datos)) },
+        })
+        .then((response) => {
+            $(`#${municipioId}`).html(response.data);
+            return $(`#${municipioId}`).val(); // Retorna el valor del primer municipio seleccionado
+        });
+    };
+    
+    /** Carga las parroquias basadas en un ID de municipio. */
+    const cargarParroquias = (id_municipio) => {
+        // Limpia el selector inferior
+        limpiarSelector(parroquiaId);
+
+        // Si el municipio no es válido o es '0', no hacemos la llamada AJAX
+        if (!id_municipio || id_municipio == '0') {
+            return Promise.resolve(null);
+        }
+
+        const datos = { id_municipio: id_municipio };
+        
+        return $.ajax({
+            url: "/parroquias",
+            method: "POST",
+            dataType: "JSON",
+            data: { data: btoa(JSON.stringify(datos)) },
+        })
+        .then((response) => {
+            $(`#${parroquiaId}`).html(response.data);
+            return true;
+        });
+    };
+
+    // --- 1. Inicialización ---
+    llenar_Paises_Multiple(paisId);
+    llenar_Estados_Multiple(estadoId);
+    // Asegurar que Municipio y Parroquia inicien limpios y en '0'
+    limpiarSelector(municipioId); 
+    limpiarSelector(parroquiaId);
+
+    // --- 2. Evento al cambiar el PAÍS (LÓGICA DE CASCADA Y EXTRANJERO) ---
+    $(`#${paisId}`).on('change', function() {
+        $(`#${paisId}`).removeClass('is-invalid');
+        const pais = $(this).val();  
+        
+        if (pais != 1) {
+            // Lógica País Extranjero: Fija la ubicación 
+            const ID_ESTADO_EXT = 26; // ID del estado para extranjeros
+            const ID_MUN_EXT = '336';
+            const ID_PARROQUIA_EXT = '1135';
+            
+            // 1. Establecer Estado y deshabilitar selectores
+            llenar_Estados_Multiple(estadoId, ID_ESTADO_EXT); 
+            $(`#${estadoId}`).val(ID_ESTADO_EXT).prop('disabled', true);
+            $(`#${municipioId}`).prop('disabled', true);
+            $(`#${parroquiaId}`).prop('disabled', true);
+
+            // 2. Cargar municipios/parroquias para la ubicación fija
+            cargarMunicipios(ID_ESTADO_EXT)
+            .then(() => cargarParroquias(ID_MUN_EXT))
+            .then(() => {
+                // 3. Establecer los valores fijos después de la carga
+                $(`#${municipioId}`).val(ID_MUN_EXT); 
+                $(`#${parroquiaId}`).val(ID_PARROQUIA_EXT);
+            })
+            .catch((request) => {
+                Swal.fire("Error", request.responseJSON.message || "Error al cargar ubicación extranjera.", "error");
+            });
+            
+        } else {
+            // Lógica País Nacional (1): Restablecer y habilitar
+            $(`#${estadoId}`).val('0').prop('disabled', false);
+            $(`#${municipioId}`).prop('disabled', false); 
+            $(`#${parroquiaId}`).prop('disabled', false);
+            
+            llenar_Estados_Multiple(estadoId); // Vuelve a llenar con todos los estados
+            limpiarSelector(municipioId);
+            limpiarSelector(parroquiaId);
+        }
+    });
+
+    // --- 3. Evento al cambiar el ESTADO (CASCADA: MUNICIPIOS y PARROQUIAS) ---
+    $(`#${estadoId}`).on("change", (e) => {
+        e.preventDefault();
+        
+        if ($(`#${estadoId}`).prop('disabled')) return;
+
+        const id_estado_seleccionado = $(`#${estadoId}`).val();
+        
+        cargarMunicipios(id_estado_seleccionado)
+        .then((primer_municipio_cargado) => {
+            // Si la carga fue exitosa, intenta cargar las parroquias del primer municipio (si existe)
+            if (primer_municipio_cargado) {
+                 return cargarParroquias(primer_municipio_cargado);
+            }
+            return null; // Retorna null si no hay municipios o si el estado era '0'
+        })
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar municipios y parroquias.", "error");
+        });
+    });
+
+    // --- 4. Evento al cambiar el MUNICIPIO (CASCADA: PARROQUIAS) ---
+    $(`#${municipioId}`).on("change", (e) => {
+        e.preventDefault();
+        
+        if ($(`#${municipioId}`).prop('disabled')) return;
+
+        const id_municipio_seleccionado = $(`#${municipioId}`).val();
+        
+        cargarParroquias(id_municipio_seleccionado)
+        .catch((request) => {
+            Swal.fire("Error", request.responseJSON.message || "Error al cargar parroquias.", "error");
+        });
+    });
+}
+
+function obtenerDatosMediacion() {
+    
+    // Función auxiliar para obtener el valor del campo de texto o select
+    const getElementValue = (id) => $(`#${id}`).val();
+
+    // -----------------------------------------------------------
+    // A. Datos del Apoderado del Solicitante (Tipo = 1)
+    // -----------------------------------------------------------
+    const apoderadoSolicitante = {
+        // Campo identificador para la BD
+        tipo_apoderado: '1', 
+        
+
+        // Datos Personales
+        ident_tipo: getElementValue('apo_solicitente-ident-tipo'),
+        ci: getElementValue('apoderado-solicitante-ci'),
+        impre: getElementValue('apoderado-solicitante-impre'),
+        nombres: getElementValue('apoderado-solicitante-nombres'),
+        telefono: getElementValue('apoderado-solicitante-telefono'),
+        correo: getElementValue('apoderado-solicitante-correo'),
+        
+        // Ubicación
+        pais: getElementValue('apoderado-solicitante-pais-select'),
+        estado: getElementValue('apoderado-solicitante-estado-select'),
+        municipio: getElementValue('apoderado-solicitante-municipio-select'),
+        parroquia: getElementValue('apoderado-solicitante-parroquia-select'),
+        direccion: getElementValue('apoderado-solicitante-direccion')
+    };
+
+    // -----------------------------------------------------------
+    // B. Datos de la Contraparte
+    // -----------------------------------------------------------
+    const contraparte = {
+        // Datos Personales y de Identificación
+        
+      
+        nombre_razon: getElementValue('contraparte-nombre-razon'),
+        ident_tipo: getElementValue('contraparte-ident-tipo'),
+        ident_valor: getElementValue('contraparte-ident-valor'),
+        correo: getElementValue('contraparte-correo'),
+        telefono: getElementValue('contraparte-telefono'),
+        // Ubicación
+        pais: getElementValue('contraparte-pais-select'),
+        estado: getElementValue('contraparte-estado-select'),
+        municipio: getElementValue('contraparte-municipio-select'),
+        parroquia: getElementValue('contraparte-parroquia-select'),
+        direccion: getElementValue('contraparte-direccion')
+    };
+
+    // -----------------------------------------------------------
+    // C. Datos del Apoderado de la Contraparte (Tipo = 2)
+    // -----------------------------------------------------------
+    const apoderadoContraparte = {
+        // Campo identificador para la BD
+        tipo_apoderado: '2', 
+        // Datos Personales y de Identificación
+        ident_tipo: getElementValue('apo_contraparte-ident-tipo'),
+        ci: getElementValue('contraparte-apoderado-ci'),
+        impre: getElementValue('contraparte-apoderado-impre'),
+        // Datos Personales
+        nombres: getElementValue('apoderado-contraparte-nombres'),
+        telefono: getElementValue('apoderado-contraparte-telefono'),
+        correo: getElementValue('apoderado-contraparte-correo'),
+        
+        // Ubicación
+        pais: getElementValue('apoderado-contraparte-pais-select'),
+        estado: getElementValue('apoderado-contraparte-estado-select'),
+        municipio: getElementValue('apoderado-contraparte-municipio-select'),
+        parroquia: getElementValue('apoderado-contraparte-parroquia-select'),
+        direccion: getElementValue('apoderado-contraparte-direccion')
+    };
+
+    // -----------------------------------------------------------
+    // D. Descripción de la Controversia (CORREGIDA para Radio Buttons)
+    // -----------------------------------------------------------
+    const controversia = {
+        // 🚨 Radio Buttons: Obtiene el valor del radio button seleccionado
+        // Asume que el atributo 'name' de todos los radios es 'tipo_controversia'
+        tipo_controversia: $('#tipo-pi').val(),
+        
+        
+    };
+
+
+    // Objeto final que contiene toda la información organizada
+    const datosMediacion = {
+        apoderado_solicitante: apoderadoSolicitante,
+        contraparte: contraparte,
+        apoderado_contraparte: apoderadoContraparte,
+        controversia: controversia
+    };
+    
+    // Puedes usar esto para depurar y ver el objeto en la consola
+    // console.log(datosMediacion);
+
+    return datosMediacion;
+}
+
+
+

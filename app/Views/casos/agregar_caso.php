@@ -4,7 +4,47 @@ $session = session();
 ?>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/agregar_caso.css">
 
+<style>
 
+
+/* 3. COMPACTAR EL LOGO/CINTILLO (AJUSTADO) */
+.navbar img, 
+.cintillo-compacto { 
+    /* Altura final ya establecida en el HTML (height="75"), esto solo la refuerza */
+    height: 60px; 
+    /* Elimina cualquier margen residual para compactación vertical */
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    /* Asegura que el contenedor de la imagen no afecte el layout horizontal */
+    display: block; 
+}
+/* Estilo para los campos deshabilitados/de solo lectura */
+.campo-solo-lectura {
+    background-color: #f5f5f5 !important; /* Gris claro para indicar inactividad */
+    color: #555555 !important;         /* Texto gris */
+    cursor: not-allowed !important;    /* Cursor de prohibido */
+    border-color: #e0e0e0 !important;
+}
+</style>
+<script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>
+
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], 
+                    },
+                    colors: {
+                        'primary-blue': '#007bff', 
+                        'primary-dark': '#0056b3',
+                        'theme-gray': '#a9b6c2', 
+                    }
+                }
+            }
+        }
+    </script>
 
 <style>
 
@@ -249,10 +289,10 @@ to {
           <div class="progress-step" data-title="Direccion"></div>
           <div class="progress-step" data-title="Atencion"></div>
         </div>
-        <div class="row">
+        <div class="row busqueda_principal ">
         <div class="col-lg-6 col-sm-6 col-md-6">
           <div style="display: flex;">  <label for="cedula-persona">Buscar Cédula o Rif  &nbsp;&nbsp;&nbsp; </label>
-            <input type="text" class="form-control" style="width: 200px;"  name="cedula-existente" min="7" id="cedula-existente" autocomplete="off">
+            <input type="text" onkeyup="mayus(this);" class="form-control" style="width: 200px;"  name="cedula-existente" min="7" id="cedula-existente" autocomplete="off">
             &nbsp;&nbsp;&nbsp; <button type="button" style="font-size: 11px;" id="btn_buscar" class="btn btn-xs btn-primary btn_buscar">Buscar</button>
           </div>
         </div>
@@ -286,7 +326,7 @@ to {
           </div>
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="cedula-persona">Nº Cédula o Rif</label>
-              <input type="text" class="form-control" onkeypress="return valideKey(event);"name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
+              <input type="text" class="form-control" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
           </div>
          
               <!-- <label for="edad">Edad</label> -->
@@ -304,13 +344,7 @@ to {
               <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
           </div>
 
-          <!-- <div class="col-lg-3 col-sm-3 col-md-3">
-              <label for="t-beneficiario">Tipo de Beneficiario</label>
-              <select class="form-control" id="t-beneficiario" name="t-beneficiario">
-              <option value="1" selected>Usuario</option>
-              <option value="2">Emprendedor</option>
-              </select>
-          </div> -->
+        
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="t-beneficiario">Tipo de Beneficiario</label>
               <select class="form-control" id="t-beneficiario" name="t-beneficiario">
@@ -373,9 +407,14 @@ to {
 
       
       <div class="col-lg-5 col-sm-5 col-md-5">
-          <label for="correo">Correo Electrónico</label>
-          <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
-      </div>
+    <label for="correo">Correo Electrónico</label>
+    
+    <div class="d-flex align-items-center"> 
+        <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
+        
+        <span class="feedback-icon ms-2 fs-5"></span>
+    </div>
+</div>
           </div>
           <br>
           <div class="">
@@ -419,6 +458,27 @@ to {
               <option value="0" disabled>Seleccione</option>
               </select>
           </div>
+
+          
+          <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
+              <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
+              <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
+              <option value="0">Seleccione</option>
+              </select>
+          </div>
+          <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
+          <label for="organismo-caso">Organismo del Poder Poular</label>
+          <select id="organismo-caso" name="organismo-caso" class="form-control">
+          <option value="0">Seleccione Organismo</option>
+          </select>
+          </div>
+          
+          
+          <!-- IMPUT QUE VALIDA SI SE SELECCIONO UN TIPO DE ATENCION CON HIJOS -->
+          <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >
+
+
+
 
           <div class="col-lg-4 col-sm-4 col-md-4 detelle_atencion  " style="display: none;" >
               <label for="tipo-pi">Detalle Atencion</label>
@@ -618,7 +678,7 @@ to {
     }
 
     function showErrorAndSetDefault() {
-        alert("No se pudo obtener tu ubicación automáticamente. El mapa se centrará en un punto por defecto.");
+       // alert("No se pudo obtener tu ubicación automáticamente. El mapa se centrará en un punto por defecto.");
         var defaultCoords = [10.4806, -66.9036]; // Caracas, Venezuela
         updateMarkerAndMap(defaultCoords, 'Ubicación por defecto: Caracas', true);
     }
@@ -698,26 +758,7 @@ to {
         </form>
     </div>
 </div>
- <div class="row">
-          <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
-              <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
-              <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
-              <option value="0">Seleccione</option>
-              </select>
-          </div>
-          <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
-          <label for="organismo-caso">Organismo del Poder Poular</label>
-          <select id="organismo-caso" name="organismo-caso" class="form-control">
-          <option value="0">Seleccione Organismo</option>
-          </select>
-          </div>
-          
-          
-          <!-- IMPUT QUE VALIDA SI SE SELECCIONO UN TIPO DE ATENCION CON HIJOS -->
-          <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >
 
-
-</div>
          
           <!-- FORMULARIO PARA EL CASO DE ASESORIA -->
           <div class="row" id="cgr" style="display: none;">
@@ -800,6 +841,380 @@ to {
 
       </div>
     </div>
+
+<style>
+/* 🎨 Estilos para la Transición Slide-Up & Fade-in */
+.hidden-content {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    /* Nuevo: El contenido empieza 20px más abajo */
+    transform: translateY(20px); 
+    /* Aseguramos una transición suave en todas las propiedades */
+    transition: opacity 0.6s ease-out, max-height 0.8s ease-out, padding 0.8s ease-out, transform 0.6s ease-out; 
+}
+
+.visible-content {
+    opacity: 1;
+    max-height: 2000px; 
+    padding-top: 1.5rem; 
+    padding-bottom: 1.5rem; 
+    overflow: visible;
+    /* Nuevo: El contenido se mueve a su posición final (0) */
+    transform: translateY(0); 
+}
+</style>
+
+<div class="row" id="mediacion" style="display: none;">
+
+    <div class="space-y-6 p-6 border border-gray-300 rounded-xl shadow-lg bg-white w-full max-w-6xl mx-auto"> 
+
+        <div class="border-b pb-6 space-y-4">
+            
+            <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg flex flex-wrap justify-between items-center">
+                <span>Datos del Apoderado del Solicitante</span>
+                
+                <div class="flex items-center space-x-3 mt-2 sm:mt-0"> 
+                    <input type="checkbox" id="apoderado-solicitante-aplica" onchange="toggleApoderado('apoderado-solicitante')"
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="apoderado-solicitante-aplica" class="text-lg font-semibold text-gray-800 flex items-center select-none"> Aplica</label> 
+                </div>
+            </h3>
+            
+            <div id="apoderado-solicitante-content" class="apoderado-content apoderado-hidden space-y-4">
+                
+                <div class="mb-4">
+                    <div class="flex items-center space-x-3">
+                        <label for="cedula-existente-apo-sol" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula </label>
+                        <input type="text" onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente" min="7" id="cedula-existente-apo-sol" autocomplete="off">
+                        <button type="button" id="btn_buscar_apo_sol" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label for="apo_solicitente-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo de Persona</label>
+                            <select id="apo_solicitente-ident-tipo" name="apo_solicitente-ident-tipo" 
+                                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                                <option value="V" selected>V - Venezolano</option>
+                                <option value="E">E - Extranjero</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-span-2"> 
+                            <label for="apoderado-solicitante-ci" class="block text-sm font-medium text-gray-700">C.I.</label>
+                            <input type="text" onkeypress="return valideKey(event);" id="apoderado-solicitante-ci" placeholder="Ej: 12345678"
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="apoderado-solicitante-impre" class="block text-sm font-medium text-gray-700">IMPRE Abogado</label>
+                        <input type="text"  onkeyup="mayus(this);" id="apoderado-solicitante-impre" placeholder="Ej: 12345"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="apoderado-solicitante-nombres" class="block text-sm font-medium text-gray-700">Nombres y Apellidos</label>
+                    <input type="text"  onkeyup="mayus(this);" id="apoderado-solicitante-nombres" placeholder="Ej: Rosa María Gómez"
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="apoderado-solicitante-telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                        <input type="text" id="apoderado-solicitante-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="apoderado-solicitante-correo" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                        <div class="flex items-center"> 
+                            <input type="email"  onkeyup="mayus(this);" id="apoderado-solicitante-correo" placeholder="ejemplo@abogado.com"
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <span class="feedback-icon ml-2"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                    <div>
+                        <label for="apoderado-solicitante-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                        <select id="apoderado-solicitante-pais-select" name="apoderado-solicitante-pais" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione País</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="apoderado-solicitante-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                        <select id="apoderado-solicitante-estado-select" name="apoderado-solicitante-estado" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Estado</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="apoderado-solicitante-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                        <select id="apoderado-solicitante-municipio-select" name="apoderado-solicitante-municipio" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Municipio</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="apoderado-solicitante-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                        <select id="apoderado-solicitante-parroquia-select" name="apoderado-solicitante-parroquia" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Parroquia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="apoderado-solicitante-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+                    <input type="text" id="apoderado-solicitante-direccion"  onkeyup="mayus(this);" placeholder="Calle, Edificio, Oficina"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b pb-6 space-y-4">
+            
+            <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg">
+                Datos de la Contraparte
+            </h3>
+            
+            <div class="mb-4">
+                <div class="flex items-center space-x-3">
+                    <label for="cedula-existente-contra" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula o Rif</label>
+                    <input type="text"  onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente-contra" min="7" id="cedula-existente-contra" autocomplete="off">
+                    <button type="button" id="btn_buscar_contra" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                
+                <div>
+                    <label for="contraparte-nombre-razon" class="block text-sm font-medium text-gray-700">
+                        Nombres y Apellidos / Razón Social <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text"  onkeyup="mayus(this);" id="contraparte-nombre-razon" placeholder="Ej: Juan Pérez o Empresa C.A." 
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                </div>
+
+                <div class="flex space-x-3">
+                    <div class="w-1/3">
+                        <label for="contraparte-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo</label>
+                        <select id="contraparte-ident-tipo" name="contraparte-ident-tipo" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                            
+                            <option value="V" selected>V - Venezolano</option>
+                            <option value="E">E - Extranjero</option>
+                            <option value="J">J - Jurídico</option>
+                            <option value="G">G - Gubernamental</option>
+                        </select>
+                    </div>
+                    
+                    <div class="w-2/3">
+                        <label for="contraparte-ident-valor" class="block text-sm font-medium text-gray-700">Identificación (C.I. / RIF)</label>
+                        <input type="text"   onkeyup="mayus(this);" id="contraparte-ident-valor" placeholder="Ej: 12345678"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                
+                <div>
+                    <label for="contraparte-telefono" class="block text-sm font-medium text-gray-700">
+                        Teléfono <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="contraparte-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567" 
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                </div>
+
+                <div>
+                    <label for="contraparte-correo" class="block text-sm font-medium text-gray-700">
+                        Correo electrónico <span class="text-red-500">*</span>
+                    </label>
+                    
+                    <div class="flex items-center">
+                        
+                        <input type="email"  onkeyup="mayus(this);" id="contraparte-correo" placeholder="ejemplo@dominio.com" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                        
+                        <span class="feedback-icon ml-2"></span>
+                    </div>
+                </div>
+
+            </div>
+                
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+
+                <div>
+                    <label for="contraparte-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                    <select id="contraparte-pais-select" name="contraparte-pais" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione País</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="contraparte-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <select id="contraparte-estado-select" name="contraparte-estado" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                        <option value="0" disabled selected>Seleccione Estado</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="contraparte-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                    <select id="contraparte-municipio-select" name="contraparte-municipio"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                        <option value="0" disabled selected>Seleccione Municipio</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="contraparte-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                    <select id="contraparte-parroquia-select" name="contraparte-parroquia"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                        <option value="0" disabled selected>Seleccione Parroquia</option>
+                        </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="contraparte-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+                <input type="text" onkeyup="mayus(this);" id="contraparte-direccion" placeholder="Calle, Edificio, Apartamento/Local"
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+            
+        </div>
+
+        <div class="border-b pb-6 space-y-4">
+            <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg flex flex-wrap justify-between items-center">
+                <span>Datos del Apoderado de la Contraparte</span>
+                
+                <div class="flex items-center space-x-3 mt-2 sm:mt-0"> 
+                    <input type="checkbox" id="apoderado-contraparte-aplica" onchange="toggleApoderado('apoderado-contraparte')"
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="apoderado-contraparte-aplica" class="text-lg font-semibold text-gray-800 flex items-center select-none"> Aplica</label>
+                </div>
+            </h3>
+
+            <div id="apoderado-contraparte-content" class="apoderado-content apoderado-hidden space-y-4">
+            
+                <div class="mb-4">
+                    <div class="flex items-center space-x-3">
+                        <label for="cedula-existente-apo-contra" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula </label>
+                        <input type="text"  onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente-apo-contra" min="7" id="cedula-existente-apo-contra" autocomplete="off">
+                        <button type="button" id="btn_buscar_apo_contra" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label for="apo_contraparte-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo de Persona</label>
+                            <select id="apo_contraparte-ident-tipo" name="apo_contraparte-ident-tipo" 
+                                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                                <option value="V" selected>V - Venezolano</option>
+                                <option value="E">E - Extranjero</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-span-2"> 
+                            <label for="contraparte-apoderado-ci" class="block text-sm font-medium text-gray-700">C.I.</label>
+                            <input type="text"  onkeypress="return valideKey(event);" id="contraparte-apoderado-ci" placeholder="Ej: 12345678"
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="contraparte-apoderado-impre" class="block text-sm font-medium text-gray-700">IMPRE Abogado</label>
+                        <input type="text"  onkeyup="mayus(this);" id="contraparte-apoderado-impre" placeholder="Ej: 12345"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="apoderado-contraparte-nombres" class="block text-sm font-medium text-gray-700">Nombres y Apellidos</label>
+                    <input type="text"  onkeyup="mayus(this);" id="apoderado-contraparte-nombres" placeholder="Ej: Rosa María Gómez"
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="apoderado-contraparte-telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                        <input type="text" id="apoderado-contraparte-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="apoderado-contraparte-correo" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                        <div class="flex items-center"> 
+                            <input type="email"  onkeyup="mayus(this);" id="apoderado-contraparte-correo" placeholder="ejemplo-contraparte@abogado.com"
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <span class="feedback-icon ml-2"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                        
+                    <div>
+                        <label for="apoderado-contraparte-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                        <select id="apoderado-contraparte-pais-select" name="apoderado-contraparte-pais" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione País</option>
+                            </select>
+                    </div>
+                    
+                    <div>
+                        <label for="apoderado-contraparte-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                        <select id="apoderado-contraparte-estado-select" name="apoderado-contraparte-estado" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Estado</option>
+                            </select>
+                    </div>
+
+                    <div>
+                        <label for="apoderado-contraparte-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                        <select id="apoderado-contraparte-municipio-select" name="apoderado-contraparte-municipio" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Municipio</option>
+                            </select>
+                    </div>
+                    
+                    <div>
+                        <label for="apoderado-contraparte-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                        <select id="apoderado-contraparte-parroquia-select" name="apoderado-contraparte-parroquia" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="0" disabled selected>Seleccione Parroquia</option>
+                            </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="apoderado-contraparte-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+                    <input type="text"  onkeyup="mayus(this);" id="apoderado-contraparte-direccion" placeholder="Calle, Edificio, Oficina"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+  
+</div>
+
+
+
                           <br>
         <div class="btns-group">
           <a href="#" class="btn btn-prev">ANTERIOR</a>
@@ -815,7 +1230,7 @@ to {
        
         <div>
             <label for="planteamiento-caso">Descripción del Caso</label>
-            <textarea type="text" class="form-control"     style="width: 1000px;"      name="requerimiento-usuario" id="requerimiento-usuario" required>
+            <textarea type="text" class="form-control"     style="width: 1145px;"      name="requerimiento-usuario" id="requerimiento-usuario" required>
             </textarea>
         </div>
             
@@ -837,7 +1252,110 @@ to {
   </div>
   </div>
   </div>
- 
+
+
+
+
+<style>
+ /* ======================================================= */
+/* CLASES CSS PARA EL EFECTO SLIDE             */
+/* ======================================================= */
+
+.apoderado-content {
+    /* Define la duración y las propiedades a animar */
+    transition: max-height 0.8s ease-out, opacity 0.4s ease-in-out, padding 0.8s ease-out;
+    overflow: hidden; 
+}
+
+/* ESTADO INICIAL (OCULTO) */
+.apoderado-hidden {
+    max-height: 0;
+    opacity: 0;
+    /* !important para asegurar que el max-height: 0 sobrescriba el padding-y que pueda haber */
+    padding-top: 0 !important; 
+    padding-bottom: 0 !important;
+}
+
+/* ESTADO FINAL (VISIBLE) */
+.apoderado-visible {
+    /* Un valor grande para asegurar que el contenido se vea */
+    max-height: 1000px; 
+    opacity: 1;
+    /* Restablece el padding que fue ocultado en apoderado-hidden */
+    padding-top: 1.5rem; /* El valor 1.5rem corresponde a p-6 / 2 */
+    padding-bottom: 1.5rem; /* El valor 1.5rem corresponde a p-6 / 2 */
+}
+</style>
+
+<script>
+    /**
+     * Limpia todos los campos de entrada (input y select) dentro de un elemento.
+     * @param {HTMLElement} container El elemento contenedor cuyos campos serán limpiados.
+     */
+    function clearFormFields(container) {
+        // Limpiar inputs de texto/email
+        const textInputs = container.querySelectorAll('input[type="text"], input[type="email"]');
+        textInputs.forEach(input => {
+            input.value = '';
+        });
+
+        // Limpiar selects 
+        const selects = container.querySelectorAll('select');
+        selects.forEach(select => {
+            if (select.options.length > 0) {
+                select.value = select.options[0].value; 
+            }
+        });
+    }
+
+
+    /**
+     * Alterna la visibilidad de la sección del apoderado usando clases de Tailwind CSS
+     * para transiciones de deslizar y aparecer (max-height).
+     * @param {string} prefix El prefijo de los IDs (e.g., 'apoderado-solicitante', 'apoderado-contraparte').
+     */
+    function toggleApoderado(prefix) {
+        if (!prefix) return; 
+
+        const checkbox = document.getElementById(prefix + '-aplica');
+        const contentDiv = document.getElementById(prefix + '-content');
+        
+        if (!checkbox || !contentDiv) return;
+
+        // Asegura la clase base (aunque ya está en el HTML)
+        contentDiv.classList.add('apoderado-content');
+
+
+        if (checkbox.checked) {
+            // MOSTRAR: Slide-Down & Fade-In
+            
+            // 1. Prepara el elemento removiendo la clase de ocultar (max-height: 0)
+            contentDiv.classList.remove('apoderado-hidden');
+            
+            // 2. **Paso CLAVE:** Forzar un reflow. Esto obliga al navegador a recalcular el estilo.
+            // Es crucial para que la transición de max-height se ejecute correctamente.
+            contentDiv.offsetWidth; 
+            
+            // 3. Aplica la clase de visualización (activa la transición a max-height: 1000px)
+            contentDiv.classList.add('apoderado-visible'); 
+            
+        } else {
+            // OCULTAR: Slide-Up & Fade-Out
+            
+            // 1. Retira la clase de visualización
+            contentDiv.classList.remove('apoderado-visible');
+            
+            // 2. Aplica la clase de ocultar (activa la transición a max-height: 0)
+            contentDiv.classList.add('apoderado-hidden');
+            
+            // 3. Limpiar campos después de que la transición termine (800ms)
+            setTimeout(() => {
+                clearFormFields(contentDiv);
+            }, 800); 
+        }
+    }
+</script>
+<!-- /**************************************** */ -->
 
   <script>
 
@@ -852,323 +1370,352 @@ function getFormattedDate() {
 </script>
 
 
-  <script>
+ <script>
+    // Variables globales
+    const prevBtns = document.querySelectorAll(".btn-prev");
+    const nextBtns = document.querySelectorAll(".btn-next");
+    const progress = document.getElementById("progress");
+    const formSteps = document.querySelectorAll(".form-step");
+    const progressSteps = document.querySelectorAll(".progress-step");
 
-const prevBtns = document.querySelectorAll(".btn-prev");
-const nextBtns = document.querySelectorAll(".btn-next");
-const progress = document.getElementById("progress");
-const formSteps = document.querySelectorAll(".form-step");
-const progressSteps = document.querySelectorAll(".progress-step");
+    // Elemento a mostrar/ocultar
+    const busquedaPrincipal = document.querySelector(".busqueda_principal");
 
-let formStepsNum = 0;
+    let formStepsNum = 0;
 
-nextBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {
+    // --- Funciones auxiliares ---
 
-    let nombre_persona = $("#nombre-persona").val();
-    let apellido_persona = $("#apellido-persona").val();
-    let cedula_persona = $("#cedula-persona").val();
-    let red_social = $("#red-social").val();
-    //let edad = $("#edad").val();
-    let fecha_nacimiento = $("#fecha-nacimiento").val();
-    let profesion = $("#profesion").val();
-    let correo = $("#correo").val();
-    let estado = $("#estado-caso").val();
-    let tipo_atencion = $("#tipo-atencion-usu").val();
-    let tipo_prop_intelec = $("#tipo-pi").val();
-    let fecha_recivido=$("#fecha-recibido").val();
-    let actcoordenadas=$("#actcoordenadas").val();
-    let detalles_atencion=$("#detalles_atencion").val();
-    let t_beneficiario=$("#t-beneficiario").val();
-
-     
-    if (fecha_recivido>getFormattedDate()) 
-    {
-     alert('La fecha de creación no debe ser mayor al dia de hoy ')
-    }else if (nombre_persona == '') {
-        $("#nombre-persona").addClass('is-invalid');
-
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR EL NOMBRE.</strong>',
-
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    } else if (apellido_persona == '') {
-        $("#nombre-persona").removeClass('is-invalid');
-        $("#apellido-persona").addClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR EL APELLIDO.</strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    } else if (cedula_persona == '') {
-        $("#apellido-persona").removeClass('is-invalid');
-        $("#cedula-persona").addClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR EL NÚMERO DE CEDULA.</strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    
-      } 
-      
-      // else if (edad == '') {
-      //   $("#apellido-persona").removeClass('is-invalid');
-      //   $("#edad").addClass('is-invalid');
-      //   Swal.fire({
-      //       icon: "success",
-      //       type: 'error',
-      //       html: '<strong>DEBE INGRESAR LA EDAD </strong>',
-      //       toast: true,
-      //       position: "center",
-      //       showConfirmButton: false,
-      //       timer: 3500,
-      //   });
-    
-      // } 
-      else if (fecha_nacimiento == '' ||fecha_nacimiento == 'NULL'  ) {
-        //$("#edad").removeClass('is-invalid');
-        $("#fecha-nacimiento").addClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR LA DE FECHA DE NACIMIENTO </strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    
-      } 
-     
-
-
-      else if (t_beneficiario == null ||t_beneficiario == 'null'  ) {
-         $("#fecha-nacimiento").removeClass('is-invalid');
-        $("#t-beneficiario").addClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE SELECCIONAR EL TIPO DE BENEFICIARIO </strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    
-      } 
-      
-      
-      
-      
-      
-      else if (red_social == null) {
-         $("#t-beneficiario").removeClass('is-invalid');
-        $("#red-social").addClass('is-invalid');
-        $("#cedula-persona").removeClass('is-invalid');
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE SELECCIONAR LA VIA DE ATENCION.</strong>',
-
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    }else if (correo == '') {
-      $("#red-social").removeClass('is-invalid');
-        $("#correo").addClass('is-invalid');
-
-        Swal.fire({
-            icon: "success",
-            type: 'error',
-            html: '<strong>DEBE INGRESAR EL CORREO ELECTRONICO.</strong>',
-            toast: true,
-            position: "center",
-            showConfirmButton: false,
-            timer: 3500,
-        });
-    }
-    
- 
-    
-
-    else
-    {
-      if (formStepsNum>0) {
-        if (estado == null) 
-        {
-          $("#correo").removeClass('is-invalid');
-          $("#estado-caso").addClass('is-invalid');
-          Swal.fire({
-              icon: "success",
-              type: 'error',
-              html: '<strong>EL CAMPO ESTADO ES OBLIGATORIO.</strong>',
-              toast: true,
-              position: "center",
-              showConfirmButton: false,
-              timer: 3500,
-          });
-        }else if (tipo_atencion == null) 
-        {
-          $("#estado-caso").removeClass('is-invalid');
-          $("#tipo-atencion-usu").addClass('is-invalid');
-          Swal.fire({
-              icon: "success",
-              type: 'error',
-              html: '<strong>EL USUARIO DEBE TENER ALGUN TIPO DE ATENCION</strong>',
-              toast: true,
-              position: "center",
-              showConfirmButton: false,
-              timer: 3500,
-          })
-        }else if (tipo_atencion == 1&& tipo_prop_intelec==null) 
-        {
-            $("#tipo-atencion-usu").removeClass('is-invalid');
-              $("#tipo-pi").addClass('is-invalid');
-              Swal.fire({
-                  icon: "success",
-                  type: 'error',
-                  html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>',
-                  toast: true,
-                  position: "center",
-                  showConfirmButton: false,
-                  timer: 3500,
-              });
-
+    const focusAndScroll = (selector) => {
+        // Asegura que el selector no sea null antes de usar jQuery
+        if ($(selector).length) {
+             $(selector).focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        else if (actcoordenadas =='t' && detalles_atencion==null) 
-        {
-            $("#tipo-atencion-usu").removeClass('is-invalid');
-              $("#detalles_atencion").addClass('is-invalid');
-              Swal.fire({
-                  icon: "success",
-                  type: 'error',
-                  html: '<strong>DEBE SELECCIONAR UN DETALLE DE ATENCION.</strong>',
-                  toast: true,
-                  position: "center",
-                  showConfirmButton: false,
-                  timer: 3500,
-              });
-
-        }
-        
-        
-        
-        
-        else  if (tipo_atencion === '5') 
-          {
-            let denu_involucrados = $('#denu-involucrados').val();
-            let fecha_hechos = $('#fecha-hechos').val();
-            denu_involucrados = denu_involucrados.trim();
-            if (document.getElementById('option-personal').checked) {
-                option_personal = true
-            } else {
-                option_personal = false
-            }
-            if (document.getElementById('option-comunidad').checked) {
-                option_comunidad = true
-            } else {
-                option_comunidad = false
-            }
-            if (document.getElementById('option-terceros').checked) {
-                option_terceros = true
-            } else {
-                option_terceros = false
-            }
-
-            if (option_personal == false && option_comunidad == false && option_terceros == false) {
-                alert('Debe indicar a quien afecta el hecho');
-            }else {
-               
-
-                if (fecha_hechos == '') {
-                    alert('Debe selecciar la fecha en que ocurrieron los hechos');
-
-                } else if (denu_involucrados === '') {
-                    $("#denu-involucrados").addClass('is-invalid');
-                    alert('Este campo es requerido , por favor introduzca la informacion solicitada');
-                }else
-                {
-                  formStepsNum++;
-                  updateFormSteps();
-                  updateProgressbar();
-                }
-              }
-          } else
-                {
-                  formStepsNum++;
-                  updateFormSteps();
-                  updateProgressbar();
-                }
-         
-
-
-
-      }else
-      {
-        formStepsNum++;
-       updateFormSteps();
-      updateProgressbar();
-      }
-   
-
-
+    };
+    
+    function getFormattedDate() {
+        // Devuelve la fecha actual en formato 'YYYY-MM-DD'
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
-  });
-});
-    
-prevBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    formStepsNum--;
-  
+    /**
+     * Muestra el paso actual del formulario y maneja la visibilidad de busqueda_principal.
+     */
+    function updateFormSteps() {
+        formSteps.forEach((formStep) => {
+            formStep.classList.contains("form-step-active") &&
+            formStep.classList.remove("form-step-active");
+        });
+
+        formSteps[formStepsNum].classList.add("form-step-active");
+        
+        // Lógica para ocultar la clase busqueda_principal
+        if (busquedaPrincipal) {
+            // Ocultar en el Paso 2 (índice 1) y Paso 3 (índice 2)
+            if (formStepsNum === 1 || formStepsNum === 2) {
+                busquedaPrincipal.style.display = 'none';
+            } else {
+                // Mostrar en el Paso 1 (índice 0)
+                busquedaPrincipal.style.display = ''; // Restablece el display original (e.g., 'block')
+            }
+        }
+    }
+
+    function updateProgressbar() {
+        progressSteps.forEach((progressStep, idx) => {
+            if (idx < formStepsNum + 1) {
+                progressStep.classList.add("progress-step-active");
+            } else {
+                progressStep.classList.remove("progress-step-active");
+            }
+        });
+
+        const progressActive = document.querySelectorAll(".progress-step-active");
+
+        progress.style.width =
+            ((progressActive.length - 1) / (progressSteps.length - 1)) * 100 + "%";
+    }
+
+    // --- Manejo del botón Siguiente ---
+
+    nextBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+
+            // Obtención de valores (simplificado por concisión, ya estaba bien)
+            let nombre_persona = $("#nombre-persona").val();
+            let apellido_persona = $("#apellido-persona").val();
+            let cedula_persona = $("#cedula-persona").val();
+            let red_social = $("#red-social").val();
+            let fecha_nacimiento = $("#fecha-nacimiento").val();
+            let correo = $("#correo").val();
+            let estado = $("#estado-caso").val();
+            let tipo_atencion = $("#tipo-atencion-usu").val();
+            let tipo_prop_intelec = $("#tipo-pi").val();
+            let fecha_recivido = $("#fecha-recibido").val();
+            let actcoordenadas = $("#actcoordenadas").val();
+            let detalles_atencion = $("#detalles_atencion").val();
+            let t_beneficiario = $("#t-beneficiario").val();
+            
+            let hasError = false; // Bandera unificada para el paso actual
+
+            // --- PASO 1: VALIDACIONES GENERALES ---
+            if (formStepsNum === 0) {
+                // Validación 1: Fecha de recibido
+                if (fecha_recivido > getFormattedDate()) {
+                    alert('La fecha de creación no debe ser mayor al día de hoy.');
+                    hasError = true;
+                } 
+                // Validación 2: Nombre
+                else if (nombre_persona == '') {
+                    $("#nombre-persona").addClass('is-invalid');
+                    focusAndScroll("#nombre-persona");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR EL NOMBRE.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 3: Apellido
+                else if (apellido_persona == '') {
+                    $("#nombre-persona").removeClass('is-invalid');
+                    $("#apellido-persona").addClass('is-invalid');
+                    focusAndScroll("#apellido-persona");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR EL APELLIDO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 4: Cédula
+                else if (cedula_persona == '') {
+                    $("#apellido-persona").removeClass('is-invalid');
+                    $("#cedula-persona").addClass('is-invalid');
+                    focusAndScroll("#cedula-persona");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR EL NÚMERO DE CÉDULA.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 5: Fecha de nacimiento
+                else if (fecha_nacimiento == '' || fecha_nacimiento == 'NULL') {
+                    $("#cedula-persona").removeClass('is-invalid');
+                    $("#fecha-nacimiento").addClass('is-invalid');
+                    focusAndScroll("#fecha-nacimiento");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR LA DE FECHA DE NACIMIENTO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 6: Tipo de beneficiario
+                else if (t_beneficiario == null || t_beneficiario == 'null') {
+                    $("#fecha-nacimiento").removeClass('is-invalid');
+                    $("#t-beneficiario").addClass('is-invalid');
+                    focusAndScroll("#t-beneficiario");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR EL TIPO DE BENEFICIARIO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 7: Vía de atención
+                else if (red_social == null) {
+                    $("#t-beneficiario").removeClass('is-invalid');
+                    $("#red-social").addClass('is-invalid');
+                    focusAndScroll("#red-social");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR LA VÍA DE ATENCIÓN.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 8: Correo
+                else if (correo == '') {
+                    $("#red-social").removeClass('is-invalid');
+                    $("#correo").addClass('is-invalid');
+                    focusAndScroll("#correo");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR EL CORREO ELECTRÓNICO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                }
+            }
+
+            // --- PASO 2: VALIDACIONES ESPECÍFICAS ---
+            if (formStepsNum === 1 && !hasError) {
+                
+                // Validación 1: Estado del caso
+                if (estado == null) 
+                {
+                    $("#correo").removeClass('is-invalid');
+                    $("#estado-caso").addClass('is-invalid');
+                    focusAndScroll("#estado-caso");
+                    Swal.fire({ icon: "error", html: '<strong>EL CAMPO ESTADO ES OBLIGATORIO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 2: Tipo de atención
+                else if (tipo_atencion == null) 
+                {
+                    $("#estado-caso").removeClass('is-invalid');
+                    $("#tipo-atencion-usu").addClass('is-invalid');
+                    focusAndScroll("#tipo-atencion-usu");
+                    Swal.fire({ icon: "error", html: '<strong>EL USUARIO DEBE TENER ALGÚN TIPO DE ATENCIÓN.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // Validación 3: Tipo de PI si el Tipo de atención es 1
+                else if (tipo_atencion == 1 && tipo_prop_intelec == null) 
+                {
+                    $("#tipo-atencion-usu").removeClass('is-invalid');
+                    $("#tipo-pi").addClass('is-invalid');
+                    focusAndScroll("#tipo-pi");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+
+                } 
+                // Validación 4: Tipo de atención 23 (Lógica de contraparte)
+                else if (tipo_atencion == 23) {
+                    
+                    $("#tipo-atencion-usu").removeClass('is-invalid');
+                    
+                    let hasErrorTipo23 = false;
+                    const REGEX_IDENTIFICACION_ESTRICTA = /^\d{5,}(?:-\d{1})?$/; 
+
+                    // --- 2.1. Validar Propiedad Intelectual ---
+                    if (tipo_prop_intelec == null) {
+                        $("#tipo-pi").addClass('is-invalid').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
+                        hasErrorTipo23 = true;
+                    } else {
+                        $("#tipo-pi").removeClass('is-invalid');
+
+                        let $ident = $("#contraparte-ident-valor");
+                        let $nombre = $("#contraparte-nombre-razon");
+                        let $telefono = $("#contraparte-telefono");
+                        let $correo = $("#contraparte-correo");
+                        
+                        let contraparte_nombre = $nombre.val();
+                        let contraparte_telefono = $telefono.val();
+                        let contraparte_correo = $correo.val();
+                        let contraparte_ident = $ident.val();
+
+                        // 2.2. Validar Nombre/Razón Social (Obligatorio)
+                        if (contraparte_nombre == null || contraparte_nombre.trim() === '')
+                        {
+                            $nombre.removeClass('border-gray-300').addClass('border-red-500').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                            $ident.removeClass('border-red-500').addClass('border-gray-300');
+                            $telefono.removeClass('border-red-500').addClass('border-gray-300');
+                            $correo.removeClass('border-red-500').addClass('border-gray-300');
+
+                            Swal.fire({ icon: "error", html: '<strong>DEBE INDICAR EL NOMBRE o RAZÓN SOCIAL DE LA CONTRAPARTE.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
+                            hasErrorTipo23 = true;
+                        } else {
+                            $nombre.removeClass('border-red-500').addClass('border-gray-300');
+
+                            // 2.3. Validar Teléfono (Obligatorio)
+                            if (contraparte_telefono == null || contraparte_telefono.trim() === '') {
+                                $telefono.removeClass('border-gray-300').addClass('border-red-500').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                                $ident.removeClass('border-red-500').addClass('border-gray-300');
+                                $correo.removeClass('border-red-500').addClass('border-gray-300');
+
+                                Swal.fire({ icon: "error", html: '<strong>DEBE INDICAR EL TELÉFONO DE LA CONTRAPARTE.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
+                                hasErrorTipo23 = true;
+                            } else {
+                                $telefono.removeClass('border-red-500').addClass('border-gray-300');
+
+                                // 2.4. Validar Correo (Obligatorio)
+                                if (contraparte_correo == null || contraparte_correo.trim() === '') {
+                                    $correo.removeClass('border-gray-300').addClass('border-red-500').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                                    $ident.removeClass('border-red-500').addClass('border-gray-300');
+                                    
+                                    Swal.fire({ icon: "error", html: '<strong>DEBE INDICAR EL CORREO DE LA CONTRAPARTE.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
+                                    hasErrorTipo23 = true;
+                                } else {
+                                    $correo.removeClass('border-red-500').addClass('border-gray-300');
+
+                                    // 2.5. Validar Identificación Estricta (Opcional) 
+                                    const ident_valor_trimmed = contraparte_ident.trim();
+
+                                    if (ident_valor_trimmed !== '') {
+                                        let valor_a_validar = ident_valor_trimmed.replace(/[. ]/g, '').toUpperCase();
+                                        
+                                        if (!REGEX_IDENTIFICACION_ESTRICTA.test(valor_a_validar)) {
+                                            $ident.removeClass('border-gray-300').addClass('border-red-500').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                                            Swal.fire({ icon: "error", html: '<strong>Identificación inválida. Formato: Mínimo 5 dígitos (ej: 12345) o 12345678-2..</strong>', toast: true, position: "center", showConfirmButton: false, timer: 4000, focusConfirm: false, allowOutsideClick: true });
+                                            hasErrorTipo23 = true;
+                                        } else {
+                                            $ident.removeClass('border-red-500').addClass('border-gray-300');
+                                        }
+                                    } else {
+                                         $ident.removeClass('border-red-500').addClass('border-gray-300');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Si NO hay errores en este bloque específico, avanza
+                    if (!hasErrorTipo23) {
+                        formStepsNum++;
+                        updateFormSteps();
+                        updateProgressbar();
+                    }
+                    return; // Salir después de manejar la validación 23
+                }
+                // Validación 5: Coordenadas y Detalles
+                else if (actcoordenadas == 't' && detalles_atencion == null) 
+                {
+                    $("#tipo-atencion-usu").removeClass('is-invalid');
+                    $("#detalles_atencion").addClass('is-invalid');
+                    focusAndScroll("#detalles_atencion");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN DETALLE DE ATENCIÓN.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+
+                } 
+                // Validación 6: Tipo de atención 5 (Denuncia)
+                else if (tipo_atencion === '5') {
+                    let denu_involucrados = $('#denu-involucrados').val().trim();
+                    let fecha_hechos = $('#fecha-hechos').val();
+                    let option_personal = document.getElementById('option-personal').checked;
+                    let option_comunidad = document.getElementById('option-comunidad').checked;
+                    let option_terceros = document.getElementById('option-terceros').checked;
+
+                    if (!option_personal && !option_comunidad && !option_terceros) {
+                        alert('Debe indicar a quien afecta el hecho');
+                        hasError = true;
+                    } else if (fecha_hechos == '') {
+                        alert('Debe seleccionar la fecha en que ocurrieron los hechos');
+                        hasError = true;
+                    } else if (denu_involucrados === '') {
+                        $("#denu-involucrados").addClass('is-invalid');
+                        alert('Este campo es requerido, por favor introduzca la información solicitada');
+                        hasError = true;
+                    }
+                    
+                    if (!hasError) {
+                        formStepsNum++;
+                        updateFormSteps();
+                        updateProgressbar();
+                    }
+                    return; // Salir después de manejar la validación 5
+                }
+
+                // Lógica de avance final para el Paso 2 (si no es 23 ni 5)
+                if (!hasError) {
+                    formStepsNum++;
+                    updateFormSteps();
+                    updateProgressbar();
+                }
+            }
+
+
+            // --- LÓGICA DE AVANCE GENÉRICA ---
+            // Solo avanza si estamos en el Paso 1 (formStepsNum=0) Y NO hubo errores.
+            if (formStepsNum === 0 && !hasError) {
+                formStepsNum++;
+                updateFormSteps();
+                updateProgressbar();
+            }
+        });
+    });
+        
+    // --- Manejo del botón Anterior ---
+
+    prevBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            formStepsNum--;
+            updateFormSteps();
+            updateProgressbar();
+        });
+    });
+
+    // Llama a updateFormSteps al cargar para asegurar el estado inicial
     updateFormSteps();
-    updateProgressbar();
-    
-  });
-});
-
-function updateFormSteps() {
-  formSteps.forEach((formStep) => {
-    formStep.classList.contains("form-step-active") &&
-      formStep.classList.remove("form-step-active");
-  });
-
-  formSteps[formStepsNum].classList.add("form-step-active");
-}
-
-function updateProgressbar() {
-  progressSteps.forEach((progressStep, idx) => {
-    if (idx < formStepsNum + 1) {
-      progressStep.classList.add("progress-step-active");
-    } else {
-      progressStep.classList.remove("progress-step-active");
-    }
-  });
-
-  const progressActive = document.querySelectorAll(".progress-step-active");
-
-  progress.style.width =
-    ((progressActive.length - 1) / (progressSteps.length - 1)) * 100 + "%";
-}
-
-  </script>
+</script>
+  
 </html>
 
      

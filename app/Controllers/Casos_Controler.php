@@ -18,7 +18,10 @@ use App\Models\Documentos_casos_Model;
 use App\Models\Roles_Model;
 use App\Models\Tipo_Atencion_Usu_Model;
 use App\Models\Coordenadas_Model;
-
+use App\Models\SapiTerceroModel;
+use App\Models\SapiExtensionModel; 
+use App\Models\Mediacion;
+use App\Models\SapiControversiaModel;
 
 use App\Models\NizaClasses;
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
@@ -170,229 +173,334 @@ curl_close($ch);
 
 	//Metodo para generar un nuevo caso
 	public function nuevoCaso()
-	{
-		$casoModel = new Casos();
-		$tipoPIModel = new PropiedadIntelectual();
-		$oficina = new Oficinas();
-		$reqModel = new RequerimientoUsuario();
-		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
-		$segModel = new Seguimientos();
-		$Casos_coordenadas = new Coordenadas_Model();
-		$Registro_cgr_Model = new Registro_cgr_Model();
-		$Casos_denuncias = new Casos_denuncias_Model();
-		//Arreglo para añadir el nuevo caso
-		$newCase = array();
+    {
+        // Instanciación de Modelos
+        $casoModel = new Casos();
+        $tipoPIModel = new PropiedadIntelectual();
+        $oficina = new Oficinas(); 
+        $reqModel = new RequerimientoUsuario(); 
+        $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+        $segModel = new Seguimientos();
+        $Casos_coordenadas = new Coordenadas_Model();
+        $Registro_cgr_Model = new Registro_cgr_Model();
+        $Casos_denuncias = new Casos_denuncias_Model();
+        
+        // Modelos SAPI
+        $terceroModel = new SapiTerceroModel();
+        $apoderadoModel = new Mediacion();
+       
 
-		$coodenadas = array();
-		$act_coordenadas = array();
+        $db = \Config\Database::connect();
+        
+        // Inicialización de Variables
+        $newCase = array();
+        $coodenadas = array(); // No se usa, pero se mantiene de tu original
+        $act_coordenadas = array();
+        $casos_existentes = array();
+        $dirCaso = array(); // No se usa
+        $tipoPI = array();
+        $datosSeguimiento = array();
+        $reqUsuario = array(); // No se usa
+        $repuesta = array(); 
+        
+        $token = $this->request->getServer('HTTP_AUTHORIZATION');
+        $buscar_token = $casoModel->buscar_token($token);
+        
+        if (($this->session->get('logged') && $this->request->isAJAX()) || !empty($buscar_token)) {
+            
+            // 1. OBTENCIÓN DE DATOS Y ASIGNACIÓN DE USUARIO
+            $idusuopr = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
+            $datos = empty($buscar_token) 
+                ? json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE) 
+                : $this->request->getPost('data');
+            
+            // 2. PREPARACIÓN DE DATOS DEL CASO PRINCIPAL (sgc_casos)
+            $newCase["idusuopr"]    = $idusuopr;
+            $newCase["casofec"]     = $datos["date-entry"];
+            $newCase["casoced"]     = $datos["person-id"];
+            $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
+            $newCase["casonom"]     = strtoupper($datos["person-name"]);
+            $newCase["casoape"]     = strtoupper($datos["person-lastname"]);
+            $newCase["casotel"]     = $datos["telephone"];
+            $newCase["idest"]       = 1;
+            $newCase["idrrss"]      = $datos["social_network"];
+            $newCase["estadoid"]    = $datos["state"];
+            $newCase["municipioid"] = $datos["county"];
+            $newCase["pais"]        = $datos["country"];
+            $newCase["sexo"]        = $datos["sexo"];
+            $newCase["parroquiaid"] = $datos["town"];
+            $newCase["ofiid"]       = $datos["office"];
+            $newCase["casodesc"]    = $datos["user-requirement"];
+            $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+            $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["direccion"]   = $datos["direccion"];
+            $newCase["correo"]      = $datos["correo"];
+            $newCase["caso_org_id"] = $datos["organismo-caso"];
+            $newCase["ente_adscrito_id"] = $datos["ente_adscrito"];
+            $newCase["edad"]        = $datos["edad"];
+            $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
+			$newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
+            $newCase["profesion"]   = $datos["profesion"];
+            $newCase["casonumsol"]  = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
 
+            $pi_type = $datos["pi-type"];
+            $act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
+            $bandera_cgr["bandera_cgr"] = $datos["bandera_cgr"];
+            $bandera_denuncia["bandera_denuncia"] = $datos["bandera_denuncia"];
 
+            // 2.1. PREPARACIÓN DE DATOS PARA BUSCAR CASOS EXISTENTES
+            $casos_existentes["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
+            $casos_existentes["casoced"]     = $datos["person-id"];
+            $casos_existentes["profesion"]     = $datos["profesion"];
+            $casos_existentes["edad"]     = $datos["edad"];
 
-		$casos_existentes = array();
-		//Arreglo de direccion de casos
-		$dirCaso = array();
-		//Arreglo con el tipo de propiedad intelectual
-		$tipoPI = array();
-		$datosSeguimiento = array();
-		//Arreglo para el requerimiento del usuario
-		$reqUsuario = array();
-		//OJO
-		$token=$this->request->getServer('HTTP_AUTHORIZATION');
-		$buscar_token = $casoModel->buscar_token($token);
-		if (($this->session->get('logged') and $this->request->isAJAX())||!empty($buscar_token)) {
-			$newCase["idusuopr"]    = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-			//Obtenemos los datos del formulario
-			$datos = empty($buscar_token)?json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE):$this->request->getPost('data');
-			//llenamos los datos iniciales del caso
-			$newCase["casofec"]     = $datos["date-entry"];
-			$newCase["casoced"]     = $datos["person-id"];
-			$newCase["caso_nacionalidad"]     = $datos["nacionalidad"];
-			$newCase["casonom"] = strtoupper($datos["person-name"]);
-			$newCase["casoape"] = strtoupper($datos["person-lastname"]);
-			$newCase["casotel"]     = $datos["telephone"];
-			$newCase["idest"]       = 1;
-			$newCase["idrrss"]      = $datos["social_network"];
-			$newCase["idusuopr"]    = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-			$newCase["estadoid"]    = $datos["state"];
-			$newCase["municipioid"] = $datos["county"];
-			$newCase["pais"] = $datos["country"];
-			$newCase["sexo"] = $datos["sexo"];
-			$newCase["parroquiaid"] = $datos["town"];
-			$newCase["ofiid"]       = $datos["office"];
-			$newCase["casodesc"]    = $datos["user-requirement"];
-			$newCase["id_tipo_atencion"]    = $datos["tipo-atencion-usu"];
-			$newCase["tipo_beneficiario"]    = $datos["tipo_beneficiario"];
-			$newCase["direccion"]    = $datos["direccion"];
-			$newCase["correo"]    = $datos["correo"];
-			$newCase["caso_org_id"]    = $datos["organismo-caso"];
-			$newCase["ente_adscrito_id"]    = $datos["ente_adscrito"];
-			$newCase["edad"]    = $datos["edad"];
-			$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
-			$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
-			$casos_existentes["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
-			$casos_existentes["casoced"]     = $datos["person-id"];
-			$casos_existentes["profesion"]     = $datos["profesion"];
-			$casos_existentes["edad"]     = $datos["edad"];
-			$newCase["profesion"]    = $datos["profesion"];
-			$bandera_cgr["bandera_cgr"]    = $datos["bandera_cgr"];
-			$bandera_denuncia["bandera_denuncia"]    = $datos["bandera_denuncia"];
-
-
-
-			$pi_type = $datos["pi-type"];
-			if (empty($datos["record-work"])) {
-				$newCase["casonumsol"] = 'No Aplica';
-			} else {
-				$newCase["casonumsol"] = $datos["record-work"];
-			}
-
-	      $act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
-	
-
-			//VERIFICO SI EXISTEN CASOS ANTERIOSRES EN FUNCION DE LA CEDULA , PARA ACTUALIZAR LA FECHA DE NACIMIENTO Y LA PROFECION
-			$query_BuscarCasosExistentes= $casoModel->BuscarCasosExistentes($casos_existentes);
-			if ($query_BuscarCasosExistentes)
-			{
-				//ACTUALIZO LA FECHA DE VENCIMIENTO
-				$query_ActualizarFechaNacimiento= $casoModel->ActualizarFechaNacimiento($casos_existentes);
-			}
-
-				$query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
-				if (isset($query_insertar_caso)) 
-				{
-					//Obtenemos el id insertado
-					$_obtener_utimo_id = $casoModel->obtener_utimo_id();
-					//Armamos el arreglo para insertar el tipo de propiedad intelectual del caso
-					if (empty($_obtener_utimo_id->getResult())) {
-						$tipoPI[] = '0';
-					} else {
-						foreach ($_obtener_utimo_id->getResult() as $fila) {
-							$tipoPI['idcaso']      = $fila->ultimo_id;
-							$tipoPI['idtippropint']  = $pi_type;
-						}
-					}
-
-				//SI TIENE COORDENADAS INSERTAMOS LOS VALORES EN LA TABLA
-
-				// El arreglo de entrada es $act_coordenadas
-				if ($act_coordenadas["act_coordenadas"] == 't') 
-				{
-				$coordenadas["idcaso"] = $tipoPI['idcaso'];
-				$coordenadas["nombre"] = $datos["nombre"];
-				$coordenadas["latitud"] = $datos["latitud"];
-				$coordenadas["longitud"] = $datos["longitud"];
-
-				// Asigna el ID del usuario
-				$coordenadas['idusuopr'] = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
-
-				//Hacemos la inserción
-				$query_Inset_coordenadas = $Casos_coordenadas->insertarCoordenadas($coordenadas);
-				}
-
-					//HACEMOS EL INSERT DE CREACION EN EL SEGUIMIENTO DEL CASO
-					$datosSeguimiento['idcaso']      = $tipoPI['idcaso'];
-					$datosSeguimiento['idestllam']    = 4;
-					$datosSeguimiento['segcoment']    = 'CREACIÓN DEL CASO';
-					$datosSeguimiento['idusuopr']    = 	empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-					$datosSeguimiento['segfec']    = 	date('Y-m-d');
-					//Hacemos la insercion
-					$query_Inset_seguimientos = $segModel->insertarSeguimiento($datosSeguimiento);
-					//$repuesta[] = '0';
-					//VERIFICAMOS SI ES UN  CASO DE ASESORIA PARA HACER LA INSERCION
-					if ($bandera_cgr["bandera_cgr"] == 'true') 
-					{
-						$cgr['competencia_cgr']  = $datos["competencia_crg"];
-						$cgr['asume_cgr']      = $datos["asume_crg"];
-						$cgr['id_caso']      = $tipoPI['idcaso'];
-						$idcaso=$tipoPI['idcaso'];
-						//Verificamos si ya existe si existe el id del caso antes de hacer el insert 
-						$query_verificacion_cgr_Model = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
-						if (empty($query_verificacion_cgr_Model))
-						{
-							//Hacemos la insercion
-							$query_Registro_cgr_Model = $Registro_cgr_Model->insertarRegistro_cgr($cgr);
-
-							//verificacion que se hiso la insercion del cgr
-							if (isset($query_Registro_cgr_Model)) 
-							{
-								//si se hiso la insercion del cgr , hacemos la insercion en el  tipo de propiedad intelectual para el  caso
-								$query_tipopimodel = $tipoPIModel->insertarTipoPICaso($tipoPI);
-								if (isset($query_tipopimodel)) {
-									$repuesta['mensaje']      = 1;
-									$repuesta['idcaso']  = $fila->ultimo_id;
-									$auditoria['audi_user_id']   = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-									$auditoria['audi_accion']   = 'INGRESO UN NUEVO CASO Nª' . $tipoPI['idcaso'];
-									$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-									return json_encode($repuesta);
-								} else {
-									$repuesta['mensaje'] = 2;
-									return json_encode($repuesta);
-								}
-							}
-						}else
-						{
-							$repuesta['mensaje'] = 7;
-							return json_encode($repuesta);
-
-						}
-						
-							
-						
-					}
-					//VERIFICAMOS SI ES UN  CASO ES DE DENUNCIA PARA HACER LA INSERCION
-					if ($bandera_denuncia["bandera_denuncia"]  == 'true') 
-					{
-						$denuncia['denu_afecta_persona']  = $datos["option_personal"];
-						$denuncia['denu_afecta_comunidad']      = $datos["option_comunidad"];
-						$denuncia['denu_afecta_terceros']  = $datos["option_terceros"];
-						$denuncia['denu_fecha_hechos']      = $datos["fecha_hechos"];
-						$denuncia['denu_involucrados']  = $datos["denu_involucrados"];
-						$denuncia['denu_instancia_popular']      = $datos["nombre_instancia"];
-						$denuncia['denu_rif_instancia']  = $datos["rif_instancia"];
-						$denuncia['denu_ente_financiador']      = $datos["ente_financiador"];
-						$denuncia['denu_nombre_proyecto']  = $datos["nombre_proyecto"];
-						$denuncia['denu_monto_aprovado']      = $datos["monto_aprovado"];
-						$denuncia['denu_id_caso']      = $tipoPI['idcaso'];
-						//Hacemos la insercion
-						$query_Casos_denuncias = $Casos_denuncias->insertarCasos_Denuncias($denuncia);
-						//verificacion que se hiso la insercion de los casos de denuncias
-						if (isset($query_Casos_denuncias)) {
-							//si se hiso la insercion del cgr , hacemos la insercion en el  tipo de propiedad intelectual para el  caso
-							$query_tipopimodel = $tipoPIModel->insertarTipoPICaso($tipoPI);
-							if (isset($query_tipopimodel)) {
-								$repuesta['mensaje']      = 1;
-								$repuesta['idcaso']  = $fila->ultimo_id;
-								$auditoria['audi_user_id']   = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-								$auditoria['audi_accion']   = 'INGRESO UN NUEVO CASO Nª' . $tipoPI['idcaso'];
-								$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-								return json_encode($repuesta);
-							} else {
-								$repuesta['mensaje'] = 2;
-								return json_encode($repuesta);
-							}
-						}
-					} else
-					{
-						$query_TipoPICaso = $tipoPIModel->insertarTipoPICaso($tipoPI);
-						if (isset($query_TipoPICaso)) {
-							$repuesta['mensaje']      = 1;
-							$repuesta['idcaso']  = $fila->ultimo_id;
-							$auditoria['audi_user_id']   = empty($buscar_token)?$this->session->get('iduser'):$buscar_token[0]->id_usuario;
-							$auditoria['audi_accion']   = 'INGRESO UN NUEVO CASO Nª' . $tipoPI['idcaso'];
-							$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-							return json_encode($repuesta);
-						} else {
-							$repuesta['mensaje'] = 2;
-							return json_encode($repuesta);
-						}
-					}
-				}
 		
-		} else {
+            // 3. INICIO DEL PROCESO DE GUARDADO
+           
+                // 3.1. VERIFICAR Y ACTUALIZAR CASOS ANTERIORES
+                $query_BuscarCasosExistentes = $casoModel->BuscarCasosExistentes($casos_existentes);
+                if ($query_BuscarCasosExistentes) {
+                    $casoModel->ActualizarFechaNacimiento($casos_existentes);
+                }
 
-			return redirect()->to('/');
-		}
-	}
+                // 3.2. INSERTAR CASO PRINCIPAL (sgc_casos)
+                $query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
+                if (isset($query_insertar_caso)) {
+                    
+                    // Obtener el ID insertado
+                    $_obtener_utimo_id = $casoModel->obtener_utimo_id();
+                    // Usamos getRow() para obtener el objeto de fila directamente
+                    $fila = $_obtener_utimo_id->getRow(); 
+                    $idcaso = $fila->ultimo_id; 
+
+                    $tipoPI['idcaso'] = $idcaso;
+                    $tipoPI['idtippropint'] = $pi_type;
+
+                    // 3.3. COORDENADAS
+                    if ($act_coordenadas["act_coordenadas"] == 't') {
+                        $coordenadas = [
+                            "idcaso" => $idcaso,
+                            "nombre" => $datos["nombre"],
+                            "latitud" => $datos["latitud"],
+                            "longitud" => $datos["longitud"],
+                            'idusuopr' => $idusuopr
+                        ];
+                        $Casos_coordenadas->insertarCoordenadas($coordenadas);
+                    }
+
+                    // 3.4. SEGUIMIENTO INICIAL
+                    $datosSeguimiento = [
+                        'idcaso' => $idcaso,
+                        'idestllam' => 4,
+                        'segcoment' => 'CREACIÓN DEL CASO',
+                        'idusuopr' => $idusuopr,
+                        'segfec' => date('Y-m-d')
+                    ];
+                    $segModel->insertarSeguimiento($datosSeguimiento);
+
+               // ===================================================================
+				// 4. LÓGICA DE MEDIACIÓN SAPI (TIPO ATENCIÓN 23)
+				// ===================================================================
+				if ($newCase["id_tipo_atencion"] == '23')
+				{
+					$medicionData = $datos['datos_medicion'];
+
+					// 4.1. INICIO DE TRANSACCIÓN SAPI
+					$db->transStart(); 
+					
+					try {
+						$contraparteId = null; // ID de la Contraparte (Tercero)
+						$apoderadoSolId = null; // ID del Apoderado del Solicitante (Tercero)
+						$apoderadoCptId = null; // ID del Apoderado de la Contraparte (Tercero)
+
+						// Función auxiliar para buscar e insertar si no existe
+						$checkAndInsertTercero = function($data) use ($terceroModel) {
+							// Verificación: Buscar por Identificación
+							$terceroExistente = $terceroModel
+													->where('ter_identificacion', $data['ter_identificacion'])
+													->first();
+
+							if ($terceroExistente) {
+								// Existe: Retornar el ID del tercero existente
+								return $terceroExistente['ter_id']; // Asumiendo que 'ter_id' es el nombre de la clave primaria
+							} else {
+								// No Existe: Insertar y retornar el nuevo ID
+								$terceroModel->insert($data);
+								return $terceroModel->insertID();
+							}
+						};
+
+						// A. REGISTRO DE TERCEROS (sgc_sapi_terceros)
+						
+						// 4.1.1. CONTRAPARTE
+						$contraparteData = $medicionData['contraparte'];
+						
+						if (!empty($contraparteData['nombre_razon']) && !empty($contraparteData['correo'])) {
+							$dataToInsert = [
+								'ter_nombre' => $contraparteData['nombre_razon'],
+								'ter_tipo_per' => $contraparteData['ident_tipo'],
+								'ter_identificacion' =>  $contraparteData['ident_valor'],
+								'ter_correo' => $contraparteData['correo'],
+								'ter_telefono' => $contraparteData['telefono'] ?? null,
+								'ter_pais' => $contraparteData['pais'],
+								'ter_estado' => $contraparteData['estado'],
+								'ter_municipio' => $contraparteData['municipio'],
+								'ter_parroquia' => $contraparteData['parroquia'],
+								'ter_direccion' => $contraparteData['direccion'],
+							];
+							
+							// Usar la función para verificar/insertar
+							$contraparteId = $checkAndInsertTercero($dataToInsert);
+
+						} else {
+							// Si no hay datos de contraparte válidos, lanzamos una excepción
+							throw new \Exception("Datos de Contraparte incompletos.");
+						}
+
+						// 4.1.2. Apoderado Solicitante (Solo si el checkbox fue marcado y hay datos)
+						$apoSolData = $medicionData['apoderado_solicitante'];
+						if (!empty($apoSolData['nombres'])) { 
+							$dataToInsert = [
+								'ter_nombre' => $apoSolData['nombres'],
+								'ter_tipo_per' => $apoSolData['ident_tipo'],
+								'ter_identificacion' => $apoSolData['ci'],
+								'ter_correo' => $apoSolData['correo'],
+								'ter_telefono' => $apoSolData['telefono'],
+								'ter_pais' => $apoSolData['pais'],
+								'ter_estado' => $apoSolData['estado'],
+								'ter_municipio' => $apoSolData['municipio'],
+								'ter_parroquia' => $apoSolData['parroquia'],
+								'ter_direccion' => $apoSolData['direccion'],
+							];
+							
+							// Usar la función para verificar/insertar
+							$apoderadoSolId = $checkAndInsertTercero($dataToInsert);
+						}
+						// Si el checkbox NO está marcado, $apoderadoSolId será null, lo cual es correcto.
+
+
+						// 4.1.3. Apoderado Contraparte (Solo si el checkbox fue marcado y hay datos)
+						$apoCptData = $medicionData['apoderado_contraparte'];
+						if (!empty($apoCptData['nombres'])) { 
+							$dataToInsert = [
+								'ter_tipo_per' => $apoCptData['ident_tipo'],
+								'ter_nombre' => $apoCptData['nombres'],
+								'ter_identificacion' => $apoCptData['ci'],
+								'ter_correo' => $apoCptData['correo'],
+								'ter_telefono' => $apoCptData['telefono'] ?? null,
+								'ter_pais' => $apoCptData['pais'],
+								'ter_estado' => $apoCptData['estado'],
+								'ter_municipio' => $apoCptData['municipio'],
+								'ter_parroquia' => $apoCptData['parroquia'],
+								'ter_direccion' => $apoCptData['direccion'],
+							];
+
+							// Usar la función para verificar/insertar
+							$apoderadoCptId = $checkAndInsertTercero($dataToInsert);
+						}
+						// Si el checkbox NO está marcado, $apoderadoCptId será null, lo cual es correcto.
+
+						// B. REGISTRO EN sgc_mediacion
+						
+						if ($contraparteId) { // Solo es necesario verificar contraparte, ya que es obligatorio
+							$apoderadoModel->insert([
+								'med_caso_id' => $idcaso, 
+								'med_apo_sol_id' => $apoderadoSolId, 
+								'med_contra_id' => $contraparteId, 
+								'med_apo_contra_id' => $apoderadoCptId, 
+							]);
+						}
+						
+						$db->transComplete(); // COMMIT de la transacción SAPI
+						
+					} catch (\Exception $e) {
+						$db->transRollback(); // ROLLBACK de la transacción SAPI
+						throw $e; 
+					}
+				}
+                    
+                    // ===================================================================
+                    // 5. LÓGICA DE CGR / DENUNCIA / PI
+                    // ===================================================================
+
+                    $casoExitoso = FALSE; 
+                    
+                    // 5.1. CASO CGR
+                    if ($bandera_cgr["bandera_cgr"] == 'true') {
+                        $cgr = [
+                            'competencia_cgr' => $datos["competencia_crg"],
+                            'asume_cgr' => $datos["asume_crg"],
+                            'id_caso' => $idcaso
+                        ];
+                        
+                        $query_verificacion_cgr_Model = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
+                        if (empty($query_verificacion_cgr_Model)) {
+                            $query_Registro_cgr_Model = $Registro_cgr_Model->insertarRegistro_cgr($cgr);
+                            if (isset($query_Registro_cgr_Model)) {
+                                $casoExitoso = TRUE;
+                            }
+                        } else {
+                            $repuesta['mensaje'] = 7; 
+                            return json_encode($repuesta);
+                        }
+                    }
+
+                    // 5.2. CASO DENUNCIA
+                    if ($bandera_denuncia["bandera_denuncia"]  == 'true') {
+                        $denuncia = [
+                            'denu_afecta_persona' => $datos["option_personal"],
+                            'denu_afecta_comunidad' => $datos["option_comunidad"],
+                            'denu_afecta_terceros' => $datos["option_terceros"],
+                            'denu_fecha_hechos' => $datos["fecha_hechos"],
+                            'denu_involucrados' => $datos["denu_involucrados"],
+                            'denu_instancia_popular' => $datos["nombre_instancia"],
+                            'denu_rif_instancia' => $datos["rif_instancia"],
+                            'denu_ente_financiador' => $datos["ente_financiador"],
+                            'denu_nombre_proyecto' => $datos["nombre_proyecto"],
+                            'denu_monto_aprovado' => $datos["monto_aprovado"],
+                            'denu_id_caso' => $idcaso
+                        ];
+                        $query_Casos_denuncias = $Casos_denuncias->insertarCasos_Denuncias($denuncia);
+                        if (isset($query_Casos_denuncias)) {
+                            $casoExitoso = TRUE;
+                        }
+                    }
+                    
+                    // 5.3. INSERTAR TIPO DE PI 
+                    if (!isset($repuesta['mensaje'])) {
+                         $query_TipoPICaso = $tipoPIModel->insertarTipoPICaso($tipoPI);
+                        if (isset($query_TipoPICaso)) {
+                            // Marca como exitoso incluso si ya pasó por CGR/Denuncia
+                            $casoExitoso = TRUE; 
+                        } else {
+                             $casoExitoso = FALSE; 
+                        }
+                    }
+                    
+                    // 6. RETORNO DE RESPUESTA ÚNICA
+                    if ($casoExitoso && !isset($repuesta['mensaje'])) {
+                        $repuesta['mensaje'] = 1;
+                        $repuesta['idcaso']  = $idcaso;
+                        
+                        $auditoria['audi_user_id'] = $idusuopr;
+                        $auditoria['audi_accion'] = 'INGRESO UN NUEVO CASO Nª' . $idcaso;
+                        $model_Auditoria_sistema_Model->agregar($auditoria);
+                        
+                        return json_encode($repuesta);
+                    } elseif (!isset($repuesta['mensaje'])) {
+                        $repuesta['mensaje'] = 2; // Error genérico de inserción
+                        return json_encode($repuesta);
+                    }
+                    
+                } // Fin de if (isset($query_insertar_caso))
+                
+           
+        
+        } else {
+            // No autenticado
+            return redirect()->to('/');
+        }
+    }
 	//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
@@ -425,289 +533,400 @@ curl_close($ch);
 		}
 	}
 
-	//Metodo para ACTUALIZAR UN CASO 
-	public function actualizarCaso()
-	{
-		$casoModel = new Casos();
-		$tipoPIModel = new PropiedadIntelectual();
-		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
-		$oficina = new Oficinas();
-		$reqModel = new RequerimientoUsuario();
-		$segModel = new Seguimientos();
-		$Casos_coordenadas = new Coordenadas_Model();
-		$Registro_cgr_Model = new Registro_cgr_Model();
-		$Casos_denuncias = new Casos_denuncias_Model();
-		//Arreglo para añadir el nuevo caso
-		$newCase = array();
-		$denuncia = array();
-		$coodenadas = array();
-		$act_coordenadas = array();
-		//Arreglo de direccion de casos
-		$dirCaso = array();
-		//Arreglo con el tipo de propiedad intelectual
-		$tipoPI = array();
-		//Arreglo para el requerimiento del usuario
-		$reqUsuario = array();
-		if ($this->session->get('logged') and $this->request->isAJAX()) {
-			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
-			$newCase["id_tipo_atencion"]    = $datos["tipo-atencion-usu"];
-			$tipoPI["idtippropint"]    = $datos["pi-type"];
-			$tipoPI["idcaso"]    = $datos["idcaso"];
-			//llenamos los datos iniciales del caso
-			if ($newCase["id_tipo_atencion"] !== 5 && $newCase["id_tipo_atencion"] !== 1)
-		 {
-				$newCase["idcaso"]    = $datos["idcaso"];
-				$newCase["casofec"]     = $datos["date-entry"];
-				$newCase["casoced"]     = $datos["person-id"];
-				$newCase["caso_nacionalidad"]     = $datos["nacionalidad"];
-				$newCase["casonom"]     = $datos["person-name"];
-				$newCase["casoape"]     = $datos["person-lastname"];
-				$newCase["casotel"]     = $datos["telephone"];
-				$newCase["idest"]       = 1;
-				$newCase["idrrss"]      = $datos["social_network"];
-				$user["idusuopr"]    = $this->session->get('iduser');
-				$newCase["estadoid"]    = $datos["state"];
-				$newCase["municipioid"] = $datos["county"];
-				$newCase["pais"] = $datos["country"];
-				$newCase["sexo"] = $datos["sexo"];
-				$newCase["parroquiaid"] = $datos["town"];
-				$newCase["ofiid"]       = $datos["office"];
-				$newCase["caso_org_id"]       = $datos["caso_org_id"];
-				$newCase["casodesc"]    = $datos["user-requirement"];
-				$newCase["id_tipo_atencion"]    = $datos["tipo-atencion-usu"];
-				$newCase["tipo_beneficiario"]    = $datos["tipo_beneficiario"];
-				$newCase["direccion"]    = $datos["direccion"];
-				$newCase["correo"]    = $datos["correo"];
-				$newCase["ente_adscrito_id"]    = $datos["ente_adscrito_id"];
-				$newCase["edad"]    = $datos["edad"];
-				$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
-				$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
-				$newCase["profesion"]    = $datos["profesion"];
+// Metodo para ACTUALIZAR UN CASO 
+public function actualizarCaso()
+{
+    // ===================================================================
+    // 1. INSTANCIACIÓN DE MODELOS
+    // ===================================================================
+    $casoModel = new Casos();
+    $tipoPIModel = new PropiedadIntelectual();
+    $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+    $oficina = new Oficinas();
+    $reqModel = new RequerimientoUsuario();
+    $segModel = new Seguimientos();
+    $Casos_coordenadas = new Coordenadas_Model();
+    $Registro_cgr_Model = new Registro_cgr_Model();
+    $Casos_denuncias = new Casos_denuncias_Model();
 
-				//$newCase["campos_modificados"]    = $datos["campos_modificados"];
-				if (empty($datos["record-work"])) {
-					$newCase["casonumsol"] = 'No Aplica';
-				} else {
-					$newCase["casonumsol"] = $datos["record-work"];
-				}
-  				$act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
-				// El arreglo de entrada es $act_coordenadas
-				if ($act_coordenadas["act_coordenadas"] == 't') 
-				{
-					$coordenadas["idcaso"] = $tipoPI['idcaso'];
-					$coordenadas["nombre"] = $datos["nombre"];
-					$coordenadas["latitud"] = $datos["latitud"];
-					$coordenadas["longitud"] = $datos["longitud"];
-					$coordenadas["borrado"] = false;
-					// Asigna el ID del usuario
-					$coordenadas['idusuopr'] = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
-					
-					// Verificamos si existe el caso en coordenadas
-					$caso_existente = $Casos_coordenadas->buscar_caso_coordenadas($coordenadas);
-					
-					// Si la búsqueda devuelve un objeto, significa que el caso ya existe
-					if ($caso_existente) 
-					{
-						// Hacemos la actualización de la coordenadas
-						$query_Actualizar_coordenadas = $Casos_coordenadas->Actualizar_coordenadas($coordenadas);
-					} 
-					else 
-					{
-						$coordenadas["idcaso"] = $tipoPI['idcaso'];
-						$coordenadas["nombre"] = $datos["nombre"];
-						$coordenadas["latitud"] = $datos["latitud"];
-						$coordenadas["longitud"] = $datos["longitud"];
-						$coordenadas["borrado"] = false;
-						// Hacemos el insert de la coordenadas
-						$query_Inset_coordenadas = $Casos_coordenadas->insertarCoordenadas($coordenadas);
-					}
-									
-					
+    // Modelos SAPI (Necesarios para el Tipo de Atención 23 - Mediación)
+    $terceroModel = new SapiTerceroModel();
+    $apoderadoModel = new Mediacion(); // Modelo que maneja sgc_mediacion
+    $db = \Config\Database::connect(); // Conexión a DB para transacciones
 
+    // ===================================================================
+    // 2. INICIALIZACIÓN DE VARIABLES
+    // ===================================================================
+    $newCase = array();
+    $denuncia = array();
+    $coodenadas = array(); 
+    $act_coordenadas = array();
+    $dirCaso = array(); 
+    $tipoPI = array();
+    $reqUsuario = array(); 
+    $mensaje = 2; // Mensaje de respuesta por defecto: Error
 
-					
-				}else
-				{
-					$coordenadas["idcaso"] = $tipoPI['idcaso'];
-					$coordenadas["borrado"] = true;
-					//Hacemos el borrado  de la coordenadas
-					$query_borrar_coordenadas = $Casos_coordenadas->borrar_coordenadas($coordenadas);
-				}
+    if ($this->session->get('logged') and $this->request->isAJAX()) {
+        
+        // Obtener datos del formulario
+        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        
+        // Asignación de variables clave
+        $idusuopr = $this->session->get('iduser');
+        $idcaso = $datos["idcaso"];
 
+        $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+        $tipoPI["idtippropint"] = $datos["pi-type"];
+        $tipoPI["idcaso"] = $idcaso;
 
-				//REALIZAMOS LA ACTUALIZACION EN LA TABLA
-				$query_actualizar_caso = $casoModel->actualizarCaso($newCase);
+        // ===================================================================
+        // 3. LÓGICA DE ACTUALIZACIÓN BASE DEL CASO (sgc_casos) Y COORDENADAS
+        //    Esto aplica para el Tipo de Atención 23 (Mediación) y para los 
+        //    casos que no son Denuncia (5) ni CGR (1).
+        // ===================================================================
+        
+        // Si no es Denuncia (5) ni CGR (1), se actualizan los datos base
+        if ($newCase["id_tipo_atencion"] !== '5' && $newCase["id_tipo_atencion"] !== '1')
+        {
+            $newCase["idcaso"] = $idcaso;
+            $newCase["casofec"] = $datos["date-entry"];
+            $newCase["casoced"] = $datos["person-id"];
+            $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
+            $newCase["casonom"] = strtoupper($datos["person-name"]);
+            $newCase["casoape"] = strtoupper($datos["person-lastname"]);
+            $newCase["casotel"] = $datos["telephone"];
+            $newCase["idest"] = 1;
+            $newCase["idrrss"] = $datos["social_network"];
+            $newCase["estadoid"] = $datos["state"];
+            $newCase["municipioid"] = $datos["county"];
+            $newCase["pais"] = $datos["country"];
+            $newCase["sexo"] = $datos["sexo"];
+            $newCase["parroquiaid"] = $datos["town"];
+            $newCase["ofiid"] = $datos["office"];
+            $newCase["caso_org_id"] = $datos["caso_org_id"];
+            $newCase["casodesc"] = $datos["user-requirement"];
+            // $newCase["id_tipo_atencion"] ya está asignado
+            $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["direccion"] = $datos["direccion"];
+            $newCase["correo"] = $datos["correo"];
+            $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
+            $newCase["edad"] = $datos["edad"];
+            $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
+            $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
+            $newCase["profesion"] = $datos["profesion"];
 
-				$auditoria['audi_user_id']   = session('iduser');
-				$auditoria['audi_accion']   = 'LOS SIGUIENTES CAMPOS  DE EL CASO 	Nª' . $datos["idcaso"] . ' ' . 'FUERON MODIFICADOS  :' . ' ' . $datos["campos_modificados"];
-				$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-			} else if ($newCase["id_tipo_atencion"] == 5) {
-				//SI ES UNA DENUNCIA ARMAMOS EL ARRAY 
-				$denuncia["denu_afecta_persona"]    = $datos["denu_afecta_persona"];
-				$denuncia["denu_afecta_comunidad"]    = $datos["denu_afecta_comunidad"];
-				$denuncia["denu_afecta_terceros"]    = $datos["denu_afecta_terceros"];
-				$denuncia["denu_fecha_hechos"]    = $datos["denu_fecha_hechos"];
-				$denuncia["denu_involucrados"]    = $datos["denu_involucrados"];
-				$denuncia['denu_instancia_popular']      = $datos["denu_instancia_popular"];
-				$denuncia["denu_rif_instancia"]    = $datos["denu_rif_instancia"];
-				$denuncia['denu_ente_financiador']      = $datos["denu_ente_financiador"];
-				$denuncia["denu_nombre_proyecto"]    = $datos["denu_nombre_proyecto"];
-				$denuncia["denu_monto_aprovado"]    = $datos["denu_monto_aprovado"];
-				$denuncia['denu_id_caso']      = $tipoPI['idcaso'];
-				$denuncia["denu_borrado"]    = false;
-				$idcaso = $tipoPI['idcaso'];
-				//BUSCAMOS EL ID EN LA TABLA DE DENUNCIAS , SI NO EXISTE PROCEDEMOS CON EL INSERT
-				$query_buscarid_denuncia = $Casos_denuncias->verificar_id_caso_denuncia($idcaso);
-				if (empty($query_buscarid_denuncia)) {
-					$query_Casos_denuncias = $Casos_denuncias->insertarCasos_Denuncias($denuncia);
-					$newCase["idcaso"]    = $datos["idcaso"];
-					$newCase["casofec"]     = $datos["date-entry"];
-					$newCase["casoced"]     = $datos["person-id"];
-					$newCase["caso_nacionalidad"]     = $datos["nacionalidad"];
-					$newCase["casonom"]     = $datos["person-name"];
-					$newCase["casoape"]     = $datos["person-lastname"];
-					$newCase["casotel"]     = $datos["telephone"];
-					$newCase["idest"]       = 1;
-					$newCase["caso_org_id"]       = $datos["caso_org_id"];
-					$newCase["idrrss"]      = $datos["social_network"];
-					$user["idusuopr"]    = $this->session->get('iduser');
-					$newCase["estadoid"]    = $datos["state"];
-					$newCase["municipioid"] = $datos["county"];
-					$newCase["sexo"] = $datos["sexo"];
-					$newCase["tipo_atend_id"]    = $datos["tipo_atend_id"];
-					$newCase["parroquiaid"] = $datos["town"];
-					$newCase["ofiid"]       = $datos["office"];
-					$newCase["casodesc"]    = $datos["user-requirement"];
-					$newCase["id_tipo_atencion"]    = $datos["tipo-atencion-usu"];
-					$newCase["tipo_beneficiario"]    = $datos["tipo_beneficiario"];
-					$newCase["direccion"]    = $datos["direccion"];
-					$newCase["correo"]    = $datos["correo"];
-					$newCase["ente_adscrito_id"]    = $datos["ente_adscrito_id"];
-					$newCase["edad"]    = $datos["edad"];
-					$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
-					$newCase["profesion"]    = $datos["profesion"];
-					//$newCase["campos_modificados"]    = $datos["campos_modificados"];
-					if (empty($datos["record-work"])) {
-						$newCase["casonumsol"] = 'No Aplica';
-					} else {
-						$newCase["casonumsol"] = $datos["record-work"];
-					}
-					//REALIZAMOS LA ACTUALIZACION EN LA TABLA
+            if (empty($datos["record-work"])) {
+                $newCase["casonumsol"] = 'No Aplica';
+            } else {
+                $newCase["casonumsol"] = $datos["record-work"];
+            }
 
-					var_dump($newCase);
-					die();
-					$query_actualizar_caso = $casoModel->actualizarCaso($newCase);
-					$auditoria['audi_user_id']   = session('iduser');
-					$auditoria['audi_accion']   = 'REGISTRO EN LA TABLA DE denunciaS EL CASO 	Nª' . $datos["idcaso"];
-					$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-				} else {
-					$newCase["idcaso"]    = $datos["idcaso"];
-					$newCase["casofec"]     = $datos["date-entry"];
-					$newCase["casoced"]     = $datos["person-id"];
-					$newCase["caso_nacionalidad"]     = $datos["nacionalidad"];
-					$newCase["casonom"]     = $datos["person-name"];
-					$newCase["casoape"]     = $datos["person-lastname"];
-					$newCase["casotel"]     = $datos["telephone"];
-					$newCase["idest"]       = 1;
-					$newCase["caso_org_id"]       = $datos["caso_org_id"];
-					$newCase["idrrss"]      = $datos["social_network"];
-					$user["idusuopr"]    = $this->session->get('iduser');
-					$newCase["estadoid"]    = $datos["state"];
-					$newCase["municipioid"] = $datos["county"];
-					$newCase["sexo"] = $datos["sexo"];
-					$newCase["parroquiaid"] = $datos["town"];
-					$newCase["ofiid"]       = $datos["office"];
-					$newCase["casodesc"]    = $datos["user-requirement"];
-					$newCase["id_tipo_atencion"]    = $datos["tipo-atencion-usu"];
-					$newCase["tipo_beneficiario"]    = $datos["tipo_beneficiario"];
-					$newCase["direccion"]    = $datos["direccion"];
-					$newCase["correo"]    = $datos["correo"];
-					$newCase["ente_adscrito_id"]    = $datos["ente_adscrito_id"];
-					$newCase["edad"]    = $datos["edad"];
-					$newCase["fecha_nacimiento"]    = $datos["fecha_nacimiento"];
-					$newCase["profesion"]    = $datos["profesion"];
-					//$newCase["campos_modificados"]    = $datos["campos_modificados"];
-					if (empty($datos["record-work"])) {
-						$newCase["casonumsol"] = 'No Aplica';
-					} else {
-						$newCase["casonumsol"] = $datos["record-work"];
-					}
-					//REALIZAMOS LA ACTUALIZACION EN LA TABLA
-					$query_actualizar_caso = $casoModel->actualizarCaso($newCase);
-					// SI EXISTE EL REGISTRO HACEMOS UN UPDATE EN FUNSION DEL ID 
-					$denuncia["denu_afecta_persona"]    = $datos["denu_afecta_persona"];
-					$denuncia["denu_afecta_comunidad"]    = $datos["denu_afecta_comunidad"];
-					$denuncia["denu_afecta_terceros"]    = $datos["denu_afecta_terceros"];
-					$denuncia["denu_fecha_hechos"]    = $datos["denu_fecha_hechos"];
-					$denuncia["denu_involucrados"]    = $datos["denu_involucrados"];
-					$denuncia['denu_instancia_popular']      = $datos["denu_instancia_popular"];
-					$denuncia["denu_rif_instancia"]    = $datos["denu_rif_instancia"];
-					$denuncia['denu_ente_financiador']      = $datos["denu_ente_financiador"];
-					$denuncia["denu_nombre_proyecto"]    = $datos["denu_nombre_proyecto"];
-					$denuncia["denu_monto_aprovado"]    = $datos["denu_monto_aprovado"];
-					$denuncia['denu_id_caso']      = $tipoPI['idcaso'];
-					$denuncia["denu_borrado"]    = false;
-					$query_actualizara_Casos_denuncias = $Casos_denuncias->AtualizarCasos_Denuncias($denuncia);
-					$auditoria['audi_user_id']   = session('iduser');
-					$auditoria['audi_accion']   = 'LOS SIGUIENTES CAMPOS  DE EL CASO 	Nª' . $datos["idcaso"] . ' ' . 'FUERON MODIFICADOS  :' . ' ' . $datos["campos_modificados"];
-					$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-				}
-				//LUEGO BUSCAMOS EL ID DEL CASO  EN LA TABLA DE CRG PARA HACER EL BORRADO LOGICO SI EXISTE EL REGISTRO
-				$query_buscarid_CGR = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
-				if (!empty($query_buscarid_CGR)) {
-					$cgr["borrado_cgr"]    = true;
-					$cgr['id_caso']      = $tipoPI['idcaso'];
-					$query_buscarid_CGR = $Registro_cgr_Model->AtualizarCasos_cgr($cgr);
-				}
-				//SI ES UNA ASESORIA ARMAMOS EL ARRAY 
-			} else if ($newCase["id_tipo_atencion"] == 1) {
-				$idcaso = $tipoPI['idcaso'];
-				//BUSCAMOS EL ID EN LA TABLA DE CRG , SI NO EXISTE PROCEDEMOS CON EL INSERT
-				$query_buscarid_CGR = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
-				if (empty($query_buscarid_CGR)) {
-					$cgr["competencia_cgr"]    = $datos["competencia_cgr"];
-					$cgr["asume_cgr"]    = $datos["asume_cgr"];
-					$cgr['id_caso']      = $tipoPI['idcaso'];
-					$query_Registro_cgr_Model = $Registro_cgr_Model->insertarRegistro_cgr($cgr);
-					$auditoria['audi_user_id']   = session('iduser');
-					$auditoria['audi_accion']   = 'REGISTRO EN LA TABLA DE CGR EL CASO 	Nª' . $datos["idcaso"];
-					$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-				} else {
-					// SI EXISTE EL REGISTRO HACEMOS UN UPDATE EN FUNSION DEL ID 
-					$cgr["competencia_cgr"]    = $datos["competencia_cgr"];
-					$cgr["asume_cgr"]    = $datos["asume_cgr"];
-					$cgr["borrado_cgr"]    = false;
-					$cgr['id_caso']      = $tipoPI['idcaso'];
-					$query_actualizara_Casos_cgr = $Registro_cgr_Model->AtualizarCasos_cgr($cgr);
-					$auditoria['audi_user_id']   = session('iduser');
-					$auditoria['audi_accion']   = 'LOS SIGUIENTES CAMPOS DE EL CASO 	Nª' . $datos["idcaso"] . ' ' . 'FUERON MODIFICADOS  :' . ' ' . $datos["campos_modificados"];
-					$Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-				}
-				//LUEGO BUSCAMOS EL ID DEL CASO  EN LA TABLA DE DENUNCIAS PARA HACER EL BORRADO LOGICO SI EXISTE EL REGISTRO
-				$query_buscarid_denuncia = $Casos_denuncias->verificar_id_caso_denuncia($idcaso);
-				if (!empty($query_buscarid_denuncia)) {
-					$denuncia["denu_borrado"]    = true;
-					$denuncia['denu_id_caso']      = $tipoPI['idcaso'];
-					$query_actualizar_denuncia = $Casos_denuncias->AtualizarCasos_Denuncias($denuncia);
-				}
-			}
-			// // //Hacemos la la actualizacion 
-			$query_tipopimodel = $tipoPIModel->ActualizarTipoPICaso($tipoPI);
-			if (isset($query_tipopimodel)) {
-				// $auditoria['audi_user_id']   = session('iduser');
-				// $auditoria['audi_accion']   = 'ACTUALIZO EL CASO 	Nª' . $datos["idcaso"];
-				// $Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
-				$mensaje = 1;
-				return json_encode($mensaje);
-			} else {
-				$mensaje = 2;
-				return json_encode($mensaje);
-			}
-		} else {
-			return redirect()->to('/');
-		}
-	}
+            // LÓGICA DE COORDENADAS
+            $act_coordenadas["act_coordenadas"] = $datos["act_coordenadas"];
+            if ($act_coordenadas["act_coordenadas"] == 't') 
+            {
+                $coordenadas["idcaso"] = $idcaso;
+                $coordenadas["nombre"] = $datos["nombre"];
+                $coordenadas["latitud"] = $datos["latitud"];
+                $coordenadas["longitud"] = $datos["longitud"];
+                $coordenadas["borrado"] = false;
+                $coordenadas['idusuopr'] = $idusuopr;
+                
+                $caso_existente = $Casos_coordenadas->buscar_caso_coordenadas($coordenadas);
+                
+                if ($caso_existente) 
+                {
+                    $Casos_coordenadas->Actualizar_coordenadas($coordenadas);
+                } else {
+                    $Casos_coordenadas->insertarCoordenadas($coordenadas);
+                }
+            } else {
+                // Borrado lógico de coordenadas
+                $coordenadas["idcaso"] = $idcaso;
+                $coordenadas["borrado"] = true;
+                $Casos_coordenadas->borrar_coordenadas($coordenadas);
+            }
+
+            // ACTUALIZACIÓN EN LA TABLA PRINCIPAL
+            $casoModel->actualizarCaso($newCase);
+
+            // REGISTRO DE AUDITORÍA BASE
+            $auditoria['audi_user_id'] = $idusuopr;
+            $auditoria['audi_accion'] = 'LOS SIGUIENTES CAMPOS DE EL CASO Nª' . $idcaso . ' FUERON MODIFICADOS: ' . ($datos["campos_modificados"] ?? 'Datos Base');
+            $model_Auditoria_sistema_Model->agregar($auditoria);
+            
+            // ===================================================================
+            // 4. LÓGICA DE MEDIACIÓN SAPI (TIPO ATENCIÓN 23)
+            // ===================================================================
+            if ($newCase["id_tipo_atencion"] == '23')
+            {
+                $medicionData = $datos['datos_medicion'];
+
+                // Función auxiliar para buscar e insertar si no existe (Terceros)
+                $checkAndInsertTercero = function($data) use ($terceroModel) {
+                    $terceroExistente = $terceroModel
+                                            ->where('ter_identificacion', $data['ter_identificacion'])
+                                            ->first();
+
+                    if ($terceroExistente) {
+                        return $terceroExistente['ter_id'];
+                    } else {
+                        $terceroModel->insert($data);
+                        return $terceroModel->insertID();
+                    }
+                };
+
+                $db->transStart(); 
+                
+                try {
+                    $contraparteId = null; 
+                    $apoderadoSolId = null;
+                    $apoderadoCptId = null;
+
+                    // A. REGISTRO DE TERCEROS (sgc_sapi_terceros)
+                    
+                    // A.1. CONTRAPARTE (Obligatorio)
+                    $contraparteData = $medicionData['contraparte'];
+                    if (!empty($contraparteData['nombre_razon']) && !empty($contraparteData['correo'])) {
+                        $dataToInsert = [
+                            'ter_nombre' => $contraparteData['nombre_razon'],
+                            'ter_tipo_per' => $contraparteData['ident_tipo'],
+                            'ter_identificacion' =>  $contraparteData['ident_valor'],
+                            'ter_correo' => $contraparteData['correo'],
+                            'ter_telefono' => $contraparteData['telefono'] ?? null,
+                            'ter_pais' => $contraparteData['pais'],
+                            'ter_estado' => $contraparteData['estado'],
+                            'ter_municipio' => $contraparteData['municipio'],
+                            'ter_parroquia' => $contraparteData['parroquia'],
+                            'ter_direccion' => $contraparteData['direccion'],
+                        ];
+                        $contraparteId = $checkAndInsertTercero($dataToInsert);
+                    } else {
+                        throw new \Exception("Datos de Contraparte incompletos para Mediación.");
+                    }
+
+                    // A.2. Apoderado Solicitante (Opcional)
+                    $apoSolData = $medicionData['apoderado_solicitante'];
+                    if (!empty($apoSolData['nombres'])) { 
+                        $dataToInsert = [
+                            'ter_tipo_per' => $apoSolData['ident_tipo'],
+                            'ter_nombre' => $apoSolData['nombres'],
+                            'ter_identificacion' => $apoSolData['ci'],
+                            'ter_correo' => $apoSolData['correo'],
+                            'ter_telefono' => $apoSolData['telefono'] ?? null,
+                            'ter_pais' => $apoSolData['pais'],
+                            'ter_estado' => $apoSolData['estado'],
+                            'ter_municipio' => $apoSolData['municipio'],
+                            'ter_parroquia' => $apoSolData['parroquia'],
+                            'ter_direccion' => $apoSolData['direccion'],
+                        ];
+                        $apoderadoSolId = $checkAndInsertTercero($dataToInsert);
+                    }
+
+                    // A.3. Apoderado Contraparte (Opcional)
+                    $apoCptData = $medicionData['apoderado_contraparte'];
+                    if (!empty($apoCptData['nombres'])) { 
+                        $dataToInsert = [
+                            'ter_tipo_per' => $apoCptData['ident_tipo'],
+                            'ter_nombre' => $apoCptData['nombres'],
+                            'ter_identificacion' => $apoCptData['ci'],
+                            'ter_correo' => $apoCptData['correo'],
+                            'ter_telefono' => $apoCptData['telefono'] ?? null,
+                            'ter_pais' => $apoCptData['pais'],
+                            'ter_estado' => $apoCptData['estado'],
+                            'ter_municipio' => $apoCptData['municipio'],
+                            'ter_parroquia' => $apoCptData['parroquia'],
+                            'ter_direccion' => $apoCptData['direccion'],
+                        ];
+                        $apoderadoCptId = $checkAndInsertTercero($dataToInsert);
+                    }
+
+                    // B. REGISTRO EN sgc_mediacion (Actualizar/Insertar)
+                    if ($contraparteId) { 
+                        $mediacionExistente = $apoderadoModel->where('med_caso_id', $idcaso)->first();
+
+                        $dataMediacion = [
+                            'med_apo_sol_id' => $apoderadoSolId, 
+                            'med_contra_id' => $contraparteId, 
+                            'med_apo_contra_id' => $apoderadoCptId, 
+                        ];
+                        
+                        if ($mediacionExistente) {
+                            $apoderadoModel->update($mediacionExistente['med_id'], $dataMediacion); 
+                        } else {
+                            $dataMediacion['med_caso_id'] = $idcaso;
+                            $apoderadoModel->insert($dataMediacion);
+                        }
+                    }
+                    
+                    $db->transComplete(); // COMMIT
+                    
+                    // Auditoría específica de Mediación
+                    $auditoria['audi_user_id'] = $idusuopr;
+                    $auditoria['audi_accion'] = 'ACTUALIZACIÓN DE DATOS SAPI/MEDIACIÓN PARA EL CASO Nª' . $idcaso;
+                    $model_Auditoria_sistema_Model->agregar($auditoria);
+                    
+                } catch (\Exception $e) {
+                    $db->transRollback(); // ROLLBACK
+                    $mensaje = 3; // Código de error para Mediación/Transacción
+                    return json_encode($mensaje);
+                }
+            }
+
+            // LUEGO DE LA LÓGICA DE MEDIACIÓN (Si aplica), CONTINÚA EL FLUJO NORMAL
+
+        } else if ($newCase["id_tipo_atencion"] == '5') {
+            // ===================================================================
+            // 5. LÓGICA DE DENUNCIA (Tipo de Atención 5)
+            // ===================================================================
+            $denuncia["denu_afecta_persona"]    = $datos["denu_afecta_persona"];
+            $denuncia["denu_afecta_comunidad"]    = $datos["denu_afecta_comunidad"];
+            $denuncia["denu_afecta_terceros"]    = $datos["denu_afecta_terceros"];
+            $denuncia["denu_fecha_hechos"]    = $datos["denu_fecha_hechos"];
+            $denuncia["denu_involucrados"]    = $datos["denu_involucrados"];
+            $denuncia['denu_instancia_popular']      = $datos["denu_instancia_popular"];
+            $denuncia["denu_rif_instancia"]    = $datos["denu_rif_instancia"];
+            $denuncia['denu_ente_financiador']      = $datos["denu_ente_financiador"];
+            $denuncia["denu_nombre_proyecto"]    = $datos["denu_nombre_proyecto"];
+            $denuncia["denu_monto_aprovado"]    = $datos["denu_monto_aprovado"];
+            $denuncia['denu_id_caso']      = $idcaso;
+            $denuncia["denu_borrado"]    = false;
+            
+            $query_buscarid_denuncia = $Casos_denuncias->verificar_id_caso_denuncia($idcaso);
+            
+            // Actualizar datos base del caso
+            $newCase["idcaso"] = $datos["idcaso"];
+            $newCase["casofec"] = $datos["date-entry"];
+            $newCase["casoced"] = $datos["person-id"];
+            $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
+            $newCase["casonom"] = strtoupper($datos["person-name"]);
+            $newCase["casoape"] = strtoupper($datos["person-lastname"]);
+            $newCase["casotel"] = $datos["telephone"];
+            $newCase["idest"] = 1;
+            $newCase["caso_org_id"] = $datos["caso_org_id"];
+            $newCase["idrrss"] = $datos["social_network"];
+            $newCase["estadoid"] = $datos["state"];
+            $newCase["municipioid"] = $datos["county"];
+            $newCase["sexo"] = $datos["sexo"];
+            $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
+            $newCase["parroquiaid"] = $datos["town"];
+            $newCase["ofiid"] = $datos["office"];
+            $newCase["casodesc"] = $datos["user-requirement"];
+            $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+            $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["direccion"] = $datos["direccion"];
+            $newCase["correo"] = $datos["correo"];
+            $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
+            $newCase["edad"] = $datos["edad"];
+            $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
+            $newCase["profesion"] = $datos["profesion"];
+            $newCase["casonumsol"] = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
+
+            $casoModel->actualizarCaso($newCase);
+
+            if (empty($query_buscarid_denuncia)) {
+                $Casos_denuncias->insertarCasos_Denuncias($denuncia);
+                $auditoria['audi_user_id'] = $idusuopr;
+                $auditoria['audi_accion'] = 'REGISTRO EN LA TABLA DE DENUNCIAS EL CASO Nª' . $idcaso;
+                $model_Auditoria_sistema_Model->agregar($auditoria);
+            } else {
+                $Casos_denuncias->AtualizarCasos_Denuncias($denuncia);
+                $auditoria['audi_user_id'] = $idusuopr;
+                $auditoria['audi_accion'] = 'LOS SIGUIENTES CAMPOS DE EL CASO Nª' . $idcaso . ' FUERON MODIFICADOS: ' . ($datos["campos_modificados"] ?? 'Datos Denuncia');
+                $model_Auditoria_sistema_Model->agregar($auditoria);
+            }
+            
+            // BORRADO LÓGICO DE CGR
+            $query_buscarid_CGR = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
+            if (!empty($query_buscarid_CGR)) {
+                $cgr["borrado_cgr"] = true;
+                $cgr['id_caso'] = $idcaso;
+                $Registro_cgr_Model->AtualizarCasos_cgr($cgr);
+            }
+
+        } else if ($newCase["id_tipo_atencion"] == '1') {
+            // ===================================================================
+            // 6. LÓGICA DE ASESORÍA CGR (Tipo de Atención 1)
+            // ===================================================================
+            
+            // Actualizar datos base del caso
+            $newCase["idcaso"] = $datos["idcaso"];
+            $newCase["casofec"] = $datos["date-entry"];
+            $newCase["casoced"] = $datos["person-id"];
+            $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
+            $newCase["casonom"] = strtoupper($datos["person-name"]);
+            $newCase["casoape"] = strtoupper($datos["person-lastname"]);
+            $newCase["casotel"] = $datos["telephone"];
+            $newCase["idest"] = 1;
+            $newCase["caso_org_id"] = $datos["caso_org_id"];
+            $newCase["idrrss"] = $datos["social_network"];
+            $newCase["estadoid"] = $datos["state"];
+            $newCase["municipioid"] = $datos["county"];
+            $newCase["sexo"] = $datos["sexo"];
+            $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
+            $newCase["parroquiaid"] = $datos["town"];
+            $newCase["ofiid"] = $datos["office"];
+            $newCase["casodesc"] = $datos["user-requirement"];
+            $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+            $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["direccion"] = $datos["direccion"];
+            $newCase["correo"] = $datos["correo"];
+            $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
+            $newCase["edad"] = $datos["edad"];
+            $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
+            $newCase["profesion"] = $datos["profesion"];
+            $newCase["casonumsol"] = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
+
+            $casoModel->actualizarCaso($newCase);
+            
+            // BUSCAMOS EL ID EN LA TABLA DE CGR , SI NO EXISTE PROCEDEMOS CON EL INSERT
+            $query_buscarid_CGR = $Registro_cgr_Model->verificar_id_caso_CGR($idcaso);
+            if (empty($query_buscarid_CGR)) {
+                $cgr["competencia_cgr"] = $datos["competencia_cgr"];
+                $cgr["asume_cgr"] = $datos["asume_cgr"];
+                $cgr['id_caso'] = $idcaso;
+                $Registro_cgr_Model->insertarRegistro_cgr($cgr);
+                $auditoria['audi_user_id'] = $idusuopr;
+                $auditoria['audi_accion'] = 'REGISTRO EN LA TABLA DE CGR EL CASO Nª' . $idcaso;
+                $model_Auditoria_sistema_Model->agregar($auditoria);
+            } else {
+                // SI EXISTE EL REGISTRO HACEMOS UN UPDATE EN FUNCIÓN DEL ID 
+                $cgr["competencia_cgr"] = $datos["competencia_cgr"];
+                $cgr["asume_cgr"] = $datos["asume_cgr"];
+                $cgr["borrado_cgr"] = false;
+                $cgr['id_caso'] = $idcaso;
+                $Registro_cgr_Model->AtualizarCasos_cgr($cgr);
+                $auditoria['audi_user_id'] = $idusuopr;
+                $auditoria['audi_accion'] = 'LOS SIGUIENTES CAMPOS DE EL CASO Nª' . $idcaso . ' FUERON MODIFICADOS: ' . ($datos["campos_modificados"] ?? 'Datos CGR');
+                $model_Auditoria_sistema_Model->agregar($auditoria);
+            }
+            
+            // BORRADO LÓGICO DE DENUNCIAS
+            $query_buscarid_denuncia = $Casos_denuncias->verificar_id_caso_denuncia($idcaso);
+            if (!empty($query_buscarid_denuncia)) {
+                $denuncia["denu_borrado"] = true;
+                $denuncia['denu_id_caso'] = $idcaso;
+                $Casos_denuncias->AtualizarCasos_Denuncias($denuncia);
+            }
+        }
+        
+        // 7. ACTUALIZACIÓN DEL TIPO DE PROPIEDAD INTELECTUAL (sgc_casos_pi)
+        $query_tipopimodel = $tipoPIModel->ActualizarTipoPICaso($tipoPI);
+        
+        // 8. RETORNO DE RESPUESTA FINAL
+        if (isset($query_tipopimodel)) {
+            $mensaje = 1;
+            return json_encode($mensaje);
+        } else {
+            $mensaje = 2; 
+            return json_encode($mensaje);
+        }
+        
+    } else {
+        // No autenticado
+        return redirect()->to('/');
+    }
+}
 
 	//Vista de carga de un caso
 	public function vercaso($id)

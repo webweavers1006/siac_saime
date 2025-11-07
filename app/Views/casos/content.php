@@ -18,8 +18,21 @@ $session = session();
     display: block; 
 }
 
-
-
+/* Estilo para un campo que está deshabilitado y queremos resaltar visualmente */
+.campo-deshabilitado {
+    background-color: #f5f5f5 !important; /* Un gris muy claro */
+    color: #888888 !important;         /* Texto en gris para indicar deshabilitado */
+    cursor: not-allowed !important;    /* Cambia el cursor para indicar que no se puede interactuar */
+    /* Opcional: Si usa Bootstrap u otro framework, puedes sobreescribir su estilo */
+    border-color: #e9ecef !important;
+}
+/* Estilo para los campos deshabilitados/de solo lectura */
+.campo-solo-lectura {
+    background-color: #f5f5f5 !important; /* Gris claro para indicar inactividad */
+    color: #555555 !important;         /* Texto gris */
+    cursor: not-allowed !important;    /* Cursor de prohibido */
+    border-color: #e0e0e0 !important;
+}
 </style>
 <script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>
 
@@ -177,37 +190,37 @@ $session = session();
                         </h5>
                     </div>
                     <input type="hidden" id="nombre_anterior" name="" value="">
-<input type="hidden" id="tipo_atend_borrado" name="" value="">
-<input type="hidden" id="apellido_anterior" name="" value="">
-<input type="hidden" id="tipo_persona_anterior" name="" value="">
-<input type="hidden" id="cedula_anterior" name="" value="">
-<input type="hidden" id="t_beneficiario_anterior" name="" value="">
-<input type="hidden" id="genero_anterior" name="" value="">
-<input type="hidden" id="telefono_anterior" name="" value="">
-<input type="hidden" id="fecha_anterior" name="" value="">
-<input type="hidden" id="via_atencion_anterior" name="" value="">
-<input type="hidden" id="ofiid_anterior" name="" value="">
-<input type="hidden" id="correo_anterior" name="" value="">
-<input type="hidden" id="direccion_anterior" name="" value="">
-<input type="hidden" id="estado_anterior" name="" value="">
-<input type="hidden" id="municipio_anterior" name="" value="">
-<input type="hidden" id="parroquia_anterior" name="" value="">
-<input type="hidden" id="descripcion_anterior" name="" value="">
-<input type="hidden" id="Tipo_prop_anterior" name="" value="">
-<input type="hidden" id="Tipo_antenc_anterior" name="" value="">
-<input type="hidden" id="ente_anterior" name="" value="">
-<input type="hidden" id="cgr_anterior" name="" value="">
-<input type="hidden" id="azume_anterior" name="" value="">
-<input type="hidden" id="afecta_hechos_anterior" name="" value="" autocomplete="off">
-<input type="hidden" id="fecha_hechos_anterior" name="" value="">
-<input type="hidden" id="involucrados_anterior" name="" value="">
-<input type="hidden" id="nombre_instancia_anterior" name="" value="">
-<input type="hidden" id="rif_instancia_anterior" name="" value="">
-<input type="hidden" id="ente_financiador_anterior" name="" value="">
-<input type="hidden" id="nombre_proyecto_anterior" name="" value="">
-<input type="hidden" id="monto_aprobado_anterior" name="" value="">
-<input type="hidden" id="actcoordenadas">
-<input type="hidden" class="form-control" id="id_hijos_detalle_atencion">
+                    <input type="hidden" id="tipo_atend_borrado" name="" value="">
+                    <input type="hidden" id="apellido_anterior" name="" value="">
+                    <input type="hidden" id="tipo_persona_anterior" name="" value="">
+                    <input type="hidden" id="cedula_anterior" name="" value="">
+                    <input type="hidden" id="t_beneficiario_anterior" name="" value="">
+                    <input type="hidden" id="genero_anterior" name="" value="">
+                    <input type="hidden" id="telefono_anterior" name="" value="">
+                    <input type="hidden" id="fecha_anterior" name="" value="">
+                    <input type="hidden" id="via_atencion_anterior" name="" value="">
+                    <input type="hidden" id="ofiid_anterior" name="" value="">
+                    <input type="hidden" id="correo_anterior" name="" value="">
+                    <input type="hidden" id="direccion_anterior" name="" value="">
+                    <input type="hidden" id="estado_anterior" name="" value="">
+                    <input type="hidden" id="municipio_anterior" name="" value="">
+                    <input type="hidden" id="parroquia_anterior" name="" value="">
+                    <input type="hidden" id="descripcion_anterior" name="" value="">
+                    <input type="hidden" id="Tipo_prop_anterior" name="" value="">
+                    <input type="hidden" id="Tipo_antenc_anterior" name="" value="">
+                    <input type="hidden" id="ente_anterior" name="" value="">
+                    <input type="hidden" id="cgr_anterior" name="" value="">
+                    <input type="hidden" id="azume_anterior" name="" value="">
+                    <input type="hidden" id="afecta_hechos_anterior" name="" value="" autocomplete="off">
+                    <input type="hidden" id="fecha_hechos_anterior" name="" value="">
+                    <input type="hidden" id="involucrados_anterior" name="" value="">
+                    <input type="hidden" id="nombre_instancia_anterior" name="" value="">
+                    <input type="hidden" id="rif_instancia_anterior" name="" value="">
+                    <input type="hidden" id="ente_financiador_anterior" name="" value="">
+                    <input type="hidden" id="nombre_proyecto_anterior" name="" value="">
+                    <input type="hidden" id="monto_aprobado_anterior" name="" value="">
+                    <input type="hidden" id="actcoordenadas">
+                    <input type="hidden" class="form-control" id="id_hijos_detalle_atencion">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
@@ -345,25 +358,29 @@ $session = session();
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                                 <label for="tipo-atencion-usu">Tipo de Atención</label>
                                 <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-atencion-usu" name="tipo-atencion-usu">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-2 prop_int oculto">
+                            <div class="col-lg-5 col-md-6 col-sm-12 mb-2 prop_int oculto">
                                 <label for="tipo-pi">Tipo de Propiedad Intelectual</label>
                                 <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-pi" name="tipo-pi">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-2 org_pp">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-2 org_pp">
                                 <label for="organismo-caso">Organismo del Poder Popular</label>
                                 <select id="organismo-caso" name="organismo-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Organismo</option>
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-2 detalle_atencion oculto">
+                             <!-- IMPUT QUE VALIDA SI SE SELECCIONO UN TIPO DE ATENCION CON HIJOS -->
+          <input type="hidden" class="form-control" name="hijos_tipoatencion" id="hijos_tipoatencion" autocomplete="off" >
+
+
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-2 detalle_atencion oculto">
                                 <label for="edit_detelle_atencion">Detalle Atencion</label>
                                 <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="edit_detelle_atencion" name="detalles_atencion">
                                     <option value="0" disabled>Seleccione</option>
@@ -412,6 +429,353 @@ $session = session();
                         </div>
                     </div>
                 </div>
+            <!-- /*Contenido de Mediacion -->
+        <div class="row" id="mediacion" style="display: none;">
+
+<div class="space-y-6 p-6 border border-gray-300 rounded-xl shadow-lg bg-white w-full max-w-6xl mx-auto"> 
+
+    <div class="border-b pb-6 space-y-4">
+        
+        <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg flex flex-wrap justify-between items-center">
+            <span>Datos del Apoderado del Solicitante</span>
+            
+            <div class="flex items-center space-x-3 mt-2 sm:mt-0"> 
+                <input type="checkbox" id="apoderado-solicitante-aplica" onchange="toggleApoderado('apoderado-solicitante')"
+                    class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="apoderado-solicitante-aplica" class="text-lg font-semibold text-gray-800 flex items-center select-none"> Aplica</label> 
+            </div>
+        </h3>
+        
+        <div id="apoderado-solicitante-content" class="apoderado-content apoderado-hidden space-y-4">
+            
+            <div class="mb-4">
+                    <div class="flex items-center space-x-3">
+                        <label for="cedula-existente-apo-sol" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula </label>
+                        <input type="text" onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente" min="7" id="cedula-existente-apo-sol" autocomplete="off">
+                        <button type="button" id="btn_buscar_apo_sol" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                    </div>
+                </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="apo_solicitente-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo de Persona</label>
+                        <select id="apo_solicitente-ident-tipo" name="apo_solicitente-ident-tipo" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                            <option value="V" selected>V - Venezolano</option>
+                            <option value="E">E - Extranjero</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-2"> 
+                        <label for="apoderado-solicitante-ci" class="block text-sm font-medium text-gray-700">C.I.</label>
+                        <input type="text" onkeypress="return valideKey(event);" id="apoderado-solicitante-ci" placeholder="Ej: 12345678"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="apoderado-solicitante-impre" class="block text-sm font-medium text-gray-700">IMPRE Abogado</label>
+                    <input type="text"  onkeyup="mayus(this);" id="apoderado-solicitante-impre" placeholder="Ej: 12345"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            
+            <div>
+                <label for="apoderado-solicitante-nombres" class="block text-sm font-medium text-gray-700">Nombres y Apellidos</label>
+                <input type="text"  onkeyup="mayus(this);" id="apoderado-solicitante-nombres" placeholder="Ej: Rosa María Gómez"
+                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="apoderado-solicitante-telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input type="text" id="apoderado-solicitante-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label for="apoderado-solicitante-correo" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                    <div class="flex items-center"> 
+                        <input type="email"  onkeyup="mayus(this);" id="apoderado-solicitante-correo" placeholder="ejemplo@abogado.com"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <span class="feedback-icon ml-2"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                <div>
+                    <label for="apoderado-solicitante-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                    <select id="apoderado-solicitante-pais-select" name="apoderado-solicitante-pais" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione País</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="apoderado-solicitante-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <select id="apoderado-solicitante-estado-select" name="apoderado-solicitante-estado" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Estado</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="apoderado-solicitante-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                    <select id="apoderado-solicitante-municipio-select" name="apoderado-solicitante-municipio" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Municipio</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="apoderado-solicitante-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                    <select id="apoderado-solicitante-parroquia-select" name="apoderado-solicitante-parroquia" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Parroquia</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="apoderado-solicitante-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+                <input type="text" id="apoderado-solicitante-direccion"  onkeyup="mayus(this);" placeholder="Calle, Edificio, Oficina"
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+    </div>
+
+    <div class="border-b pb-6 space-y-4">
+        
+        <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg">
+            Datos de la Contraparte
+        </h3>
+        
+         <div class="mb-4">
+                <div class="flex items-center space-x-3">
+                    <label for="cedula-existente-contra" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula o Rif</label>
+                    <input type="text"  onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente-contra" min="7" id="cedula-existente-contra" autocomplete="off">
+                    <button type="button" id="btn_buscar_contra" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                </div>
+            </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            
+            <div>
+                <label for="contraparte-nombre-razon" class="block text-sm font-medium text-gray-700">
+                    Nombres y Apellidos / Razón Social <span class="text-red-500">*</span>
+                </label>
+                <input type="text"  onkeyup="mayus(this);" id="contraparte-nombre-razon" placeholder="Ej: Juan Pérez o Empresa C.A." 
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+
+            <div class="flex space-x-3">
+                <div class="w-1/3">
+                    <label for="contraparte-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo</label>
+                    <select id="contraparte-ident-tipo" name="contraparte-ident-tipo" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                        
+                        <option value="V" selected>V - Venezolano</option>
+                        <option value="E">E - Extranjero</option>
+                        <option value="J">J - Jurídico</option>
+                        <option value="G">G - Gubernamental</option>
+                    </select>
+                </div>
+                
+                <div class="w-2/3">
+                    <label for="contraparte-ident-valor" class="block text-sm font-medium text-gray-700">Identificación (C.I. / RIF)</label>
+                    <input type="text"   onkeyup="mayus(this);" id="contraparte-ident-valor" placeholder="Ej: 12345678"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            
+            <div>
+                <label for="contraparte-telefono" class="block text-sm font-medium text-gray-700">
+                    Teléfono <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="contraparte-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567" 
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+
+            <div>
+                <label for="contraparte-correo" class="block text-sm font-medium text-gray-700">
+                    Correo electrónico <span class="text-red-500">*</span>
+                </label>
+                
+                <div class="flex items-center">
+                    
+                    <input type="email"  onkeyup="mayus(this);" id="contraparte-correo" placeholder="ejemplo@dominio.com" 
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    
+                    <span class="feedback-icon ml-2"></span>
+                </div>
+            </div>
+
+        </div>
+            
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+
+            <div>
+                <label for="contraparte-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                <select id="contraparte-pais-select" name="contraparte-pais" 
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                    <option value="0" disabled selected>Seleccione País</option>
+                    </select>
+            </div>
+            <div>
+                <label for="contraparte-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                <select id="contraparte-estado-select" name="contraparte-estado" 
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                    <option value="0" disabled selected>Seleccione Estado</option>
+                    </select>
+            </div>
+            <div>
+                <label for="contraparte-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                <select id="contraparte-municipio-select" name="contraparte-municipio"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                    <option value="0" disabled selected>Seleccione Municipio</option>
+                    </select>
+            </div>
+            <div>
+                <label for="contraparte-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                <select id="contraparte-parroquia-select" name="contraparte-parroquia"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                    <option value="0" disabled selected>Seleccione Parroquia</option>
+                    </select>
+            </div>
+        </div>
+
+        <div>
+            <label for="contraparte-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+            <input type="text" onkeyup="mayus(this);" id="contraparte-direccion" placeholder="Calle, Edificio, Apartamento/Local"
+                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+        </div>
+        
+    </div>
+
+    <div class="border-b pb-6 space-y-4">
+        <h3 class="text-lg font-semibold text-gray-800 bg-blue-50 border-t-2 border-blue-200 p-2 rounded-lg flex flex-wrap justify-between items-center">
+            <span>Datos del Apoderado de la Contraparte</span>
+            
+            <div class="flex items-center space-x-3 mt-2 sm:mt-0"> 
+                <input type="checkbox" id="apoderado-contraparte-aplica" onchange="toggleApoderado('apoderado-contraparte')"
+                    class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="apoderado-contraparte-aplica" class="text-lg font-semibold text-gray-800 flex items-center select-none"> Aplica</label>
+            </div>
+        </h3>
+
+      
+        <div id="apoderado-contraparte-content" class="apoderado-content apoderado-hidden space-y-4">
+          <div class="mb-4">
+                    <div class="flex items-center space-x-3">
+                        <label for="cedula-existente-apo-contra" class="text-sm font-medium text-gray-700 whitespace-nowrap">Buscar Cédula </label>
+                        <input type="text"  onkeyup="mayus(this);" class="flex-grow border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 max-w-xs"  name="cedula-existente-apo-contra" min="7" id="cedula-existente-apo-contra" autocomplete="off">
+                        <button type="button" id="btn_buscar_apo_contra" class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">Buscar</button>
+                    </div>
+         </div>
+           
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="apo_contraparte-ident-tipo" class="block text-sm font-medium text-gray-700">Tipo de Persona</label>
+                        <select id="apo_contraparte-ident-tipo" name="apo_contraparte-ident-tipo" 
+                                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
+                            <option value="V" selected>V - Venezolano</option>
+                            <option value="E">E - Extranjero</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-2"> 
+                        <label for="contraparte-apoderado-ci" class="block text-sm font-medium text-gray-700">C.I.</label>
+                        <input type="text"  onkeypress="return valideKey(event);" id="contraparte-apoderado-ci" placeholder="Ej: 12345678"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="contraparte-apoderado-impre" class="block text-sm font-medium text-gray-700">IMPRE Abogado</label>
+                    <input type="text"  onkeyup="mayus(this);" id="contraparte-apoderado-impre" placeholder="Ej: 12345"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label for="apoderado-contraparte-nombres" class="block text-sm font-medium text-gray-700">Nombres y Apellidos</label>
+                <input type="text"  onkeyup="mayus(this);" id="apoderado-contraparte-nombres" placeholder="Ej: Rosa María Gómez"
+                class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="apoderado-contraparte-telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input type="text" id="apoderado-contraparte-telefono" onkeypress="return valideKey(event);" placeholder="Ej: +58 412 1234567"
+                        class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="apoderado-contraparte-correo" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                    <div class="flex items-center"> 
+                        <input type="email"  onkeyup="mayus(this);" id="apoderado-contraparte-correo" placeholder="ejemplo-contraparte@abogado.com"
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <span class="feedback-icon ml-2"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                    
+                <div>
+                    <label for="apoderado-contraparte-pais-select" class="block text-sm font-medium text-gray-700">País</label>
+                    <select id="apoderado-contraparte-pais-select" name="apoderado-contraparte-pais" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione País</option>
+                        </select>
+                </div>
+                
+                <div>
+                    <label for="apoderado-contraparte-estado-select" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <select id="apoderado-contraparte-estado-select" name="apoderado-contraparte-estado" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Estado</option>
+                        </select>
+                </div>
+
+                <div>
+                    <label for="apoderado-contraparte-municipio-select" class="block text-sm font-medium text-gray-700">Municipio</label>
+                    <select id="apoderado-contraparte-municipio-select" name="apoderado-contraparte-municipio" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Municipio</option>
+                        </select>
+                </div>
+                
+                <div>
+                    <label for="apoderado-contraparte-parroquia-select" class="block text-sm font-medium text-gray-700">Parroquia</label>
+                    <select id="apoderado-contraparte-parroquia-select" name="apoderado-contraparte-parroquia" 
+                            class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="0" disabled selected>Seleccione Parroquia</option>
+                        </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="apoderado-contraparte-direccion" class="block text-sm font-medium text-gray-700">Dirección Completa</label>
+                <input type="text"  onkeyup="mayus(this);" id="apoderado-contraparte-direccion" placeholder="Calle, Edificio, Oficina"
+                    class="mt-1 block w-full border border-gray-300 p-2 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+</div>
 
                 <div class="card card-section mt-3" id="denuncias" style="display: none;">
                     <div class="card-header">
@@ -775,3 +1139,105 @@ $session = session();
     }
 }
       </script>
+
+
+
+<style>
+ /* ======================================================= */
+/* CLASES CSS PARA EL EFECTO SLIDE             */
+/* ======================================================= */
+
+.apoderado-content {
+    /* Define la duración y las propiedades a animar */
+    transition: max-height 0.8s ease-out, opacity 0.4s ease-in-out, padding 0.8s ease-out;
+    overflow: hidden; 
+}
+
+/* ESTADO INICIAL (OCULTO) */
+.apoderado-hidden {
+    max-height: 0;
+    opacity: 0;
+    /* !important para asegurar que el max-height: 0 sobrescriba el padding-y que pueda haber */
+    padding-top: 0 !important; 
+    padding-bottom: 0 !important;
+}
+
+/* ESTADO FINAL (VISIBLE) */
+.apoderado-visible {
+    /* Un valor grande para asegurar que el contenido se vea */
+    max-height: 1000px; 
+    opacity: 1;
+    /* Restablece el padding que fue ocultado en apoderado-hidden */
+    padding-top: 1.5rem; /* El valor 1.5rem corresponde a p-6 / 2 */
+    padding-bottom: 1.5rem; /* El valor 1.5rem corresponde a p-6 / 2 */
+}
+</style>
+
+<script>
+    /**
+     * Limpia todos los campos de entrada (input y select) dentro de un elemento.
+     * @param {HTMLElement} container El elemento contenedor cuyos campos serán limpiados.
+     */
+    function clearFormFields(container) {
+        // Limpiar inputs de texto/email
+        const textInputs = container.querySelectorAll('input[type="text"], input[type="email"]');
+        textInputs.forEach(input => {
+            input.value = '';
+        });
+
+        // Limpiar selects 
+        const selects = container.querySelectorAll('select');
+        selects.forEach(select => {
+            if (select.options.length > 0) {
+                select.value = select.options[0].value; 
+            }
+        });
+    }
+
+
+    /**
+     * Alterna la visibilidad de la sección del apoderado usando clases de Tailwind CSS
+     * para transiciones de deslizar y aparecer (max-height).
+     * @param {string} prefix El prefijo de los IDs (e.g., 'apoderado-solicitante', 'apoderado-contraparte').
+     */
+    function toggleApoderado(prefix) {
+        if (!prefix) return; 
+
+        const checkbox = document.getElementById(prefix + '-aplica');
+        const contentDiv = document.getElementById(prefix + '-content');
+        
+        if (!checkbox || !contentDiv) return;
+
+        // Asegura la clase base (aunque ya está en el HTML)
+        contentDiv.classList.add('apoderado-content');
+
+
+        if (checkbox.checked) {
+            // MOSTRAR: Slide-Down & Fade-In
+            
+            // 1. Prepara el elemento removiendo la clase de ocultar (max-height: 0)
+            contentDiv.classList.remove('apoderado-hidden');
+            
+            // 2. **Paso CLAVE:** Forzar un reflow. Esto obliga al navegador a recalcular el estilo.
+            // Es crucial para que la transición de max-height se ejecute correctamente.
+            contentDiv.offsetWidth; 
+            
+            // 3. Aplica la clase de visualización (activa la transición a max-height: 1000px)
+            contentDiv.classList.add('apoderado-visible'); 
+            
+        } else {
+            // OCULTAR: Slide-Up & Fade-Out
+            
+            // 1. Retira la clase de visualización
+            contentDiv.classList.remove('apoderado-visible');
+            
+            // 2. Aplica la clase de ocultar (activa la transición a max-height: 0)
+            contentDiv.classList.add('apoderado-hidden');
+            
+            // 3. Limpiar campos después de que la transición termine (800ms)
+            setTimeout(() => {
+                clearFormFields(contentDiv);
+            }, 800); 
+        }
+    }
+</script>

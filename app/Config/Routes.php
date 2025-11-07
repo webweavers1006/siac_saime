@@ -265,7 +265,15 @@ $routes->setAutoRoute(false);
      $routes->get('/buscar_participante/(:any)', "Participantes_Controler::buscar_participante/$1");
      $routes->get('/reporte_talleres', "Participantes_Controler::reporte_talleres");
      
-    
+       //RUTAS PARA PARTICIPANTES MEDIACION
+     $routes->get('/Vista_Participantes_Mediacion', "Participantes_Mediacion_Controler::Vista_Participantes_Mediacion");
+     $routes->POST('/edit_participante', 'Participantes_Mediacion_Controler::edit_participante'); 
+     $routes->get('/listar_participantes_Mediacion', "Participantes_Mediacion_Controler::listar_participantes_Mediacion");
+     $routes->get('/buscar_Info_Mediacion/(:any)', "Participantes_Mediacion_Controler::buscar_Info_Mediacion/$1");
+     $routes->get('/buscar_datos_cedula_mediacion/(:any)', "Participantes_Mediacion_Controler::buscar_datos_cedula_mediacion/$1");
+
+
+     
 
      //RUTAS PARA TALLERES PARTICIPANTES
      $routes->get('/Talleres_Participantes', "Talleres_Participantes_Controler::Talleres_Participantes");

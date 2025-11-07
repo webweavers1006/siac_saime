@@ -333,6 +333,12 @@ $userdata = $session->get();
                 </li>
 
                  <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/Vista_Participantes_Mediacion/" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Parti-Mediacion </p>
+                  </a>
+                </li>
+                 <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/punto_cuenta" class="nav-link">
                     <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
                     <p>Punto de Cuenta</p>

@@ -136,6 +136,7 @@ $(document).on('submit', "#form-add-punto-cuenta", function(e) {
             if (mensaje == 1) {
                 Swal.fire({
                     icon: "success",
+                    type:"success",
                     html: '<strong>Registro Exitoso</strong>',
                     toast: true,
                     position: "center",
@@ -148,6 +149,7 @@ $(document).on('submit', "#form-add-punto-cuenta", function(e) {
             } else if (mensaje == 2) {
                 Swal.fire({
                     icon: "error",
+                    type:"error",
                     html: '<strong>Hubo un error al insertar el registro </strong>',
                     toast: true,
                     position: "center",
@@ -300,6 +302,7 @@ $(document).on('submit', "#form-edit-punto-cuenta", function(e) {
             if (mensaje === 1) {
                 Swal.fire({
                     icon: "success",
+                    type:"success",
                     html: '<strong>Registro Actualizado </strong>',
                     toast: true,
                     position: "center",
@@ -312,6 +315,7 @@ $(document).on('submit', "#form-edit-punto-cuenta", function(e) {
             } else if (mensaje === 2) {
                 Swal.fire({
                     icon: "error",
+                    type:"error",
                     html: '<strong>Hubo un error en la actualización del registro</strong>',
                     toast: true,
                     position: "center",
@@ -916,7 +920,7 @@ $(document).on("click", "#subir_archivos", (e) => {
         success: function(data) {
             if (data == 0) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>ERROR EL ARCHIVO YA EXISTE.</strong>',
                     toast: true,
@@ -929,7 +933,7 @@ $(document).on("click", "#subir_archivos", (e) => {
                 // }, 1600);
             } else if (data == 1) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>ERROR EL ARCHIVO ES DEMASIADO GRANDE.</strong>',
 
@@ -995,7 +999,7 @@ $(document).on("click", "#subir_archivos", (e) => {
                 }, 1600);
             } else if (data == 3) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>HUBO UN ERROR AL CAGAR EL ARCHIVO.</strong>',
 
@@ -1006,7 +1010,7 @@ $(document).on("click", "#subir_archivos", (e) => {
                 });
             } else if (data == 4) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>DEBE SELECCIONAR UN ARCHIVO.</strong>',
                     toast: true,
@@ -1016,7 +1020,7 @@ $(document).on("click", "#subir_archivos", (e) => {
                 });
             }else if (data == 5) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>Tipo de archivo no permitido.</strong>',
                     toast: true,
@@ -1027,7 +1031,7 @@ $(document).on("click", "#subir_archivos", (e) => {
             }
             else if (data == 6) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>Tipo de archivo no coincide con el contenido.</strong>',
                     toast: true,
@@ -1038,7 +1042,7 @@ $(document).on("click", "#subir_archivos", (e) => {
             }
             else if (data == 7) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>Error al agregar a la base de datos.</strong>',
                     toast: true,
@@ -1049,7 +1053,7 @@ $(document).on("click", "#subir_archivos", (e) => {
             }
             else if (data == 8) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>Nombre de archivo inválido. Las extensiones dobles no están permitidas.</strong>',
                     toast: true,
@@ -1060,7 +1064,7 @@ $(document).on("click", "#subir_archivos", (e) => {
             }
             else if (data == 9) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>El archivo no es una imagen válida.</strong>',
                     toast: true,

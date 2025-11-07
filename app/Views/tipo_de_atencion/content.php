@@ -1,4 +1,3 @@
-<!-- Content Wrapper. Contains page content -->
 <?php
 $session = session();
 ?>
@@ -10,22 +9,14 @@ $session = session();
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
 </style>
-
+<script src="<?php echo base_url(); ?>/custom/js/tailwindcss.js"></script>
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container">
       <div class="row mb-2">
         <div class="col-sm-6">
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-
-  <!-- Main content  fluid-->
+        </div><div class="col-sm-6">
+        </div></div></div></div>
   <div class="content">
     <div class="container">
       <div class="row">
@@ -80,37 +71,55 @@ $session = session();
             <input type="text" name="name-atencion" id="name-atencion" class="form-control" placeholder="Ej: ASESORIA" autocomplete="off" required>
           </div>
 
-          <div class="form-group">
+          <div class="form-group space-y-3">
             <label>Permisos:</label>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input borrado" id="acceso_pro_int" name="borrado" value='false'>
-              <label class="form-check-label" for="acceso_pro_int">Propiedad Intelectual</label>
+            <div class="flex items-center space-x-2">
+              <label for="acceso_pro_int" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="acceso_pro_int" name="borrado" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="acceso_pro_int" class="text-sm font-medium text-gray-700">Propiedad Intelectual</label>
             </div>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input participantes" id="participantes" name="participantes" value='false'>
-              <label class="form-check-label" for="participantes">Acceso a participantes</label>
+            <div class="flex items-center space-x-2">
+              <label for="participantes" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="participantes" name="participantes" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="participantes" class="text-sm font-medium text-gray-700">Acceso a participantes</label>
             </div>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input correo" id="correo" name="correo" value='false'>
-              <label class="form-check-label" for="correo">Correo</label>
+            <div class="flex items-center space-x-2">
+              <label for="correo" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="correo" name="correo" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="correo" class="text-sm font-medium text-gray-700">Correo</label>
             </div>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input correo" id="organismo_pp" name="correo" value='false'>
-              <label class="form-check-label" for="organismo_pp">Org del poder popular</label>
+            <div class="flex items-center space-x-2">
+              <label for="organismo_pp" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="organismo_pp" name="correo" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="organismo_pp" class="text-sm font-medium text-gray-700">Org del poder popular</label>
             </div>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input correo" id="coordenadas" name="coordenadas" value='false'>
-              <label class="form-check-label" for="coordenadas">Coordenadas</label>
+            <div class="flex items-center space-x-2">
+              <label for="coordenadas" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="coordenadas" name="coordenadas" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="coordenadas" class="text-sm font-medium text-gray-700">Coordenadas</label>
             </div>
 
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input correo" id="punto_cuenta" name="punto_cuenta" value='false'>
-              <label class="form-check-label" for="punto_cuenta">Punto de Cuenta</label>
+            <div class="flex items-center space-x-2">
+              <label for="punto_cuenta" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="punto_cuenta" name="punto_cuenta" value='false' class="sr-only peer" />
+                <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+              </label>
+              <label for="punto_cuenta" class="text-sm font-medium text-gray-700">Punto de Cuenta</label>
             </div>
 
           </div>
@@ -125,9 +134,6 @@ $session = session();
     </div>
     </div>
   </div>
-      <!-- /.modal -->
-      <!-- Modal para editar usuarios-->
-
       <div class="modal fade" id="editar">
         <div class="modal-dialog modal-dialog-centered  modal-md">
           <div class="modal-content">
@@ -145,36 +151,63 @@ $session = session();
         <input type="text" name="name-atencion" id="editar-atencion" class="form-control" placeholder="Ej: Direccion de tecnología" autocomplete="off" required>
     </div>
 
-    <div class="form-group">
+    <div class="form-group space-y-3">
         <label>Permisos:</label>
         
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input borrado" id="edit_acceso_pro_int" name="borrado" value='false'>
-            <label class="form-check-label" for="edit_acceso_pro_int">Propiedad Intelectual</label>
+        <div class="flex items-center space-x-2">
+          <label for="edit_acceso_pro_int" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_acceso_pro_int" name="borrado" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_acceso_pro_int" class="text-sm font-medium text-gray-700">Propiedad Intelectual</label>
         </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input edit_participantes" id="edit_participantes" name="edit_participantes" value='false'>
-            <label class="form-check-label" for="edit_participantes">Participantes</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="edit_participantes" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_participantes" name="edit_participantes" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_participantes" class="text-sm font-medium text-gray-700">Participantes</label>
         </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input edit_correo" id="edit_correo" name="edit_correo" value='false'>
-            <label class="form-check-label" for="edit_correo">Correo</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="edit_correo" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_correo" name="edit_correo" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_correo" class="text-sm font-medium text-gray-700">Correo</label>
         </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input correo" id="edit_organismo_pp" name="correo" value='false'>
-            <label class="form-check-label" for="edit_organismo_pp">Org del poder popular</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="edit_organismo_pp" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_organismo_pp" name="correo" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_organismo_pp" class="text-sm font-medium text-gray-700">Org del poder popular</label>
         </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input correo" id="edit_coordenadas" name="coordenadas" value='false'>
-            <label class="form-check-label" for="edit_coordenadas">  Coordenadas</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="edit_coordenadas" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_coordenadas" name="coordenadas" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_coordenadas" class="text-sm font-medium text-gray-700">Coordenadas</label>
         </div>
-        <div class="form-check">
-              <input type="checkbox" class="form-check-input correo" id="edit_punto_cuenta" name="punto_cuenta" value='false'>
-              <label for="user-pass">  Punto de Cuenta</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="edit_punto_cuenta" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit_punto_cuenta" name="punto_cuenta" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="edit_punto_cuenta" class="text-sm font-medium text-gray-700">Punto de Cuenta</label>
         </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input borrado" id="borrado" name="borrado" value='false'>
-            <label class="form-check-label" for="borrado">Activo</label>
+
+        <div class="flex items-center space-x-2">
+          <label for="borrado" class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="borrado" name="borrado" value='false' class="sr-only peer" />
+            <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
+          </label>
+          <label for="borrado" class="text-sm font-medium text-gray-700">Activo</label>
         </div>
 
       </div>
@@ -186,12 +219,9 @@ $session = session();
               </div>
             </form>
           </div>
-          <!-- /.modal-content -->
+          </div>
         </div>
-        <!-- /.modal-dialog -->
-      </div>
 
-      <!-- ***** FUNCION PARA SOLO NUMEROS***-** -->
       <script type="text/javascript">
         function valideKey(evt) {
           var code = (evt.which) ? evt.which : evt.keyCode;
@@ -204,7 +234,6 @@ $session = session();
           }
         }
       </script>
-      <!-- ***** FUNCION PARA SOLO LETRAS***-** -->
       <script>
         function noNumeros(event) {
           const tecla = event.keyCode || event.which;
@@ -213,12 +242,8 @@ $session = session();
           }
         }
       </script>
-      <!-- ***** FUNCION PARA CONVERTIR EN MAYUSCULA***-** -->
       <script>
         function mayus(e) {
           e.value = e.value.toUpperCase();
         }
       </script>
-
-
-
