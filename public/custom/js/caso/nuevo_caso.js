@@ -78,11 +78,7 @@ function limpiarCamposTercero(prefix) {
     $(`#${prefix}-direccion`).val('');
     if (impreFieldId) $(impreFieldId).val('');
     
-    // Reiniciar selectores de Ubicación
-    $(`#${prefix}-pais-select`).val('0').trigger('change');
-    $(`#${prefix}-estado-select`).empty().append('<option value="0" disabled selected>Seleccione Estado</option>');
-    $(`#${prefix}-municipio-select`).empty().append('<option value="0" disabled selected>Seleccione Municipio</option>');
-    $(`#${prefix}-parroquia-select`).empty().append('<option value="0" disabled selected>Seleccione Parroquia</option>');
+    
 }
 
 // =================================================================
@@ -1728,7 +1724,7 @@ error:function(xhr, status, errorThrown)
                 let valor_asume = ''; 
 
              
-                let tipo_atend_id = ''; 
+                
                
                 let competencia_crg = valor_competencia; // Se iguala a las variables inicializadas
                 let asume_crg = valor_asume;             // Se iguala a las variables inicializadas

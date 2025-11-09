@@ -176,7 +176,7 @@ $session = session();
     }
     </style>
 <div class="modal fade" id="editCase">
-    <div class="modal-dialog modal-dialog-centered modal-lg"> 
+    <div class="modal-dialog modal-dialog-centered modal-xl"> 
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="text-secondary"><i class="fas fa-angle-double-right"></i> EDICION DE CASO</h4>

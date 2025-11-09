@@ -674,11 +674,442 @@ class FPDF
 		$this->Cell(50, 5, iconv('utf-8', 'cp1252', ' 2- Indique personas, Organismos o Instituciones, Involucradas en los hechos:'), 0, 0, 'L', 'L');
 	}
 
+function Content_Planilla_SAPI($datos)
+{
+    // Cargar la fuente ZapfDingbats para el checkmark
+    $this->AddFont('ZapfDingbats', '', 'zapfdingbats.php');
+    
+    // --- FUNCIÓN HELPER PARA OBTENER EL VALOR O 'N/A' ---
+    // Esta función se usará para todos los campos de contenido simple.
+    $obtener_contenido_o_na = function($clave, $datos) {
+        $valor = $datos[$clave] ?? '';
+        $valor_limpio = trim($valor);
+        // Si después de limpiar el espacio el valor es vacío, nulo, o '0', retorna 'N/A'
+        if (empty($valor_limpio) || $valor_limpio === '0') {
+            return 'N/A';
+        }
+        return $valor;
+    };
+    // --------------------------------------------------------
+
+    // Establecer imagen y título
+    $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 6, 15, 210, 15, 'png');
+    $this->SetTitle(iconv("UTF-8", "CP1252", "PLANILLA DE MEDIACIÓN SAPI"));
+    $this->Ln(30);
+    
+    // Configuración de colores para los encabezados de sección
+    $this->SetFillColor(230, 230, 230); // Gris claro para encabezados
+    $this->SetDrawColor(0, 0, 0); // Borde negro
+
+    // Título principal
+    $this->SetFont('Arial', 'B', 12);
+    $this->Ln(5);
+    $this->Cell(190, 8, iconv('utf-8', 'cp1252', 'SOLICITUD DE MEDIACIÓN SAPI'), 1, 1, 'C', 1);
+    
+    // Nº de Caso y Fecha
+    $this->SetFont('Arial', '', 9);
+    // Aplica N/A si el valor es vacío o nulo (aunque '____' es aceptable si es solo un placeholder)
+    $this->Cell(95, 5, iconv('utf-8', 'cp1252', 'Nº de Caso: ') . ($obtener_contenido_o_na('caso', $datos) === 'N/A' ? '__________' : $obtener_contenido_o_na('caso', $datos)), 0, 0, 'L');
+    $this->Cell(95, 5, iconv('utf-8', 'cp1252', 'Fecha de Solicitud: ') . ($obtener_contenido_o_na('fecha_caso', $datos) === 'N/A' ? '__________' : $obtener_contenido_o_na('fecha_caso', $datos)), 0, 1, 'R');
+    $this->Ln(5);
+    
+    // --- DEFINICIÓN DE ANCHOS PARA ALINEACIÓN UNIFORME ---
+    $ANCHO_ETIQUETA = 55; // 55mm para todas las etiquetas (A, B, C, D)
+    $ANCHO_CONTENIDO_TOTAL = 190 - $ANCHO_ETIQUETA; // 135mm para el contenido restante
+
+// --- A. DATOS DEL SOLICITANTE ---
+    $this->SetFont('Arial', 'B', 10);
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'A. DATOS DEL SOLICITANTE'), 1, 1, 'L', 1);
+    $this->SetFont('Arial', '', 8); 
+
+    // 🏆 Fila 1: Nombre/Razón Social Y Estado/Ciudad EN LA MISMA LÍNEA (AJUSTADO)
+    // Se aplica N/A a ambos contenidos
+    $this->SetFont('Arial', 'B', 8); 
+    // 1. Etiqueta: Nombres/Razón Social
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Nombres/Razón Social:'), 'LT', 0, 'L');
+    
+    $this->SetFont('Arial', '', 8); 
+    // 2. Contenido: Nombres/Razón Social
+    $this->Cell(50, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_nombre', $datos)), 'T', 0, 'L'); 
+    
+    $this->SetFont('Arial', 'B', 8); 
+    // 3. Etiqueta: Estado/Ciudad
+    $this->Cell(30, 5, iconv('utf-8', 'cp1252', 'Estado/Ciudad:'), 'T', 0, 'L'); 
+    
+    $this->SetFont('Arial', '', 8); 
+    // 4. Contenido: Estado/Ciudad (A_estado)
+    $this->Cell(55, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_estado', $datos)), 'TR', 1, 'L'); // Cierra la fila
+
+    // Fila 2: C.I./RIF. 
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'C.I. / RIF:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_cedula', $datos)), 'R', 1, 'L');
+
+    // Fila 3: Teléfono 
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Teléfono:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_telefono', $datos)), 'R', 1, 'L');
+    
+    // Fila 4: Dirección 
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Dirección:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    // **AQUÍ SE CORRIGE la Dirección**
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_direccion', $datos)), 'R', 1, 'L');
+    
+    // Fila 5: Correo electrónico (Cierra la sección con borde inferior)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Correo electrónico:'), 'LB', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('A_correo', $datos)), 'RB', 1, 'L');
+    $this->Ln(3);
 
 
+    // --- B. DATOS DEL APODERADO DEL SOLICITANTE (SI APLICA) ---
+    $this->SetFont('Arial', 'B', 10);
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'B. DATOS DEL APODERADO DEL SOLICITANTE (SI APLICA)'), 1, 1, 'L', 1);
+    $this->SetFont('Arial', '', 8);
+
+    // Fila 1: Nombre (55) | C.I. (30) | Contenido C.I. (50)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Nombres y Apellidos:'), 'LT', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell(75, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_nombre', $datos)), 'T', 0, 'L'); 
+    
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell(30, 5, iconv('utf-8', 'cp1252', 'C.I.:'), 'T', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell(30, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_CI', $datos)), 'TR', 1, 'L'); 
+    
+    // Fila 2: IMPRE Abogado (55) | Teléfono (30) | Contenido Teléfono (50)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'IMPRE Abogado:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell(75, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_IMPRE', $datos)), 0, 0, 'L');
+    
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell(30, 5, iconv('utf-8', 'cp1252', 'Teléfono:'), 0, 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell(30, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_telefono', $datos)), 'R', 1, 'L');
+    
+    // Fila 3: Dirección (55) | Contenido Dirección (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Dirección:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_direccion', $datos)), 'R', 1, 'L');
+    
+    // Fila 4: Correo electrónico (55) | Contenido Correo (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Correo electrónico:'), 'L', 0, 'L'); 
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('B_correo', $datos)), 'R', 1, 'L'); 
+
+ // Fila 5: Estado/Ciudad Completa (55) | Contenido Ubicación (135) - BORDE INFERIOR
+// --- INICIO DE CORRECCIÓN PARA ESTADO/CIUDAD B (MANTENIDA LA LÓGICA DE 'N/A')---
+$estado_valor_b = $datos['B_estado'] ?? '';
+
+// 1. Elimina solo los espacios en blanco al inicio y al final.
+$estado_limpio_b = trim($estado_valor_b);
+
+// 2. Definir una variable para la validación de contenido REAL.
+// Quita los espacios y la barra solo para la comprobación, y si queda '0' lo trata como vacío.
+$estado_para_validar = str_replace('/', '', $estado_limpio_b);
+$estado_para_validar = ($estado_para_validar === '0') ? '' : $estado_para_validar;
+
+// 3. Comprueba si el valor REAL (sin barra ni '0') está vacío.
+if (!empty($estado_para_validar)) {
+    // Opción A: HAY INFORMACIÓN REAL (se imprime $estado_limpio_b, que puede contener '/')
+    $contenido_celda = $estado_limpio_b;
+} else {
+    // Opción B: NO HAY INFORMACIÓN REAL, es nulo, vacío, solo '/', o '0'.
+    // Ahora se establece 'N/A' como el contenido de la celda.
+    $contenido_celda = 'N/A'; 
+}
+
+// 4. Imprime la fila con el contenido determinado ($estado_limpio_b o 'N/A').
+$this->SetFont('Arial', 'B', 8); 
+$this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Estado/Ciudad:'), 'LB', 0, 'L'); 
+$this->SetFont('Arial', '', 8); 
+$this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $contenido_celda), 'RB', 1, 'L'); 
+$this->Ln(3); 
+// --- FIN DE CORRECCIÓN PARA ESTADO/CIUDAD B ---
 
 
+    // --- C. DATOS DE LA CONTRAPARTE ---
+    $this->SetFont('Arial', 'B', 10);
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'C. DATOS DE LA CONTRAPARTE'), 1, 1, 'L', 1);
+    $this->SetFont('Arial', '', 8);
 
+    // FILA 1 AJUSTADA: Nombre/Razón Social | Correo electrónico 
+    // Total: 55 + 45 + 35 + 55 = 190
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Nombres/Razón Social:'), 'LT', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    // Contenido Nombre (45mm)
+    $this->Cell(45, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('C_nombre', $datos)), 'T', 0, 'L'); 
+
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell(35, 5, iconv('utf-8', 'cp1252', 'Correo electrónico:'), 'T', 0, 'L'); // Etiqueta Correo (35mm)
+    $this->SetFont('Arial', '', 8); 
+    // Contenido Correo (55mm)
+    $this->Cell(55, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('C_correo', $datos)), 'TR', 1, 'L'); 
+    
+    // Fila 2: C.I./RIF. (55) | Contenido C.I./RIF. (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'C.I. / RIF:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('C_CI_RIF', $datos)), 'R', 1, 'L');
+
+    // Fila 3: Teléfono (55) | Contenido Teléfono (45) | VACÍO (90)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Teléfono:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell(45, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('C_telefono', $datos)), 0, 0, 'L'); 
+    
+    // Rellena el espacio restante hasta el borde derecho (190 - 55 - 45 = 90mm)
+    $this->Cell(90, 5, '', 'R', 1, 'L'); 
+
+    // Fila 4: Dirección (55) | Contenido Dirección (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Dirección:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('C_direccion', $datos)), 'R', 1, 'L');
+    
+  // Fila 5: Estado/Ciudad Completa (55) | Contenido Ubicación (135) - BORDE INFERIOR
+// --- INICIO DE CORRECCIÓN PARA ESTADO/CIUDAD C (MANTENIDA LA LÓGICA DE 'N/A')---
+$estado_valor_c = $datos['C_estado'] ?? '';
+
+// 1. Elimina solo los espacios en blanco al inicio y al final.
+$estado_limpio_c = trim($estado_valor_c);
+
+// 2. Definir una variable para la validación de contenido REAL.
+// Quita los espacios y la barra solo para la comprobación, y si queda '0' lo trata como vacío.
+$estado_para_validar = str_replace('/', '', $estado_limpio_c);
+$estado_para_validar = ($estado_para_validar === '0') ? '' : $estado_para_validar;
+
+// 3. Comprueba si el valor REAL (sin barra ni '0') está vacío.
+if (!empty($estado_para_validar)) {
+    // Opción A: HAY INFORMACIÓN REAL
+    $contenido_celda = $estado_limpio_c; // Contenido real, que puede incluir '/'
+} else {
+    // Opción B: NO HAY INFORMACIÓN REAL, es nulo, vacío, solo '/', o '0'.
+    // Se establece 'N/A' como el contenido de la celda.
+    $contenido_celda = 'N/A'; 
+}
+
+// 4. Imprime la fila con el contenido determinado ($estado_limpio_c o 'N/A').
+$this->SetFont('Arial', 'B', 8); 
+$this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Estado/Ciudad:'), 'LB', 0, 'L'); 
+$this->SetFont('Arial', '', 8); 
+// Se utiliza $contenido_celda para imprimir el valor.
+$this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $contenido_celda), 'RB', 1, 'L'); 
+$this->Ln(3); // Mantener el Ln(3) para la separación de secciones
+// --- FIN DE CORRECCIÓN PARA ESTADO/CIUDAD C ---
+
+
+    // --- D. DATOS DEL APODERADO DE LA CONTRAPARTE (SI APLICA) ---
+    $this->SetFont('Arial', 'B', 10);
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'D. DATOS DEL APODERADO DE LA CONTRAPARTE (SI APLICA)'), 1, 1, 'L', 1);
+    $this->SetFont('Arial', '', 8);
+
+    // Fila 1: Nombre (55) | Contenido Nombre (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Nombres y Apellidos:'), 'LT', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('D_nombre', $datos)), 'TR', 1, 'L');
+    
+    // Fila 2: Dirección (55) | Contenido Dirección (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Dirección:'), 'L', 0, 'L');
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('D_direccion', $datos)), 'R', 1, 'L');
+    
+    // Fila 3: Correo electrónico (55) | Contenido Correo (135)
+    $this->SetFont('Arial', 'B', 8); 
+    $this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Correo electrónico:'), 'L', 0, 'L'); 
+    $this->SetFont('Arial', '', 8); 
+    $this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $obtener_contenido_o_na('D_correo', $datos)), 'R', 1, 'L'); 
+    
+   // Fila 4: Estado/Ciudad Completa (55) | Contenido Ubicación (135) - BORDE INFERIOR
+// --- INICIO DE CORRECCIÓN PARA ESTADO/CIUDAD D (MANTENIDA LA LÓGICA DE 'N/A')---
+$estado_valor_d = $datos['D_estado'] ?? '';
+
+// 1. Elimina solo los espacios en blanco al inicio y al final.
+$estado_limpio_d = trim($estado_valor_d);
+
+// 2. Definir una variable para la validación de contenido REAL.
+// Quita los espacios y la barra solo para la comprobación, y si queda '0' lo trata como vacío.
+$estado_para_validar = str_replace('/', '', $estado_limpio_d);
+$estado_para_validar = ($estado_para_validar === '0') ? '' : $estado_para_validar;
+
+// 3. Comprueba si el valor REAL (sin barra ni '0') está vacío.
+if (!empty($estado_para_validar)) {
+    // Opción A: HAY INFORMACIÓN REAL
+    $contenido_celda = $estado_limpio_d; // Contenido real, que puede incluir '/'
+} else {
+    // Opción B: NO HAY INFORMACIÓN REAL, es nulo, vacío, solo '/', o '0'.
+    // Se establece 'N/A' como el contenido de la celda.
+    $contenido_celda = 'N/A'; 
+}
+
+// 4. Imprime la fila con el contenido determinado ($estado_limpio_d o 'N/A').
+$this->SetFont('Arial', 'B', 8); 
+$this->Cell($ANCHO_ETIQUETA, 5, iconv('utf-8', 'cp1252', 'Estado/Ciudad:'), 'LB', 0, 'L');
+$this->SetFont('Arial', '', 8); 
+// Se utiliza $contenido_celda para imprimir el valor.
+$this->Cell($ANCHO_CONTENIDO_TOTAL, 5, iconv('utf-8', 'cp1252', $contenido_celda), 'RB', 1, 'L'); 
+$this->Ln(3); // Mantener el Ln(3) para la separación de secciones
+// --- FIN DE CORRECCIÓN PARA ESTADO/CIUDAD D ---
+    
+ // --- E. DESCRIPCIÓN DE LA CONTROVERSIA ---
+$this->SetFont('Arial', 'B', 10);
+$this->Cell(190, 6, iconv('utf-8', 'cp1252', 'E. DESCRIPCIÓN DE LA CONTROVERSIA'), 1, 1, 'L', 1);
+$this->SetFont('Arial', '', 9);
+
+$this->Ln(1); // Espacio de 1mm antes de la fila de checks
+
+// --- Bloque de Checkboxes (propiedad intelectual) ---
+$altura_fila_checks = 6; // Altura total de la fila de checkboxes (para el borde)
+$opc_height = 2.5;       // Altura de cada elemento (texto, check) para centrado
+$ancho_check = 2.5; 
+
+// Anchos para completar 190mm
+$ancho_marca_label = 38; 
+$ancho_autor_label = 40; 
+$ancho_patente_label = 35; 
+$ancho_geo_label = 38; 
+$ancho_espacio_int = 9; 
+$ancho_borde_ext = 1; 
+
+// Normalización de la cadena para la lógica de selección
+$tipo_prop = strtoupper(str_replace(['Á', 'É', 'Í', 'Ó', 'Ú', 'á', 'é', 'í', 'ó', 'ú', 'Ñ', 'ñ', ' '], ['A', 'E', 'I', 'O', 'U', 'A', 'E', 'I', 'O', 'U', 'N', 'N', ''], ($datos['tipo_prop_nombre'] ?? '')));
+$check_char = chr(51); 
+
+
+// Guardamos la posición Y actual (arriba de la línea de checks)
+$y_inicio_checks = $this->GetY();
+$x_inicio_checks = $this->GetX();
+
+// Dibuja el borde superior (T), izquierdo (L), y derecho (R)
+$this->Cell(190, $altura_fila_checks, '', 'TLR', 1);
+
+// Regresa a la posición inicial Y y avanza el margen de 1mm
+$this->SetY($y_inicio_checks);
+$this->SetX($x_inicio_checks + $ancho_borde_ext); 
+
+// Ajusta la posición Y para centrar verticalmente los elementos de 2.5mm
+$this->SetY($this->GetY() + ($altura_fila_checks - $opc_height) / 2);
+
+// **AJUSTE: Establecer fuente en negrita para las etiquetas**
+$this->SetFont('Arial', 'B', 9); 
+// **Eliminado Ln(1) que rompía el centrado**
+
+// Marcas 
+$is_checked = (strpos($tipo_prop, 'MARCAS') !== false);
+$this->Cell($ancho_marca_label, $opc_height, iconv('utf-8', 'cp1252', 'MARCAS:'), 0, 0, 'L'); 
+$this->SetFont('ZapfDingbats', '', 10); 
+$this->Cell($ancho_check, $opc_height, $is_checked ? $check_char : '', 1, 0, 'C', 0);
+$this->SetFont('Arial', 'B', 9); // Vuelve a negrita después del check
+
+$this->Cell($ancho_espacio_int, $opc_height, '', 0, 0, 'L'); 
+
+// Derecho de Autor 
+$is_checked = (strpos($tipo_prop, 'DERECHODEAUTOR') !== false);
+$this->Cell($ancho_autor_label, $opc_height, iconv('utf-8', 'cp1252', 'DERECHO DE AUTOR:'), 0, 0, 'L'); 
+$this->SetFont('ZapfDingbats', '', 10); 
+$this->Cell($ancho_check, $opc_height, $is_checked ? $check_char : '', 1, 0, 'C', 0);
+$this->SetFont('Arial', 'B', 9); // Vuelve a negrita después del check
+
+$this->Cell($ancho_espacio_int, $opc_height, '', 0, 0, 'L'); 
+
+// Patentes 
+$is_checked = (strpos($tipo_prop, 'PATENTES') !== false);
+$this->Cell($ancho_patente_label, $opc_height, iconv('utf-8', 'cp1252', 'PATENTES:'), 0, 0, 'L'); 
+$this->SetFont('ZapfDingbats', '', 10); 
+$this->Cell($ancho_check, $opc_height, $is_checked ? $check_char : '', 1, 0, 'C', 0);
+$this->SetFont('Arial', 'B', 9); // Vuelve a negrita después del check
+
+$this->Cell($ancho_espacio_int, $opc_height, '', 0, 0, 'L'); 
+
+// Ind. Geográfica 
+$is_checked = (strpos($tipo_prop, 'INDICACIONGEOGRAFICAPROTEGIDA') !== false);
+$this->Cell($ancho_geo_label, $opc_height, iconv('utf-8', 'cp1252', 'IND. GEOGRÁFICA:'), 0, 0, 'L'); 
+$this->SetFont('ZapfDingbats', '', 10); 
+$this->Cell($ancho_check, $opc_height, $is_checked ? $check_char : '', 1, 0, 'C', 0);
+$this->SetFont('Arial', '', 9); 
+
+// Posiciona la celda para el borde derecho y paso de línea (restableciendo Y)
+$this->SetY($this->GetY() - ($altura_fila_checks - $opc_height) / 2); 
+$this->SetX(200 - $ancho_borde_ext); // Mueve al borde derecho (asume ancho total 200, margen 10)
+$this->Cell($ancho_borde_ext, $altura_fila_checks, '', 0, 1, 'L'); // **Paso de línea final**
+
+// Línea inferior de la fila de checkboxes (AHORA CORRECTA)
+$this->Cell(190, 0, '', 'T', 1); 
+
+// --- Bloque de Descripción ---
+
+$this->Ln(0.5); // Espacio pequeño antes del título de la descripción.
+
+// Título de la descripción (Negrita)
+$this->SetFont('Arial', 'B', 9);
+$this->Cell(190, 5, iconv('utf-8', 'cp1252', 'Descripción del Caso:'), 'LR', 1, 'L'); // Borde L y R
+
+// Descripción del caso (Regular, no Negrita)
+$this->SetFont('Arial', '', 9); 
+// **CORRECCIÓN: Se aplica N/A si el texto está vacío**
+$descripcion_casodesc = $obtener_contenido_o_na('casodesc', $datos);
+if ($descripcion_casodesc === 'N/A') {
+    // Si es N/A, se imprime en una celda normal para evitar MultiCell vacío/borde incorrecto.
+    $this->Cell(190, 5, iconv('utf-8', 'cp1252', 'N/A'), 'LRB', 1, 'J'); 
+} else {
+    // Si hay contenido, se usa MultiCell para la descripción larga.
+    $this->MultiCell(190, 5, iconv('utf-8', 'cp1252', trim($descripcion_casodesc)), 'LRB', 'J'); // Borde L, R y B
+}
+
+
+$this->Ln(3);
+    // --- F. ACEPTACIÓN DE SOMETER LA CONTROVERSIA A MEDIACIÓN DEL SAPI ---
+    $this->SetFont('Arial', 'B', 10);
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'F. ACEPTACIÓN DE SOMETER LA CONTROVERSIA A MEDIACIÓN DEL SAPI'), 1, 1, 'L', 1);
+    $this->SetFont('Arial', '', 9);
+    
+    $texto_F = iconv('utf-8', 'cp1252', "La parte solicitante o su representante debidamente facultado, acepta someter a mediación la controversia descrita anteriormente.\n");
+    $texto_F .= iconv('utf-8', 'cp1252', "Sírvase llenar este formulario y remitirlo al correo atencionciudadana@sapi.gob.ve o consignarlo a la taquilla única del Servicio Autónomo de la Propiedad Intelectual (SAPI) y a la contraparte.");
+    
+    $this->MultiCell(190, 4, $texto_F, 'LR', 'J');
+
+    // Bloque de Fecha y Firma
+    $this->Cell(190, 0.5, '', 'T', 1); // Separador horizontal (borde superior)
+    
+    // **CORRECCIÓN: Se aplica N/A si Lugar o Fecha están vacíos, usando el helper.**
+    $lugar = $obtener_contenido_o_na('lugar', $datos);
+    $fecha = $obtener_contenido_o_na('fecha_firma', $datos);
+    
+    $this->Cell(63.3, 8, iconv('utf-8', 'cp1252', 'Lugar: ') . ($lugar === 'N/A' ? '__________' : $lugar), 'L', 0, 'L'); 
+    $this->Cell(63.3, 8, iconv('utf-8', 'cp1252', 'Fecha: ') . ($fecha === 'N/A' ? '__________' : $fecha), 0, 0, 'L');
+    $this->Cell(63.4, 8, iconv('utf-8', 'cp1252', 'Firma: ________________'), 'R', 1, 'L');
+    
+    $this->Cell(190, 0.5, '', 'B', 1); // Borde inferior del bloque
+    
+    $this->Ln(5);
+
+    // Pie de página de la planilla (Dirección SAPI)
+    $this->SetFont('Arial', 'I', 7);
+    $direccion = iconv('utf-8', 'cp1252', "Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas. Caracas - Venezuela. Teléfonos (0212) 484-91-81 código postal 1010 www.sapi.gob.ve");
+    $this->Cell(190, 3, $direccion, 0, 1, 'C');
+}function Footer_Mediacion()
+{
+    // Posición a 15 mm del final
+    $this->SetY(-15);
+    
+    // Configurar fuente
+    $this->SetFont('Arial','I',8);
+    
+    // Número de página
+    $this->Cell(0,10,iconv('utf-8', 'cp1252','Página ').$this->PageNo().'/{nb}',0,0,'C');
+}
 //////////////////////USUARIOS VISITAS 
 
 

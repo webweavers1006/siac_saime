@@ -85,11 +85,7 @@ function limpiarCamposTercero(prefix) {
     $(`#${prefix}-direccion`).val('');
     if (impreFieldId) $(impreFieldId).val('');
     
-    // Reiniciar selectores de Ubicación
-    $(`#${prefix}-pais-select`).val('0').trigger('change');
-    $(`#${prefix}-estado-select`).empty().append('<option value="0" disabled selected>Seleccione Estado</option>');
-    $(`#${prefix}-municipio-select`).empty().append('<option value="0" disabled selected>Seleccione Municipio</option>');
-    $(`#${prefix}-parroquia-select`).empty().append('<option value="0" disabled selected>Seleccione Parroquia</option>');
+   
 }
 
 /**
@@ -116,62 +112,49 @@ function mapearDatosTercero(prefix, data) {
     $(`#${prefix}-correo`).val(data.ter_correo || '');
     $(`#${prefix}-direccion`).val(data.ter_direccion ? data.ter_direccion.trim() : '');
 
-    // 2. Mapeo de Ubicación (Usando tu lógica de inicialización y disparadores)
+    // 2. Mapeo de Ubicación (¡BLOQUE CORREGIDO CON PROMESAS!)
     const pais = data.ter_pais;
     const estado = data.ter_estado;
     const municipio = data.ter_municipio;
     const parroquia = data.ter_parroquia;
     
+  
     if (pais) {
         const paisId = `${prefix}-pais-select`;
         const estadoId = `${prefix}-estado-select`;
         const municipioId = `${prefix}-municipio-select`;
         const parroquiaId = `${prefix}-parroquia-select`;
-
-        llenar_Paises_Multiple(paisId, pais); 
-
-        if (pais == 1) {
-            llenar_Estados_Multiple(estadoId, estado); 
-            
-            // Lógica de carga asíncrona simulando el evento change
-            setTimeout(() => {
-                if (estado) {
-                    const datos_m = { id_estado: estado };
-                    $.ajax({
-                        url: "/municipios", method: "POST", dataType: "JSON", data: { data: btoa(JSON.stringify(datos_m)) },
-                    })
-                    .then((response) => {
-                        $(`#${municipioId}`).html(response.data);
-                        if (municipio) {
-                             $(`#${municipioId}`).val(municipio); 
-
-                             const datos_p = { id_municipio: municipio };
-                             return $.ajax({
-                                 url: "/parroquias", method: "POST", dataType: "JSON", data: { data: btoa(JSON.stringify(datos_p)) },
-                             });
-                        }
-                    })
-                    .then((response) => {
-                        if (response) {
-                             $(`#${parroquiaId}`).html(response.data);
-                             if (parroquia) {
-                                $(`#${parroquiaId}`).val(parroquia); 
-                             }
-                        }
-                    })
-                    .catch((request) => {
-                        console.error("Error cargando ubicación en mapeo:", request);
-                    });
-                }
-            }, 100); 
-        } else {
-             llenar_Estados_Multiple(estadoId, 26); 
-             $(`#${municipioId}`).val('336'); 
-             $(`#${parroquiaId}`).val('1135');
-        }
+        
+        // 1. Cargar País
+        llenar_Paises_Multiple(paisId, pais)
+        
+        // 2. Cargar Estados Y esperar
+        .then(() => llenar_Estados_Multiple(estadoId, estado))
+        
+        // 3. Cargar Municipios (solo si el país es 1 y hay estado)
+        .then(() => {
+            if (pais == 1 && estado) {
+                return llenar_municipios_generico(prefix, estado, municipio);
+            } else if (pais != 1) {
+                // Manejo de país extranjero: Asume que '336' y '1135' son correctos para no-Venezuela
+                 $(`#${municipioId}`).val('336'); 
+                 $(`#${parroquiaId}`).val('1135');
+                 return Promise.resolve(); 
+            }
+            return Promise.resolve();
+        })
+        
+        // 4. Cargar Parroquias (solo si hay municipio y país es 1)
+        .then(() => {
+            if (pais == 1 && municipio) {
+                return llenar_parroquias_generico(prefix, municipio, parroquia);
+            }
+        })
+        .catch((error) => {
+            console.error(`Error en la cascada de ubicación de Búsqueda para ${prefix}:`, error);
+        });
     }
 }
-
 
 // =================================================================
 // 2. FUNCIÓN MAESTRA DE BÚSQUEDA (buscar_Tercero_Mediacion)
@@ -1552,6 +1535,20 @@ function loadCaseData(idcaso) {
         $('#editCase').find('#office').val('2');
     }
 
+/**
+ * Función para manejar valores nulos/vacíos en campos de texto, 
+ * devolviendo 'N/A' o el valor predeterminado si el valor es falsy.
+ * @param {string} value El valor a revisar (del JSON).
+ * @returns {string} El valor saneado o 'N/A'.
+ */
+const safeValue = (value) => {
+    // Convierte a String, elimina espacios y verifica si está vacío, nulo o cero
+    if (value === null || value === undefined || String(value).trim() === "" || value === 0 || value === '0') {
+        return 'N/A';
+    }
+    return String(value).trim();
+};
+
 
 /**
  * Función para cargar los datos del caso al presionar el botón de edición (Modo Visualización/Bloqueado).
@@ -1572,26 +1569,64 @@ function loadDatosMediacion(idcaso) {
         
         const data = response[0];
         
-        // Estructura de mapeo centralizada de roles (Solo se muestra por referencia)
+        // Estructura de mapeo centralizada de roles (UTILIZANDO LOS ID NUMÉRICOS DE SU JSON)
         const roles = [
             {
-                prefix: 'apoderado-solicitante', dataId: data.med_apo_sol_id, nombre: data.nombre_apo_sol, ci: data.id_apo_sol, tipo_per: data.tipo_per_apo_sol,
-                correo: data.correo_apo_sol, telefono: data.telefono_apo_sol, pais: data.pais_apo_sol, estado: data.estado_apo_sol,
-                municipio: data.municipio_apo_sol, parroquia: data.parroquia_apo_sol, direccion: data.direccion_apo_sol, impre_abogado: data.impre_abogado_apo_sol,
-                id_nombre: '#apoderado-solicitante-nombres', id_ci: '#apoderado-solicitante-ci', id_tipo_per: '#apo_solicitente-ident-tipo', id_impre: '#apoderado-solicitante-impre',
+                prefix: 'apoderado-solicitante', 
+                dataId: data.med_apo_sol_id, 
+                nombre: data.nombre_apo_sol, 
+                ci: data.id_apo_sol, 
+                tipo_per: data.tipo_per_apo_sol,
+                correo: data.correo_apo_sol, 
+                telefono: data.telefono_apo_sol, 
+                pais: data.pais_id_apo_sol, 
+                estado: data.estado_id_apo_sol,
+                municipio: data.municipio_id_apo_sol, 
+                parroquia: data.parroquia_id_apo_sol, 
+                direccion: data.direccion_apo_sol, 
+                impre_abogado: data.impre_abogado_apo_sol,
+                id_nombre: '#apoderado-solicitante-nombres', 
+                id_ci: '#apoderado-solicitante-ci', 
+                id_tipo_per: '#apo_solicitente-ident-tipo', 
+                id_impre: '#apoderado-solicitante-impre',
             },
             {
-                prefix: 'contraparte', dataId: data.med_contra_id, nombre: data.nombre_contra, ci: data.id_contra, tipo_per: data.tipo_per_contra,
-                correo: data.correo_contra, telefono: data.telefono_contra, pais: data.pais_contra, estado: data.estado_contra,
-                municipio: data.municipio_contra, parroquia: data.parroquia_contra, direccion: data.direccion_contra, impre_abogado: data.impre_abogado_contra,
-                id_nombre: '#contraparte-nombre-razon', id_ci: '#contraparte-ident-valor', id_tipo_per: '#contraparte-ident-tipo', id_impre: '',
+                prefix: 'contraparte', 
+                dataId: data.med_contra_id, 
+                nombre: data.nombre_contra, 
+                ci: data.id_contra, 
+                tipo_per: data.tipo_per_contra,
+                correo: data.correo_contra, 
+                telefono: data.telefono_contra, 
+                pais: data.pais_id_contra, 
+                estado: data.estado_id_contra,
+                municipio: data.municipio_id_contra, 
+                parroquia: data.parroquia_id_contra, 
+                direccion: data.direccion_contra, 
+                impre_abogado: data.impre_abogado_contra,
+                id_nombre: '#contraparte-nombre-razon', 
+                id_ci: '#contraparte-ident-valor', 
+                id_tipo_per: '#contraparte-ident-tipo', 
+                id_impre: '',
             },
             {
-                prefix: 'apoderado-contraparte', dataId: data.med_apo_contra_id, nombre: data.nombre_apo_contra, ci: data.id_apo_contra, tipo_per: data.tipo_per_apo_contra,
-                correo: data.correo_apo_contra, telefono: data.telefono_apo_contra, pais: data.pais_apo_contra, estado: data.estado_apo_contra,
-                municipio: data.municipio_apo_contra, parroquia: data.parroquia_apo_contra, direccion: data.direccion_apo_contra,
-                impre_abogado: data.impre_abogado_apo_contra, id_nombre: '#apoderado-contraparte-nombres', id_ci: '#contraparte-apoderado-ci',
-                id_tipo_per: '#apo_contraparte-ident-tipo', id_impre: '#contraparte-apoderado-impre',
+                prefix: 'apoderado-contraparte', 
+                dataId: data.med_apo_contra_id, 
+                nombre: data.nombre_apo_contra, 
+                ci: data.id_apo_contra, 
+                tipo_per: data.tipo_per_apo_contra,
+                correo: data.correo_apo_contra, 
+                telefono: data.telefono_apo_contra, 
+                pais: data.pais_id_apo_contra, 
+                estado: data.estado_id_apo_contra,
+                municipio: data.municipio_id_apo_contra, 
+                parroquia: data.parroquia_id_apo_contra,
+                direccion: data.direccion_apo_contra,
+                impre_abogado: data.impre_abogado_apo_contra, 
+                id_nombre: '#apoderado-contraparte-nombres', 
+                id_ci: '#contraparte-apoderado-ci',
+                id_tipo_per: '#apo_contraparte-ident-tipo', 
+                id_impre: '#contraparte-apoderado-impre',
             }
         ];
 
@@ -1607,47 +1642,64 @@ function loadDatosMediacion(idcaso) {
 
             // 1. Manejo de Checkbox y Visibilidad
             if (isApoderado) {
-                const aplica = dataId !== null;
+                const aplica = dataId && dataId != 0;
                 $(`#${prefix}-aplica`).prop('checked', aplica);
-                toggleApoderado(prefix); 
+                if (typeof toggleApoderado === 'function') {
+                    toggleApoderado(prefix); 
+                }
             }
 
-            // 2. Mapeo de campos de texto y selectores sencillos
-            $(id_nombre).val(nombre ? nombre.trim() : '');
-            $(id_ci).val(ci || '');
+            // 2. Mapeo de campos de texto y selectores sencillos (APLICANDO safeValue)
+            $(id_nombre).val(safeValue(nombre));
+            $(id_ci).val(safeValue(ci));
             $(id_tipo_per).val(tipo_per || 'V');
-            $(`#${prefix}-telefono`).val(telefono || '');
-            $(`#${prefix}-correo`).val(correo || '');
-            $(`#${prefix}-direccion`).val(direccion ? direccion.trim() : '');
+            $(`#${prefix}-telefono`).val(safeValue(telefono));
+            $(`#${prefix}-correo`).val(safeValue(correo));
+            $(`#${prefix}-direccion`).val(safeValue(direccion));
             
             if (id_impre) {
-                 $(id_impre).val(impre_abogado || '');
+                 $(id_impre).val(safeValue(impre_abogado));
             }
 
-            // 3. Mapeo de Ubicación Asíncrona (Secuencial con setTimeout)
-            if (pais) {
-                // A. Cargar País
-                llenar_Paises_Multiple(`${prefix}-pais-select`, pais);
+            // 3. Mapeo de Ubicación Asíncrona (CASCADA CORREGIDA Y MANEJO DE NULOS EN UBICACIÓN)
+            
+            // Convertimos los IDs a string y tratamos "null" o 0 como null para la lógica
+            const paisId = (pais && pais != 0 && pais != '0') ? String(pais) : null;
+            const estadoId = (estado && estado != 0 && estado != '0') ? String(estado) : null;
+            const municipioId = (municipio && municipio != 0 && municipio != '0') ? String(municipio) : null;
+            const parroquiaId = (parroquia && parroquia != 0 && parroquia != '0') ? String(parroquia) : null;
 
-                // B. Cargar Estados y secuenciar Municipio/Parroquia
-                llenar_Estados_Multiple(`${prefix}-estado-select`, estado);
+            if (paisId) {
+                // Si existe ID de país, inicia la cascada
+                llenar_Paises_Multiple(`${prefix}-pais-select`, paisId)
                 
-                // Usamos setTimeout para esperar que los datos de Estado carguen antes de llamar a Municipio
-                setTimeout(() => {
-                    if (estado) {
-                         // Cargar y seleccionar el municipio
-                         llenar_municipios_generico(prefix, estado, municipio);
+                // Cargar Estados Y esperar
+                .then(() => llenar_Estados_Multiple(`${prefix}-estado-select`, estadoId))
+                
+                // Cargar Municipios (solo si hay estado)
+                .then(() => {
+                    if (estadoId) {
+                        return llenar_municipios_generico(prefix, estadoId, municipioId);
                     }
-                    
-                    // Retraso adicional para que Parroquia espere al Municipio
-                    setTimeout(() => {
-                        if (municipio) {
-                            // Cargar y seleccionar la parroquia
-                            llenar_parroquias_generico(prefix, municipio, parroquia);
-                        }
-                    }, 200); 
-
-                }, 200);
+                    return Promise.resolve();
+                })
+                
+                // Cargar Parroquias (solo si hay municipio)
+                .then(() => {
+                    if (municipioId) {
+                        return llenar_parroquias_generico(prefix, municipioId, parroquiaId);
+                    }
+                })
+                .catch((error) => {
+                    console.error(`Error en la cascada de ubicación para ${prefix}:`, error);
+                });
+            } else {
+                // SI NO HAY PAÍS (null/0), establecer todos los selectores en "0" (Seleccione/N/A)
+                // Se asume que la opción con value="0" es el placeholder "Seleccione"
+                $(`#${prefix}-pais-select`).val('0');
+                $(`#${prefix}-estado-select`).val('0');
+                $(`#${prefix}-municipio-select`).val('0');
+                $(`#${prefix}-parroquia-select`).val('0');
             }
         });
         
@@ -3770,61 +3822,81 @@ function llenar_parroquias_generico(prefix, municipioid, parroquiaid) {
 // =================================================================
 // DEFINICIONES DE FUNCIONES AUXILIARES (CORRECCIÓN)
 // =================================================================
-
 function llenar_Paises_Multiple(selectId, idSeleccionado) {
     const url = "/llenar_pais";
-    $.ajax({
+    
+    // Retorna la promesa de la llamada AJAX
+    return $.ajax({
         url: url,
         method: "GET",
         dataType: "JSON",
-        success: function(data) {
-            const $select = $(`#${selectId}`);
-            if (data.length >= 1) {
-                $select.empty();
-                $.each(data, function(i, item) {
-                    let selectedAttr = (idSeleccionado !== undefined && item.paisid == idSeleccionado) ? " selected" : "";
-                    $select.append(
-                        `<option value="${item.paisid}"${selectedAttr}>${item.paisnom}</option>`
-                    );
-                });
-            }
-        },
-        error: function(xhr, status, errorThrown) {
-            console.error("Error al cargar Países:", status, errorThrown);
-        },
+    })
+    .then((data) => {
+        const $select = $(`#${selectId}`);
+        $select.empty();
+        
+        // 1. Llenar opciones
+        if (data.length >= 1) {
+            $.each(data, function(i, item) {
+                $select.append(
+                    `<option value="${item.paisid}">${item.paisnom}</option>`
+                );
+            });
+        }
+        
+        // 2. FORZAR LA SELECCIÓN y disparar el evento (CRUCIAL)
+        if (idSeleccionado && idSeleccionado != 0) {
+            // Convertimos a String para asegurar compatibilidad con los valores del DOM
+            $select.val(String(idSeleccionado)).trigger('change'); 
+        }
+        
+        return data; 
+    })
+    .catch((xhr, status, errorThrown) => {
+        console.error("Error al cargar Países:", status, errorThrown);
+        throw errorThrown;
     });
 }
 
 function llenar_Estados_Multiple(selectId, idSeleccionado) {
     const url = "/llenar_Estados"; 
-
-    $.ajax({
+    
+    // Retorna la promesa de la llamada AJAX
+    return $.ajax({
         url: url,
         method: "GET",
         dataType: "JSON",
-        success: function(data) {
-            const $select = $(`#${selectId}`);
-            if (data.length >= 1) {
-                $select.empty();
+    })
+    .then((data) => {
+        const $select = $(`#${selectId}`);
+        $select.empty();
+        
+        // 1. Llenar opciones
+        $select.append("<option value='0' selected disabled>Seleccione</option>");
+            
+        if (data.length >= 1) {
+            $.each(data, function(i, item) {
                 $select.append(
-                    "<option value='0' selected disabled>Seleccione</option>"
+                    `<option value="${item.estadoid}">${item.estadonom}</option>`
                 );
-                
-                $.each(data, function(i, item) {
-                    let selectedAttr = (idSeleccionado !== undefined && item.estadoid == idSeleccionado) ? " selected" : "";
-                    $select.append(
-                        `<option value="${item.estadoid}"${selectedAttr}>${item.estadonom}</option>`
-                    );
-                });
-            }
-        },
-        error: function(xhr, status, errorThrown) {
-            console.error("Error al cargar Estados:", status, errorThrown);
-        },
+            });
+        }
+        
+        // 2. FORZAR LA SELECCIÓN y disparar el evento (CRUCIAL)
+        if (idSeleccionado && idSeleccionado != 0) {
+            $select.val(String(idSeleccionado)).trigger('change');
+        } else {
+            // Asegurar que el valor "Seleccione" (value='0') esté seleccionado por defecto
+            $select.val('0'); 
+        }
+        
+        return data;
+    })
+    .catch((xhr, status, errorThrown) => {
+        console.error("Error al cargar Estados:", status, errorThrown);
+        throw errorThrown;
     });
 }
-
-
 // =================================================================
 // FUNCIÓN PRINCIPAL DE INICIALIZACIÓN (CÓDIGO CORREGIDO Y REFACTORIZADO)
 // =================================================================

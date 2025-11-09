@@ -299,125 +299,142 @@ curl_close($ch);
                     $segModel->insertarSeguimiento($datosSeguimiento);
 
                // ===================================================================
-				// 4. LÓGICA DE MEDIACIÓN SAPI (TIPO ATENCIÓN 23)
-				// ===================================================================
-				if ($newCase["id_tipo_atencion"] == '23')
-				{
-					$medicionData = $datos['datos_medicion'];
+// 4. LÓGICA DE MEDIACIÓN SAPI (TIPO ATENCIÓN 23)
+// ===================================================================
+if ($newCase["id_tipo_atencion"] == '23')
+{
+    $medicionData = $datos['datos_medicion'];
 
-					// 4.1. INICIO DE TRANSACCIÓN SAPI
-					$db->transStart(); 
-					
-					try {
-						$contraparteId = null; // ID de la Contraparte (Tercero)
-						$apoderadoSolId = null; // ID del Apoderado del Solicitante (Tercero)
-						$apoderadoCptId = null; // ID del Apoderado de la Contraparte (Tercero)
+    // 4.1. INICIO DE TRANSACCIÓN SAPI
+    $db->transStart(); 
+    
+    try {
+        $contraparteId = null; // ID de la Contraparte (Tercero)
+        $apoderadoSolId = null; // ID del Apoderado del Solicitante (Tercero)
+        $apoderadoCptId = null; // ID del Apoderado de la Contraparte (Tercero)
 
-						// Función auxiliar para buscar e insertar si no existe
-						$checkAndInsertTercero = function($data) use ($terceroModel) {
-							// Verificación: Buscar por Identificación
-							$terceroExistente = $terceroModel
-													->where('ter_identificacion', $data['ter_identificacion'])
-													->first();
+        // ... (Tu función checkAndInsertTercero se mantiene igual) ...
 
-							if ($terceroExistente) {
-								// Existe: Retornar el ID del tercero existente
-								return $terceroExistente['ter_id']; // Asumiendo que 'ter_id' es el nombre de la clave primaria
-							} else {
-								// No Existe: Insertar y retornar el nuevo ID
-								$terceroModel->insert($data);
-								return $terceroModel->insertID();
-							}
-						};
+        $checkAndInsertTercero = function($data) use ($terceroModel) {
+            // Verificación: Buscar por Identificación
+            $terceroExistente = $terceroModel
+                                    ->where('ter_identificacion', $data['ter_identificacion'])
+                                    ->first();
 
-						// A. REGISTRO DE TERCEROS (sgc_sapi_terceros)
-						
-						// 4.1.1. CONTRAPARTE
-						$contraparteData = $medicionData['contraparte'];
-						
-						if (!empty($contraparteData['nombre_razon']) && !empty($contraparteData['correo'])) {
-							$dataToInsert = [
-								'ter_nombre' => $contraparteData['nombre_razon'],
-								'ter_tipo_per' => $contraparteData['ident_tipo'],
-								'ter_identificacion' =>  $contraparteData['ident_valor'],
-								'ter_correo' => $contraparteData['correo'],
-								'ter_telefono' => $contraparteData['telefono'] ?? null,
-								'ter_pais' => $contraparteData['pais'],
-								'ter_estado' => $contraparteData['estado'],
-								'ter_municipio' => $contraparteData['municipio'],
-								'ter_parroquia' => $contraparteData['parroquia'],
-								'ter_direccion' => $contraparteData['direccion'],
-							];
-							
-							// Usar la función para verificar/insertar
-							$contraparteId = $checkAndInsertTercero($dataToInsert);
+            if ($terceroExistente) {
+                // Existe: Retornar el ID del tercero existente
+                return $terceroExistente['ter_id']; // Asumiendo que 'ter_id' es el nombre de la clave primaria
+            } else {
+                // No Existe: Insertar y retornar el nuevo ID
+                $terceroModel->insert($data);
+                return $terceroModel->insertID();
+            }
+        };
 
-						} else {
-							// Si no hay datos de contraparte válidos, lanzamos una excepción
-							throw new \Exception("Datos de Contraparte incompletos.");
-						}
+        // A. REGISTRO DE TERCEROS (sgc_sapi_terceros)
+        
+        // 4.1.1. CONTRAPARTE (Lógica de verificación/inserción, genera $contraparteId)
 
-						// 4.1.2. Apoderado Solicitante (Solo si el checkbox fue marcado y hay datos)
-						$apoSolData = $medicionData['apoderado_solicitante'];
-						if (!empty($apoSolData['nombres'])) { 
-							$dataToInsert = [
-								'ter_nombre' => $apoSolData['nombres'],
-								'ter_tipo_per' => $apoSolData['ident_tipo'],
-								'ter_identificacion' => $apoSolData['ci'],
-								'ter_correo' => $apoSolData['correo'],
-								'ter_telefono' => $apoSolData['telefono'],
-								'ter_pais' => $apoSolData['pais'],
-								'ter_estado' => $apoSolData['estado'],
-								'ter_municipio' => $apoSolData['municipio'],
-								'ter_parroquia' => $apoSolData['parroquia'],
-								'ter_direccion' => $apoSolData['direccion'],
-							];
-							
-							// Usar la función para verificar/insertar
-							$apoderadoSolId = $checkAndInsertTercero($dataToInsert);
-						}
-						// Si el checkbox NO está marcado, $apoderadoSolId será null, lo cual es correcto.
+        // ... (La lógica de Contraparte se mantiene igual) ...
+        
+        $contraparteData = $medicionData['contraparte'];
+        
+        if (!empty($contraparteData['nombre_razon']) && !empty($contraparteData['correo'])) {
+            $dataToInsert = [
+                'ter_nombre' => $contraparteData['nombre_razon'],
+                'ter_tipo_per' => $contraparteData['ident_tipo'],
+                'ter_identificacion' =>  $contraparteData['ident_valor'],
+                'ter_correo' => $contraparteData['correo'],
+                'ter_telefono' => $contraparteData['telefono'] ?? null,
+                'ter_pais' => $contraparteData['pais'],
+                'ter_estado' => $contraparteData['estado'],
+                'ter_municipio' => $contraparteData['municipio'],
+                'ter_parroquia' => $contraparteData['parroquia'],
+                'ter_direccion' => $contraparteData['direccion'],
+            ];
+            
+            // Usar la función para verificar/insertar
+            $contraparteId = $checkAndInsertTercero($dataToInsert);
+
+        } else {
+            // Si no hay datos de contraparte válidos, lanzamos una excepción
+            throw new \Exception("Datos de Contraparte incompletos.");
+        }
 
 
-						// 4.1.3. Apoderado Contraparte (Solo si el checkbox fue marcado y hay datos)
-						$apoCptData = $medicionData['apoderado_contraparte'];
-						if (!empty($apoCptData['nombres'])) { 
-							$dataToInsert = [
-								'ter_tipo_per' => $apoCptData['ident_tipo'],
-								'ter_nombre' => $apoCptData['nombres'],
-								'ter_identificacion' => $apoCptData['ci'],
-								'ter_correo' => $apoCptData['correo'],
-								'ter_telefono' => $apoCptData['telefono'] ?? null,
-								'ter_pais' => $apoCptData['pais'],
-								'ter_estado' => $apoCptData['estado'],
-								'ter_municipio' => $apoCptData['municipio'],
-								'ter_parroquia' => $apoCptData['parroquia'],
-								'ter_direccion' => $apoCptData['direccion'],
-							];
+        // 4.1.2. Apoderado Solicitante (Lógica de verificación/inserción, genera $apoderadoSolId o queda en null)
 
-							// Usar la función para verificar/insertar
-							$apoderadoCptId = $checkAndInsertTercero($dataToInsert);
-						}
-						// Si el checkbox NO está marcado, $apoderadoCptId será null, lo cual es correcto.
+        // ... (La lógica de Apoderado Solicitante se mantiene igual) ...
 
-						// B. REGISTRO EN sgc_mediacion
-						
-						if ($contraparteId) { // Solo es necesario verificar contraparte, ya que es obligatorio
-							$apoderadoModel->insert([
-								'med_caso_id' => $idcaso, 
-								'med_apo_sol_id' => $apoderadoSolId, 
-								'med_contra_id' => $contraparteId, 
-								'med_apo_contra_id' => $apoderadoCptId, 
-							]);
-						}
-						
-						$db->transComplete(); // COMMIT de la transacción SAPI
-						
-					} catch (\Exception $e) {
-						$db->transRollback(); // ROLLBACK de la transacción SAPI
-						throw $e; 
-					}
-				}
+        $apoSolData = $medicionData['apoderado_solicitante'];
+        if (!empty($apoSolData['nombres'])) { 
+            $dataToInsert = [
+                'ter_nombre' => $apoSolData['nombres'],
+                'ter_tipo_per' => $apoSolData['ident_tipo'],
+                'ter_identificacion' => $apoSolData['ci'],
+                'ter_correo' => $apoSolData['correo'],
+                'ter_telefono' => $apoSolData['telefono'],
+                'ter_pais' => $apoSolData['pais'],
+                'ter_estado' => $apoSolData['estado'],
+                'ter_municipio' => $apoSolData['municipio'],
+                'ter_parroquia' => $apoSolData['parroquia'],
+                'ter_direccion' => $apoSolData['direccion'],
+            ];
+            
+            // Usar la función para verificar/insertar
+            $apoderadoSolId = $checkAndInsertTercero($dataToInsert);
+        }
+        // Si no hay datos, $apoderadoSolId será null.
+
+
+        // 4.1.3. Apoderado Contraparte (Lógica de verificación/inserción, genera $apoderadoCptId o queda en null)
+
+        // ... (La lógica de Apoderado Contraparte se mantiene igual) ...
+
+        $apoCptData = $medicionData['apoderado_contraparte'];
+        if (!empty($apoCptData['nombres'])) { 
+            $dataToInsert = [
+                'ter_tipo_per' => $apoCptData['ident_tipo'],
+                'ter_nombre' => $apoCptData['nombres'],
+                'ter_identificacion' => $apoCptData['ci'],
+                'ter_correo' => $apoCptData['correo'],
+                'ter_telefono' => $apoCptData['telefono'] ?? null,
+                'ter_pais' => $apoCptData['pais'],
+                'ter_estado' => $apoCptData['estado'],
+                'ter_municipio' => $apoCptData['municipio'],
+                'ter_parroquia' => $apoCptData['parroquia'],
+                'ter_direccion' => $apoCptData['direccion'],
+            ];
+
+            // Usar la función para verificar/insertar
+            $apoderadoCptId = $checkAndInsertTercero($dataToInsert);
+        }
+        // Si no hay datos, $apoderadoCptId será null.
+
+
+        // B. REGISTRO EN sgc_mediacion
+        
+        if ($contraparteId) { // Solo es necesario verificar contraparte, ya que es obligatorio
+            
+            // **MODIFICACIÓN AQUÍ**
+            // Se utiliza el operador de fusión de null (??) para establecer 0 si el ID es null.
+            $apoderadoModel->insert([
+                'med_caso_id' => $idcaso, 
+                'med_apo_sol_id' => $apoderadoSolId ?? 0, // Si es null, usa 0
+                'med_contra_id' => $contraparteId, 
+                'med_apo_contra_id' => $apoderadoCptId ?? 0, // Si es null, usa 0
+            ]);
+            // **FIN MODIFICACIÓN**
+
+        }
+        
+        $db->transComplete(); // COMMIT de la transacción SAPI
+        
+    } catch (\Exception $e) {
+        $db->transRollback(); // ROLLBACK de la transacción SAPI
+        throw $e; 
+    }
+}
                     
                     // ===================================================================
                     // 5. LÓGICA DE CGR / DENUNCIA / PI
