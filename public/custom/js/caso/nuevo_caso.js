@@ -1553,160 +1553,155 @@ error:function(xhr, status, errorThrown)
  
             
              } 
-             else if (tipo_atencion === '5') 
-            {
-                    if (document.getElementById('option-personal').checked) {
-                        option_personal = true
-                    } else {
-                        option_personal = false
-                    }
-                    if (document.getElementById('option-comunidad').checked) {
-                        option_comunidad = true
-                    } else {
-                        option_comunidad = false
-                    }
-                    if (document.getElementById('option-terceros').checked) {
-                        option_terceros = true
-                    } else {
-                        option_terceros = false
-                    }
-        
-                    if (option_personal == false && option_comunidad == false && option_terceros == false) {
-                        alert('Debe indicar a quien afecta el hecho');
-                    } else {
-                        ente_adscrito = 0
-                        if (fecha_hechos == '') {
-                            alert('Debe selecciar la fecha en que ocurrieron los hechos');
-        
-                        } else if (denu_involucrados === '') {
-                            $("#denu-involucrados").addClass('is-invalid');
-                            alert('Este campo es requerido , por favor introduzca la informacion solicitada');
-                        } else {
-                            bandera_denuncia = true;
-        
-                            let tipo_prop_intelec = $("#tipo-pi").val();
+            else if (tipo_atencion === '5') {
+    // 1. Obtención de valores booleanos de los checkboxes de manera concisa
+    const option_personal = $('#option-personal').prop('checked');
+    const option_comunidad = $('#option-comunidad').prop('checked');
+    const option_terceros = $('#option-terceros').prop('checked');
+    
+    // Asumiendo que 'fecha_hechos', 'denu_involucrados', 'nombre_instancia', etc.,
+    // son variables definidas en el scope superior o son obtenidas de otros inputs.
+    // **NOTA:** Aquí debes asegurarte de que estas variables existen y tienen valor.
+    
+    // 2. Validación de Afectados
+    if (!option_personal && !option_comunidad && !option_terceros) {
+        alert('Debe indicar a quien afecta el hecho');
+        return; 
+    } 
 
-             
-                            if (tipo_prop_intelec !=null && tipo_prop_intelec !='null') 
-                           {
-                               prop_intelectual= $("#tipo-pi").val();
-                           }
-                           else
-                           {
-                               prop_intelectual = 1
-               
-                           }
+    // 3. Validación de Campos Requeridos y Recolección de Errores
+    const mensajesError = [];
 
-                           
-                            let cedula= $("#cedula-persona").val()
-                            if (cedula.charAt(0).match(/[a-zA-Z]/))
-                            {
-                                cedula = cedula.slice(1);
-                            }
-                            $("#denu-involucrados").removeClass('is-invalid');
-                            let datos = {
-                                "social_network": $("#red-social").val(),
-                                "date-entry": $("#fecha-recibido").val(),
-                                "person-name": $("#nombre-persona").val(),
-                                "person-lastname": $("#apellido-persona").val(),
-                                "person-id": cedula,
-                                "nacionalidad": $("#tipo-persona").val(),
-                                "telephone": $("#telefono").val(),
-                                "country": $("#pais-caso").val(),
-                                "state": $("#estado-caso").val(),
-                                "county": $("#municipio-caso").val(),
-                                "town": $("#parroquia-caso").val(),
-                                "record-work": $("#num-tramite").val(),
-                                "pi-type": prop_intelectual = 1,
-                                "user-requirement": $("#requerimiento-usuario").val(),
-                                "office": $("#office").val(),
-                                "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
-                                "sexo": $("#sexo").val(),
-                                "tipo_atend_id": tipo_atend_id,
-                                "bandera_denuncia": bandera_denuncia,
-                                "option_personal": option_personal,
-                                "option_comunidad": option_comunidad,
-                                "option_terceros": option_terceros,
-                                "fecha_hechos": fecha_hechos,
-                                "denu_involucrados": denu_involucrados,
-                                "nombre_instancia": nombre_instancia,
-                                "rif_instancia": rif_instancia,
-                                "ente_financiador": ente_financiador,
-                                "nombre_proyecto": nombre_proyecto,
-                                "monto_aprovado": monto_aprovado,
-                                "bandera_cgr": bandera_cgr,
-                                "tipo_beneficiario": $("#t-beneficiario").val(),
-                                "direccion": $("#office").val(),
-                                "correo": $("#correo").val(),
-                                "ente_adscrito": ente_adscrito,
-                                "edad": $("#edad").val(),
-                                "fecha_nacimiento": $("#fecha-nacimiento").val(),
-                                "profesion": $("#profesion").val(),
-                                "organismo-caso": org_id,
-                                 "act_coordenadas": $("#actcoordenadas").val(),
-                                
-                            }
-                            $.ajax({
-                                url: "/registrarCaso",
-                                method: "POST",
-                                dataType: "JSON",
-                                data: {
-                                    "data": btoa(JSON.stringify(datos))
-                                },
-                                beforeSend: function() {
-                                    
-                                },
-                                success: function(respuesta) {
-                                    $("button[type=button]").attr('disabled', 'false');
-                                    if (respuesta.mensaje === 1) {
-                                        Swal.fire({
-                                            icon: "success",
-                                            type: 'success',
-                                            html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + respuesta.idcaso + '</strong>',
-                                            toast: true,
-                                            position: "center",
-                                            showConfirmButton: false,
-                                            //timer: 3500,
-                                        });
-                                        setTimeout(function() {
-                                            window.location = "/casos";
-                                        }, 1500);
-                                    } else if (respuesta.mensaje === 2) {
-                                        Swal.fire({
-                                            icon: "error",
-                                            type: 'error',
-                                            html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                            toast: true,
-                                            position: "center",
-                                            showConfirmButton: false,
-                                            //timer: 3000,
-                                        });
-                                        setTimeout(function() {
-                                            window.location = "/casos";
-                                        }, 1500);
-                                    }
-                                    else if (respuesta.mensaje === 7) {
-                                        Swal.fire({
-                                            icon: "error",
-                                            type: 'error',
-                                            html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                            toast: true,
-                                            position: "center",
-                                            showConfirmButton: false,
-                                            //timer: 3000,
-                                        });
-                                        setTimeout(function() {
-                                            window.location = "/casos";
-                                        }, 1500);
-                                    }
-                                }
-                                
-                            });
-                        }
-        
-                    }
- 
-         }
+    if (fecha_hechos === '' || fecha_hechos === undefined) {
+        mensajesError.push('Debe seleccionar la fecha en que ocurrieron los hechos.');
+    }
+    
+    if (denu_involucrados === '' || denu_involucrados === undefined) {
+        $("#denu-involucrados").addClass('is-invalid');
+        mensajesError.push('Este campo es requerido, por favor introduzca la información solicitada.');
+    } else {
+        $("#denu-involucrados").removeClass('is-invalid');
+    }
+
+    if (mensajesError.length > 0) {
+        alert(mensajesError.join('\n'));
+        return; // Detener el proceso si hay errores
+    }
+
+    // 4. Preparación de Variables para el Envío
+    const bandera_denuncia = true;
+    const ente_adscrito = 0; // Se mantiene en 0 según tu lógica original
+    
+    // Lógica mejorada para 'prop_intelectual'
+    let prop_intelectual = $("#tipo-pi").val();
+    if (prop_intelectual == null || prop_intelectual === 'null') {
+        prop_intelectual = 1; // Asignar valor por defecto
+    }
+
+    // Normalizar la cédula para el envío (eliminando el prefijo si existe)
+    let cedula_a_enviar = $("#cedula-persona").val();
+    if (cedula_a_enviar.charAt(0).match(/[a-zA-Z]/)) {
+        cedula_a_enviar = cedula_a_enviar.slice(1);
+    }
+
+    // 5. Construcción del Objeto de Datos
+    const datos = {
+        social_network: $("#red-social").val(),
+        'date-entry': $("#fecha-recibido").val(),
+        'person-name': $("#nombre-persona").val(),
+        'person-lastname': $("#apellido-persona").val(),
+        'person-id': cedula_a_enviar,
+        nacionalidad: $("#tipo-persona").val(),
+        telephone: $("#telefono").val(),
+        country: $("#pais-caso").val(),
+        state: $("#estado-caso").val(),
+        county: $("#municipio-caso").val(),
+        town: $("#parroquia-caso").val(),
+        'record-work': $("#num-tramite").val(),
+        'pi-type': prop_intelectual, 
+        'user-requirement': $("#requerimiento-usuario").val(),
+        office: $("#office").val(),
+        'tipo-atencion-usu': $("#tipo-atencion-usu").val(),
+        sexo: $("#sexo").val(),
+        tipo_atend_id: tipo_atend_id, // Variable que debe venir definida del scope superior
+        bandera_denuncia: bandera_denuncia,
+        option_personal: option_personal,
+        option_comunidad: option_comunidad,
+        option_terceros: option_terceros,
+        fecha_hechos: fecha_hechos,
+        denu_involucrados: denu_involucrados,
+        nombre_instancia: nombre_instancia, // Asegurar que estas variables están definidas
+        rif_instancia: rif_instancia,       // Asegurar que estas variables están definidas
+        ente_financiador: ente_financiador, // Asegurar que estas variables están definidas
+        nombre_proyecto: nombre_proyecto,    // Asegurar que estas variables están definidas
+        monto_aprovado: monto_aprovado,      // Asegurar que estas variables están definidas
+        bandera_cgr: bandera_cgr,            // Asegurar que estas variables están definidas
+        tipo_beneficiario: $("#t-beneficiario").val(),
+        direccion: $("#office").val(),
+        correo: $("#correo").val(),
+        ente_adscrito: ente_adscrito,
+        edad: $("#edad").val(),
+        fecha_nacimiento: $("#fecha-nacimiento").val(),
+        profesion: $("#profesion").val(),
+        'organismo-caso': org_id, // Asegurar que 'org_id' está definido
+        'act_coordenadas': $("#actcoordenadas").val(),
+    };
+    
+    // 6. Llamada AJAX para el registro del caso
+    $.ajax({
+        url: "/registrarCaso",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            "data": btoa(JSON.stringify(datos)) // Mantener el formato de codificación
+        },
+        beforeSend: function() {
+            // Deshabilitar el botón de envío y mostrar un mensaje de carga
+            $("button[type=button]").prop('disabled', true);
+        },
+        success: function(respuesta) {
+            $("button[type=button]").prop('disabled', false); // Habilitar al finalizar
+
+            if (respuesta.mensaje === 1) {
+                // Éxito en el registro
+                Swal.fire({
+                    icon: "success",
+                    title: '¡Registro Exitoso! ✅',
+                    html: `<strong>Caso registrado con el N° ${respuesta.idcaso}</strong>`,
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 2000,
+                }).then(() => {
+                    // Redirigir después del SweetAlert
+                    window.location = "/casos";
+                });
+            } else if (respuesta.mensaje === 2 || respuesta.mensaje === 7) {
+                // Error de registro conocido
+                Swal.fire({
+                    icon: "error",
+                    title: 'Error de Registro ❌',
+                    html: '<strong>Hubo un error en el registro del requerimiento.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 3000,
+                }).then(() => {
+                    window.location = "/casos";
+                });
+            } else {
+                 // Respuesta exitosa pero con mensaje inesperado
+                 Swal.fire("Error Desconocido", "El servidor respondió, pero el mensaje fue inesperado.", "warning");
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            // Manejo de errores de conexión/servidor
+            $("button[type=button]").prop('disabled', false);
+            console.error("Error en el registro:", status, errorThrown);
+            Swal.fire("Error de Conexión 🛑", `No se pudo registrar el caso. Código: ${xhr.status}`, "error");
+        }
+    });
+}
          // SI ES UN CASO DE MEDIACION ENTRA AQUI
          else if (tipo_atencion === '23') 
 
@@ -1966,205 +1961,152 @@ error:function(xhr, status, errorThrown)
  
  });
 
- $('#btn_buscar').on('click',function(e)
- {  
-     e.preventDefault
-     let cedula_normal = $("#cedula-existente").val().trim();
-    let cedula_existente = $("#cedula-existente").val().trim();
-    if (cedula_existente.charAt(0).match(/[a-zA-Z]/))
-    {
-        cedula_existente = cedula_existente.slice(1);
+ // Función auxiliar para calcular la edad (movida fuera del evento para mejor organización)
+function calcularEdad(fechaNacimientoStr) {
+    const hoy = new Date();
+    // Asegurarse de que el formato de fecha sea YYYY-MM-DD para compatibilidad
+    const fechaNacimiento = new Date(fechaNacimientoStr.replace(/-/g, '/')); 
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+
+    // Ajustar la edad si aún no ha cumplido años este año
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
     }
-      
-    if (cedula_existente==''||cedula_existente==null) 
-    {
-        alert('Debe ingresar la cédula para los datos del Usuario');   
-    }else
-    {
-        var url='/buscar_datos_usuarios';
-        var data=
-        {
-            cedula_existente: cedula_existente,
-        }
-         $.ajax
-         ({
-             url:url,
-             method:'POST',
-             data:{data:btoa(unescape(encodeURIComponent(JSON.stringify(data))))},
-             dataType:'JSON',
-             beforeSend:function(data)
-             {
-             },
-             success:function(data)
-             {    
+    return edad;
+}
 
-              
-                if (data==0) 
-                {
-                   alert('La cedula no se encuentra registrada');
-                   $("#cedula-persona").val(cedula_existente);
-                }else
-                {
-                   
-                     // Accede al objeto data
-                const caso = data[0];
-                const nombre = caso.casonom ;
-                const apellido = caso.casoape ;
-                const cedula = cedula_normal;
-                let nacionalidad = caso.caso_nacionalidad;
-                if (nacionalidad == 'null' || nacionalidad == null) {
-                    nacionalidad = 'V'; 
-                }
-                
-               
-                const beneficiario = caso.tipo_beneficiario;
-                const genero = caso.sexo;
-                const telefono = caso.casotel;
-                const correo = caso.correo;
-                const estado = caso.estadoid;
-                const municipio = caso.municipioid;
-                const parroquia = caso.parroquiaid;
-                const tipo_atencion = caso.idTipoAtencion;
-                const fecha_nacimiento = caso.fecha_nacimiento;
-                const edad = caso.edad;
-                const profesion = caso.profesion;
+// Función principal para cargar todos los datos del usuario y sus dependencias
+function cargarDatosUsuario(caso, cedulaNormal) {
+    const datos = {
+        nombre: caso.casonom,
+        apellido: caso.casoape,
+        cedula: cedulaNormal,
+        nacionalidad: caso.caso_nacionalidad || 'V', // Valor por defecto 'V' si es nulo
+        beneficiario: caso.tipo_beneficiario,
+        genero: caso.sexo,
+        telefono: caso.casotel,
+        correo: caso.correo,
+        estado: caso.estadoid,
+        municipio: caso.municipioid,
+        parroquia: caso.parroquiaid,
+        fecha_nacimiento: caso.fecha_nacimiento,
+        profesion: caso.profesion,
+    };
 
-           
-             
-                
+    // 1. Asignación de valores a Inputs
+    $("#nombre-persona").val(datos.nombre);
+    $("#apellido-persona").val(datos.apellido);
+    $("#cedula-persona").val(datos.cedula);
+    $("#telefono").val(datos.telefono);
+    $("#correo").val(datos.correo);
+    $("#fecha-nacimiento").val(datos.fecha_nacimiento);
+    $("#profesion").val(datos.profesion);
     
-                // Asigna el nombre al valor del atributo value del input
-                const nombreInput = document.getElementById("nombre-persona");
-                nombreInput.value = nombre;
-                const apellidoInput = document.getElementById("apellido-persona");
-                apellidoInput.value = apellido;
-                const cedulaInput = document.getElementById("cedula-persona");
-                cedulaInput.value = cedula;
-                const telefonoInput = document.getElementById("telefono");
-                telefonoInput.value = telefono;
-                const correoInput = document.getElementById("correo");
-                correoInput.value = correo;
-
-
-                // Obtener la fecha de nacimiento seleccionada
-                var fechaNacimiento = new Date(fecha_nacimiento); // Asegúrate de que fecha_nacimiento sea una cadena válida
-                var hoy = new Date();
-
-                // Calcular la edad
-                var edad_actual = hoy.getFullYear() - fechaNacimiento.getFullYear();
-                var mes = hoy.getMonth() - fechaNacimiento.getMonth();
-
-                // Ajustar la edad si no ha cumplido años este año
-                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-                    edad_actual--;
-                }
-
-                // Asignar la edad al elemento con id='edad'
-                $("#edad").val(edad_actual);
-
-
-              
-
-
-
-
-                const fecha_nacimientoInput = document.getElementById("fecha-nacimiento");
-                fecha_nacimientoInput.value = fecha_nacimiento;
-
-                const profesionInput = document.getElementById("profesion");
-                profesionInput.value = profesion;
-
-                //NACIONALIDAD
-                const nacionalidadselect = document.getElementById("tipo-persona");
-                const indicenacionalidad = Array.from(nacionalidadselect.options).findIndex(option => option.value === nacionalidad);
-                nacionalidadselect.selectedIndex = indicenacionalidad;
-                //BENEFICIARIO
-                const beneficiarioselect = document.getElementById("t-beneficiario");
-                const indicebeneficiario = Array.from(beneficiarioselect.options).findIndex(option => option.value === beneficiario);
-                beneficiarioselect.selectedIndex = indicebeneficiario;
-                 //SEXO
-                 const sexoselect = document.getElementById("sexo");
-                 const indicesexo = Array.from(sexoselect.options).findIndex(option => option.value === genero);
-                 sexoselect.selectedIndex = indicesexo;
-                 //ESTADO
-                 const estadoselect = document.getElementById("estado-caso");
-                 const indiceestado = Array.from(estadoselect.options).findIndex(option => option.value === estado);
-                 estadoselect.selectedIndex = indiceestado;
-                 //MUNICIPIO
-                 let datos = {
-                    id_estado: $("#estado-caso").val(),
-                };
-                $.ajax({
-                        url: "/municipios",
-                        method: "POST",
-                        dataType: "JSON",
-                        data: {
-                            data: btoa(JSON.stringify(datos)),
-                        },
-                    })
-                    .then((response) => {
-                        $("#municipio-caso").html(response.data);
-            
-                        let mun = $("#municipio-caso").val();
-            
-                        if (mun != 0) {
-                            let datos = {
-                                id_municipio: $("#municipio-caso").val(),
-                            };
-                            $.ajax({
-                                    url: "/parroquias",
-                                    method: "POST",
-                                    dataType: "JSON",
-                                    data: {
-                                        data: btoa(JSON.stringify(datos)),
-                                    },
-                                })
-                                .then((response) => {
-                                    $("#parroquia-caso").html(response.data);
-                                })
-                                .catch((request) => {
-                                    Swal.fire("Error", response.JSONmessage, "Error");
-                                });
-                        }
-                    })
-                    .catch((request) => {
-                        Swal.fire("Error", response.JSONmessage, "Error");
-                    });
-                // //PARROQUIA
-                let datos2 = {
-                    id_municipio: $("#municipio-caso").val(),
-                };
-                $.ajax({
-                        url: "/parroquias",
-                        method: "POST",
-                        dataType: "JSON",
-                        data: {
-                            data: btoa(JSON.stringify(datos2)),
-                        },
-                    })
-                    .then((response) => {
-                        $("#parroquia-caso").html(response.data);
-                    })
-                    .catch((request) => {
-                        Swal.fire("Error", response.JSONmessage, "Error");
-                    });
-
-
-
-                }
-               
-             },
-
-            error:function(xhr, status, errorThrown)
-            {
-                 alert(xhr.status);
-                 alert(errorThrown);
-            }
-        });
+    // Calcular y asignar edad
+    if (datos.fecha_nacimiento) {
+        $("#edad").val(calcularEdad(datos.fecha_nacimiento));
     }
-         
-}); 
 
+    // 2. Selección de opciones en Selects (usando .val() de jQuery es más simple)
+    $("#tipo-persona").val(datos.nacionalidad);
+    $("#t-beneficiario").val(datos.beneficiario);
+    $("#sexo").val(datos.genero);
+    $("#estado-caso").val(datos.estado);
+    
+    // 3. Carga ENCADENADA de Municipios y Parroquias (Solución al problema)
+    const datosMunicipio = { id_estado: datos.estado };
+    
+    // Petición para cargar los Municipios
+    $.ajax({
+        url: "/municipios",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            data: btoa(JSON.stringify(datosMunicipio)),
+        },
+    })
+    .done((response) => {
+        $("#municipio-caso").html(response.data);
+        $("#municipio-caso").val(datos.municipio); // Selecciona el municipio guardado
+
+        // Petición ENCADENADA para cargar las Parroquias (SÓLO si el Municipio se cargó)
+        const datosParroquia = {
+            id_municipio: datos.municipio, 
+        };
+
+        // Devolvemos la promesa de la segunda llamada AJAX
+        return $.ajax({ 
+            url: "/parroquias",
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                data: btoa(JSON.stringify(datosParroquia)),
+            },
+        });
+    })
+    .done((response) => {
+        // Se ejecuta cuando las Parroquias se han cargado exitosamente
+        $("#parroquia-caso").html(response.data);
+        $("#parroquia-caso").val(datos.parroquia); // Selecciona la parroquia guardada
+    })
+    .fail((request, textStatus, errorThrown) => {
+        // Manejo de error si falla cualquiera de las dos llamadas
+        console.error("Error en la carga de dependencias:", textStatus, errorThrown);
+        alert("Error: No se pudieron cargar los municipios o parroquias.");
+    });
+}
+
+// --------------------------------------------------------------------------
+
+// Evento click del botón de búsqueda
+$('#btn_buscar').on('click', function(e) {
+    e.preventDefault(); 
+
+    let cedula = $("#cedula-existente").val().trim();
+    const cedula_normal = $("#cedula-existente").val().trim();
+    
+    // Normalizar la cédula: eliminar el primer carácter si es una letra
+    if (cedula.charAt(0).match(/[a-zA-Z]/)) {
+        cedula = cedula.slice(1);
+    }
+    
+    if (cedula === '') { 
+        alert('Debe ingresar la cédula para los datos del Usuario');
+        return; 
+    }
+    
+    const url = '/buscar_datos_usuarios';
+    const data = {
+        cedula_existente: cedula,
+    };
+
+    $.ajax({
+        url: url,
+        method: 'POST',
+        // Se mantiene el formato de codificación si el backend lo requiere
+        data: {data:btoa(unescape(encodeURIComponent(JSON.stringify(data))))}, 
+        dataType: 'JSON',
+        beforeSend: function(data) {
+            // Aquí se puede mostrar un spinner
+        },
+        success: function(response) {
+            if (response === 0) {
+                alert('La cedula no se encuentra registrada');
+                $("#cedula-persona").val(cedula);
+                // También limpiar otros campos si es un error de búsqueda
+                $("#nombre-persona, #apellido-persona, #telefono, #correo, #edad, #profesion").val('');
+            } else {
+                // Llama a la función que organiza la carga de datos y las dependencias
+                cargarDatosUsuario(response[0], cedula_normal);
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error en la búsqueda:", status, errorThrown);
+            alert(`Error ${xhr.status}: ${errorThrown}`);
+        }
+    });
+});
 
 $("#fecha-nacimiento").on('change', function() {
     // Obtener la fecha de nacimiento seleccionada
