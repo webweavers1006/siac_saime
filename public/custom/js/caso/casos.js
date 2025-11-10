@@ -2778,8 +2778,8 @@ $(document).on("click", "#editar_caso", function(e) {
 
                 // **CORRECCIÓN 4: Se usa 'const' para el objeto de datos final.**
                 const datos = { 
-                    datos_medicion:datos_medicion,
-                    "social_network": $("#red-social").val(),
+                 datos_medicion:datos_medicion,
+                "social_network": $("#red-social").val(),
                 "date-entry": $("#fecha-recibido").val(),
                 "person-name": $("#nombre-persona").val(),
                 "person-lastname": $("#apellido-persona").val(),
