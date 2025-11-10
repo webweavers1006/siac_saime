@@ -287,9 +287,9 @@ $(function() {
     // 3. INICIALIZACIÓN DE SELECTORES PARA APODERADO CONTRAPARTE
     llenar_Selectores_Iniciales("apoderado-contraparte");
 
-toggleCamposEdicion('apoderado-solicitante', false); 
-    toggleCamposEdicion('contraparte', false); 
-    toggleCamposEdicion('apoderado-contraparte', false);
+// toggleCamposEdicion('apoderado-solicitante', false); 
+//     toggleCamposEdicion('contraparte', false); 
+//     toggleCamposEdicion('apoderado-contraparte', false);
 
    // Adjuntar eventos de búsqueda (Click)
     $('#btn_buscar_apo_sol').on('click', function(e) {
@@ -1976,8 +1976,12 @@ function calcularEdad(fechaNacimientoStr) {
     return edad;
 }
 
-// Función principal para cargar todos los datos del usuario y sus dependencias
-function cargarDatosUsuario(caso, cedulaNormal) {
+/**
+ * Función principal para cargar todos los datos del usuario y sus dependencias.
+ * Nota: Asume que las funciones 'calcularEdad', 'obtenerMunicipios' y 'obtenerParroquias'
+ * existen y manejan su propia lógica de AJAX/Fetch.
+ */
+async function cargarDatosUsuario(caso, cedulaNormal) {
     const datos = {
         nombre: caso.casonom,
         apellido: caso.casoape,
@@ -1994,7 +1998,8 @@ function cargarDatosUsuario(caso, cedulaNormal) {
         profesion: caso.profesion,
     };
 
-    // 1. Asignación de valores a Inputs
+    // 1. Asignación de valores a Inputs y Selects
+    // (Esta parte es síncrona y no requiere cambios)
     $("#nombre-persona").val(datos.nombre);
     $("#apellido-persona").val(datos.apellido);
     $("#cedula-persona").val(datos.cedula);
@@ -2003,57 +2008,82 @@ function cargarDatosUsuario(caso, cedulaNormal) {
     $("#fecha-nacimiento").val(datos.fecha_nacimiento);
     $("#profesion").val(datos.profesion);
     
-    // Calcular y asignar edad
     if (datos.fecha_nacimiento) {
+        // Asegúrate de que 'calcularEdad' exista y funcione
         $("#edad").val(calcularEdad(datos.fecha_nacimiento));
     }
 
-    // 2. Selección de opciones en Selects (usando .val() de jQuery es más simple)
     $("#tipo-persona").val(datos.nacionalidad);
     $("#t-beneficiario").val(datos.beneficiario);
     $("#sexo").val(datos.genero);
-    $("#estado-caso").val(datos.estado);
-    
-    // 3. Carga ENCADENADA de Municipios y Parroquias (Solución al problema)
-    const datosMunicipio = { id_estado: datos.estado };
-    
-    // Petición para cargar los Municipios
-    $.ajax({
-        url: "/municipios",
-        method: "POST",
-        dataType: "JSON",
-        data: {
-            data: btoa(JSON.stringify(datosMunicipio)),
-        },
-    })
-    .done((response) => {
-        $("#municipio-caso").html(response.data);
-        $("#municipio-caso").val(datos.municipio); // Selecciona el municipio guardado
 
-        // Petición ENCADENADA para cargar las Parroquias (SÓLO si el Municipio se cargó)
-        const datosParroquia = {
-            id_municipio: datos.municipio, 
-        };
+    // 2. Selección del Estado y Carga ENCADENADA de Municipios y Parroquias
+    
+    // Selecciona el Estado primero (no depende de AJAX)
+    $("#estado-caso").val(datos.estado); 
 
-        // Devolvemos la promesa de la segunda llamada AJAX
-        return $.ajax({ 
+    if (!datos.estado) {
+        // No hay estado, salimos de la carga dependiente
+        return; 
+    }
+
+    try {
+        // PASO A: Cargar Municipios. Esperamos a que termine.
+        const datosMunicipio = { id_estado: datos.estado };
+        const responseMunicipios = await obtenerMunicipios(datosMunicipio); // Función simulada/abstracta
+        
+        // Llenamos y seleccionamos el Municipio
+        $("#municipio-caso").html(responseMunicipios.data);
+        $("#municipio-caso").val(datos.municipio); 
+        
+        if (!datos.municipio) {
+            // No hay municipio guardado, salimos antes de la siguiente llamada
+            return;
+        }
+
+        // PASO B: Cargar Parroquias. Esperamos a que termine.
+        const datosParroquia = { id_municipio: datos.municipio };
+        const responseParroquias = await obtenerParroquias(datosParroquia); // Función simulada/abstracta
+        
+        // Llenamos y seleccionamos la Parroquia
+        $("#parroquia-caso").html(responseParroquias.data);
+        $("#parroquia-caso").val(datos.parroquia);
+
+    } catch (error) {
+        // Manejo de error único para cualquier paso
+        console.error("Error en la carga de dependencias:", error);
+        alert("Error: No se pudieron cargar los municipios o parroquias.");
+    }
+}
+
+// ----------------------------------------------------
+// Funciones de ayuda (se deben definir en el código real)
+// ----------------------------------------------------
+
+// Ejemplo de cómo podrían verse las funciones de ayuda usando jQuery AJAX:
+function obtenerMunicipios(data) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "/municipios",
+            method: "POST",
+            dataType: "JSON",
+            data: { data: btoa(JSON.stringify(data)) },
+            success: resolve,
+            error: reject,
+        });
+    });
+}
+
+function obtenerParroquias(data) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
             url: "/parroquias",
             method: "POST",
             dataType: "JSON",
-            data: {
-                data: btoa(JSON.stringify(datosParroquia)),
-            },
+            data: { data: btoa(JSON.stringify(data)) },
+            success: resolve,
+            error: reject,
         });
-    })
-    .done((response) => {
-        // Se ejecuta cuando las Parroquias se han cargado exitosamente
-        $("#parroquia-caso").html(response.data);
-        $("#parroquia-caso").val(datos.parroquia); // Selecciona la parroquia guardada
-    })
-    .fail((request, textStatus, errorThrown) => {
-        // Manejo de error si falla cualquiera de las dos llamadas
-        console.error("Error en la carga de dependencias:", textStatus, errorThrown);
-        alert("Error: No se pudieron cargar los municipios o parroquias.");
     });
 }
 
