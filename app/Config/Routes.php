@@ -80,7 +80,7 @@ $routes->setAutoRoute(false);
      $routes->post('/eliminar_Caso', 'Casos_Controler::eliminar_Caso');
      $routes->post('/upload', 'Casos_Controler::upload');
      $routes->post('/buscar_documentos_casos', "Documentos_casos_Controler::buscar_documentos_casos");
-     $routes->post('/ver_documentos/(:any)', "Documentos_casos_Controler::ver_documentos/$1");
+     $routes->get('/ver_documentos/(:any)', "Documentos_casos_Controler::ver_documentos/$1");
      
 
    

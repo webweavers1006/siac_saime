@@ -29,7 +29,8 @@ class Mapa_Ayuda_Controler extends BaseController
     {
         $model = new Mapa_Ayuda_Model();
         $casos = $model->Listar_Casos_Ayuda();
-       
+       var_dump($casos);
+       die();
 
         if (empty($casos)) {
             $response = [];
