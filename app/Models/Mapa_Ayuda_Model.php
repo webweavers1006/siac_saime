@@ -21,7 +21,7 @@ public function Listar_Casos_Ayuda()
         'c.correo', 'c.ente_adscrito_id', 'c.caso_hora', 'c.edad', 'c.fecha_nacimiento',
         'c.profesion', 'c.tipo_atend_id', 'c.pais', 'c.caso_org_id',
         'coor.id_coord', 'coor.nombre', 'coor.latitud', 'coor.longitud', 'coor.fecha_creacion',
-        'deta.tipo_atend_nombre',
+        'deta.tipo_atend_nombre','docu.docu_ruta',
 
         // 🎯 NOMBRES DE CAMPOS GEOGRÁFICOS CORREGIDOS SEGÚN TU ESPECIFICACIÓN
         'p.paisnom AS nombre_pais',       
