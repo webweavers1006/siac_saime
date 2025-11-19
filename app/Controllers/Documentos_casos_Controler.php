@@ -18,17 +18,11 @@ public function ver_documentos($idcaso = null)
     $model_docu_casos = new Documentos_casos_Model();
    
     $query = $model_docu_casos->buscar_documentos($idcaso);
-    
+      $response = array_values($query);
     // 1. Establece la cabecera HTTP para indicar que el contenido es JSON
     header('Content-Type: application/json');
 
-    // 2. Codifica el array de resultados a formato JSON y lo imprime
-    echo json_encode($query); 
-    
-    // 3. Detiene la ejecución para asegurar que solo se envíe el JSON
-    die(); 
-    
-    /* Nota: Se eliminan $datos_para_vista y el 'return' de aquí */
+   return $this->response->setJSON($response);
 }
 
     //Metodo para obtener documentos_casos
