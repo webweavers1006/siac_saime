@@ -26,7 +26,7 @@ class Reporte_Controler extends BaseController
 			$direccionesModel = new Ubi_Admini_Model();
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
-			$query = $direccionesModel->listar_Ubicacion_Administrativa();
+			$query = $direccionesModel->listar_direcciones_administrativas();
 		
 			$direccionesopt = '';
 			if (isset($query)) {
@@ -134,7 +134,7 @@ public function reporte_consolidado()
 			$direccionesModel = new Ubi_Admini_Model();
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
-			$query = $direccionesModel->listar_Ubicacion_Administrativa();
+			$query = $direccionesModel->listar_direcciones_administrativas();
 
 			$direccionesopt = '';
 			if (isset($query)) {
@@ -149,7 +149,7 @@ public function reporte_consolidado()
 
 
 			
-			$query_usuarios = $usuariosModel->getAllUsers();
+			$query_usuarios = $usuariosModel->getAllUsers_filtro();
 			;
 			$usuarios = [];
 			if (isset($query_usuarios) && $query_usuarios->getResult()) {

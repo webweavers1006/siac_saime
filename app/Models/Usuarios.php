@@ -25,6 +25,18 @@ class Usuarios extends BaseModel
 		$query = $builder->get();
 		return $query;
 	}
+
+
+public function getAllUsers_filtro()
+	{
+		$builder = $this->dbconn('sgc_usuario_operador a');
+		$builder->select('a.idusuopr,a.usercargo,a.id_direccion_administrativa,a.idusuopr,a.usuopnom,a.usuopape,a.usuopemail,a.usuoppass,a,usuopborrado,b.rolnom,b.idrol');
+		$builder->join("sgc_roles b", 'a.idrol = b.idrol');
+		$builder->where('a.usuopborrado=false');
+		$query = $builder->get();
+		return $query;
+	}
+
 	public function getAllUsers_operadores()
 	{
 		$builder = $this->dbconn('sgc_usuario_operador a');

@@ -19,6 +19,9 @@ $(function() {
     desde = null; // ¡Sin comillas!
     hasta = null; // ¡Sin comillas!
 }
+let idcaso = $('#id-caso').val();
+
+
 // Las edades (edad_min, edad_max) pueden seguir siendo 'null' como cadena,
 // si no las pasas a moment() u otra función de fecha.
 if (edad_min === '' && edad_max === '') {
@@ -34,6 +37,7 @@ if (edad_min === '' && edad_max === '') {
     llenar_pais(Event);
     llenar_Organismos_PP(Event);
 });
+
 
 
 //FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
@@ -445,18 +449,30 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     },
     // **COLUMNAS**
     "columns": [
-        { data: 'idcaso' },
-        { data: 'cedula' },
-        { data: 'tipo_beneficiario' },
-        { data: 'nombre' },
-        { data: 'casotel' },
-        { data: 'tipo_prop_nombre' },
-        { data: 'tipo_aten_nombre' },
-        { data: 'casofec' },
-        { data: 'estnom' },
-        { data: 'descripcion' },
-        { data: 'user_name' },
-    ],
+    { data: 'idcaso' },
+    { data: 'cedula' },
+    { data: 'tipo_beneficiario' },
+    { data: 'nombre' },
+    { data: 'casotel' },
+    { data: 'tipo_prop_nombre' },
+    { data: 'tipo_aten_nombre' },
+    { data: 'casofec' },
+    { data: 'estnom' },
+    { data: 'descripcion' },
+    { data: 'user_name' },
+    { 
+        // Columna para el botón de acción
+        data: null,
+        render: function(data, type, row) {
+            // Se usa 'return' y solo se añade el idcaso como atributo
+            return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" ' +
+                   'style="font-size:1px" data-toggle="tooltip" title="Seguimientos" ' +
+                   'idcaso="' + row.idcaso + '">' + 
+                   '  <i class="material-icons">search</i> ' +
+                   '</a>';
+        }
+    },
+],
     language: {
         sProcessing: "Procesando...",
         sLengthMenu: "Mostrar _MENU_ registros",
@@ -499,6 +515,166 @@ table.on('page.dt', function() {
     localStorage.setItem('datatable_page', info.page);
 });
 }
+
+// MÉTODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS
+// === OBJETO DE CONFIGURACIÓN DE IDIOMA DE DATATABLES ===
+const datatablesLanguageConfig = {
+    sProcessing: "Procesando...",
+    sLengthMenu: "Mostrar _MENU_ registros",
+    sZeroRecords: "No se encontraron resultados",
+    sEmptyTable: "Ningún dato disponible en esta tabla",
+    sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+    sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+    sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+    sInfoPostFix: "",
+    sSearch: "Buscar:",
+    sUrl: "",
+    sInfoThousands: ",",
+    sLoadingRecords: "Cargando...",
+    oPaginate: {
+        sFirst: "Primero",
+        sLast: "Último",
+        sNext: "Siguiente",
+        sPrevious: "Anterior"
+    },
+    oAria: {
+        sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+        sSortDescending: ": Activar para ordenar la columna de manera descendente"
+    }
+};
+
+
+// === FUNCIÓN PARA INICIALIZAR/RE-INICIALIZAR DATATABLES ===
+function initializeSeguimientosDataTable() {
+    // Si la tabla ya está inicializada, la destruimos
+    if ($.fn.DataTable.isDataTable('#table_seguimientos')) {
+        $('#table_seguimientos').DataTable().destroy();
+    }
+    
+    // Inicializamos DataTables con las características necesarias
+    $('#table_seguimientos').DataTable({
+        "searching": true, 
+        "paging": true,    
+        "responsive": true, 
+        "info": true,
+        "ordering": true,
+        "language": datatablesLanguageConfig 
+    });
+}
+
+// === EVENTO CLAVE: Inicializa DataTables cuando el modal se muestra ===
+$('#modal-detalle-seguimientos').on('shown.bs.modal', function () {
+    // 1. Asegúrate de que el contenedor de la tabla esté visible
+    $('#tl').show();
+    
+    // 2. Inicializa/re-dibuja la tabla
+    initializeSeguimientosDataTable();
+    
+    // 3. Llama a la API de DataTables para re-calcular el ancho.
+    $('#table_seguimientos').DataTable().columns.adjust().responsive.recalc();
+});
+
+
+// === MÉTODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS (AJAX) ===
+$('#listar_casos').on('click', '.Seguimientos', function(e) {
+    e.preventDefault();
+    
+    let $this = $(this);
+    let idcaso = $this.attr('idcaso');
+    const $modal = $('#modal-detalle-seguimientos');
+    
+    // Mostrar el modal inmediatamente
+    $modal.modal('show'); 
+    
+    // Mostrar estado de carga
+    $('#caso-id-titulo').text('...');
+    $('#detalle-nombre').text('Cargando...'); 
+    $('#listar_seguimientos').html('<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Cargando datos del caso...</p></td></tr>');
+     buscar_documentos_casos(idcaso);
+
+    // Ejecutar la llamada AJAX
+    $.ajax({
+        url: '/DetalleCasoConsolidado/' + idcaso, 
+        type: 'GET',
+        dataType: 'json', 
+        
+        success: function(response) {
+            if (response.success) {
+                const data = response.caso_data;
+
+                // 1. PINTAR LA INFORMACIÓN GENERAL DEL CASO
+                $('#caso-id-titulo').text(data.idcaso);
+                $('#id-caso').val(data.idcaso);
+                $('#detalle-fecha-caso').text(data.fecha_caso);
+                $('#detalle-nombre').text(data.nombre);
+                $('#detalle-correo').text(data.correo);
+                $('#detalle-estado').text(data.estado);
+                $('#detalle-municipio').text(data.municipio);
+                $('#detalle-parroquia').text(data.parroquia);
+                $('#detalle-descripcion').text(data.casodesc);
+                $('#detalle-unidad-adm').text(data.unidad_administrativa);
+                $('#detalle-usuario-operador').text(data.usuario_operador);
+
+
+                // 2. GENERAR Y PINTAR LA TABLA DE SEGUIMIENTOS
+                let seguimientosHtml = '';
+                response.seguimientos.forEach((seg, index) => {
+                    // Usando los nombres de columna de tu método obtenerSeguimientoDeCaso
+                    seguimientosHtml += `
+                        <tr>
+                            <td class="text-center">${index + 1}</td>
+                            <td class="text-center">${seg.fecha_segui}</td> 
+                            <td class="text-center">${seg.desc_est_llamada}</td> 
+                            <td class="text-center">${seg.user_name}</td> 
+                            <td class="text-center">${seg.segcoment}</td> 
+                        </tr>
+                    `;
+                });
+                $('#listar_seguimientos').html(seguimientosHtml);
+
+                // No llamamos a initializeSeguimientosDataTable() aquí.
+                // El evento 'shown.bs.modal' se encargará de hacerlo.
+
+            } else {
+                 $modal.find('.modal-body').html('<p class="alert alert-warning">Error: ' + response.message + '</p>');
+            }
+        },
+        
+        error: function(xhr, status, error) {
+            console.error("Error al cargar el detalle del caso: ", error);
+            $modal.find('.modal-body').html('<p class="alert alert-danger">Hubo un error de conexión al cargar la información.</p>');
+        }
+    });
+});
+
+
+//FUNCION PARA LLENAR EL COMBO DE LOS MUNICIPIOS EN FUNSION DEL ID DEL ESTADO
+function buscar_documentos_casos(idcaso) {
+
+
+
+let datos = {
+    idcaso: idcaso,
+};
+$.ajax({
+        url: "/buscar_documentos_casos",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            data: btoa(JSON.stringify(datos)),
+        },
+    })
+    .then((response) => {
+        $("#docu-casos").html(response.data);
+
+    })
+    .catch((request) => {
+        $("#docu-casos").val(0);
+        Swal.fire("Error", response.JSONmessage, "Error");
+    });
+
+}
+
 
 //FUNCION PARA LLENAR EL COMBO DE LAS REDES SOCIALES
 function llenar_via_atencion(e, id) {

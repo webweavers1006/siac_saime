@@ -1038,6 +1038,65 @@ public function actualizarCaso()
 		}
 	}
 
+
+    // En app/Controllers/Casos_Controler.php
+
+// En app/Controllers/Casos_Controler.php
+
+public function DetalleCasoConsolidado($idcaso)
+{
+    // Carga de modelos necesarios
+    $casoModel = new \App\Models\Casos();
+    $segModel = new \App\Models\Seguimientos(); // Asumiendo que esta clase tiene obtenerSeguimientosPorCaso
+    
+    // 1. Verificar sesión
+    if (!$this->session->get('logged')) {
+        return $this->response->setJSON(['success' => false, 'message' => 'Sesión expirada o no iniciada.'])->setStatusCode(401);
+    }
+    
+    // 2. Consultar los detalles del caso
+    $queryCaso = $casoModel->detalleCaso($idcaso);
+    
+    // 3. Consultar los seguimientos del caso (Este método debe usar la consulta SQL que proporcionaste)
+    $seguimientos = $segModel->obtenerSeguimientoDeCaso($idcaso); 
+    
+    if (empty($queryCaso)) {
+        return $this->response->setJSON(['success' => false, 'message' => 'Caso no encontrado.'])->setStatusCode(404);
+    }
+
+    // 4. Procesar y preparar los datos del caso para el JSON
+    $row = $queryCaso[0]; 
+    
+    $casoData = [
+        "idcaso" => $idcaso,
+        "nombre" => ucwords(strtolower($row->casonom) . ' ' . strtolower($row->casoape)),
+        "estado" => ucfirst(strtolower($row->estadonom)),
+        "municipio" => ucfirst(strtolower($row->municipionom)),
+        "parroquia" => ucfirst(strtolower($row->parroquianom)),
+        "casodesc" => mb_strtoupper(mb_convert_encoding($row->casodesc, 'UTF-8', 'auto')), 
+        "correo" => strtolower($row->correo),
+        "fecha_caso" => $row->casofec,
+        "usuario_operador" => $row->user_name,
+        "unidad_administrativa" => $row->unidad_administrativa,
+        "direccion" => $row->direccion,
+        "id_tipo_atencion" => $row->id_tipo_atencion,
+        "env_correo" => $row->env_correo,
+        "rol_usuario" => $this->session->get('userrol')
+    ];
+    
+    // 5. Construir la respuesta final JSON
+    $response = [
+        'success' => true,
+        'caso_data' => $casoData,
+        'seguimientos' => $seguimientos // Array listo para pintar la tabla
+    ];
+
+    // Devolver JSON
+    return $this->response->setJSON($response);
+}
+
+
+
 	//Metodo para ACTUALIZAR UN CASO 
 	public function remitirCaso()
 	{

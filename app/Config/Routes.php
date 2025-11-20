@@ -83,7 +83,7 @@ $routes->setAutoRoute(false);
      $routes->get('/ver_documentos/(:any)', "Documentos_casos_Controler::ver_documentos/$1");
      
 
-   
+   $routes->get('/DetalleCasoConsolidado/(:num)', "Casos_Controler::DetalleCasoConsolidado/$1");
    
    
    
