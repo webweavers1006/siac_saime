@@ -240,7 +240,7 @@ $userdata = $session->get();
           <li class="nav-item">
             <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
               <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
-              <p>Mapa de Venezuela</p>
+              <p>Mapa de ayudas</p>
             </a>
           </li>
         </ul>

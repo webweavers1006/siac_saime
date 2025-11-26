@@ -1,0 +1,179 @@
+[33mcommit 3dabf7e3f7bcf4fbb2ab87160de6df8f977cf50b[m[33m ([m[1;36mHEAD -> [m[1;32mdesarrollo[m[33m, [m[1;31morigin/desarrollo[m[33m)[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu Nov 20 10:57:59 2025 -0400
+
+    SE INCLUYO EL BOTON DE DETALLE EN EL REPORTE CONSOLIDADO DE CASOS , Y SE CORRIGIO EN EL REPORTE DE ANALISTA , QUE SOLO MUESTRE LOS ACTIVOS
+
+[33mcommit 05a6720baf899d7dfb41798b9add397a9905717e[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Nov 19 14:37:15 2025 -0400
+
+    inclusion de informacion de punto de cuenta en listar caso ayudas
+
+[33mcommit b934f265afb38fe9ff006658d9c8d258d4a8c2a2[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Nov 18 15:13:57 2025 -0400
+
+    se incorporo la ruta del los adjuntos del caso al listar caso ayuda
+
+[33mcommit 9a736ea4487f7b61c5baba1674286cac44a5bc88[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Nov 18 15:03:28 2025 -0400
+
+    ADECUACIONES EN LA RUTA DE LISTAR CASOS AYUDAS
+
+[33mcommit ae930cff2d0115cf939c1995c9de466cdd1c3620[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Mon Nov 10 16:12:32 2025 -0400
+
+    CORRECCION EN CARGA DE PARROQUIAS AL AGREGAR CASOS
+
+[33mcommit dd5926ab04b8bcc61cafd4f4066d4176dbd22d93[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Mon Nov 10 09:24:22 2025 -0400
+
+    PRUEBAS DE MEDIACION
+
+[33mcommit cadf62eb0539bd68455a87ce5d19745190838011[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Sun Nov 9 10:37:50 2025 -0400
+
+    CORRECCION DE PARROQUIAS AL AGREGAR CASO , AVECES NO LA TOMABA XQ TARDABA EN CARGAR
+
+[33mcommit 21ee4aff82cc81b76eca9c74e72883e3a6cb7402[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Sun Nov 9 09:29:34 2025 -0400
+
+    SE INCLUYO LA EDICION DEL LA PLANTILLA DE EDICION Y LA IMPRESION DE LA MISMA
+
+[33mcommit 2b318242382eacf29966c5f74e76081661176370[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Fri Nov 7 14:32:14 2025 -0400
+
+    INCLUSION DEL TIPO DE ATENCION MEDIACION
+
+[33mcommit 9cc0b6a1412b3433c98e233a20c438aaace00744[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Oct 7 13:40:09 2025 -0400
+
+    inclusion de crossOrigin: true en agregar caso y editar caso para el mapa
+
+[33mcommit b5626c41fd2cc2d82a969f7f975eec9df0639bc6[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Fri Oct 3 15:13:56 2025 -0400
+
+    Correcciones visuales  en reportes globales  y esatadales
+
+[33mcommit a0ed81139d44d12cd32cccf8228726ace7b41d9a[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu Oct 2 15:11:36 2025 -0400
+
+    Mejoras visuales en Reporte Consolidado y Operador
+
+[33mcommit 754c2f27ca39c96836bf8d59910f9ffebbd12698[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Oct 1 16:22:29 2025 -0400
+
+    MEJORAS DE EDICION DE CASOS
+
+[33mcommit d5183b5a7bfeaf5120f3dc9241f811d5e4f6cf4e[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Oct 1 11:56:27 2025 -0400
+
+    INCLUSION DE PDF Y EXEL PARA LOS CASOS ASOCIADOS A UN PUNTO DE CUENTA
+
+[33mcommit 398410b1a06a3ae6c20ed0af27dd17a926d10dd2[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Sep 30 14:55:24 2025 -0400
+
+    INTEGRACION DEL PUNTO DE CUENTA EN DITAR CASO
+
+[33mcommit 3c40cd6ee52c7e0d7bb33dc41d1a1bd11c3c90df[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Sep 30 14:53:55 2025 -0400
+
+    INTEGRACION DEL PUNTO DE CUENTA EN DITAR CASO
+
+[33mcommit d5052a06c6b31ec45f27cc9a7e43d1d2644dc549[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Mon Sep 29 16:00:52 2025 -0400
+
+    INCOORPORACION DELPUENTO DE CUENTA
+
+[33mcommit 99bf15686b793a8297d52d76aa77fd7e73df0418[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu Sep 25 16:11:12 2025 -0400
+
+    INTEGRACION DE UBICACION POR GPS Y IP
+
+[33mcommit a36ba98c9e25e9928be8c514b30baa71b3d5f2ac[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Sep 24 15:55:11 2025 -0400
+
+    ajuste visual de edicion de casos
+
+[33mcommit 7b775dca0cb6e057a6e9ea0332af44526a4622d9[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Sep 24 12:55:50 2025 -0400
+
+    INCLUCION DEL FILTRO PARA LAS COORDENAS , SOLO LOS QUE TENGAN REGISTROS
+
+[33mcommit ab8a4f69d03c2f65cb595f266724f48a5d152d68[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Wed Sep 24 12:45:13 2025 -0400
+
+    INCORPORACION DEL MAPA EN EDITAR CASOS
+
+[33mcommit 8287dc9522fbe788d6dfe14b22c24838d415a4a6[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Sep 23 16:50:58 2025 -0400
+
+    SE CORRIO LA VALIDACION DE TIPO DE BENEFICIARIO EN AGREGAR CASO
+
+[33mcommit c65e9923adc8ef71e0af3a607ac589d006429b3b[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Tue Sep 23 16:22:37 2025 -0400
+
+    INCORPORACION DE GRAFICAS TIPO DE ATENCION Y MAPA DE COORDENADAS AL MOMENTO DE CREAR UN CASO
+
+[33mcommit 597e5eb0bfcd60ff12c5eefab23aacb61f03274c[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu Sep 18 13:10:30 2025 -0400
+
+    INCORPORACIOIN DEL REPORTE DE DETALLE TIPO DE ATENCION
+
+[33mcommit 0e849181b35950e9705ba5ba8faae0c1f63ea08c[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Ely Chirivella <elychirivella10@gmail.com>
+Date:   Mon Aug 25 21:36:33 2025 +0000
+
+    Cambio de Cintillo Institucional
+
+[33mcommit 09a107bd23c9c5c2de1aa2d5d5447cacfc0d99b3[m
+Author: Ely Chirivella <elychirivella10@gmail.com>
+Date:   Mon Jun 16 18:56:48 2025 +0000
+
+    Cambios de PP y Audiencia
+
+[33mcommit 13c24d33502051d7b26a6c7b4c43a906c424346f[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu Jun 5 13:15:29 2025 -0400
+
+    Se grego al reporte consolidado el codigo del caso y en el reporte de analistas se agrego un seleccione al desplegable de paises
+
+[33mcommit 1f7654f3b3b9846f3d547f6da950bdabccc15324[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu May 29 18:26:16 2025 -0400
+
+    Organismos Del Poder Ppular
+
+[33mcommit fb3a30b64093caea73b4de0c9048c925450c2790[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Mon May 12 11:02:45 2025 -0400
+
+    NOTIFICACION DEL LIMITE DE SUBIDA DE ARCHIVOS
+
+[33mcommit cd7b087a118e37f2ed3df12dae7371d579eb8259[m
+Author: seven070791 <freddysubero208@gmail.com>
+Date:   Thu May 8 12:37:08 2025 -0400
+
+    correccion del mapa terminada

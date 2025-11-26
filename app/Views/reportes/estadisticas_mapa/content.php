@@ -3,7 +3,7 @@
 <div class="content-wrapper">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mapa.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<link href="/static/css/main.ee9d7dba.css" rel="stylesheet">
+<link href="/static/css/styles.css" rel="stylesheet">
   <style>
     table.dataTable thead,
     table.dataTable tfoot {
@@ -24,13 +24,30 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-12">
-                               
-                                    
-                                    <div id="root">
+                            <div class="col-lg-12">  
+
+                                <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+                                    <div class="modals" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                                    <div class="modal-header">
+                                        <h3 id="modalTitle">Información</h3>
+                                        <button id="modalClose" class="modal-close" aria-label="Cerrar">✕</button>
                                     </div>
-                                    <script defer="defer" src="/static/js/main.07b9b2dc.js"></script>
-                                   
+                                    <div id="modalBody" class="modal-body">Cargando...</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="map">
+                                    
+                                </div>
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                                crossorigin=""></script>
+                                <script src="/static/js/ruta.js"></script>
+                                <script src="/static/js/map-core.js"></script>
+                                <script src="/static/js/modal-config.js"></script>
+                                <script src="/static/js/map-modal.js"></script>
+                                <script src="/static/js/map-api.js"></script>
+                                <script src="/static/js/map-data.js"></script>
                             </div>
                         </div>  
                     </div>
