@@ -561,21 +561,69 @@ function initializeSeguimientosDataTable() {
         "language": datatablesLanguageConfig 
     });
 }
+// ====================================================================
+// === FUNCIÓN DE INICIALIZACIÓN DE DATATABLES (MODIFICADA) ===
+// ====================================================================
+function initializeSeguimientosDataTable() {
+    // 1. Verificar si ya existe una instancia de DataTables
+    if ($.fn.DataTable.isDataTable('#table_seguimientos')) {
+        // Si existe, la destruimos para garantizar una re-inicialización limpia.
+        // Esto sirve como un seguro, aunque el evento 'hidden.bs.modal' ya lo hace.
+        $('#table_seguimientos').DataTable().destroy();
+    }
+    
+    // 2. Inicializar la tabla de DataTables
+    $('#table_seguimientos').DataTable({
+        "responsive": true,
+        "paging": true,
+        "searching": true,
+        "info": true,
+        "ordering": true,
+        // Configuración de idioma, CRUCIAL para DataTables
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+        }
+        // Nota: NO uses 'retrieve: true'
+    });
+}
 
-// === EVENTO CLAVE: Inicializa DataTables cuando el modal se muestra ===
+
+// ====================================================================
+// === EVENTOS CLAVE DE BOOTSTRAP MODAL ===
+// ====================================================================
+
+// 1. EVENTO: Inicializa DataTables cuando el modal se muestra (SHOWN)
+//    Aquí es donde la tabla existe y tiene contenido del AJAX.
 $('#modal-detalle-seguimientos').on('shown.bs.modal', function () {
-    // 1. Asegúrate de que el contenedor de la tabla esté visible
+    // Asegúrate de que el contenedor de la tabla esté visible
     $('#tl').show();
     
-    // 2. Inicializa/re-dibuja la tabla
+    // Inicializa/re-dibuja la tabla con los nuevos datos.
     initializeSeguimientosDataTable();
     
-    // 3. Llama a la API de DataTables para re-calcular el ancho.
+    // Llama a la API de DataTables para re-calcular el ancho.
     $('#table_seguimientos').DataTable().columns.adjust().responsive.recalc();
 });
 
+// 2. EVENTO CLAVE: Destruye DataTables y limpia al ocultarse el modal (HIDDEN)
+//    Esto resuelve el problema de ver datos anteriores.
+$('#modal-detalle-seguimientos').on('hidden.bs.modal', function () {
+    // Verificar si existe una instancia antes de intentar destruirla
+    if ($.fn.DataTable.isDataTable('#table_seguimientos')) {
+        $('#table_seguimientos').DataTable().destroy();
+    }
+    
+    // Opcional: Limpiar el cuerpo de la tabla para evitar flashes
+    $('#listar_seguimientos').empty(); 
+    
+    // Ocultar el contenedor si tu lógica lo requiere
+    $('#tl').hide(); 
+});
 
+
+// ====================================================================
 // === MÉTODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS (AJAX) ===
+// ====================================================================
 $('#listar_casos').on('click', '.Seguimientos', function(e) {
     e.preventDefault();
     
@@ -589,8 +637,11 @@ $('#listar_casos').on('click', '.Seguimientos', function(e) {
     // Mostrar estado de carga
     $('#caso-id-titulo').text('...');
     $('#detalle-nombre').text('Cargando...'); 
+    // Usar el elemento <tbody> (listar_seguimientos) para mostrar el spinner
     $('#listar_seguimientos').html('<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Cargando datos del caso...</p></td></tr>');
-     buscar_documentos_casos(idcaso);
+    
+    // Asumo que esta función existe y es síncrona/asíncrona
+     buscar_documentos_casos(idcaso); 
 
     // Ejecutar la llamada AJAX
     $.ajax({
@@ -619,7 +670,6 @@ $('#listar_casos').on('click', '.Seguimientos', function(e) {
                 // 2. GENERAR Y PINTAR LA TABLA DE SEGUIMIENTOS
                 let seguimientosHtml = '';
                 response.seguimientos.forEach((seg, index) => {
-                    // Usando los nombres de columna de tu método obtenerSeguimientoDeCaso
                     seguimientosHtml += `
                         <tr>
                             <td class="text-center">${index + 1}</td>
@@ -632,17 +682,17 @@ $('#listar_casos').on('click', '.Seguimientos', function(e) {
                 });
                 $('#listar_seguimientos').html(seguimientosHtml);
 
-                // No llamamos a initializeSeguimientosDataTable() aquí.
-                // El evento 'shown.bs.modal' se encargará de hacerlo.
-
+                // IMPORTANTE: No se llama a initializeSeguimientosDataTable() aquí.
+                // Se llama en el evento 'shown.bs.modal'
             } else {
-                 $modal.find('.modal-body').html('<p class="alert alert-warning">Error: ' + response.message + '</p>');
+                 // Si hay error en la respuesta pero la llamada fue exitosa
+                 $('#listar_seguimientos').html('<tr><td colspan="5" class="text-center py-4"><p class="alert alert-warning">Error: ' + response.message + '</p></td></tr>');
             }
         },
         
         error: function(xhr, status, error) {
             console.error("Error al cargar el detalle del caso: ", error);
-            $modal.find('.modal-body').html('<p class="alert alert-danger">Hubo un error de conexión al cargar la información.</p>');
+            $('#listar_seguimientos').html('<tr><td colspan="5" class="text-center py-4"><p class="alert alert-danger">Hubo un error de conexión al cargar la información.</p></td></tr>');
         }
     });
 });
