@@ -245,7 +245,9 @@ private function buildBaseQuery($builder)
         $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
         $builder->where('cr.direccion_id', $id_direccion); 
-       
+        $builder->where('cr.vigencia', true);
+        $builder->orWhere('cr.vigencia IS NULL');
+        $builder->where('a.borrado', false); 
         $query = $builder->get();
         return $query->getResult();
     }
