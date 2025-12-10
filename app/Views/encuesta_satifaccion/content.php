@@ -48,7 +48,7 @@ $session = session();
                                 <input type="date" class="form-control" value="<?php echo date('YY-MM-DD'); ?>" name="hasta" id="fecha_fin">
                             </div>
                             <div class="col-md-3">
-                                <label for="tramite">Tramite:</label>
+                                <label for="tramite">Nº Solicitud:</label>
                                 <input type="text" class="form-control"  onkeypress="return valideKey(event);" value="" name="tramite" id="tramite">
                             </div>
         
@@ -67,8 +67,9 @@ $session = session();
                           <thead>
                             <tr>
                               <td class="text-center" style="width: 1%;">id</td>
-                              <td class="text-center" style="width: 10%;">Tramite</td>
+                              <td class="text-center" style="width: 10%;">Solicitud</td>
                               <td class="text-center" style="width: 20%;">Nombre y Apellido</td>
+                               <td class="text-center" style="width: 10%;">Tipo de Prop</td>
                               <td class="text-center" style="width: 20%;">Fecha</td>
                               <td class="text-center" style="width: 1%;">Acciones</td>
                             </tr>

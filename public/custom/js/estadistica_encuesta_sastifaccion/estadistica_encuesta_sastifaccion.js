@@ -219,7 +219,7 @@ function actualizarTablaModal(data, exportTitle) {
     // 📌 Definición de 8 columnas
     const columnsDefinition = [
         { data: 'apellidos_nombres', title: 'Nombres'}, 
-        { data: 'tramite', title: 'Trámite'}, 
+        { data: 'tramite', title: 'Solicitud'}, 
         { data: 'observacion', title: 'Observación'}, 
         { data: 'respuesta_text', title: 'Respuesta'}, 
         { data: 'telefono', title: 'Teléfono'}, 

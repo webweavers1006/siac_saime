@@ -153,7 +153,7 @@ $session = session();
                             <td class="text-center" style="width: 3%;">Fecha</td>
                             <td class="text-center" style="width: 3%;">Estatus</td>
                             <td class="text-center" style="width: 6%;">Operador</td>
-                            <td class="text-center" style="width: 10%;">Acciones</td>
+                            <td class="text-center" style="width: 6%;">Acciones</td>
                           </tr>
                         </thead>
                         <tbody id="listar_casos">

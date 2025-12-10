@@ -20,7 +20,7 @@ $(function() {
 function listar_participantes_encuestas(fecha_inicio, fecha_fin, tramite) {
     
     let url = `${url_encuestas}/api/encuesta`;
-    console.log(url);
+   
     let params = [];
     if (fecha_inicio && fecha_inicio !== 'null') {
         params.push(`fecha_inicio=${encodeURIComponent(fecha_inicio)}`);
@@ -34,7 +34,7 @@ function listar_participantes_encuestas(fecha_inicio, fecha_fin, tramite) {
     if (params.length > 0) {
         url += `?${params.join('&')}`;
     }
-
+    console.log(url);
     let table = $('#table_participantes_encuestas').DataTable({
         "order": [
             [0, "desc"]
@@ -53,7 +53,9 @@ function listar_participantes_encuestas(fecha_inicio, fecha_fin, tramite) {
         "columns": [
             { data: 'id' },
             { data: 'tramite' },
+           
             { data: 'apellidos_nombres' },
+              { data: 'tipo_propiedad' },
             { 
 
                 data: 'fecha',

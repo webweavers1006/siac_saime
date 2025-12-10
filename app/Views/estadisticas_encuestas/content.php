@@ -181,8 +181,8 @@ table.dataTable tfoot {
                         <thead>
                             <tr>
                                 <th class="text-center" style="width: 20%;">Nombres</th>
-                                <th class="text-center" style="width: 5%;">Trámite</th>
-                                <th class="text-center" style="width: 46%;"> Observación</th>
+                                <th class="text-center" style="width: 5%;">Solicitud</th>
+                                <th class="text-center" style="width: 46%;">Observación</th>
                                 <th class="text-center" style="width: 5%;">Respuesta</th>
                                 <th class="text-center" style="width: 5%;">Teléfono</th>
                                 <th>Propiedad Intelectual</th>
@@ -214,6 +214,8 @@ body.modal-open {
 /* ------------------------------------------------------------------- */
 
 #miModal .modal-dialog {
+    position: relative;
+    top: 60px;
     /* CLAVE: Aumentar el margen vertical a 5rem para bajarlo más */
     margin: 7rem auto; 
     
