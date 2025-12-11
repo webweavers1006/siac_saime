@@ -185,7 +185,8 @@ table.dataTable tfoot {
                                 <th class="text-center" style="width: 46%;">Observación</th>
                                 <th class="text-center" style="width: 5%;">Respuesta</th>
                                 <th class="text-center" style="width: 5%;">Teléfono</th>
-                                <th>Propiedad Intelectual</th>
+                                 <th class="text-center" style="width: 20%;">Propiedad Intelectual</th>
+                          
                                
                                 <th class="text-center" style="width: 5%;">Ver</th> 
                                 <th style="width: 0%;"></th>
