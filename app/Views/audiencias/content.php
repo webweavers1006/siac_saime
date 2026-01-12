@@ -101,6 +101,7 @@ $userdata = $session->get();
                   <table class="display table-responsive" id="table_audiencia" style="width:100%" style="margin-top: 20px">
                       <thead>
                         <tr>
+                         <td class="text-center" style="width: 2%;">#</td>
                           <td class="text-center ant-table-cell" style="width: 1%;" >Estatus</td>
                           <td class="text-center" style="width: 4%;">Numero de audiencia</td>
                           <td class="text-center" style="width: 5%;">Pais</td>
@@ -109,7 +110,7 @@ $userdata = $session->get();
                           <td class="text-center" style="width: 8%;">Usuario</td>
                           <td class="text-center" style="width: 8%;">Contacto</td>
                           <td class="text-center" style="width: 8%;">Solicitudes</td>
-                          <td class="text-center" style="width: 5%;">Acciones</td>
+                          <td class="text-center" style="width: 1%;">Acciones</td>
                         </tr>
                       </thead>
                       <tbody id="listar_audencias">

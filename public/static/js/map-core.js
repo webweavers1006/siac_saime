@@ -3,9 +3,9 @@
   const initialCenter = [10.4806, -66.9036];
   const initialZoom = 6;
   const map = L.map('map').setView(initialCenter, initialZoom);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     crossOrigin: true
   }).addTo(map);
   global.MapApp = global.MapApp || {};
