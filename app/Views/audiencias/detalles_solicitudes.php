@@ -639,11 +639,16 @@ foreach ($cronologia["solicitudes"] as $dato) {
                       <div class="field" style="margin-top: 20px;">
                         <div class="control">
                           <div class="select">
-                            <select name="id_opcion" id="id_opcion">
+                            <select name="id_opcion" id="id_opcion" class="form-control">
                               <option value="0">---Seleccione un tipo de mensaje---</option>
-                              <option value="1">SOLICITUD DE CITA</option>
-                              <option value="3">OBSERVACION INTERNA</option>
-                            </select>
+                              
+                              <?php foreach ($Observaciones as $opcion): ?>
+                                  <option value="<?= $opcion['id'] ?>">
+                                      <?= $opcion['opcion'] ?>
+                                  </option>
+                              <?php endforeach; ?>
+                              
+                          </select>
                           </div>
                         </div>
                       </div>

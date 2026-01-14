@@ -374,6 +374,9 @@ class Audiencias_Controler extends BaseController
 		}
 
 		$responsable = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/usuarios_areas", false, $contexto), true);
+
+		$Observaciones = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/opciones_mensajes", false, $contexto), true);
+		
 		
 		// Pasa los datos a la vista
 		$data['datos'] = $datos;
@@ -381,6 +384,7 @@ class Audiencias_Controler extends BaseController
 		$data['cronologia'] = $cronologia;
 		$data['responsable'] = $responsable;
 		$data['mensajes'] = $mensajes;
+		$data['Observaciones'] = $Observaciones;
 		echo view('template/header');
 		echo view('template/nav_bar');
 		echo view('audiencias/detalles_solicitudes.php', $data);

@@ -4,63 +4,460 @@ $session = session();
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
 <style>
-  /* Estilo base para DataTables */
-  table.dataTable thead,
-  table.dataTable tfoot {
-    background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
-  }
+      /* Paleta y superficies tipo Tailwind */
+    :root {
+        --slate-50: #f8fafc;
+        --slate-100: #eef2f7; /* más contraste */
+        --slate-200: #d9e0ea;
+        --slate-300: #b8c2cf;
+        --slate-500: #4b5563;
+        --slate-700: #1f2937;
+        --primary-500: #083B7A; /* Azul primario */
+        --primary-600: #062F60;
+        --primary-700: #05264D;
+        --success-500: #10b981;
+        --danger-500: #ef4444;
+        --warning-500: #f59e0b;
+        --info-500: #06b6d4;
+        --accent-500: #1363DF; /* azul acento */
+        --radius-md: 14px;
+        --radius-sm: 10px;
+        --shadow-sm: 0 2px 4px rgba(2,6,23,0.08), 0 1px 3px rgba(2,6,23,0.06);
+        --shadow-md: 0 20px 25px -5px rgba(2,6,23,0.1), 0 10px 10px -5px rgba(2,6,23,0.04);
+    }
 
-  /*
-  ==========================================
-  CORRECCIONES PARA SCROLL Y POSICIONAMIENTO DE MODALES 🛠️
-  ==========================================
-  */
+    .detalle_caso {
+        border-left: 1px solid #dee2e6; /* separador visual */
+        padding: 15px; /* espacio interno */
+        background-color: #fcfcfc; /* fondo claro como el ejemplo */
+        color: #1f2937; /* buen contraste en texto */
+    }
 
-  /* 1. Evita que la página salte al abrir el modal (el principal culpable del mal posicionamiento). 
-     Fuerza el scroll del body y elimina el padding-right que añade Bootstrap al ocultar el scrollbar. */
-  .modal-open {
-    overflow: auto !important;
-    padding-right: 0px !important;
-  }
+    .btn-xs-xs {
+        position: relative;
+        padding: 0.25rem 0.5rem;
+        left: 0%;
+        background-color: var(--slate-500);
+        border-radius: 6px;
+        align-items: center;
+        color: white;
+    }
 
-  /* 2. Asegura que el modal siempre use su propio scroll si su contenido es largo,
-     y que se posicione correctamente. */
-  .modal {
-    overflow-y: auto !important;
-    padding: 0 !important;
-    /* Usar 'fade' en el div del modal ayuda a la transición y el cálculo del tamaño */
-  }
+    .length-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Estilos mejorados para Información General */
+    .card-info {
+        border: 1px solid var(--slate-200);
+        border-top: 3px solid var(--info-500);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .info-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    /* Layout de 2 columnas cuando Información General ocupa todo el ancho */
+    .info-general-left.col-lg-12 .info-section {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Tarjetas de información */
+    .info-item-custom {
+        position: relative;
+        display: block;
+        padding: 14px 14px;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-sm);
+        background: #ffffff;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .info-item-custom:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-500);
+    }
+
+    /* Iconografía */
+    .icon-wrapper {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: inline-grid;
+        place-items: center;
+        margin-right: 12px;
+        box-shadow: 0 6px 12px rgba(2,6,23,0.08);
+    }
+
+    .bg-info-light { background: linear-gradient(135deg, rgba(6,182,212,0.16), rgba(19,99,223,0.12)); }
+    .bg-success-light { background: linear-gradient(135deg, rgba(16,185,129,0.16), rgba(5,150,105,0.12)); }
+    .bg-warning-light { background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.12)); }
+
+    /* Encabezado del bloque Información General */
+    .card.card-info .card-header {
+        background: linear-gradient(135deg, rgba(8,59,122,0.95), rgba(19,99,223,0.88));
+        color: #fff;
+    }
+
+    .card.card-info .card-title {
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .info-item {
+        padding: 10px 12px;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-sm);
+        background: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .info-item.bg-light {
+        background-color: var(--slate-100) !important;
+        padding: 12px;
+        border: 1px solid var(--slate-200);
+    }
+
+    .info-item.bg-info-light {
+        background: linear-gradient(135deg, rgba(19,99,223,0.08), rgba(8,59,122,0.08)) !important;
+        padding: 14px;
+        border: 1px solid rgba(19,99,223,0.2);
+    }
+
+    .info-label {
+        display: block;
+        font-size: 11px !important;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 0.04em;
+    }
+
+    .info-value {
+        font-size: 14px !important;
+        color: var(--slate-700);
+        word-break: break-word;
+    }
+
+    /* Unificar tipografía para Información General */
+    .info-item-custom .text-uppercase,
+    .info-item-custom .info-label {
+        font-size: 11px !important;
+    }
+
+    .info-item-custom .font-weight-semibold,
+    .info-item-custom .font-weight-medium,
+    .info-item-custom .text-dark,
+    .info-item-custom > div > div:last-child {
+        font-size: 14px !important;
+    }
+
+    .info-item-custom .text-white {
+        font-size: 14px !important;
+    }
+
+    .info-value.font-weight-bold {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .info-value.font-italic {
+        font-style: italic;
+        color: #334155;
+        line-height: 1.6;
+    }
+
+    .additional-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Badge styles */
+    .badge-success {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 800;
+        border-radius: 9999px;
+        letter-spacing: 0.04em;
+        box-shadow: 0 8px 16px rgba(16,185,129,0.25);
+    }
+
+    /* Tabla - volver a bordes originales, sin radios ni sombra del contenedor */
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+        background: transparent;
+        border-radius: 0;
+        overflow: visible;
+        box-shadow: none;
+    }
+
+    .table thead th {
+        background: linear-gradient(90deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+        color: #0b1220;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 12px;
+        padding: 12px 8px; /* original */
+        border-bottom: 2px solid #6c757d; /* original */
+        vertical-align: middle;
+        letter-spacing: 0.06em;
+    }
+
+    .table tbody td {
+        padding: 10px 8px; /* original */
+        vertical-align: middle;
+        border-bottom: 1px solid #e6dede; /* original */
+        color: #495057; /* original */
+        background: transparent;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa; /* original */
+    }
+
+    .table .text-center {
+        text-align: center;
+    }
+
+    /* Card improvements */
+    .card {
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        background: white;
+    }
+
   
-  /* Estilo para hacer que el texto general del modal-body sea ligeramente más grande */
-  .modal-body-lg-text {
-      font-size: 0.95rem; /* Talla ligeramente más grande que el estándar */
-  }
+    .card-header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(circle, rgba(99,102,241,0.15), rgba(168,85,247,0.05) 60%, transparent 70%);
+        filter: blur(2px);
+        pointer-events: none;
+    }
 
-  /* Ajuste para que la tabla y el resumen de casos también tengan un tamaño legible */
-  #lista-casos-asociados, #resumen-financiero {
-      font-size: 0.9rem;
-  }
+    .card-body {
+        padding: 22px;
+        background: #ffffff;
+    }
 
-  /* Asegurar que los detalles del punto de cuenta sean claros */
-  #modal-casos .card-body dl {
-      font-size: 0.95rem; /* Aumenta el texto dentro de la lista de detalles */
-  }
+    
+    /* Botones mejorados */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 700;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
 
-  /* ... Mantener el resto de tu CSS para DataTables ... */
-  #lista-casos-asociados table {
-      width: 100% !important;
-  }
-  #lista-casos-asociados .dataTables_wrapper {
-      padding: 10px;
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
-      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
-  }
-  
-  /* Estilo adicional para un borde superior más grueso y colorido en card-detalle-caso */
-  #card-detalle-caso {
-      border-top: 3px solid #28a745 !important; /* success color */
-  }
+    .btn-primary:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+       
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-color: transparent;
+        font-weight: 700;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-radius: 9999px;
+        box-shadow: 0 10px 15px -3px rgba(16,185,129,0.25), 0 4px 6px -2px rgba(5,150,105,0.25);
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+
+    .btn-success:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        box-shadow: 0 20px 25px -5px rgba(16,185,129,0.35), 0 10px 10px -5px rgba(5,150,105,0.35);
+    }
+
+    .btn-dark {
+        background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 100;
+       padding: 4px 12px; 
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+
+    .btn-dark:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        
+    }
+
+    /* Modal improvements */
+    .modal-header {
+        background: linear-gradient(180deg, var(--slate-50), var(--slate-100));
+        border-bottom: 1px solid var(--slate-200);
+        padding: 16px 22px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--slate-200);
+        padding: 16px 22px;
+        background: var(--slate-50);
+    }
+
+    .modal-title {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    /* Form controls */
+    .form-control {
+        border: 1px solid var(--slate-300);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background: white;
+        transition: box-shadow 0.1s ease, border-color 0.1s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-500);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-control-sm {
+        padding: 8px 10px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* Page header improvements */
+    .content-header {
+        padding: 18px 0;
+    }
+
+    .content-wrapper {
+        background-color: var(--slate-100);
+    }
+
+    /* Table responsive */
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        background: transparent; /* original */
+        border-radius: 0; /* original */
+        box-shadow: none; /* original */
+        border: 0; /* original */
+    }
+
+    /* Utilities */
+    .mb-2 { margin-bottom: 0.5rem !important; }
+    .mt-1 { margin-top: 0.25rem !important; }
+    .mt-3 { margin-top: 1rem !important; }
+    .my-3 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+    .mr-2 { margin-right: 0.5rem !important; }
+
+    /* Text utilities */
+    .text-muted { color: var(--slate-500) !important; }
+    .text-info { color: var(--info-500) !important; }
+    .text-warning { color: var(--warning-500) !important; }
+    .text-secondary { color: var(--slate-500) !important; }
+    .text-primary { color: var(--primary-600) !important; }
+    .text-dark { color: #0f172a !important; }
+    .small { font-size: 85% !important; }
+    .font-italic { font-style: italic !important; }
+    .font-weight-bold { font-weight: 700 !important; }
+    .text-uppercase { text-transform: uppercase !important; }
+
+    .d-flex { display: flex !important; }
+    .align-items-start { align-items: flex-start !important; }
+
+    /* Rounded utilities */
+    .rounded { border-radius: 0.5rem !important; }
+    .rounded-lg { border-radius: 0.75rem !important; }
+
+    /* Shadow utilities */
+    .shadow-sm { box-shadow: var(--shadow-sm) !important; }
+
+    /* Height utilities */
+    .h-100 { height: 100% !important; }
+
+    /* Order utilities - mantener bloque info a la derecha en desktop */
+    .order-1 { order: 1 !important; }
+    .order-2 { order: 2 !important; }
+
+    @media (min-width: 768px) {
+        .order-md-1 { order: 1 !important; }
+        .order-md-2 { order: 2 !important; }
+    }
+
+    /* Cabeceras DataTables (compatibles) */
+    table.dataTable thead,
+    table.dataTable tfoot {
+        color: white;
+        background: linear-gradient(to right, #083B7A, #083B7A, #083B7A);
+    }
+
+    /* Ocultar bloque duplicado de Información General en vista con participantes */
+    .card-body.seguimientos .row > .col-lg-4.col-md-4.col-12.order-1.order-md-2 + .col-lg-4.col-md-4.col-12.order-1.order-md-2 {
+        display: none !important;
+    }
+
+    /* Iconografía visible y estilizada para Información General */
+    .card.card-info .card-header i,
+    .card.card-info .info-section i { opacity: 1; }
+    .card.card-info .icon-wrapper { display: inline-grid !important; }
+
+    /* Corregir padding solo en contenedores de tablas, sin afectar Información General */
+    .card-body.seguimientos .row #tl > .card-body,
+    .card-body.participantes .row .col-12 > .card-body { padding: 0 !important; }
+    .info-general-left .card-body { padding: 18px !important; }
+
+    /* Mover Información General hacia la izquierda */
+    .info-general-left {
+        margin-left: 0;
+    }
+
+    /* Ampliar ancho de Información General en escritorio */
+    @media (min-width: 792px) {
+        .card-body.seguimientos .row .info-general-left {
+            flex: 0 0 36%;
+            max-width: 36%;
+            padding-left: 40px; /* separación de la tabla */
+        }
+        .card-body.seguimientos .row #tl {
+            flex: 0 0 62%;
+            max-width: 62%;
+            padding-right: 30px; /* separación del bloque de info */
+        }
+        /* Anular espaciador para liberar ancho */
+        .card-body.seguimientos .row .col-lg-1.col-md-1 {
+            flex: 0 0 0 !important;
+            max-width: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
 </style>
 
 <div class="content-wrapper">
@@ -266,7 +663,7 @@ $session = session();
                                     <div class="form-group">
                                         <label for="edit_monto_aprobado" class="form-label">Monto Aprobado</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                            
                                             <input type="text" onkeypress="return valideKey(event);" name="monto_aprobado" id="edit_monto_aprobado" class="form-control" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
                                         </div>
                                     </div>
@@ -297,7 +694,7 @@ $session = session();
                                 </button>
                             </div>
                             
-                            <h6 class="card-subtitle mb-2 text-muted">Documentos del Punto de Cuenta</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">Documentos Existentes del Caso</h6>
                             <div class="row g-3 align-items-center">
                                 <div class="col-12">
                                     <select class="form-control" id="docu-punto" name="docu-punto">
@@ -370,15 +767,26 @@ $session = session();
                             <dd class="col-sm-3 text-success font-weight-bolder">
                                 <i class="fas fa-money-bill-wave mr-1"></i> <span id="detalle-monto"></span>
                             </dd>
+                             <div class="mt-4">
+    <label class="small text-uppercase text-muted font-weight-bold mb-2">
+        <i class="fas fa-paperclip mr-1"></i> Documentos Adjuntos del Caso
+    </label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text bg-white text-primary">
+                <i class="fas fa-file-pdf"></i>
+            </span>
+        </div>
+        <select class="custom-select form-control-lg shadow-none" id="docu-punto-deta" name="docu-punto" style="font-size: 0.9rem;">
+            <option value="0" selected disabled>Seleccione un documento para visualizar...</option>
+            </select>
+        
+    </div>
+    <small class="form-text text-muted mt-2">
+        <i class="fas fa-info-circle mr-1"></i> Se muestran todos los archivos digitales vinculados a este punto de cuenta.
+    </small>
+</div>
                         </dl>
-                        <h6 class="card-subtitle mb-2 text-muted">Documentos del Punto de Cuenta</h6>
-                            <div class="row g-3 align-items-center">
-                                <div class="col-12">
-                                    <select class="form-control" id="docu-punto-deta" name="docu-punto">
-                                        <option value="0" selected disabled>Seleccione un documento adjunto...</option>
-                                    </select>
-                                </div>
-                            </div>
                         <input type="hidden" id="caso-id-punto-cuenta">
                     </div>
                 </div>
@@ -424,38 +832,38 @@ $session = session();
                     
                     <div class="card shadow-lg border-0 border-top-success mt-3" id="card-detalle-caso" style="display: none;">
     
-                        <div class="card-header bg-white p-2">
-                            <h3 class="text-success m-0 font-weight-bold small">
-                                <i class="fas fa-check-circle mr-2"></i> Informacion del Caso
-                            </h3>
-                        </div>
-                        
-                        <div class="card-body p-3 pt-2">
-                            <dl class="row mb-0 small">
-                                
-                                <dt class="col-sm-3 text-muted text-truncate">Nombre:</dt>
-                                <dd class="col-sm-9 font-weight-bolder text-dark mb-1">
-                                    <input type="text" id="campo-nombre" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-                                </dd>
-                                
-                                <dt class="col-sm-3 text-muted">Cédula:</dt>
-                                <dd class="col-sm-3 font-weight-normal text-muted mb-1">
-                                    <input type="text" id="campo-cedula" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-                                </dd>
-                                
-                                <dt class="col-sm-3 text-muted">Teléfono:</dt>
-                                <dd class="col-sm-3 font-weight-normal text-muted mb-1">
-                                    <input type="text" id="campo-telefono" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-                                </dd>
+    <div class="card-header bg-white p-2">
+        <h3 class="text-success m-0 font-weight-bold small">
+            <i class="fas fa-check-circle mr-2"></i> Informacion del Caso
+        </h3>
+    </div>
+    
+    <div class="card-body p-3 pt-2">
+        <dl class="row mb-0 small">
+            
+            <dt class="col-sm-3 text-muted text-truncate">Nombre:</dt>
+            <dd class="col-sm-9 font-weight-bolder text-dark mb-1">
+                <input type="text" id="campo-nombre" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+            </dd>
+            
+            <dt class="col-sm-3 text-muted">Cédula:</dt>
+            <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                <input type="text" id="campo-cedula" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+            </dd>
+            
+            <dt class="col-sm-3 text-muted">Teléfono:</dt>
+            <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                <input type="text" id="campo-telefono" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+            </dd>
 
-                                <dt class="col-sm-3 text-muted">Tipo de Atención:</dt>
-                                <dd class="col-sm-9 font-weight-semibold text-primary mb-1">
-                                    <input type="text" id="campo-tipo-atencion" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-                                </dd>
-                                
-                            </dl>
-                        </div>
-                    </div>
+            <dt class="col-sm-3 text-muted">Tipo de Atención:</dt>
+            <dd class="col-sm-9 font-weight-semibold text-primary mb-1">
+                <input type="text" id="campo-tipo-atencion" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+            </dd>
+            
+        </dl>
+    </div>
+</div>
 
                   <div id="mensaje-punto-cuenta" class="mt-2" style="display: none;"></div> 
                     <button type="submit" id="btn-asociar-caso" class="btn btn-success btn-block mt-3 py-2 shadow-sm" disabled>
@@ -472,6 +880,11 @@ $session = session();
         </div>
     </div>
 </div>
+</div>
+</div>
+</div>
+</div>
+
       <script type="text/javascript">
         function valideKey(evt) {
           var code = (evt.which) ? evt.which : evt.keyCode;

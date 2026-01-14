@@ -1,0 +1,784 @@
+
+<?php
+$session = session();
+?>
+
+<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
+<style>
+  /* ========================================
+     ESTILO PROFESIONAL TAIWIN - PUNTO DE CUENTA
+     ======================================== */
+  
+  /* Header de página estilo Taiwin */
+  .taiwin-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-radius: 20px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    color: white;
+    box-shadow: 0 7px 30px 0 rgba(0, 123, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .taiwin-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.5rem;
+  }
+  
+  .taiwin-header h3 i {
+    font-size: 1.8rem;
+    opacity: 0.9;
+  }
+
+  /* Cards estilo Taiwin */
+  .taiwin-card {
+    border-radius: 20px;
+    box-shadow: 0 7px 30px 0 rgba(91, 115, 123, 0.12);
+    border: none;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .taiwin-card:hover {
+    box-shadow: 0 10px 40px 0 rgba(91, 115, 123, 0.18);
+    transform: translateY(-2px);
+  }
+  
+  .taiwin-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 20px 25px;
+    font-weight: 600;
+  }
+  
+  .taiwin-card .card-body {
+    padding: 25px;
+  }
+
+  /* Botones estilo Taiwin */
+  .taiwin-btn {
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .taiwin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .taiwin-btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+  }
+  
+  .taiwin-btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+  }
+  
+  .taiwin-btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+    color: white;
+  }
+  
+  .taiwin-btn-light {
+    background: white;
+    color: #007bff;
+    border: 2px solid white;
+  }
+  
+  .taiwin-btn-light:hover {
+    background: transparent;
+    color: white;
+  }
+
+  /* DataTables estilo Taiwin */
+  .taiwin-table {
+    width: 100% !important;
+  }
+  
+  table.dataTable {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  table.dataTable thead th {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 15px 20px;
+    border: none !important;
+  }
+  
+  table.dataTable tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  table.dataTable tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05) !important;
+  }
+  
+  table.dataTable tbody td {
+    padding: 15px 20px;
+    vertical-align: middle;
+    border: none !important;
+  }
+
+  /* Badges estilo Taiwin */
+  .taiwin-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .taiwin-badge-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+  }
+  
+  .taiwin-badge-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+  }
+  
+  .taiwin-badge-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #d39e00 100%);
+    color: #212529;
+  }
+  
+  .taiwin-badge-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%);
+    color: white;
+  }
+
+  /* Iconos con contenedor */
+  .taiwin-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+  }
+  
+  .taiwin-icon-box-primary {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+  }
+  
+  .taiwin-icon-box-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+  }
+  
+  .taiwin-icon-box-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #d39e00;
+  }
+
+  /* Modales estilo Taiwin */
+  .taiwin-modal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+  
+  .taiwin-modal .modal-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 25px 30px;
+  }
+  
+  .taiwin-modal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+  
+  .taiwin-modal .modal-body {
+    padding: 30px;
+  }
+  
+  .taiwin-modal .modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background: #f8f9fa;
+  }
+
+  /* Inputs estilo Taiwin */
+  .taiwin-input {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    padding: 12px 18px;
+    transition: all 0.3s ease;
+  }
+  
+  .taiwin-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+  }
+  
+  .taiwin-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  /* Section divider */
+  .taiwin-divider {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+  }
+  
+  .taiwin-divider::before,
+  .taiwin-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #dee2e6, transparent);
+  }
+  
+  .taiwin-divider span {
+    padding: 0 20px;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+  }
+
+  /* Acciones botones */
+  .taiwin-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0 3px;
+  }
+  
+  .taiwin-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .taiwin-action-btn-edit {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+  }
+  
+  .taiwin-action-btn-view {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+  }
+  
+  .taiwin-action-btn-delete {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+  }
+
+  /* Scroll modales */
+  .modal-open {
+    overflow: auto !important;
+    padding-right: 0px !important;
+  }
+  
+  .modal {
+    overflow-y: auto !important;
+    padding: 0 !important;
+  }
+  
+  .modal-body-lg-text {
+    font-size: 0.95rem;
+  }
+
+  #lista-casos-asociados, #resumen-financiero {
+    font-size: 0.9rem;
+  }
+
+  #modal-casos .card-body dl {
+    font-size: 0.95rem;
+  }
+
+  #lista-casos-asociados table {
+    width: 100% !important;
+  }
+  
+  #card-detalle-caso {
+    border-top: 4px solid #28a745 !important;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  /* Table wrapper */
+  .table-responsive {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px 0 rgba(91, 115, 123, 0.08);
+  }
+</style>
+
+<div class="content-wrapper">
+  <div class="content">
+    <div class="container">
+      <!-- Header estilo Taiwin -->
+      <div class="taiwin-header">
+        <h3>
+          <i class="fas fa-file-invoice-alt"></i>
+          Punto de Cuenta
+        </h3>
+        <button type="submit" id="btn_agregar" class="taiwin-btn taiwin-btn-light btn_agregar" data-toggle="modal" data-target="#add-punto-cuenta">
+          <i class="fas fa-plus-circle"></i>
+          Agregar Nuevo
+        </button>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12 col-sm-12 col-md-12">
+          <!-- Card principal estilo Taiwin -->
+          <div class="card taiwin-card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="display table-responsive taiwin-table" id="table_punto_cuenta" style="width:100%">
+                  <thead>
+                    <tr>
+                      <td class="text-center" style="width: 5%;">ID</td>
+                      <td class="text-center" style="width: 12%;">Número</td>
+                      <td class="text-center" style="width: 10%;">Fecha</td>
+                      <td class="text-center" style="width: 20%;">Nombre Completo</td>
+                      <td class="text-center" style="width: 12%;">Monto</td>
+                      <td class="text-center" style="width: 15%;">Causa</td>
+                      <td class="text-center" style="width: 15%;">Acciones</td>
+                    </tr>
+                  </thead>
+                  <tbody id="listar_punto_cuenta">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Agregar Punto de Cuenta -->
+      <div class="modal fade taiwin-modal" id="add-punto-cuenta" tabindex="-1" role="dialog" aria-labelledby="addPuntoCuentaTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold" id="addPuntoCuentaTitle">
+                <i class="fas fa-plus-circle mr-2"></i>Agregar Punto de Cuenta
+              </h5>
+              <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            
+            <form id="form-add-punto-cuenta" method="POST" role="form">
+              <div class="modal-body">
+                
+                <!-- Datos del Punto de Cuenta -->
+                <div class="taiwin-card mb-4">
+                  <div class="card-header">
+                    <h6 class="mb-0">
+                      <div class="taiwin-icon-box taiwin-icon-box-primary">
+                        <i class="fas fa-file-invoice"></i>
+                      </div>
+                      Datos del Punto de Cuenta
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <label for="numero_punto_cuenta" class="taiwin-label">Número de Punto de Cuenta</label>
+                        <input type="text" onkeyup="mayus(this);" name="numero_punto_cuenta" id="numero_punto_cuenta" class="form-control taiwin-input" autocomplete="off" required placeholder="Ej: PC-2024-001">
+                      </div>
+
+                      <div class="col-md-6">
+                        <label for="fecha_punto_cuenta" class="taiwin-label">Fecha de Punto de Cuenta</label>
+                        <input type="date" name="fecha_punto_cuenta" id="fecha_punto_cuenta" class="form-control taiwin-input" autocomplete="off" required>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="taiwin-divider">
+                  <span><i class="fas fa-user-check mr-2"></i>Datos del Aprobador</span>
+                </div>
+                
+                <!-- Datos del Aprobador -->
+                <div class="taiwin-card">
+                  <div class="card-body">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <label for="nombre_beneficiario" class="taiwin-label">Nombre del Aprobador</label>
+                        <input type="text" onkeyup="mayus(this);" name="nombre_beneficiario" id="nombre_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Nombres">
+                      </div>
+
+                      <div class="col-md-6">
+                        <label for="apellido_beneficiario" class="taiwin-label">Apellido del Aprobador</label>
+                        <input type="text" onkeyup="mayus(this);" name="apellido_beneficiario" id="apellido_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Apellidos">
+                      </div>
+
+                      <div class="col-md-6">
+                        <label for="monto_aprobado" class="taiwin-label">Monto Aprobado</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-white border-2"><i class="fas fa-dollar-sign text-success"></i></span>
+                          <input type="text" onkeypress="return valideKey(event);" name="monto_aprobado" id="monto_aprobado" class="form-control taiwin-input" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <label for="causa_beneficiario" class="taiwin-label">Causa del Beneficiario</label>
+                        <input type="text" onkeyup="mayus(this);" name="causa_beneficiario" id="causa_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Motivo o causa">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="modal-footer">
+                <button class="btn btn-outline-secondary taiwin-btn" type="reset">
+                  <i class="fas fa-eraser"></i>Limpiar
+                </button>
+                
+                <button type="button" class="btn btn-outline-danger taiwin-btn" data-dismiss="modal">
+                  <i class="fas fa-times"></i>Cancelar
+                </button>
+
+                <button class="btn btn-success taiwin-btn taiwin-btn-success" type="submit">
+                  <i class="fas fa-save"></i>Guardar Punto de Cuenta
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Editar Punto de Cuenta -->
+      <div class="modal fade taiwin-modal" id="editar" tabindex="-1" role="dialog" aria-labelledby="editarPuntoCuentaTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold" id="editarPuntoCuentaTitulo">
+                <i class="fas fa-edit mr-2"></i>Editar Punto de Cuenta
+              </h5>
+              <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <form id="form-edit-punto-cuenta" method="POST" role="form">
+              <input type="hidden" name="id_punto_cuenta_editar" id="id_punto_cuenta_editar" class="form-control">
+
+              <div class="modal-body">
+                <!-- Información Principal -->
+                <div class="taiwin-card mb-4">
+                  <div class="card-header">
+                    <h6 class="mb-0">
+                      <div class="taiwin-icon-box taiwin-icon-box-primary">
+                        <i class="fas fa-file-invoice"></i>
+                      </div>
+                      Información Principal
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <label for="edit_numero_punto_cuenta" class="taiwin-label">Número de Punto de Cuenta</label>
+                        <input type="text" onkeyup="mayus(this);" name="numero_punto_cuenta" id="edit_numero_punto_cuenta" class="form-control taiwin-input" autocomplete="off" required placeholder="Escribe el número aquí">
+                      </div>
+
+                      <div class="col-md-6">
+                        <label for="edit_fecha_punto_cuenta" class="taiwin-label">Fecha de Punto de Cuenta</label>
+                        <input type="date" name="fecha_punto_cuenta" id="edit_fecha_punto_cuenta" class="form-control taiwin-input" autocomplete="off" required>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos del Aprobador y Monto -->
+                <div class="taiwin-card mb-4">
+                  <div class="card-header">
+                    <h6 class="mb-0">
+                      <div class="taiwin-icon-box taiwin-icon-box-success">
+                        <i class="fas fa-user-tie"></i>
+                      </div>
+                      Datos del Aprobador y Monto
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <label for="edit_nombre_beneficiario" class="taiwin-label">Nombre del Aprobador</label>
+                        <input type="text" onkeyup="mayus(this);" name="nombre_beneficiario" id="edit_nombre_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Nombre">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="edit_apellido_beneficiario" class="taiwin-label">Apellido del Aprobador</label>
+                        <input type="text" onkeyup="mayus(this);" name="apellido_beneficiario" id="edit_apellido_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Apellido">
+                      </div>
+
+                      <div class="col-md-6">
+                        <label for="edit_monto_aprobado" class="taiwin-label">Monto Aprobado</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-white border-2"><i class="fas fa-dollar-sign text-success"></i></span>
+                          <input type="text" onkeypress="return valideKey(event);" name="monto_aprobado" id="edit_monto_aprobado" class="form-control taiwin-input" step="0.01" min="0" autocomplete="off" required placeholder="0.00">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="edit_causa_beneficiario" class="taiwin-label">Causa/Motivo</label>
+                        <input type="text" onkeyup="mayus(this);" name="causa_beneficiario" id="edit_causa_beneficiario" class="form-control taiwin-input" autocomplete="off" required placeholder="Breve descripción de la causa">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Gestión de Documentos -->
+                <div class="taiwin-card mb-4">
+                  <div class="card-header" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white;">
+                    <h6 class="mb-0">
+                      <i class="fas fa-paperclip mr-2"></i>Gestión de Documentos
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-4">
+                      <label class="taiwin-label">Subir Nuevo Documento</label>
+                      <div class="input-group">
+                        <input type="file" class="form-control taiwin-input" id="archivo" name="archivo">
+                        <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">
+                        <button type="button" id="subir_archivos" class="taiwin-btn taiwin-btn-primary">
+                          <i class="fas fa-cloud-upload-alt"></i>Subir
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <label class="taiwin-label">Documentos del Punto de Cuenta</label>
+                    <select class="form-control taiwin-input" id="docu-punto" name="docu-punto">
+                      <option value="0" selected disabled>Seleccione un documento adjunto...</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Estado del Punto de Cuenta -->
+                <div class="taiwin-card">
+                  <div class="card-body">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="borrado" name="borrado" value='false' style="width: 50px; height: 26px;">
+                      <label class="form-check-label fw-bold ms-2" for="borrado">Punto de Cuenta Activo</label>
+                    </div>
+                    <small class="text-muted d-block mt-2">Desactivar para marcar como inactivo o borrado.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-outline-secondary taiwin-btn" type="reset">
+                  <i class="fas fa-eraser"></i>Limpiar Campos
+                </button>
+                <div>
+                  <button type="button" class="btn btn-outline-danger taiwin-btn me-2" data-dismiss="modal">
+                    <i class="fas fa-times-circle"></i>Cerrar
+                  </button>
+                  <button class="btn btn-success taiwin-btn taiwin-btn-success" type="submit">
+                    <i class="fas fa-save"></i>Actualizar Punto
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Casos Asociados -->
+      <div class="modal fade taiwin-modal" id="modal-casos" tabindex="-1" role="dialog" aria-labelledby="modalCasosTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold" id="modalCasosTitle">
+                <i class="fas fa-link mr-2"></i>Gestión de Casos Asociados
+              </h5>
+              <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body modal-body-lg-text">
+              
+              <!-- Detalles del Punto de Cuenta -->
+              <div class="taiwin-card mb-4" style="border-left: 4px solid #007bff;">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                  <h6 class="card-title text-primary m-0 font-weight-bold">
+                    <i class="fas fa-info-circle mr-2"></i>Detalles del Punto de Cuenta
+                  </h6>
+                  <span id="detalle-numero-cuenta" class="taiwin-badge taiwin-badge-primary"></span>
+                </div>
+                <div class="card-body informacion">
+                  <dl class="row mb-4">
+                    <dt class="col-sm-3 text-secondary">Nombre Aprobador:</dt>
+                    <dd class="col-sm-9 font-weight-bold text-dark"><span id="detalle-nombre-completo"></span></dd>
+                    
+                    <dt class="col-sm-3 text-secondary">Causa:</dt>
+                    <dd class="col-sm-9 text-muted text-wrap"><span id="detalle-causa"></span></dd>
+                    
+                    <dt class="col-sm-3 text-secondary">Fecha:</dt>
+                    <dd class="col-sm-3"><span id="detalle-fecha" class="taiwin-badge taiwin-badge-primary"></span></dd>
+
+                    <dt class="col-sm-3 text-secondary">Monto Aprobado:</dt>
+                    <dd class="col-sm-3 text-success font-weight-bolder">
+                      <i class="fas fa-money-bill-wave mr-1"></i> <span id="detalle-monto"></span>
+                    </dd>
+                  </dl>
+                  
+                  <label class="taiwin-label">Documentos del Punto de Cuenta</label>
+                  <select class="form-control taiwin-input" id="docu-punto-deta" name="docu-punto">
+                    <option value="0" selected disabled>Seleccione un documento adjunto...</option>
+                  </select>
+                  <input type="hidden" id="caso-id-punto-cuenta">
+                </div>
+              </div>
+
+              <!-- Casos Asociados -->
+              <div class="taiwin-card mb-4">
+                <div class="card-header">
+                  <h6 class="mb-0">
+                    <div class="taiwin-icon-box taiwin-icon-box-success">
+                      <i class="fas fa-list-alt"></i>
+                    </div>
+                    Casos Actualmente Asociados
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div id="lista-casos-asociados">
+                    <p class="text-muted text-center p-4">
+                      <i class="fas fa-sync fa-spin mr-2 text-primary"></i> Cargando casos...
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="resumen-financiero" class="mb-4"></div>
+              
+              <!-- Asociar Nuevo Caso -->
+              <div class="taiwin-card">
+                <div class="card-header" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); color: white;">
+                  <h6 class="mb-0">
+                    <i class="fas fa-link mr-2"></i>Asociar Nuevo Caso
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <form id="form-asociar-caso">
+                    <div class="row g-4 align-items-end">
+                      <div class="col-md-8">
+                        <label for="inputnuevocaso" class="taiwin-label">Número/Referencia del Caso</label>
+                        <div class="input-group">
+                          <input type="text" id="inputnuevocaso" onkeypress="return valideKey(event);" name="referencia_caso" class="form-control taiwin-input" placeholder="Ej: 2023-012345" required>
+                          <button class="taiwin-btn taiwin-btn-primary" type="button" id="btnverificarcaso">
+                            <i class="fas fa-search"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mt-4" id="card-detalle-caso" style="display: none;">
+                      <div class="card-header bg-white">
+                        <h6 class="text-success m-0 font-weight-bold">
+                          <i class="fas fa-check-circle mr-2"></i>Información del Caso
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <dl class="row mb-0">
+                          <dt class="col-sm-3 text-muted">Nombre:</dt>
+                          <dd class="col-sm-9 font-weight-bolder text-dark mb-1">
+                            <input type="text" id="campo-nombre" class="form-control border-0 bg-transparent p-0" readonly>
+                          </dd>
+                          
+                          <dt class="col-sm-3 text-muted">Cédula:</dt>
+                          <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                            <input type="text" id="campo-cedula" class="form-control border-0 bg-transparent p-0" readonly>
+                          </dd>
+                          
+                          <dt class="col-sm-3 text-muted">Teléfono:</dt>
+                          <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                            <input type="text" id="campo-telefono" class="form-control border-0 bg-transparent p-0" readonly>
+                          </dd>
+
+                          <dt class="col-sm-3 text-muted">Tipo de Atención:</dt>
+                          <dd class="col-sm-9 font-weight-semibold text-primary mb-1">
+                            <input type="text" id="campo-tipo-atencion" class="form-control border-0 bg-transparent p-0" readonly>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+
+                    <div id="mensaje-punto-cuenta" class="mt-3" style="display: none;"></div>
+                    
+                    <button type="submit" id="btn-asociar-caso" class="btn btn-success taiwin-btn taiwin-btn-success w-100 mt-3 py-3" disabled>
+                      <i class="fas fa-plus-circle mr-2"></i>Asociar Caso
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary taiwin-btn" data-dismiss="modal">
+                <i class="fas fa-times-circle mr-1"></i>Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script type="text/javascript">
+        function valideKey(evt) {
+          var code = (evt.which) ? evt.which : evt.keyCode;
+          if (code == 8) {
+            return true;
+          } else if (code >= 48 && code <= 57) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      </script>
+      <script>
+        function noNumeros(event) {
+          const tecla = event.keyCode || event.which;
+          if (tecla >= 48 && tecla <= 57) {
+            event.preventDefault();
+          }
+        }
+      </script>
+      <script>
+        function mayus(e) {
+          e.value = e.value.toUpperCase();
+        }
+      </script>
+    </div>
+  </div>
+</div>
+

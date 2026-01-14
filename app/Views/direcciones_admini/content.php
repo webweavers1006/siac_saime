@@ -9,6 +9,49 @@ $session = session();
   table.dataTable tfoot {
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
+    /* Paleta y superficies tipo Tailwind */
+    :root {
+        --slate-50: #f8fafc;
+        --slate-100: #eef2f7; /* más contraste */
+        --slate-200: #d9e0ea;
+        --slate-300: #b8c2cf;
+        --slate-500: #4b5563;
+        --slate-700: #1f2937;
+        --primary-500: #083B7A; /* Azul primario */
+        --primary-600: #062F60;
+        --primary-700: #05264D;
+        --success-500: #10b981;
+        --danger-500: #ef4444;
+        --warning-500: #f59e0b;
+        --info-500: #06b6d4;
+        --accent-500: #1363DF; /* azul acento */
+        --radius-md: 14px;
+        --radius-sm: 10px;
+        --shadow-sm: 0 2px 4px rgba(2,6,23,0.08), 0 1px 3px rgba(2,6,23,0.06);
+        --shadow-md: 0 20px 25px -5px rgba(2,6,23,0.1), 0 10px 10px -5px rgba(2,6,23,0.04);
+    }
+      /* Botones mejorados */
+    .btn-xs {
+      color: white;
+     background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 700;
+         padding: 4px 6px; 
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+      /* Botones mejorados */
+   .btn_agregar{
+     background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 700;
+         padding: 8px 13px; 
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+      /*
 </style>
 
 <div class="content-wrapper">

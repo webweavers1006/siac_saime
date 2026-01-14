@@ -1,11 +1,53 @@
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/agregar_usuario.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/botones_datatable.css">
+
 <style>
   table.dataTable thead,
   table.dataTable tfoot {
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
   }
+  /* Paleta y superficies tipo Tailwind */
+    :root {
+        --slate-50: #f8fafc;
+        --slate-100: #eef2f7; /* más contraste */
+        --slate-200: #d9e0ea;
+        --slate-300: #b8c2cf;
+        --slate-500: #4b5563;
+        --slate-700: #1f2937;
+        --primary-500: #083B7A; /* Azul primario */
+        --primary-600: #062F60;
+        --primary-700: #05264D;
+        --success-500: #10b981;
+        --danger-500: #ef4444;
+        --warning-500: #f59e0b;
+        --info-500: #06b6d4;
+        --accent-500: #1363DF; /* azul acento */
+        --radius-md: 14px;
+        --radius-sm: 10px;
+        --shadow-sm: 0 2px 4px rgba(2,6,23,0.08), 0 1px 3px rgba(2,6,23,0.06);
+        --shadow-md: 0 20px 25px -5px rgba(2,6,23,0.1), 0 10px 10px -5px rgba(2,6,23,0.04);
+    }
+      /* Botones mejorados */
+    .btn-xs {
+      color: white;
+     background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 700;
+         padding: 4px 6px; 
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+      /* Botones mejorados */
+    .btn-primary {
+      color: white;
+     background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+        border-color: transparent;
+        font-weight: 700;
+         padding: 8px 13px; 
+        font-size: 13px;
+        border-radius: 9999px;
+        transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -127,7 +169,7 @@
               <option value="0" selected disabled>Seleccione</option>
               <?php echo $direcciones; ?>
           </select>
-        </div>
+        </div)
 
 
 
@@ -206,92 +248,138 @@
 <!-- /.modal -->
 <!-- Modal para editar usuarios-->
 <div class="modal fade" id="editUser">
-  <div class="modal-dialog modal-dialog-centered  modal-md">
+  <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 800px;">
     <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Editar Usuario</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header" >
+        <h4 class="modal-title"><i class="fas fa-user-edit mr-2"></i>Editar Usuario</h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <form id="edit-user" method="POST" role="form">
         <input type="hidden" name="userid" id="userid">
         <div class="modal-body">
-          <div class="form-group">
-            <label for="user-name">Nombre</label>
-            <input type="text" name="edit-user-name" onkeyup="mayus(this);" id="edit-user-name" class="form-control" placeholder="Ej: Juan">
-            <label for="user-lastname">Apellido</label>
-            <input type="text" name="edit-user-lastname" onkeyup="mayus(this);" id="edit-user-lastname" class="form-control" placeholder="Ej: Perez">
-            <label for="user-email">Correo electronico</label>
-            <input type="email" name="edit-user-email" id="edit-user-email" class="form-control" placeholder="Ej: juan.perez@sapi.gob.ve">
-            <label for="user-lastname">Cargo</label>
-            <input type="text" name="cargo" id="cargo"  onkeyup="mayus(this);"class="form-control" placeholder="Ej: Perez">
-           
-          </div>
-
-         
-        
-           <label for="user-pass">Cambiar Contraseña</label>&nbsp;&nbsp;
-            <input type="checkbox" class="cambiar-clave" id="cambiar-clave" name="cambiar-clave" value='false'>
-          
-          <div class="form-group" id="modulo-claves" style="display: none;">
-            <label for="user-pass">Contraseña</label>
-            <input type="password" name="edit-user-pass" id="edit-user-pass" class="form-control" >
-            <label for="user-pass" style="display: none;">Confirmar Contraseña</label>
-            <input type="password" style="display: none;" name="edit-user-confirm-pass" id="edit-user-confirm-pass" class="form-control">
-          </div>
-         
-          <div class="form-group">
-            <label for="user-rol">Rol de usuario</label>
-            <select class="form-control" id="edit-user-rol" name="edit-user-rol">
-              <option value="0" disabled>Seleccione</option>
-            </select>
-
-            
-            <div class="form-group edit_id_rol_nivel" style="display: none;" >
-            <label for="user-rol">Nivel de Rol</label>
-            <select class="form-control" id="edit_id_rol" name="id_rol">
-                <?php foreach($nivel_rol["roless"] as $rol) { ?>
-                    <option value="<?php echo $rol["id"]; ?>"><?php echo $rol["rol"]; ?></option>
-                <?php } ?>
-            </select>
-        </div>
-
-
-     
-
-
-            <div class="direcciones"  >
-              <label for="user-rol">Direccione Administrativa</label>
-              <select class="form-control" name="edit_direccion_administrativa" id="edit_direccion_administrativa" style="font-size: 13px;">
-                <option value="0" disabled>Seleccione</option>
-              </select>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit-user-name">Nombre</label>
+                <input type="text" name="edit-user-name" onkeyup="mayus(this);" id="edit-user-name" class="form-control" placeholder="Ej: Juan">
+              </div>
             </div>
-
-
-        <div class="form-group edit_user_cedula"  style="display: none;" >
-          <label for="user-name">cedula</label>
-          <input type="text" name="ceula" id="edit_cedula" class="form-control">
-        </div>
-           
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit-user-lastname">Apellido</label>
+                <input type="text" name="edit-user-lastname" onkeyup="mayus(this);" id="edit-user-lastname" class="form-control" placeholder="Ej: Perez">
+              </div>
+            </div>
           </div>
-          &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
-            <input type="checkbox" class="usuopborrado" id="usuopborrado" name="usuopborrado" value='false'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-            <label for="user-email">Acceso a Audiencias</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="terminos" id="edit_acceso_audi" class="form-check-input">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit-user-email">Correo Electrónico</label>
+                <input type="email" name="edit-user-email" id="edit-user-email" class="form-control" placeholder="Ej: juan.perez@sapi.gob.ve">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="cargo">Cargo</label>
+                <input type="text" name="cargo" id="cargo" onkeyup="mayus(this);" class="form-control" placeholder="Ej: Director">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit-user-rol">Rol de Usuario</label>
+                <select class="form-control" id="edit-user-rol" name="edit-user-rol">
+                  <option value="0" disabled>Seleccione</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group edit_id_rol_nivel" style="display: none;">
+                <label for="edit_id_rol">Nivel de Rol</label>
+                <select class="form-control" id="edit_id_rol" name="id_rol">
+                  <?php foreach($nivel_rol["roless"] as $rol) { ?>
+                    <option value="<?php echo $rol["id"]; ?>"><?php echo $rol["rol"]; ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group direcciones">
+                <label for="edit_direccion_administrativa">Dirección Administrativa</label>
+                <select class="form-control" name="edit_direccion_administrativa" id="edit_direccion_administrativa">
+                  <option value="0" disabled>Seleccione</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group edit_user_cedula" style="display: none;">
+                <label for="edit_cedula">Cédula</label>
+                <input type="text" name="ceula" id="edit_cedula" class="form-control">
+              </div>
+            </div>
+          </div>
+          <hr style="border-color: #e5e7eb; margin: 20px 0;">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="user-pass">Cambiar Contraseña</label>
+                <div style="margin-top: 8px;">
+                  <input type="checkbox" class="cambiar-clave" id="cambiar-clave" name="cambiar-clave" value="false" style="width: 18px; height: 18px; accent-color: #1363DF;">
+                  <span style="margin-left: 8px; color: #4b5563;">Marcar para cambiar contraseña</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group" id="modulo-claves" style="display: none;">
+                <label for="edit-user-pass">Nueva Contraseña</label>
+                <input type="password" name="edit-user-pass" id="edit-user-pass" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="row" style="display: none;" id="confirm-password-row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit-user-confirm-pass">Confirmar Contraseña</label>
+                <input type="password" name="edit-user-confirm-pass" id="edit-user-confirm-pass" class="form-control">
+              </div>
+            </div>
+          </div>
+          <hr style="border-color: #e5e7eb; margin: 20px 0;">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="usuopborrado">Estatus</label>
+                <div style="margin-top: 8px;">
+                  <input type="checkbox" class="usuopborrado" id="usuopborrado" name="usuopborrado" value="false" style="width: 18px; height: 18px; accent-color: #10b981;">
+                  <span style="margin-left: 8px; color: #4b5563;">Usuario Activo</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit_acceso_audi">Acceso a Audiencias</label>
+                <div style="margin-top: 8px;">
+                  <input type="checkbox" name="terminos" id="edit_acceso_audi" style="width: 18px; height: 18px; accent-color: #1363DF;">
+                  <span style="margin-left: 8px; color: #4b5563;">Permitir acceso</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="modal-footer ">
-          <button class="btn  btn-sm btn-light" type="reset">Limpiar</button>
-          <button class="btn  btn-sm  btn-primary" type="submit" id="guardar">Guardar</button>
-          <button class="btn  btn-sm  btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar</button>
-          <button type="button" class="btn btn-sm  btn-danger" data-dismiss="modal">Cerrar</button>
+        <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid #e5e7eb;">
+          <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
+          <button class="btn btn-sm btn-primary" type="submit" id="guardar">Guardar</button>
+          <button class="btn btn-sm btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar</button>
+          <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
         </div>
       </form>
     </div>
-    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-dialog -->
 </div>
 
  <!-- ***** FUNCION PARA CONVERTIR EN MAYUSCULA***-** -->
@@ -300,3 +388,4 @@
           e.value = e.value.toUpperCase();
         }
       </script>
+

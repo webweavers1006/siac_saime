@@ -43,152 +43,157 @@
         gap: 10px;
     }
 
-    /* Estilos mejorados para Información General */
-    .card-info {
-        border: 1px solid var(--slate-200);
-        border-top: 3px solid var(--info-500);
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-    }
+    /* ==========================================================================
+   ESTILOS COMPACTOS: INFORMACIÓN GENERAL
+   ========================================================================== */
 
-    .info-section {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
+:root {
+    /* Variables de ayuda si no las tienes definidas */
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-500: #64748b;
+    --slate-700: #334155;
+    --info-500: #0ea5e9;
+    --primary-500: #3b82f6;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
 
-    /* Layout de 2 columnas cuando Información General ocupa todo el ancho */
-    .info-general-left.col-lg-12 .info-section {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.card-info {
+    border: 1px solid var(--slate-200);
+    border-top: 3px solid var(--info-500);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
 
-    /* Tarjetas de información */
-    .info-item-custom {
-        position: relative;
-        display: block;
-        padding: 14px 14px;
-        border: 1px solid var(--slate-200);
-        border-radius: var(--radius-sm);
-        background: #ffffff;
-        box-shadow: var(--shadow-sm);
-        transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
-    }
+/* Reducción del espacio entre filas */
+.info-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px; /* Altura entre items reducida */
+}
 
-    .info-item-custom:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary-500);
-    }
+/* Layout de 2 columnas */
+.info-general-left.col-lg-12 .info-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-    /* Iconografía */
-    .icon-wrapper {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        display: inline-grid;
-        place-items: center;
-        margin-right: 12px;
-        box-shadow: 0 6px 12px rgba(2,6,23,0.08);
-    }
+/* Tarjetas de información compactas */
+.info-item-custom {
+    position: relative;
+    display: block;
+    padding: 6px 10px; /* Altura reducida */
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
 
-    .bg-info-light { background: linear-gradient(135deg, rgba(6,182,212,0.16), rgba(19,99,223,0.12)); }
-    .bg-success-light { background: linear-gradient(135deg, rgba(16,185,129,0.16), rgba(5,150,105,0.12)); }
-    .bg-warning-light { background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.12)); }
+.info-item-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-500);
+}
 
-    /* Encabezado del bloque Información General */
-    .card.card-info .card-header {
-        background: linear-gradient(135deg, rgba(8,59,122,0.95), rgba(19,99,223,0.88));
-        color: #fff;
-    }
+/* Iconografía más pequeña */
+.icon-wrapper {
+    width: 18px; 
+    height: 18px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    margin-right: 8px;
+    box-shadow: 0 4px 8px rgba(2,6,23,0.06);
+}
 
-    .card.card-info .card-title {
-        font-weight: 700;
-        letter-spacing: 0.02em;
-    }
+.bg-info-light { background: linear-gradient(135deg, rgba(6,182,212,0.16), rgba(19,99,223,0.12)); }
+.bg-success-light { background: linear-gradient(135deg, rgba(16,185,129,0.16), rgba(5,150,105,0.12)); }
+.bg-warning-light { background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.12)); }
 
-    .info-item {
-        padding: 10px 12px;
-        border: 1px solid var(--slate-200);
-        border-radius: var(--radius-sm);
-        background: white;
-        box-shadow: var(--shadow-sm);
-    }
+/* Encabezado */
+.card.card-info .card-header {
+    background: linear-gradient(135deg, rgba(8,59,122,0.95), rgba(19,99,223,0.88));
+    color: #fff;
+    padding: 10px 15px; /* Cabecera más delgada */
+}
 
-    .info-item.bg-light {
-        background-color: var(--slate-100) !important;
-        padding: 12px;
-        border: 1px solid var(--slate-200);
-    }
+.card.card-info .card-title {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    margin-bottom: 0;
+}
 
-    .info-item.bg-info-light {
-        background: linear-gradient(135deg, rgba(19,99,223,0.08), rgba(8,59,122,0.08)) !important;
-        padding: 14px;
-        border: 1px solid rgba(19,99,223,0.2);
-    }
+/* Items genéricos compactos */
+.info-item {
+    padding: 6px 10px;
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-sm);
+    background: white;
+}
 
-    .info-label {
-        display: block;
-        font-size: 11px !important;
-        text-transform: uppercase;
-        color: var(--slate-500);
-        font-weight: 700;
-        margin-bottom: 6px;
-        letter-spacing: 0.04em;
-    }
+.info-item.bg-light {
+    background-color: var(--slate-100) !important;
+    padding: 6px 10px;
+}
 
-    .info-value {
-        font-size: 14px !important;
-        color: var(--slate-700);
-        word-break: break-word;
-    }
+.info-item.bg-info-light {
+    background: linear-gradient(135deg, rgba(19,99,223,0.05), rgba(8,59,122,0.05)) !important;
+    padding: 8px 10px;
+    border: 1px solid rgba(19,99,223,0.15);
+}
 
-    /* Unificar tipografía para Información General */
-    .info-item-custom .text-uppercase,
-    .info-item-custom .info-label {
-        font-size: 11px !important;
-    }
+/* Etiquetas (Labels) pegadas al contenido */
+.info-label {
+    display: block;
+    font-size: 10px !important;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    font-weight: 700;
+    margin-bottom: 1px; /* Espacio mínimo vertical */
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
 
-    .info-item-custom .font-weight-semibold,
-    .info-item-custom .font-weight-medium,
-    .info-item-custom .text-dark,
-    .info-item-custom > div > div:last-child {
-        font-size: 14px !important;
-    }
+/* Valores de texto */
+.info-value {
+    font-size: 13px !important;
+    color: var(--slate-700);
+    word-break: break-word;
+    line-height: 1.3;
+}
 
-    .info-item-custom .text-white {
-        font-size: 14px !important;
-    }
+.info-value.font-weight-bold {
+    font-weight: 700;
+    color: #0f172a;
+}
 
-    .info-value.font-weight-bold {
-        font-weight: 700;
-        color: #0f172a;
-    }
+.info-value.font-italic {
+    font-style: italic;
+    color: #334155;
+}
 
-    .info-value.font-italic {
-        font-style: italic;
-        color: #334155;
-        line-height: 1.6;
-    }
+/* Badges compactos */
+.badge-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    padding: 4px 10px; /* Antes era mucho más grande */
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(16,185,129,0.2);
+}
 
-    .additional-info {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    /* Badge styles */
-    .badge-success {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        color: white;
-        padding: 8px 14px;
-        font-size: 12px;
-        font-weight: 800;
-        border-radius: 9999px;
-        letter-spacing: 0.04em;
-        box-shadow: 0 8px 16px rgba(16,185,129,0.25);
-    }
-
+/* Contenedor de información adicional */
+.additional-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Espacio reducido entre líneas adicionales */
+}
     /* Tabla - volver a bordes originales, sin radios ni sombra del contenedor */
     .table {
         border-collapse: collapse;
@@ -265,7 +270,7 @@
         background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
         border-color: transparent;
         font-weight: 700;
-        padding: 10px 16px;
+        padding: 8px 8px;
         font-size: 13px;
         border-radius: 9999px;
         box-shadow: 0 10px 15px -3px rgba(99,102,241,0.25), 0 4px 6px -2px rgba(168,85,247,0.25);
@@ -299,7 +304,7 @@
         background: linear-gradient(135deg, #111827, #0b1220);
         border-color: transparent;
         font-weight: 700;
-        padding: 10px 16px;
+        padding: 8px 8px;
         font-size: 13px;
         border-radius: 9999px;
         color: #e5e7eb;
