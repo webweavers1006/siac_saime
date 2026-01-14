@@ -1,33 +1,29 @@
-<!-- Content Wrapper. Contains page content -->
-<script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/Chart.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url(); ?>/js_paginas/jspdf.debug.js"></script>
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/estadisticas.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/dashboard.css">
+<script type="text/javascript" src="<?= base_url(); ?>/js_paginas/Chart.min.js"></script>
+<script type="text/javascript" src="<?= base_url(); ?>/js_paginas/jspdf.debug.js"></script>
+<link rel="stylesheet" href="<?= base_url(); ?>/css_paginas/estadisticas.css">
+<link rel="stylesheet" href="<?= base_url(); ?>/css_paginas/dashboard.css">
 <style>
-  table.dataTable thead,
-  table.dataTable tfoot {
+  table.dataTable thead, table.dataTable tfoot {
     background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
-    ;
   }
+  /* Estilo opcional para asegurar que el canvas no se desborde */
+  #reportPage { overflow-x: auto; }
 </style>
 
 <div class="content-wrapper">
-  <!-- Main content -->
   <div class="content">
     <div class="container-fluid container-fluid-smaller">
-      <!-- /.row -->
-
       <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>Estadisticas Audiencias</h1>
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>Estadísticas Audiencias</h1>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-   
+      </section>
 
-        <section class="content">
+      <section class="content">
         <div class="card">
           <form id="anual-report" name="anual-report" method="POST" class="form-horizontal">
             <div id="reportPage">
@@ -35,100 +31,83 @@
                 <div class="col-12">
                   <div class="card-body">
                     <h3 class="card-title">Audiencias</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <div class="card-tools text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i></button>
-                      <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
-                        <i class="fas fa-times"></i></button>
                     </div>
-                    <canvas id="myChart" width="1430" height="600"></canvas>
-                      
+                    <canvas id="myChart" style="min-height: 400px; max-height: 600px; max-width: 100%;"></canvas>
                   </div>
                 </div>
               </div>
             </div>
           </form>
-        
-        </section>
         </div>
-      
-      
-    </div><!-- /.container-fluid -->
+      </section>
+    </div>
   </div>
-  <!-- /.content -->
 </div>
 
-<?php
-    $allStates = [
-        'NUEVO' => 0,
-        'EN PROCESO' => 0,
-        'RESUELTA' => 0
-    ];
-
-    // Actualizar los valores según los datos originales
-    foreach ($estatus['requerimientosbyEstados'] as $estado) {
-        if (array_key_exists($estado['estado'], $allStates)) {
-            $allStates[$estado['estado']] = $estado['total'];
-        }
-    }
-?>
-
 <script>
-const labels = <?php echo json_encode(array_keys($allStates)); ?>;
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: 'Audiencias',
-      data: <?php echo json_encode(array_values($allStates)); ?>,
-      backgroundColor: [
-        'rgba(255, 206, 86, 0.70)', // Amarillo para NUEVO
-        'rgba(54, 162, 235, 0.2)', // Azul para EN PROCESO
-        'rgba(255, 99, 132, 0.70)'  // Rojo para RESUELTA
-      ],
-      borderColor: [
-        'rgba(54, 162, 235, 1)', // Amarillo para NUEVO
-        'rgba(54, 162, 235, 1)', // Azul para EN PROCESO
-        'rgba(54, 162, 235, 1)',  // Rojo para RESUELTA
-      ],
-      borderWidth: 1, // Ancho del borde
-    }
-  ]
-};
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Obtenemos la data del controlador (aseguramos que sea un array)
+    const rawData = <?= json_encode($estatus['requerimientosbyEstados'] ?? []); ?>;
+    
+    // 2. Arrays para la gráfica
+    const labels = [];
+    const dataValues = [];
+    const backgroundColors = [];
 
-const config = {
-  type: 'bar',
-  data: data,
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      text: 'Estado de Requerimientos' // Título del gráfico
-    },
-    tooltips: {
-      mode: "index",
-      intersect: false
-    },
-    scales: {
-      xAxes: [{
-        ticks: {
-          beginAtZero: true,
-          stepSize: 1 // Cambié a 1 para que se ajuste a los datos
+    // Mapas de colores predefinidos (opcional)
+    const colorMap = {
+        'NUEVO': 'rgba(255, 206, 86, 0.7)',      // Amarillo
+        'EN PROCESO': 'rgba(54, 162, 235, 0.7)', // Azul
+        'RESUELTA': 'rgba(255, 99, 132, 0.7)'    // Rojo
+    };
+
+    // 3. Recorremos la data dinámicamente
+    rawData.forEach(item => {
+        labels.push(item.estado);
+        dataValues.push(item.total);
+        
+        // Si el estado está en nuestro mapa usamos ese color, si no, uno gris aleatorio
+        backgroundColors.push(colorMap[item.estado] || 'rgba(200, 200, 200, 0.7)');
+    });
+
+    // 4. Configuración de Chart.js
+    const ctx = document.getElementById('myChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total de Audiencias',
+                data: dataValues,
+                backgroundColor: backgroundColors,
+                borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                borderWidth: 1
+            }]
         },
-        grid: {
-          display: true,
-          color: 'rgba(0, 0, 255, 1)',
-          z: 1,
-          drawOnChartArea: true,
-          borderDash: [5, 5] // Línea discontinua
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Estado de Requerimientos (Actualizado)'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        precision: 0 // Solo números enteros
+                    }
+                }],
+                xAxes: [{
+                    gridLines: { display: false }
+                }]
+            }
         }
-      }]
-    }
-  }
-};
-
-new Chart(
-  document.getElementById('myChart'),
-  config
-);
+    });
+});
 </script>

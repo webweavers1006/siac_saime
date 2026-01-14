@@ -1434,7 +1434,7 @@ error:function(xhr, status, errorThrown)
                      //} //else if (asume_crg == null) {
                      // alert('DEBE INDICAR SI ASUME CGR')
                      // } else {
-                 bandera_cgr = true;
+                    bandera_cgr = true;
                      // valor_competencia = $("#competencia-cgr").val();
                      // valor_asume = $("#asume-cgr").val();
                      let cedula= $("#cedula-persona").val()

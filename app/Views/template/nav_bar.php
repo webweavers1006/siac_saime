@@ -179,11 +179,36 @@ $userdata = $session->get();
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="<?php echo base_url(); ?>/estadisticas" class="nav-link">
-          <i class="nav-icon fas fa-globe" style='font-size:20px'></i>
+        <a href="#" class="nav-link">
+          <i class="nav-icon fa fa-book"></i>
           <p>Global</p>
+          <i class="right fas fa-angle-left"></i>
         </a>
+
+        <ul class="nav nav-treeview">
+
+
+          <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/estadisticas" class="nav-link">
+              <i class="nav-icon fas fa-users" style='font-size:20px'></i>
+              <p>Reporte</p>
+            </a>
+          </li>
+            <li class="nav-item">
+            <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
+              <i class="nav-icon fas fa-users" style='font-size:20px'></i>
+              <p>Graficas Encuestas</p>
+            </a>
+          </li>
+        </ul>
+
       </li>
+
+      
+
+
+
+
       <li class="nav-item">
         <a href="#" class="nav-link">
           <i class="nav-icon fa fa-book"></i>
@@ -191,12 +216,7 @@ $userdata = $session->get();
           <i class="right fas fa-angle-left"></i>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item">
-            <a href="<?php echo base_url(); ?>/vista_Grafica_Encuestas/null/null" class="nav-link">
-              <i class="nav-icon fas fa-users" style='font-size:20px'></i>
-              <p>Graficas Encuestas</p>
-            </a>
-          </li>
+          
           <li class="nav-item">
             <a href="<?php echo base_url(); ?>/estadal/null/null" class="nav-link">
               <i class="nav-icon fa fa-bookmark" style='font-size:20px'></i>

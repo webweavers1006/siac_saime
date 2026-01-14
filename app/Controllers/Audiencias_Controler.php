@@ -243,43 +243,33 @@ class Audiencias_Controler extends BaseController
 	}
 
 	public function actualizar_audiencia($idcaso)
-	{
-		if ($this->session->get('logged')) {
+{
+    if (!$this->session->get('logged')) {
+        return redirect()->to('/');
+    }
 
-			$session = session();
-			$token = $session->get('token');
-		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
-		$contexto = stream_context_create([
-			'http' => [
-				'method'  => 'GET',
-				'header'  => "Authorization: Bearer $token\r\n"
-			]
-		]);
+    $token = session()->get('token');
+    $contexto = stream_context_create([
+        'http' => [
+            'method'  => 'GET',
+            'header'  => "Authorization: Bearer $token\r\n"
+        ]
+    ]);
 
-		 // Realiza la solicitud a la API para obtener los datos
-		 $datos2 = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/unique/".$idcaso, false, $contexto), true);
-		
-		 $pais = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/paises", false, $contexto), true);
-		 $estados = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/estados_paises", false, $contexto), true);
+    // Consumo de APIs
+    $baseUrl = "https://siac.sapi.gob.ve/api/audiencia";
+    
+    $data['datos2']  = json_decode(@file_get_contents("$baseUrl/requerimientos/unique/$idcaso", false, $contexto), true);
+    $data['pais']    = json_decode(@file_get_contents("$baseUrl/paises", false, $contexto), true);
+    $data['estados'] = json_decode(@file_get_contents("$baseUrl/estados_paises", false, $contexto), true);
+    $data['estatus'] = json_decode(@file_get_contents("$baseUrl/estados", false, $contexto), true);
 
-
-
-		 // Pasa los datos a la vista
-		 $data['estados'] = $estados;
-		 $data['pais'] = $pais;
-		 $data['datos2'] = $datos2;
-		 echo view('template/header');
-		 echo view('template/nav_bar');
-		 echo view('audiencias/actualizar_audiencia', $data);
-		 echo view('template/footer');
-		 echo view('audiencias/footer_actualizar_audiencia.php');
-	 } else {
- 
-		 return redirect()->to('/');
- 
-	 }
-	}
-
+    return view('template/header')
+        . view('template/nav_bar')
+        . view('audiencias/actualizar_audiencia', $data)
+        . view('template/footer')
+        . view('audiencias/footer_actualizar_audiencia');
+}
 
 	public function actualizar_solicitud($idcaso)
 	{
@@ -598,28 +588,42 @@ public function casos_categorias()
 
 public function estadisticas_audiencias()
 {
-	if ($this->session->get('logged')) {
+    // 1. Verificación de sesión
+    if (!$this->session->get('logged')) {
+        return redirect()->to('/');
+    }
 
+    $token = session()->get('token');
 
-		$session = session();
-		$token = $session->get('token');
-		$contexto = stream_context_create([
-			'http' => [
-				'method'  => 'GET',
-				'header'  => "Authorization: Bearer $token\r\n"
-			]
-		]);
+    // 2. Configuración del contexto de la petición
+    $contexto = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => [
+                "Authorization: Bearer $token",
+                "Content-Type: application/json"
+            ],
+            'ignore_errors' => true // Para evitar que PHP lance un Warning si la API falla
+        ]
+    ]);
 
-	$estado = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
-	$data['estatus'] = $estado;
-	echo view('template/header');
-	echo view('template/nav_bar');
-	echo view('audiencias/estadisticas/audiencias.php',$data);
-	echo view('template/footer');
-	echo view('audiencias/estadisticas/footer_estadisticas_audiencias.php');
-	} else {
-		return redirect()->to('/');
-	}
+    // 3. Consumo de la API con manejo de errores básico
+    $url = "https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados";
+    $response = @file_get_contents($url, false, $contexto);
+
+    if ($response === false) {
+        // Si la API falla, enviamos un array vacío para que el JS no rompa
+        $data['estatus'] = ['requerimientosbyEstados' => []];
+    } else {
+        $data['estatus'] = json_decode($response, true) ?? ['requerimientosbyEstados' => []];
+    }
+
+    // 4. Retorno de vistas (Uso de return concatenado o múltiple según el estándar CI4)
+    return view('template/header')
+        . view('template/nav_bar')
+        . view('audiencias/estadisticas/audiencias', $data)
+        . view('template/footer')
+        . view('audiencias/estadisticas/footer_estadisticas_audiencias');
 }
 
 

@@ -184,93 +184,116 @@ class PdfController extends BaseController
 			$pdf->Output("SIAC.pdf", "I");
 		} 
 	else if ($datos_tipoatencion['id_tipo_atencion'] == 23) 
-    {
-        // 1. Recolectar datos del Caso General (Solicitante y caso) y obtener ID
-        $datos_caso = [];
-        $idcaso = null;
-        $tipo_prop_nombre = '';
+{
+    // 1. Recolectar datos del Caso General
+    $datos_caso = [];
+    $idcaso = null;
+    $tipo_prop_nombre = '';
 
-        foreach ($query_pdf as $query_item) {
-            $idcaso = $query_item->idcaso; // Obtener ID para la consulta de Mediacion
-            
-            // Datos generales del caso y solicitante (Sección A)
-            $datos_caso['caso']         = $query_item->idcaso;
-            $datos_caso['fecha_caso']   = $query_item->casofec;
-            $datos_caso['nombre']       = $query_item->nombre;
-            $datos_caso['cedula']       = $query_item->cedula;
-            $datos_caso['correo']       = $query_item->correo;
-            $datos_caso['casotel']      = $query_item->casotel;
-            $datos_caso['casodesc']     = $query_item->casodesc;
-            $datos_caso['municipionom'] = $query_item->municipionom;
-            $datos_caso['parroquianom'] = $query_item->parroquianom;
-            $datos_caso['user_name']    = $query_item->user_name;
-            
-            // Campo clave para la lógica de Checkboxes en Sección E
-            $tipo_prop_nombre           = $query_item->tipo_prop_nombre; 
-            
-            break; // Parar después del primer registro
-        }
-
-        // 2. Instanciar el modelo de mediación y buscar la información detallada (B, C, D)
-        $mediacion = new \App\Models\Mediacion(); // Asegura la ruta de tu modelo
-        $info_mediacion = $mediacion->buscar_Info_Mediacion($idcaso);
-        // Usar el primer registro o un objeto vacío si no hay datos de mediación
-        $datos_mediacion = $info_mediacion[0] ?? (object)[]; 
-
-        // 3. Mapeo de Datos de Mediación a la Planilla SAPI (A, B, C, D, E, F)
-        $datos_para_planilla = [
-            // --- Datos Generales ---
-            'caso'         => $datos_caso['caso'],
-            'fecha_caso'   => $datos_caso['fecha_caso'],
-            'casodesc'     => $datos_caso['casodesc'],
-            'user_name'    => $datos_caso['user_name'], 
-            'tipo_prop_nombre' => $tipo_prop_nombre, // CLAVE para Sección E
-
-            // --- A. DATOS DEL SOLICITANTE (Caso General) ---
-            'A_nombre'    => $datos_caso['nombre'],
-            'A_cedula'    => $datos_caso['cedula'],
-            'A_telefono'  => $datos_caso['casotel'],
-            'A_correo'    => $datos_caso['correo'],
-            // Placeholder si no está disponible o el dato de dirección no se extrajo del query_pdf
-            'A_direccion' => '', 
-            'A_estado'    => $datos_caso['municipionom'] . '/' . $datos_caso['parroquianom'], 
-
-            // --- B. APODERADO SOLICITANTE (ter_sol) ---
-            'B_nombre'   => $datos_mediacion->nombre_apo_sol ?? '',
-            'B_CI'       => $datos_mediacion->id_apo_sol ?? '',
-            'B_IMPRE'    => $datos_mediacion->impre_abogado_apo_sol ?? '',
-            'B_telefono' => $datos_mediacion->telefono_apo_sol ?? '',
-            'B_correo'   => $datos_mediacion->correo_apo_sol ?? '',
-            'B_direccion'=> $datos_mediacion->direccion_apo_sol ?? '',
-            'B_estado'   => ($datos_mediacion->estado_apo_sol ?? '') . '/' . ($datos_mediacion->municipio_apo_sol ?? ''),
-
-            // --- C. CONTRAPARTE (ter_contra) ---
-            'C_nombre'   => $datos_mediacion->nombre_contra ?? '',
-            'C_CI_RIF'   => $datos_mediacion->id_contra ?? '',
-            'C_telefono' => $datos_mediacion->telefono_contra ?? '',
-            'C_correo'   => $datos_mediacion->correo_contra ?? '',
-            'C_direccion'=> $datos_mediacion->direccion_contra ?? '',
-            'C_estado'   => ($datos_mediacion->estado_contra ?? '') . '/' . ($datos_mediacion->municipio_contra ?? ''),
-            
-            // --- D. APODERADO CONTRAPARTE (ter_apo_contra) ---
-            'D_nombre'   => $datos_mediacion->nombre_apo_contra ?? '',
-            'D_correo'   => $datos_mediacion->correo_apo_contra ?? '',
-            'D_direccion'=> $datos_mediacion->direccion_apo_contra ?? '',
-            'D_estado'   => ($datos_mediacion->estado_apo_contra ?? '') . '/' . ($datos_mediacion->municipio_apo_contra ?? ''),
-
-        ];
-
-        $pdf->SetMargins(10, 10);
-        $pdf->SetAutoPageBreak(true, 10);
-                    
-        // 4. Generar el Contenido
-        $pdf->Content_Planilla_SAPI($datos_para_planilla); 
+    foreach ($query_pdf as $query_item) {
+        $idcaso = $query_item->idcaso; 
+        $datos_caso['caso']         = $query_item->idcaso;
+        $datos_caso['fecha_caso']   = $query_item->casofec;
+        $datos_caso['nombre']       = $query_item->nombre;
+        $datos_caso['cedula']       = $query_item->cedula;
+        $datos_caso['correo']       = $query_item->correo;
+        $datos_caso['casotel']      = $query_item->casotel;
+        $datos_caso['casodesc']     = $query_item->casodesc;
+        $datos_caso['user_name']    = $query_item->user_name;
         
-        // 5. Finalizar
-        $pdf->Footer_Mediacion();
-        $this->response->setHeader('Content-Type', 'application/pdf');
-        $pdf->Output("SIAC.pdf", "I");
-    } 
+        // Campos de ubicación base
+        $datos_caso['paisnom']      = $query_item->paisnom ?? '';
+        $datos_caso['estadonom']    = $query_item->estadonom ?? '';
+        $datos_caso['municipionom'] = $query_item->municipionom ?? '';
+        $datos_caso['parroquianom'] = $query_item->parroquianom ?? '';
+        
+        $tipo_prop_nombre           = $query_item->tipo_prop_nombre; 
+        break; 
+    }
+
+    // 2. Instanciar el modelo de mediación
+    $mediacion = new \App\Models\Mediacion();
+    $info_mediacion = $mediacion->buscar_Info_Mediacion($idcaso);
+    $datos_mediacion = $info_mediacion[0] ?? (object)[]; 
+
+    // --- FUNCIÓN DE APOYO PARA EVITAR COMAS VACÍAS ---
+    // Esta función revisa si hay datos, si no hay nada, devuelve 'N/A'
+    $formarUbicacion = function($p, $e, $m, $pa) {
+        $partes = [];
+        if (!empty(trim($p)))  $partes[] = trim($p);
+        if (!empty(trim($e)))  $partes[] = trim($e);
+        if (!empty(trim($m)))  $partes[] = "Mun. " . trim($m);
+        if (!empty(trim($pa))) $partes[] = "Parr. " . trim($pa);
+        
+        return empty($partes) ? 'N/A' : implode(' / ', $partes);
+    };
+
+    // 3. Mapeo de Datos a la Planilla
+    $datos_para_planilla = [
+        'caso'             => $datos_caso['caso'],
+        'fecha_caso'       => $datos_caso['fecha_caso'],
+        'casodesc'         => $datos_caso['casodesc'],
+        'user_name'        => $datos_caso['user_name'], 
+        'tipo_prop_nombre' => $tipo_prop_nombre,
+
+        // --- A. DATOS DEL SOLICITANTE ---
+        'A_nombre'    => $datos_caso['nombre'],
+        'A_cedula'    => $datos_caso['cedula'],
+        'A_telefono'  => $datos_caso['casotel'],
+        'A_correo'    => $datos_caso['correo'], 
+        'A_ubicacion_completa' => $formarUbicacion($datos_caso['paisnom'], $datos_caso['estadonom'], $datos_caso['municipionom'], $datos_caso['parroquianom']),
+
+        // --- B. APODERADO SOLICITANTE ---
+        'B_nombre'   => $datos_mediacion->nombre_apo_sol ?? '',
+        'B_CI'       => $datos_mediacion->id_apo_sol ?? '',
+        'B_IMPRE'    => $datos_mediacion->impre_abogado_apo_sol ?? '',
+        'B_telefono' => $datos_mediacion->telefono_apo_sol ?? '',
+        'B_correo'   => $datos_mediacion->correo_apo_sol ?? '',
+        'B_direccion'=> $datos_mediacion->direccion_apo_sol ?? '',
+        'B_ubicacion_completa' => $formarUbicacion(
+            $datos_mediacion->pais_apo_sol ?? '', 
+            $datos_mediacion->estado_apo_sol ?? '', 
+            $datos_mediacion->municipio_apo_sol ?? '', 
+            $datos_mediacion->parroquia_apo_sol ?? ''
+        ),
+
+        // --- C. CONTRAPARTE ---
+        'C_nombre'   => $datos_mediacion->nombre_contra ?? '',
+        'C_CI_RIF'   => $datos_mediacion->tipo_per_contra.$datos_mediacion->id_contra ?? '',
+        'C_telefono' => $datos_mediacion->telefono_contra ?? '',
+        'C_correo'   => $datos_mediacion->correo_contra ?? '',
+        'C_direccion'=> $datos_mediacion->direccion_contra ?? '',
+        'C_ubicacion_completa' => $formarUbicacion(
+            $datos_mediacion->pais_contra ?? '', 
+            $datos_mediacion->estado_contra ?? '', 
+            $datos_mediacion->municipio_contra ?? '', 
+            $datos_mediacion->parroquia_contra ?? ''
+        ),
+
+        // --- D. APODERADO CONTRAPARTE ---
+        'D_nombre'   => $datos_mediacion->nombre_apo_contra ?? '',
+        'D_CI'       => $datos_mediacion->id_apo_contra ?? '', 
+        'D_IMPRE'    => $datos_mediacion->impre_abogado_apo_contra ?? '',
+        'D_telefono' => $datos_mediacion->telefono_apo_contra ?? '',
+        'D_correo'   => $datos_mediacion->correo_apo_contra ?? '',
+        'D_direccion'=> $datos_mediacion->direccion_apo_contra ?? '',
+        'D_ubicacion_completa' => $formarUbicacion(
+            $datos_mediacion->pais_apo_contra ?? '', 
+            $datos_mediacion->estado_apo_contra ?? '', 
+            $datos_mediacion->municipio_apo_contra ?? '', 
+            $datos_mediacion->parroquia_apo_contra ?? ''
+        ),
+    ];
+
+    // 4. Generación del PDF
+    $pdf->SetMargins(10, 10);
+    $pdf->SetAutoPageBreak(true, 10);
+    $pdf->Content_Planilla_SAPI($datos_para_planilla); 
+    $pdf->Footer_Mediacion();
+    
+    $this->response->setHeader('Content-Type', 'application/pdf');
+    $pdf->Output("SIAC_Caso_{$idcaso}.pdf", "I");
+}
 
 		
 		

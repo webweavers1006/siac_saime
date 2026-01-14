@@ -83,8 +83,10 @@
                         <div class="form-group col-md-4">
                             <label for="data-ter_tipo_per">Tipo de Persona:</label>
                             <select class="form-control" id="data-ter_tipo_per" name="ter_tipo_per">
-                                <option value="V">V</option>
-                                <option value="E">E</option>
+                               <option value="V">V - Venezolano</option>
+                                    <option value="E">E - Extranjero</option>
+                                    <option value="J">J - Juridico</option>
+                                    <option value="G">G - Gobierno</option>
                             </select>
                         </div>
                         

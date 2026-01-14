@@ -297,7 +297,7 @@ $session = session();
                                 </button>
                             </div>
                             
-                            <h6 class="card-subtitle mb-2 text-muted">Documentos Existentes del Caso</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">Documentos del Punto de Cuenta</h6>
                             <div class="row g-3 align-items-center">
                                 <div class="col-12">
                                     <select class="form-control" id="docu-punto" name="docu-punto">
@@ -371,6 +371,14 @@ $session = session();
                                 <i class="fas fa-money-bill-wave mr-1"></i> <span id="detalle-monto"></span>
                             </dd>
                         </dl>
+                        <h6 class="card-subtitle mb-2 text-muted">Documentos del Punto de Cuenta</h6>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-12">
+                                    <select class="form-control" id="docu-punto-deta" name="docu-punto">
+                                        <option value="0" selected disabled>Seleccione un documento adjunto...</option>
+                                    </select>
+                                </div>
+                            </div>
                         <input type="hidden" id="caso-id-punto-cuenta">
                     </div>
                 </div>
@@ -416,38 +424,38 @@ $session = session();
                     
                     <div class="card shadow-lg border-0 border-top-success mt-3" id="card-detalle-caso" style="display: none;">
     
-    <div class="card-header bg-white p-2">
-        <h3 class="text-success m-0 font-weight-bold small">
-            <i class="fas fa-check-circle mr-2"></i> Informacion del Caso
-        </h3>
-    </div>
-    
-    <div class="card-body p-3 pt-2">
-        <dl class="row mb-0 small">
-            
-            <dt class="col-sm-3 text-muted text-truncate">Nombre:</dt>
-            <dd class="col-sm-9 font-weight-bolder text-dark mb-1">
-                <input type="text" id="campo-nombre" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-            </dd>
-            
-            <dt class="col-sm-3 text-muted">Cédula:</dt>
-            <dd class="col-sm-3 font-weight-normal text-muted mb-1">
-                <input type="text" id="campo-cedula" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-            </dd>
-            
-            <dt class="col-sm-3 text-muted">Teléfono:</dt>
-            <dd class="col-sm-3 font-weight-normal text-muted mb-1">
-                <input type="text" id="campo-telefono" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-            </dd>
+                        <div class="card-header bg-white p-2">
+                            <h3 class="text-success m-0 font-weight-bold small">
+                                <i class="fas fa-check-circle mr-2"></i> Informacion del Caso
+                            </h3>
+                        </div>
+                        
+                        <div class="card-body p-3 pt-2">
+                            <dl class="row mb-0 small">
+                                
+                                <dt class="col-sm-3 text-muted text-truncate">Nombre:</dt>
+                                <dd class="col-sm-9 font-weight-bolder text-dark mb-1">
+                                    <input type="text" id="campo-nombre" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+                                </dd>
+                                
+                                <dt class="col-sm-3 text-muted">Cédula:</dt>
+                                <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                                    <input type="text" id="campo-cedula" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+                                </dd>
+                                
+                                <dt class="col-sm-3 text-muted">Teléfono:</dt>
+                                <dd class="col-sm-3 font-weight-normal text-muted mb-1">
+                                    <input type="text" id="campo-telefono" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+                                </dd>
 
-            <dt class="col-sm-3 text-muted">Tipo de Atención:</dt>
-            <dd class="col-sm-9 font-weight-semibold text-primary mb-1">
-                <input type="text" id="campo-tipo-atencion" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
-            </dd>
-            
-        </dl>
-    </div>
-</div>
+                                <dt class="col-sm-3 text-muted">Tipo de Atención:</dt>
+                                <dd class="col-sm-9 font-weight-semibold text-primary mb-1">
+                                    <input type="text" id="campo-tipo-atencion" class="form-control form-control-sm border-0 bg-transparent p-0" readonly>
+                                </dd>
+                                
+                            </dl>
+                        </div>
+                    </div>
 
                   <div id="mensaje-punto-cuenta" class="mt-2" style="display: none;"></div> 
                     <button type="submit" id="btn-asociar-caso" class="btn btn-success btn-block mt-3 py-2 shadow-sm" disabled>

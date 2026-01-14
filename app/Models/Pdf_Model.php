@@ -30,6 +30,8 @@ class Pdf_Model extends BaseModel
             'a.correo',
             'a.caso_hora',
             'u_ope.usercargo',
+            'p.paisnom',
+            'e.estadonom',
             'mun.municipionom',
             'parr.parroquianom',
             'cgr.competencia_cgr',
@@ -52,6 +54,8 @@ class Pdf_Model extends BaseModel
         $builder->join('sgc_tipo_prop_caso AS tpc', 'a.idcaso = tpc.idcaso');
         $builder->join('sgc_tipo_prop_intelec AS tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
         $builder->join('sgc_tipoatencion_usu AS t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('sgc_paises AS p', 'a.pais = p.paisid');
+        $builder->join('sgc_estados AS e', 'a.estadoid = e.estadoid');
         $builder->join('sgc_municipio AS mun', 'a.municipioid = mun.municipioid');
         $builder->join('sgc_parroquias AS parr', 'a.parroquiaid = parr.parroquiaid');
         $builder->join('sgc_registro_cgr AS cgr', 'a.idcaso = cgr.id_caso', 'left');

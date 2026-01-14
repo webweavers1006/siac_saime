@@ -208,19 +208,36 @@
                       </div>
                     </div>
 
-
                   <div>
-                    <label>Estatus</label>
-                    <div class="control">
-                      <div class="select">
-                      <select name="id_estado" id="id_estado">
-                          <option value="0" <?php echo ($datos2['id_estado'] == 0) ? 'selected' : ''; ?>>---Seleccione un Estatus---</option>
-                          <option value="1" <?php echo ($datos2['id_estado'] == 1) ? 'selected' : ''; ?>>NUEVO</option>
-                          <option value="2" <?php echo ($datos2['id_estado'] == 2) ? 'selected' : ''; ?>>EN PROCESO</option>
-                          <option value="3" <?php echo ($datos2['id_estado'] == 3) ? 'selected' : ''; ?>>RESUELTO</option>
-                      </select>
+                      <label>Estatus</label>
+                      <div class="control">
+                          <div class="select">
+                              <select name="id_estado" id="id_estado" class="form-control">
+                                  <option value="0" <?php echo (isset($datos2['id_estado']) && $datos2['id_estado'] == 0) ? 'selected' : ''; ?>>
+                                      ---Seleccione un Estatus---
+                                  </option>
+
+                                  <?php 
+                                  // Verificamos que 'estadoss' exista y sea un array
+                                  if (isset($estatus['estadoss']) && is_array($estatus['estadoss'])): 
+                                      foreach ($estatus['estadoss'] as $item): 
+                                          // FILTRO: Solo mostramos si la agrupación es REQUERIMIENTOS
+                                          if ($item['agrupacion'] === "REQUERIMIENTOS"): 
+                                  ?>
+                                      <option value="<?= $item['id']; ?>" 
+                                          <?= (isset($datos2['id_estado']) && $datos2['id_estado'] == $item['id']) ? 'selected' : ''; ?>>
+                                          <?= $item['estados']; ?>
+                                      </option>
+                                  <?php 
+                                          endif; // Fin del filtro de agrupación
+                                      endforeach; 
+                                  endif; 
+                                  ?>
+                              </select>
+                          </div>
                       </div>
-                    </div>
+                  </div>
+                  </div>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
- <?php
+ n<?php
 $session = session();
 ?>
 <style>
@@ -58,19 +58,20 @@ $session = session();
   <section class="container-fluid">
     <div class="card">
       <div class="card-header">
-        <div class="d-flex flex-wrap align-items-center">
-          <h3 class="text-secondary mb-0 mr-3">
-            <i class="fas fa-angle-double-right"></i> Seguimientos del Caso Nº 
-            <span class="text-dark"><?= $idcaso; ?></span>
-          </h3>
+        <h3 class="text-secondary">
+          <i class="fas fa-angle-double-right"></i> Seguimientos del Caso Nº 
+          <span style="color: black;"><?= $idcaso; ?></span>&nbsp;&nbsp;
           <a data-toggle="modal" data-target="#add-seguimiento" class="btn btn-sm btn-primary">Añadir Seguimiento</a>
+          
           <?php if ($acc_participantes == 't') : ?>
-            <a data-toggle="modal" data-target="#add-participantes" class="btn btn-sm btn-success ml-2" id="btn-add-participantes">Añadir Participantes</a>
+            <a data-toggle="modal" data-target="#add-participantes" class="btn btn-sm btn-success" id="btn-add-participantes">Añadir Participantes</a>
+           
           <?php endif; ?>
-          <?php if (in_array($session->get('userrol'), [1, 2,3, 5, 10])) : ?>
-            <a data-toggle="modal" data-target="#cambiar-estatus" class="btn btn-sm btn-dark ml-2">Cambiar estatus</a>
+         
+          <?php if (in_array($session->get('userrol'), [1, 3, 5, 10])) : ?>
+            <a data-toggle="modal" data-target="#cambiar-estatus" class="btn btn-sm btn-dark">Cambiar estatus</a>
           <?php endif; ?>
-        </div>
+        </h3>
         
         <?php if ($acc_participantes == 't') : ?>
           <br>
@@ -79,7 +80,7 @@ $session = session();
               <h3 class="text-secondary">
                   Nombre de la Actividad:
               </h3>
-              <h4 class="text-dark mb-0"><?= htmlspecialchars($casodesc); ?></h4>
+              <h4 style="color: black;"><?= htmlspecialchars($casodesc); ?></h4>
               <input type="hidden" id="descripcion_actividad" value="<?php echo htmlspecialchars($casodesc); ?>">
           </div>
               <div class="col-lg-1 col-md-1 col-sm-1">
@@ -89,9 +90,9 @@ $session = session();
               <div class="col-lg-4 col-md-4 col-sm-4 d-flex align-items-center">
                   <label for="informacion" class="mr-2"><h3>Información</h3></label>&nbsp;&nbsp;
                   <select class="form-control" id="informacion" name="tipo-atencioni-usu">
-                      <option value="0" disabled>Seleccione</option>
+                      <option value="0" selected disabled>Seleccione</option>
                       <option value="1">Seguimientos</option>
-                      <option value="2" selected>Participantes</option>
+                      <option value="2">Participantes</option>
                   </select>
               </div>
           </div>
@@ -100,7 +101,7 @@ $session = session();
          
           
 
-          <div class="card-body seguimientos d-none">
+          <div class="card-body seguimientos" style="visibility: hidden;">
             <div class="row">
               <div class="col-lg-8 col-md-8 col-12 order-2 order-md-1" id="tl">
                 <div class="card-body">
@@ -292,7 +293,7 @@ $session = session();
           </div>
 
          
-        <div class="card-body participantes">
+        <div class="card-body participantes" style="visibility: hidden;">
           <div class="row">
             <div class="col-12 col-md-12 col-lg-12 ">
               <div class="card-body">
@@ -529,6 +530,8 @@ $session = session();
 </div>
 
 
+
+
   <div class="modal fade" id="add-seguimiento">
   <div class="modal-dialog modal-dialog-centered  modal-md">
   <div class="modal-content">
@@ -539,7 +542,7 @@ $session = session();
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <input type="hidden" id="idsegcas" value="">
+        <input type="hidden" name="" id="idsegcas" value="">
         <div class="modal-body">
           <div class="form-group">
             <label for="estatus-llamadas">Estatus de llamadas</label>
@@ -569,7 +572,7 @@ $session = session();
 <!-- /.MODAL DE PARTICIPANTES -->
 <div class="modal fade" id="add-participantes">
  
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Cambiado a modal-lg -->
     <div class="modal-content">
       <input type="hidden"id="id_participante" >
       <input type="hidden"id="id_taller" >
@@ -585,10 +588,9 @@ $session = session();
 
         <div class="row">
         <div class="col-lg-8 col-sm-8 col-md-8 buscar_participante">
-          <div class="d-flex align-items-center">
-            <label for="cedula-existente" class="mb-0 mr-2">Buscar Cédula</label>
-            <input type="text" class="form-control mr-2" style="max-width: 220px;" onkeypress="return valideKey(event);" name="cedula-existente" min="7" id="cedula-existente" autocomplete="off">
-            <button type="button" style="font-size: 11px;" id="btn_buscar" class="btn btn-xs btn-primary btn_buscar">Buscar</button>
+          <div style="display: flex;">  <label for="cedula-persona">Buscar Cédula   &nbsp;&nbsp;&nbsp; </label>
+            <input type="text" class="form-control" style="width: 200px;"  onkeypress="return valideKey(event);" name="cedula-existente" min="7" id="cedula-existente" autocomplete="off">
+            &nbsp;&nbsp;&nbsp; <button type="button" style="font-size: 11px;" id="btn_buscar" class="btn btn-xs btn-primary btn_buscar">Buscar</button>
           </div>
         </div>
         </div>
@@ -630,7 +632,7 @@ $session = session();
         </div>
         <div class="form-group col-md-4"> <!-- Tercera columna -->
             <label for="edad">Edad</label>
-            <input type="text" inputmode="numeric" onkeypress="return valideKey(event);" class="form-control" id="edad" name="edad" required>
+            <input type="text" onkeypress="return valideKey(event);" class="form-control" id="edad" name="edad" required>
         </div>
     </div>
     <div class="row">
@@ -662,7 +664,7 @@ $session = session();
         </div>
         <div class="col-4">
         <label for="telefono">Teléfono</label>
-        <input type="tel" inputmode="numeric" onkeypress="return valideKey(event);" class="form-control" id="telefono" name="telefono" required>
+        <input type="tel" onkeypress="return valideKey(event);" class="form-control" id="telefono" name="telefono" required>
         </div>
 
         <div class="col-4">
@@ -691,8 +693,8 @@ $session = session();
         <div class="col-4">
         </div>
         <div class="col-4">
-        <label for="telefono" class="invisible">Teléfono</label>
-            <button class="btn btn-primary" id="ingresar_participante" style="border-radius: 3px; background-color:#3c5b72; color: white; border: none;">
+        <label for="telefono" style="color: white; pointer-events: none; user-select: none;">Teléfono</label>
+            <button  class="btn btn-primary" id="ingresar_participante" style="border-radius: 3px; background-color:#3c5b72; color: white; border: none;">
                 Ingresar Participante
             </button>
         </div>
@@ -712,7 +714,7 @@ $session = session();
                       <div class="ant-table ant-table-empty">
                         <div class="ant-table-container">
                           <div class="ant-table-content">
-                            <table class="table table-striped table-bordered" id="table_audiencia">
+                            <table class="table table-striped table-bordered" id="table_audiencia" style="table-layout: auto;">
                               <thead>
                                 <tr>
                                   <th class="ant-table-cell" scope="col">Nombre</th>
@@ -784,7 +786,7 @@ $session = session();
 
 <!-- /.modal -->
 <!--/.Añadir estatus-->
-<?php if (in_array($session->get('userrol'), [1,2, 3, 5, 10])) { ?>
+<?php if ($session->get('userrol') == 1  or $session->get('userrol') == 3 or $session->get('userrol') == 5 or $session->get('userrol') == 10) { ?>
   <div class="modal fade" id="cambiar-estatus">
     <div class="modal-dialog  modal-dialog-centered modal-md">
       <div class="modal-content">
@@ -847,70 +849,4 @@ $session = session();
       return false;
     }
   }
-</script>
-
-<!-- Ajuste de layout dinámico para evitar espacio vacío y normalizar visibilidad -->
-<script>
-(function(){
-  function updateLayoutForSections(showSeguimientos){
-    var rows = document.querySelectorAll('.card-body.seguimientos .row');
-    rows.forEach(function(row){
-      var leftCol = row.querySelector('#tl');
-      var spacer = row.querySelector('.col-lg-1.col-md-1');
-      var infoCol = row.querySelector('.info-general-left');
-      if (!leftCol || !infoCol) return;
-      if (showSeguimientos){
-        leftCol.classList.remove('d-none');
-        if (spacer) spacer.classList.remove('d-none');
-        infoCol.classList.remove('col-12','col-md-12','col-lg-12');
-        if (!infoCol.classList.contains('col-lg-3')){
-          infoCol.classList.add('col-lg-3','col-md-3','col-12');
-        }
-      } else {
-        leftCol.classList.add('d-none');
-        if (spacer) spacer.classList.add('d-none');
-        infoCol.classList.remove('col-lg-3','col-md-3');
-        if (!infoCol.classList.contains('col-lg-12')){
-          infoCol.classList.add('col-12','col-md-12','col-lg-12');
-        }
-      }
-    });
-  }
-
-  function setSections(showSeguimientos){
-    var seg = document.querySelector('.card-body.seguimientos');
-    var part = document.querySelector('.card-body.participantes');
-    if (seg) seg.classList.toggle('d-none', !showSeguimientos);
-    if (part) part.classList.toggle('d-none', showSeguimientos);
-    updateLayoutForSections(showSeguimientos);
-    if (showSeguimientos && window.$ && $.fn && $.fn.dataTable){
-      setTimeout(function(){ try { $('#table_seguimientos').DataTable().columns.adjust(); } catch(e) {} }, 150);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    var selectInfo = document.getElementById('informacion');
-    if (selectInfo){
-      if (selectInfo.value === '1'){
-        setSections(true);
-      } else if (selectInfo.value === '2'){
-        setSections(false);
-      } else {
-        var seg = document.querySelector('.card-body.seguimientos');
-        var showSeguimientos = seg ? !seg.classList.contains('d-none') : true;
-        updateLayoutForSections(showSeguimientos);
-      }
-      selectInfo.addEventListener('change', function(){
-        setSections(this.value === '1');
-      });
-    } else {
-      var seg = document.querySelector('.card-body.seguimientos');
-      var showSeguimientos = seg ? !seg.classList.contains('d-none') : true;
-      updateLayoutForSections(showSeguimientos);
-    }
-  });
-
-  window.previewInfoOnly = function(){ setSections(false); };
-  window.restoreLayout = function(){ setSections(true); };
-})();
 </script>

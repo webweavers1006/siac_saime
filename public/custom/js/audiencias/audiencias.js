@@ -112,15 +112,7 @@ function listado_Audiencias() {
                 ['10', '25', '50', 'Todos']
             ],
             columns: [
-                {
-                    // NUEVA COLUMNA: IDENTIFICADOR AUTO-INCREMENTAL
-                    title: "#",
-                    data: null,
-                    sortable: false,
-                    render: function (data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                },
+               
                 {
                     // Semáforo/Estado Visual
                     orderable: true,
@@ -131,6 +123,9 @@ function listado_Audiencias() {
                         return `<div style="text-align: center;"><span class="circle" style="background: ${color};"></span></div>`;
                     }
                 },
+                
+                
+                { data: 'numero_audiencia' },
                 { data: 'id' },
                 { data: 'pais' },
                 { data: 'estado' },   

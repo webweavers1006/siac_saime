@@ -222,7 +222,16 @@ curl_close($ch);
             $newCase["casonom"]     = strtoupper($datos["person-name"]);
             $newCase["casoape"]     = strtoupper($datos["person-lastname"]);
             $newCase["casotel"]     = $datos["telephone"];
-            $newCase["idest"]       = 1;
+            $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+            if ($newCase["id_tipo_atencion"]==1) 
+            {
+                $newCase["idest"]       = 2;
+            }else
+            {
+                $newCase["idest"]       = 1;
+            }
+            
+
             $newCase["idrrss"]      = $datos["social_network"];
             $newCase["estadoid"]    = $datos["state"];
             $newCase["municipioid"] = $datos["county"];
@@ -231,7 +240,6 @@ curl_close($ch);
             $newCase["parroquiaid"] = $datos["town"];
             $newCase["ofiid"]       = $datos["office"];
             $newCase["casodesc"]    = $datos["user-requirement"];
-            $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
             $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
             $newCase["direccion"]   = $datos["direccion"];
             $newCase["correo"]      = $datos["correo"];
@@ -298,7 +306,24 @@ curl_close($ch);
                     ];
                     $segModel->insertarSeguimiento($datosSeguimiento);
 
-               // ===================================================================
+if ($newCase["id_tipo_atencion"] == '1')
+{
+                 // 3.4. SEGUIMIENTO DE CIERRE PARA EL CASO DE ASESORIA
+                    $datosSeguimientoCierre = [
+                        'idcaso' => $idcaso,
+                        'idestllam' => 2,
+                        'idusuopr' => $idusuopr,  // AGREGADO: Campo faltante necesario para la inserción
+                        'segcoment' => 'Cambiado a estatus Cerrado el dia ' . date('d-m-Y'),
+                        'segfec' => date('Y-m-d'),
+                    ];
+                    $resultadoCierre = $segModel->insertarSeguimiento($datosSeguimientoCierre);
+                    
+                    // Verificación de éxito para debugging
+                    if (!$resultadoCierre) {
+                        log_message('error', 'Error al insertar seguimiento de cierre para caso: ' . $idcaso);
+                    }
+}
+// ===================================================================
 // 4. LÓGICA DE MEDIACIÓN SAPI (TIPO ATENCIÓN 23)
 // ===================================================================
 if ($newCase["id_tipo_atencion"] == '23')
@@ -982,6 +1007,11 @@ public function actualizarCaso()
 					$data["correo_beneficiario"] = $row->correo;
 					$data["id_tipo_atencion"] = $row->id_tipo_atencion;	
 					$data["env_correo"] = $row->env_correo;	
+                    $data["tipo_aten_nombre"] = $row->tipo_aten_nombre;
+                    $data["tipo_atend_nombre"] = $row->tipo_atend_nombre;
+                    $data["tipo_prop_nombre"] = $row->tipo_prop_nombre;
+
+                    
 					//$data["casodesc"] = ucfirst(strtolower($row->casodesc));	
 					
 					//$idEstatusCaso = $row->idest;

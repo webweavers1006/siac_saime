@@ -101,8 +101,8 @@ $userdata = $session->get();
                   <table class="display table-responsive" id="table_audiencia" style="width:100%" style="margin-top: 20px">
                       <thead>
                         <tr>
-                         <td class="text-center" style="width: 2%;">#</td>
                           <td class="text-center ant-table-cell" style="width: 1%;" >Estatus</td>
+                         <td class="text-center" style="width: 2%;">#</td>
                           <td class="text-center" style="width: 4%;">Numero de audiencia</td>
                           <td class="text-center" style="width: 5%;">Pais</td>
                           <td class="text-center" style="width: 8%;">Estatus del caso</td>
