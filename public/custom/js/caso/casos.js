@@ -427,7 +427,7 @@ $(document).on("click", "#subir_archivos", (e) => {
         success: function(data) {
             if (data == 0) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>ERROR EL ARCHIVO YA EXISTE.</strong>',
                     toast: true,
@@ -440,7 +440,7 @@ $(document).on("click", "#subir_archivos", (e) => {
                 // }, 1600);
             } else if (data == 1) {
                 Swal.fire({
-                    icon: "success",
+                    icon: "error",
                     type: 'error',
                     html: '<strong>ERROR EL ARCHIVO ES DEMASIADO GRANDE.</strong>',
 
