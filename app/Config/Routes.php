@@ -339,6 +339,8 @@ $routes->get('/citas', 'Audiencias_Controler::citas');
 $routes->get('/actualizar_citas/(:any)', 'Audiencias_Controler::actualizar_citas/$1');
 $routes->get('/actualizar_solicitud/(:any)', 'Audiencias_Controler::actualizar_solicitud/$1');
 
+$routes->get('/detalles_estadisticas_audiencias', 'Audiencias_Controler::detalles_estadisticas_audiencias');
+
 
 
 

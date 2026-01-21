@@ -631,5 +631,59 @@ public function estadisticas_audiencias()
 }
 
 
-	
+public function detalles_estadisticas_audiencias()
+{
+    // 1. Verificación de sesión
+    if (!session()->get('logged')) {
+        return redirect()->to('/');
+    }
+
+    $token = session()->get('token');
+    $id_estado = $this->request->getGet('id_estado');
+
+    // Validar que el ID de estado no sea nulo
+    if (!$id_estado) {
+        return redirect()->back()->with('error', 'ID de estado no proporcionado');
+    }
+
+    // 2. Preparar la URL y el filtro JSON correctamente
+    // Usamos json_encode para evitar errores de comillas manuales
+    $filtro = json_encode(['id_estado' => (int)$id_estado]);
+    $url = "https://siac.sapi.gob.ve/api/audiencia/requerimientos/1/1000/" . urlencode($filtro);
+
+    // 3. Uso de CURLRequest (Nativo de CodeIgniter 4)
+    $client = \Config\Services::curlrequest();
+
+    try {
+        $response = $client->request('GET', $url, [
+            'headers' => [
+                'Authorization' => "Bearer $token",
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ],
+            'http_errors' => false // Para manejar errores manualmente
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        $body = $response->getBody();
+
+        if ($statusCode === 200) {
+            $decoded = json_decode($body, true);
+            $data['informacion'] = $decoded ?: ['requerimientos' => []];
+        } else {
+            $data['informacion'] = ['requerimientos' => []];
+        }
+
+    } catch (\Exception $e) {
+        // Log del error si es necesario: log_message('error', $e->getMessage());
+        $data['informacion'] = ['requerimientos' => []];
+    }
+
+    // 4. Retorno de vistas
+    return view('template/header')
+        . view('template/nav_bar')
+        . view('audiencias/estadisticas/detalles_estadisticas_audiencias', $data)
+        . view('template/footer')
+        . view('audiencias/estadisticas/footer_detalles_estadisticas_audiencias');
+}
 }
