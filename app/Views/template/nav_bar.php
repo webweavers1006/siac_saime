@@ -20,7 +20,7 @@ $userdata = $session->get();
     </li>
   </ul>
   <input type="text" name="" disabled="disabled" style="width: 350px; background-color: transparent; border: none;" value="">
-  <img src="http://siac_v2.com/img/cintillo_tradicional.png" 
+ <img src="<?= base_url('img/cintillo_tradicional.png') ?>" 
      height="60" 
      width="auto" 
      class="cintillo-compacto">

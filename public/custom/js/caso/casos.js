@@ -3246,6 +3246,15 @@ $("#red-social").on('change', function() {
 });
 
 function llenar_Tipo_Atencion_filtros(e, id_red_social, id_tipo_atencion) {
+    // Validación: No hacer la llamada AJAX si id_red_social es nulo, indefinido, 0 o cadena vacía
+    if (id_red_social === null || id_red_social === undefined || id_red_social === '' || id_red_social === '0') {
+        // Limpiar el select y colocar la opción por defecto
+        var $select = $("#tipo-atencion-usu");
+        $select.empty();
+        $select.append("<option value='0' selected disabled>Seleccione</option>");
+        return; // No continuar con la llamada AJAX
+    }
+    
     let url = "/buscar_via_tipo_atencion/" + id_red_social;
     $.ajax({
         url: url,
