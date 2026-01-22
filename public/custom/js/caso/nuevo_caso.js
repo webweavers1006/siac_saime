@@ -269,14 +269,14 @@ $(function() {
 
     // let tipo_atencion_usu = $("#tipo-atencion-usu").val();
  
-   
-     llenar_Propiedad_Intelectual(Event);
-     llenar_Estados(Event);
-     llenar_pais(Event);
-     llenar_Red_social(Event);
-     llenar_Entes_asdcritos(Event);
-     llenar_Tipo_Beneficiarios(Event);
-     llenar_Organismos_PP(Event);
+    
+     llenar_Propiedad_Intelectual();
+     llenar_Estados(); // Llamar sin parámetros o con undefined
+     llenar_pais();
+     llenar_Red_social();
+     llenar_Entes_asdcritos();
+     llenar_Tipo_Beneficiarios();
+     llenar_Organismos_PP();
 
    // 1. INICIALIZACIÓN DE SELECTORES PARA APODERADO SOLICITANTE
     llenar_Selectores_Iniciales("apoderado-solicitante");
@@ -312,8 +312,9 @@ $(function() {
 // =================================================================
 
 // FUNCION PARA LLENAR EL COMBO ESTADOS
-function llenar_Estados(e, id) {
-    const url = "/llenar_Estados"; // Usar const para variables que no cambian
+function llenar_Estados(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const url = "/llenar_Estados";
     $.ajax({
         url: url,
         method: "GET",
@@ -322,43 +323,27 @@ function llenar_Estados(e, id) {
             // Puedes agregar un loader o alguna indicación de que se está cargando
         },
         success: function(data) {
-            //;
-          
             if (data.length >= 1) {
-                $("#estado-caso").empty(); // Limpiar el combo
+                $("#estado-caso").empty();
                 $("#estado-caso").append(
                     "<option value='0' selected disabled>Seleccione</option>"
                 );
                 $.each(data, function(i, item) {
-                    // Agregar las opciones al combo
-                    if (id === undefined) {
-                        $("#estado-caso").append(
-                            "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
-                        );
-                    } else {
-                       
-                        if (item.estadoid === id) {
-                            $("#estado-caso").append(
-                                "<option value='" + item.estadoid + "' selected>" + item.estadonom + "</option>"
-                            );
-                        } else {
-                            $("#estado-caso").append(
-                                "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
-                            );
-                        }
-                    }
+                    $("#estado-caso").append(
+                        "<option value='" + item.estadoid + "'>" + item.estadonom + "</option>"
+                    );
                 });
             }
         },
         error: function(xhr, status, errorThrown) {
-            alert("Error: " + xhr.status + " - " + errorThrown);
+            console.error("Error al cargar estados:", errorThrown);
         },
     });
 }
 
 // FUNCION PARA LLENAR EL COMBO PAIS
-function llenar_pais(e, id) {
-    e.preventDefault;
+function llenar_pais(e) {
+    if (e && e.preventDefault) e.preventDefault();
     url = "/llenar_pais";
     $.ajax({
         url: url,
@@ -368,44 +353,15 @@ function llenar_pais(e, id) {
         success: function(data) {
             if (data.length >= 1) {
                 $("#pais-caso").empty();
-               
-                if (id === undefined) {
-                    $.each(data, function(i, item) {
-                        //
-                        $("#pais-caso").append(
-                            "<option value=" +
-                            item.paisid +
-                            ">" +
-                            item.paisnom +
-                            "</option>"
-                        );
-                    });
-                } else {
-                    $.each(data, function(i, item) {
-                        if (item.id === id) {
-                            $("#pais-caso").append(
-                                "<option value=" +
-                                item.paisid +
-                                " selected>" +
-                                item.paisnom +
-                                "</option>"
-                            );
-                        } else {
-                            $("#pais-caso").append(
-                                "<option value=" +
-                                item.paisid +
-                                ">" +
-                                item.paisnom +
-                                "</option>"
-                            );
-                        }
-                    });
-                }
+                $.each(data, function(i, item) {
+                    $("#pais-caso").append(
+                        "<option value=" + item.paisid + ">" + item.paisnom + "</option>"
+                    );
+                });
             }
         },
         error: function(xhr, status, errorThrown) {
-            alert(xhr.status);
-            alert(errorThrown);
+            console.error("Error al cargar países:", errorThrown);
         },
     });
 }
@@ -416,10 +372,8 @@ function llenar_pais(e, id) {
 
 $("#red-social").on('change', function() {
     $("#red-social").removeClass('is-invalid');
-    id_red_social=$('#red-social').val();  
-    
-   llenar_Tipo_Atencion(Event,id_red_social);   
- 
+    let id_red_social = $('#red-social').val();
+    llenar_Tipo_Atencion(id_red_social);   
 });
  
 $("#estado-caso").on('change', function() {
@@ -543,75 +497,94 @@ $("#pais-caso").on('change', function() {
 });
 
 
-// Evento que busca los municipios por estados (Disparado al hacer click en el selector)
-$(document).on("click", "#estado-caso", (e) => {
-     e.preventDefault();
- 
-     let datos = {
-         id_estado: $("#estado-caso").val(),
-     };
-     $.ajax({
-             url: "/municipios",
-             method: "POST",
-             dataType: "JSON",
-             data: {
-                 data: btoa(JSON.stringify(datos)),
-             },
-         })
-         .then((response) => {
-             $("#municipio-caso").html(response.data);
- 
-             let mun = $("#municipio-caso").val();
- 
-             if (mun != 0) {
-                 let datos = {
-                     id_municipio: $("#municipio-caso").val(),
-                 };
-                 $.ajax({
-                         url: "/parroquias",
-                         method: "POST",
-                         dataType: "JSON",
-                         data: {
-                             data: btoa(JSON.stringify(datos)),
-                         },
-                     })
-                     .then((response) => {
-                         $("#parroquia-caso").html(response.data);
-                     })
-                     .catch((request) => {
-                         // El mensaje de error original usa 'response.JSONmessage' que no está definido en el catch
-                         Swal.fire("Error", "Error al cargar parroquias.", "error"); 
-                     });
-             }
-         })
-         .catch((request) => {
-             // El mensaje de error original usa 'response.JSONmessage' que no está definido en el catch
-             Swal.fire("Error", "Error al cargar municipios.", "error");
-         });
- });
+// Evento que busca los municipios por estados (Disparado al cambiar la selección)
+$(document).on("change", "#estado-caso", (e) => {
+    e.preventDefault();
+    
+    // Validar que se haya seleccionado un estado válido (no "Seleccione" que tiene valor 0)
+    const estadoId = $("#estado-caso").val();
+    if (!estadoId || estadoId === '0' || estadoId === 0) {
+        // Limpiar los selectores dependientes
+        $("#municipio-caso").html("<option value='0' selected disabled>Seleccione</option>");
+        $("#parroquia-caso").html("<option value='0' selected disabled>Seleccione</option>");
+        return;
+    }
+    
+    let datos = {
+        id_estado: estadoId,
+    };
+    $.ajax({
+        url: "/municipios",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            data: btoa(JSON.stringify(datos)),
+        },
+    })
+    .then((response) => {
+        $("#municipio-caso").html(response.data);
+        
+        // Obtener el primer municipio cargado y cargar sus parroquias
+        let mun = $("#municipio-caso").val();
+        if (mun && mun !== '0') {
+            let datos_p = {
+                id_municipio: mun,
+            };
+            return $.ajax({
+                url: "/parroquias",
+                method: "POST",
+                dataType: "JSON",
+                data: {
+                    data: btoa(JSON.stringify(datos_p)),
+                },
+            });
+        } else {
+            // Si no hay municipios, limpiar parroquias
+            $("#parroquia-caso").html("<option value='0' selected disabled>Seleccione</option>");
+        }
+    })
+    .then((response) => {
+        if (response) {
+            $("#parroquia-caso").html(response.data);
+        }
+    })
+    .catch((request) => {
+        console.error("Error al cargar municipios:", request);
+        Swal.fire("Error", "Error al cargar municipios.", "error");
+    });
+});
 
-// Evento que busca las parroquias por municipio (Disparado al hacer click en el selector)
- $(document).on("click", "#municipio-caso", (e) => {
-     e.preventDefault();
-     let datos = {
-         id_municipio: $("#municipio-caso").val(),
-     };
-     $.ajax({
-             url: "/parroquias",
-             method: "POST",
-             dataType: "JSON",
-             data: {
-                 data: btoa(JSON.stringify(datos)),
-             },
-         })
-         .then((response) => {
-             $("#parroquia-caso").html(response.data);
-         })
-         .catch((request) => {
-             // El mensaje de error original usa 'response.JSONmessage' que no está definido en el catch
-             Swal.fire("Error", "Error al cargar parroquias.", "error");
-         });
- });
+// Evento que busca las parroquias por municipio (Disparado al cambiar la selección)
+$(document).on("change", "#municipio-caso", (e) => {
+    e.preventDefault();
+    
+    // Validar que se haya seleccionado un municipio válido
+    const municipioId = $("#municipio-caso").val();
+    if (!municipioId || municipioId === '0' || municipioId === 0) {
+        // Limpiar el selector de parroquias
+        $("#parroquia-caso").html("<option value='0' selected disabled>Seleccione</option>");
+        return;
+    }
+    
+    let datos = {
+        id_municipio: municipioId,
+    };
+    $.ajax({
+        url: "/parroquias",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            data: btoa(JSON.stringify(datos)),
+        },
+    })
+    .then((response) => {
+        $("#parroquia-caso").html(response.data);
+    })
+    .catch((request) => {
+        console.error("Error al cargar parroquias:", request);
+        Swal.fire("Error", "Error al cargar parroquias.", "error");
+    });
+});
 
 // =================================================================
 // DEFINICIONES DE FUNCIONES AUXILIARES (CORRECCIÓN)
@@ -826,8 +799,8 @@ function llenar_Selectores_Iniciales(prefijo) {
 
 
 //FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
-function llenar_Organismos_PP(e, id) {
-    e.preventDefault;
+function llenar_Organismos_PP(e) {
+    if (e && e.preventDefault) e.preventDefault();
     url = "/Listar_Organismo_PP_filtro";
     $.ajax({
         url: url,
@@ -836,46 +809,19 @@ function llenar_Organismos_PP(e, id) {
         beforeSend: function(data) {},
         success: function(data) {
             if (data.length >= 1) {
-             $("#organismo-caso").empty();
+                $("#organismo-caso").empty();
                 $("#organismo-caso").append(
                     "<option value=0  selected disabled>Seleccione</option>"
                 );
-                if (id === undefined) {
-                    $.each(data, function(i, item) {
-                        //
-                        $("#organismo-caso").append(
-                            "<option value=" +
-                            item.org_id+
-                            ">" +
-                            item.org_nombre +
-                            "</option>"
-                        );
-                    });
-                } else {
-                    $.each(data, function(i, item) {
-                        if (item.id=== org_id) {
-                            $("#organismo-caso").append(
-                                "<option value=" +
-                                item.org_id+
-                                " selected>" +
-                                item.org_nombre +
-                                "</option>"
-                            );
-                        } else {
-                            $("#organismo-caso").append(
-                                "<option value=" +
-                                item.org_id+
-                                ">" +
-                                item.org_nombre +
-                                "</option>"
-                            );
-                        }
-                    });
-                }
+                $.each(data, function(i, item) {
+                    $("#organismo-caso").append(
+                        "<option value=" + item.org_id + ">" + item.org_nombre + "</option>"
+                    );
+                });
             }
         },
         error: function(xhr, status, errorThrown) {
-            
+            console.error("Error al cargar organismos:", errorThrown);
         },
     });
 }
@@ -888,9 +834,9 @@ function llenar_Organismos_PP(e, id) {
 
 
  
- //FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
- function llenar_Tipo_Beneficiarios(e, id) {
-    e.preventDefault;
+//FUNCION PARA LLENAR EL COMBO TIPO DE BENEFICIARIOS
+function llenar_Tipo_Beneficiarios(e) {
+    if (e && e.preventDefault) e.preventDefault();
     url = "/Listar_Tipo_Beneficiarios_filtro";
     $.ajax({
         url: url,
@@ -899,241 +845,130 @@ function llenar_Organismos_PP(e, id) {
         beforeSend: function(data) {},
         success: function(data) {
             if (data.length >= 1) {
-             $("#t-beneficiario").empty();
+                $("#t-beneficiario").empty();
                 $("#t-beneficiario").append(
                     "<option value=0  selected disabled>Seleccione</option>"
                 );
-                if (id === undefined) {
-                    $.each(data, function(i, item) {
-                        //
-                        $("#t-beneficiario").append(
-                            "<option value=" +
-                            item.tipo_beneficiario_id+
-                            ">" +
-                            item.tipo_beneficiario_nombre +
-                            "</option>"
-                        );
-                    });
-                } else {
-                    $.each(data, function(i, item) {
-                        if (item.id=== ente_adscrito_id) {
-                            $("#t-beneficiario").append(
-                                "<option value=" +
-                                item.tipo_beneficiario_id+
-                                " selected>" +
-                                item.tipo_beneficiario_nombre +
-                                "</option>"
-                            );
-                        } else {
-                            $("#t-beneficiario").append(
-                                "<option value=" +
-                                item.tipo_beneficiario_id+
-                                ">" +
-                                item.tipo_beneficiario_nombre +
-                                "</option>"
-                            );
-                        }
-                    });
-                }
+                $.each(data, function(i, item) {
+                    $("#t-beneficiario").append(
+                        "<option value=" + item.tipo_beneficiario_id + ">" + item.tipo_beneficiario_nombre + "</option>"
+                    );
+                });
             }
         },
         error: function(xhr, status, errorThrown) {
-            
+            console.error("Error al cargar tipos de beneficiario:", errorThrown);
         },
     });
 }
  
- //FUNCION PARA LLENAR EL COMBO ENTES ADSCRITOS
- function llenar_Entes_asdcritos(e, ente_adscrito_id) {
-     e.preventDefault;
-     url = "/Listar_Entes_asdcritos";
-     $.ajax({
-         url: url,
-         method: "GET",
-         dataType: "JSON",
-         beforeSend: function(data) {},
-         success: function(data) {
-             if (data.length >= 1) {
-              $("#ente-adscrito").empty();
-                 $("#ente-adscrito").append(
-                     "<option value=0  selected disabled>Seleccione</option>"
-                 );
-                 if (ente_adscrito_id === undefined) {
-                     $.each(data, function(i, item) {
-                         //
-                         $("#ente-adscrito").append(
-                             "<option value=" +
-                             item.ente_id +
-                             ">" +
-                             item.ente_nombre +
-                             "</option>"
-                         );
-                     });
-                 } else {
-                     $.each(data, function(i, item) {
-                         if (item.ente_id === ente_adscrito_id) {
-                             $("#ente-adscrito").append(
-                                 "<option value=" +
-                                 item.ente_id +
-                                 " selected>" +
-                                 item.ente_nombre +
-                                 "</option>"
-                             );
-                         } else {
-                             $("#ente-adscrito").append(
-                                 "<option value=" +
-                                 item.ente_id +
-                                 ">" +
-                                 item.ente_nombre +
-                                 "</option>"
-                             );
-                         }
-                     });
-                 }
-             }
-         },
-         error: function(xhr, status, errorThrown) {
-             alert(xhr.status);
-             alert(errorThrown);
-         },
-     });
- }
+//FUNCION PARA LLENAR EL COMBO ENTES ADSCRITOS
+function llenar_Entes_asdcritos(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    url = "/Listar_Entes_asdcritos";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $("#ente-adscrito").empty();
+                $("#ente-adscrito").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                $.each(data, function(i, item) {
+                    $("#ente-adscrito").append(
+                        "<option value=" + item.ente_id + ">" + item.ente_nombre + "</option>"
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar entes adscritos:", errorThrown);
+        },
+    });
+}
  
- //FUNCION PARA LLENAR EL COMBO DE LAS REDES SOCIALES
- function llenar_Red_social(e, id) {
-     e.preventDefault;
-     url = "/listar_Red_Social_filtro";
-     $.ajax({
-         url: url,
-         method: "GET",
-         dataType: "JSON",
-         beforeSend: function(data) {},
-         success: function(data) {
-             if (data.length >= 1) {
-                 $("#red-social").empty();
-                 $("#red-social").append(
-                     "<option value=0  selected disabled>Seleccione</option>"
-                 );
-                 if (id === undefined) {
-                     $.each(data, function(i, item) {
-                         //
-                         $("#red-social").append(
-                             "<option value=" +
-                             item.red_s_id +
-                             ">" +
-                             item.red_s_nom +
-                             "</option>"
-                         );
-                     });
-                 } else {
-                     $.each(data, function(i, item) {
-                         if (item.id === id) {
-                             $("#red-social").append(
-                                 "<option value=" +
-                                 item.red_s_id +
-                                 " selected>" +
-                                 item.red_s_nom +
-                                 "</option>"
-                             );
-                         } else {
-                             $("#red-social").append(
-                                 "<option value=" +
-                                 item.red_s_id +
-                                 ">" +
-                                 item.red_s_nom +
-                                 "</option>"
-                             );
-                         }
-                     });
-                 }
-             }
-         },
-         error: function(xhr, status, errorThrown) {
-             alert(xhr.status);
-             alert(errorThrown);
-         },
-     });
- }
+//FUNCION PARA LLENAR EL COMBO DE LAS REDES SOCIALES
+function llenar_Red_social(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    url = "/listar_Red_Social_filtro";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $("#red-social").empty();
+                $("#red-social").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                $.each(data, function(i, item) {
+                    $("#red-social").append(
+                        "<option value=" + item.red_s_id + ">" + item.red_s_nom + "</option>"
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar redes sociales:", errorThrown);
+        },
+    });
+}
  
  
 
 
  
- //FUNCION PARA LLENAR EL COMBO TIPO DE PROPIEDAD INTELECTUAL
- function llenar_Propiedad_Intelectual(e, id) {
-     e.preventDefault;
-     url = "/Listar_Propiedad_Intelectual_MOD";
-     $.ajax({
-         url: url,
-         method: "GET",
-         dataType: "JSON",
-         beforeSend: function(data) {},
-         success: function(data) {
-             if (data.length >= 1) {
-                 $("#tipo-pi").empty();
-                 $("#tipo-pi").append(
-                     "<option value=0  selected disabled>Seleccione</option>"
-                 );
-                 if (id === undefined) {
-                     $.each(data, function(i, item) {
-                         //
-                         $("#tipo-pi").append(
-                             "<option value=" +
-                             item.tipo_prop_id +
-                             ">" +
-                             item.tipo_prop_nombre +
-                             "</option>"
-                         );
-                     });
-                 } else {
-                     $.each(data, function(i, item) {
-                         if (item.id === id) {
-                             $("#tipo-pi").append(
-                                 "<option value=" +
-                                 item.tipo_prop_id +
-                                 " selected>" +
-                                 item.tipo_prop_nombre +
-                                 "</option>"
-                             );
-                         } else {
-                             $("#tipo-pi").append(
-                                 "<option value=" +
-                                 item.tipo_prop_id +
-                                 ">" +
-                                 item.tipo_prop_nombre +
-                                 "</option>"
-                             );
-                         }
-                     });
-                 }
-             }
-         },
-         error: function(xhr, status, errorThrown) {
-             alert(xhr.status);
-             alert(errorThrown);
-         },
-     });
- }
+// FUNCION PARA LLENAR EL COMBO TIPO DE PROPIEDAD INTELECTUAL
+function llenar_Propiedad_Intelectual(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    url = "/Listar_Propiedad_Intelectual_MOD";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $("#tipo-pi").empty();
+                $("#tipo-pi").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                $.each(data, function(i, item) {
+                    $("#tipo-pi").append(
+                        "<option value=" +
+                        item.tipo_prop_id +
+                        ">" +
+                        item.tipo_prop_nombre +
+                        "</option>"
+                    );
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar propiedad intelectual:", errorThrown);
+        },
+    });
+}
  
-// Función para llenar el combo tipo de atención usuario con formación
-
-
-
-
-
-
-
-
-
- function llenar_Tipo_Atencion(e, idRedSocial) {
+// Función para llenar el combo tipo de atención usuario
+function llenar_Tipo_Atencion(idRedSocial) {
+    if (!idRedSocial) {
+        let $select = $("#tipo-atencion-usu");
+        $select.empty();
+        $select.append("<option value='0' selected disabled>Seleccione</option>");
+        return;
+    }
+    
     let url = "/buscar_via_tipo_atencion/" + idRedSocial;
     $.ajax({
         url: url,
         method: "GET",
         dataType: "JSON",
-        beforeSend: function() {
-            // Puedes agregar un loader o alguna acción antes de la solicitud
-        },
+        beforeSend: function() {},
         success: function(data) {
             let $select = $("#tipo-atencion-usu");
             $select.empty();
@@ -1148,7 +983,7 @@ function llenar_Organismos_PP(e, id) {
             });
         },
         error: function(xhr) {
-            alert("Error: " + xhr.status + " - " + xhr.statusText);
+            console.error("Error al cargar tipos de atención:", xhr.status);
         },
     });
 }
@@ -1242,61 +1077,36 @@ $("#tipo-atencion-usu").on('change', function(e) {
 
 
 
-function  llenar_detalle_atencion(e,idTipoAtencion)
-{
-
-    e.preventDefault;
+function llenar_detalle_atencion(e, idTipoAtencion) {
+    if (e && e.preventDefault) e.preventDefault();
     
-      url='/Listar_Detalle_Atencion_filtro';
-       $.ajax
-      ({
-           url:url,
-           method:'GET',
-          dataType:'JSON',
-          beforeSend:function(data)
-          {
-          },
-          success:function(data)
-          {
-          
-if(data.length>=1)
-{
-     $('#detalles_atencion').empty();
-     $('#detalles_atencion').append('<option value=0  selected disabled>Seleccione</option>');   
-     if(idTipoAtencion===undefined)
-    {
-      
-      
-         $.each(data, function(i, item)
-         {
-           $(".detelle_atencion").hide();
-              //
-              $('#detalles_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');
-
-         });
-    }
-    else
-    {
-       $(".detelle_atencion").hide();
-       data=data.filter(dato=>dato.tipo_aten_id==idTipoAtencion);
-       //console.log(buscar);
-          $.each(data, function(i, item)
-          {
-          
-   
-           $(".detelle_atencion").show();
-           $("#hijos_tipoatencion").val('SI');
-           $('#detalles_atencion').append('<option value='+item.tipo_atend_id+'>'+item.tipo_atend_nombre+'</option>');    
-         });
-    }
-}      
-},
-error:function(xhr, status, errorThrown)
-{
-    alert(xhr.status);
-    alert(errorThrown);
-}
-});
+    url = '/Listar_Detalle_Atencion_filtro';
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'JSON',
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+                $('#detalles_atencion').empty();
+                $('#detalles_atencion').append('<option value=0  selected disabled>Seleccione</option>');
+                
+                // Filtrar por tipo de atención si se proporciona
+                if (idTipoAtencion !== undefined) {
+                    data = data.filter(dato => dato.tipo_aten_id == idTipoAtencion);
+                }
+                
+                $.each(data, function(i, item) {
+                    $(".detelle_atencion").show();
+                    $("#hijos_tipoatencion").val('SI');
+                    $('#detalles_atencion').append('<option value=' + item.tipo_atend_id + '>' + item.tipo_atend_nombre + '</option>');
+                });
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar detalle de atención:", errorThrown);
+        }
+    });
 }
 
 
