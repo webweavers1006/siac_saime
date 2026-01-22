@@ -634,6 +634,9 @@ $(document).on('submit', "#form-asociar-caso", function(e) {
 
         // 8. Éxito
         success: function(response) {
+            // Rehabilitar botón antes de cualquier acción
+            $submitBtn.prop('disabled', false).text('Asignar');
+            
             if (response.success) {
                 alert("✅ Caso asociado exitosamente.");
                  window.location = "/punto_cuenta";
@@ -645,7 +648,23 @@ $(document).on('submit', "#form-asociar-caso", function(e) {
             }
         },
 
-       
+        // 9. Manejo de errores HTTP (incluye 500)
+        error: function(xhr, status, error) {
+            // Rehabilitar botón
+            $submitBtn.prop('disabled', false).text('Asignar');
+            
+            console.error("Error AJAX:", status, error);
+            
+            let mensaje_error = "Error de conexión con el servidor.";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                mensaje_error = xhr.responseJSON.message;
+            } else if (xhr.status === 500) {
+                mensaje_error = "Error interno del servidor (500). Verifique que el caso no esté ya asociado.";
+            }
+            
+            alert("❌ Error: " + mensaje_error);
+        }
+
     });
 });
 

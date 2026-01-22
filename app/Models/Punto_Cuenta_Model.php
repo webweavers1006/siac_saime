@@ -113,23 +113,24 @@ public function cargarCasosAsociados($id_punto_cuenta)
     public function verificar_caso_existente(int $id_punto_cuenta, int $id_caso)
     {
         $db = \Config\Database::connect();
-        $builder = $db->table('public.sgc_caso_punto_cuenta ');    
+        $builder = $db->table('public.sgc_caso_punto_cuenta');    
        
         $builder->select("*");
         $builder->where('id_punto_cuenta', $id_punto_cuenta);
-        $builder ->where('id_caso', $id_caso);
+        $builder->where('id_caso', $id_caso);
         $query = $builder->get();
-        $resultado = $query->getResult();
-        return $resultado;
+        $resultado = $query->getRow(); // Usar getRow() para obtener una sola fila
+        return $resultado ? true : false; // Retornar booleano
     }
 
 
 
  public function asociar_nuevo_caso($datosAsociacion)
     {
-        $builder = $this->dbconn("sgc_caso_punto_cuenta");
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_caso_punto_cuenta');
         $query = $builder->insert($datosAsociacion);
-        return $query;
+        return $query ? true : false; // Retornar booleano explícito
     }
 
 

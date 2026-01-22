@@ -102,39 +102,47 @@ class Punto_Cuenta_Controler extends BaseController
         return $this->response->setJSON($respuesta);
     }
     
-    // 4. Verificar si el caso ya está asociado (el modelo devuelve un array, no un booleano)
-    $existe = $puntoCuentaModel->verificar_caso_existente($id_punto_cuenta, $id_caso);
+    try {
+        // 4. Verificar si el caso ya está asociado
+        $existe = $puntoCuentaModel->verificar_caso_existente($id_punto_cuenta, $id_caso);
 
-    if (!empty($existe)) {
-        // Ya existe
-        $respuesta['message'] = 'El Caso ID: ' . $id_caso . ' ya está asociado a este Punto de Cuenta.';
-        
-    } else {
-        // 5. Asociar nuevo caso
-        $datosAsociacion = [
-            'id_punto_cuenta' => $id_punto_cuenta,
-            'id_caso' => $id_caso,
-        ];
-        
-        $insertado = $puntoCuentaModel->asociar_nuevo_caso($datosAsociacion);
-
-        if ($insertado) { 
+        if ($existe) {
+            // Ya existe
+            $respuesta['message'] = 'El Caso ID: ' . $id_caso . ' ya está asociado a este Punto de Cuenta.';
             
-            // Lógica de Auditoría
-            $descripcion = "Caso ID: $id_caso asociado al Punto de Cuenta ID: $id_punto_cuenta.";
-            $auditoriaModel->agregar([
-                'audi_user_id'  => $this->session->get('id_usuario'),
-                'audi_accion' => $descripcion,
-            ]);
-
-             $respuesta['success'] = true;
-             $respuesta['message'] = 'Caso ID: ' . $id_caso . ' asociado correctamente.';
-
         } else {
-            // Falla en la inserción
-            $respuesta['message'] = 'Error de base de datos al asociar el caso.';
+            // 5. Asociar nuevo caso
+            $datosAsociacion = [
+                'id_punto_cuenta' => $id_punto_cuenta,
+                'id_caso' => $id_caso,
+            ];
+            
+            $insertado = $puntoCuentaModel->asociar_nuevo_caso($datosAsociacion);
+
+            if ($insertado) { 
+                
+                // Lógica de Auditoría
+                $descripcion = "Caso ID: $id_caso asociado al Punto de Cuenta ID: $id_punto_cuenta.";
+                $auditoriaModel->agregar([
+                    'audi_user_id'  => $this->session->get('iduser'), // Corregido: 'iduser' no 'id_usuario'
+                    'audi_accion' => $descripcion,
+                ]);
+
+                 $respuesta['success'] = true;
+                 $respuesta['message'] = 'Caso ID: ' . $id_caso . ' asociado correctamente.';
+
+            } else {
+                // Falla en la inserción
+                $respuesta['message'] = 'Error de base de datos al asociar el caso.';
+            }
         }
+    } catch (\Exception $e) {
+        // Capturar cualquier excepción y loguear
+        log_message('error', 'Error en asociar_casos: ' . $e->getMessage());
+        $respuesta['message'] = 'Error del servidor: ' . $e->getMessage();
+        return $this->response->setJSON($respuesta)->setStatusCode(500);
     }
+    
     // 6. Devolver la respuesta como JSON
     return $this->response->setJSON($respuesta);
 
