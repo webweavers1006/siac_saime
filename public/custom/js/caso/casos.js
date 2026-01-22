@@ -1414,12 +1414,13 @@ cargarPuntosDeCuenta(idcaso);
 
    
     ///////
- loadCaseData(idcaso);
+    loadCaseData(idcaso, id_tipo_atencion);
 /**
  * Función para cargar los datos del caso al presionar el botón de edición.
  * @param {number} idcaso El ID del caso a editar.
+ * @param {number} id_tipo_atencion El ID del tipo de atención del caso.
  */
-function loadCaseData(idcaso) {
+function loadCaseData(idcaso, id_tipo_atencion) {
     $.ajax({
         url: "/buscar_caso_cordenada/" + idcaso,
         method: "get",
@@ -1427,25 +1428,60 @@ function loadCaseData(idcaso) {
     })
     .then((response) => {
         if (response && response.length > 0) {
-            const coordenadas = response[0];
-            const initialCoords = [parseFloat(coordenadas.latitud), parseFloat(coordenadas.longitud)];
-            const initialName = coordenadas.nombre;
-            $(".coordenadas").show();
-            $("#actcoordenadas").val('t');
-            handleMapDisplay(true, initialCoords, initialName);
+            // Hay coordenadas guardadas - ahora verificar si el tipo de atención permite coordenadas
+            verificarCoordenadasYObtenerMapa(idcaso, id_tipo_atencion, response[0]);
         } else {
-
-            $(".coordenadas").hide();
-            $("#actcoordenadas").val('f');
-            handleMapDisplay(false);
-            console.log("No se encontró información de coordenadas.");
+            // No hay coordenadas guardadas - verificar si el tipo de atención permite coordenadas
+            verificarCoordenadasYObtenerMapa(idcaso, id_tipo_atencion, null);
         }
     })
     .catch(() => {
-        Swal.fire("Error", "Error al cargar los datos.", "error");
-        $("#actcoordenadas").val('f');
+        // En caso de error, intentar mostrar mapa según el tipo de atención
+        verificarCoordenadasYObtenerMapa(idcaso, id_tipo_atencion, null);
+    });
+}
+
+/**
+ * Función auxiliar para verificar si el tipo de atención permite coordenadas
+ * y mostrar el mapa con valores correspondientes.
+ * @param {number} idcaso El ID del caso.
+ * @param {number} id_tipo_atencion El ID del tipo de atención.
+ * @param {object|null} coordenadasData Datos de coordenadas guardadas (si existen).
+ */
+function verificarCoordenadasYObtenerMapa(idcaso, id_tipo_atencion, coordenadasData) {
+    $.ajax({
+        url: `/Listar_Tipo_Atencion_act_coordenadas/${id_tipo_atencion}`,
+        method: 'GET',
+        dataType: 'json',
+    })
+    .done((resp) => {
+        const tipoAtencion = resp[0];
+        if (tipoAtencion && tipoAtencion.act_coordenadas === 't') {
+            // El tipo de atención permite coordenadas - mostrar mapa
+            $(".coordenadas").show();
+            $("#actcoordenadas").val('t');
+            
+            if (coordenadasData) {
+                // Hay coordenadas guardadas - mostrarlas en el mapa
+                const initialCoords = [parseFloat(coordenadasData.latitud), parseFloat(coordenadasData.longitud)];
+                const initialName = coordenadasData.nombre;
+                console.log("Coordenadas encontradas. Mostrando ubicación guardada.");
+                handleMapDisplay(true, initialCoords, initialName);
+            } else {
+                // No hay coordenadas guardadas - mostrar mapa con valores por defecto
+                console.log("No se encontraron coordenadas guardadas. Tipo de atención permite coordenadas. Mostrando mapa para que el usuario pueda agregar las coordenadas.");
+                handleMapDisplay(true, defaultVenezuelaCoords, 'Nueva ubicación');
+            }
+        } else {
+            // El tipo de atención no permite coordenadas - ocultar mapa
+            console.log("El tipo de atención no permite coordenadas. El mapa permanece oculto.");
+            handleMapDisplay(false);
+        }
+    })
+    .fail((xhr, status, error) => {
+        console.error("Error al verificar si el tipo de atención permite coordenadas:", error);
+        // En caso de error, ocultamos el mapa por precaución
         handleMapDisplay(false);
-        console.log("Error en la solicitud. El mapa no se muestra.");
     });
 }
 
@@ -1913,6 +1949,7 @@ function llenar_municipios(e, estadoid, municipioid) {
             $("#municipio-caso").val(municipioid).prop("selected", true);
             let municipionom = $('#municipio-caso option:selected').text();
             $("#municipio_anterior").val(municipionom);
+            let mun = $("#municipio-caso").val();
             if (mun != 0) {
                 let datos = {
                     id_municipio: $("#municipio-caso").val(),
