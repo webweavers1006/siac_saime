@@ -73,7 +73,7 @@ class Punto_Cuenta_Model extends BaseModel
         $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
         $builder->join('sgc_tipoatenciondetalle deta', 'a.tipo_atend_id = deta.tipo_atend_id', 'left');
-        $builder->where('a.borrado', 'false');
+        $builder->where('a.borrado', false);
         $builder->where('a.idcaso', $inputnuevocaso);
         $builder->orderBy('a.idcaso', 'DESC');
         $query = $builder->get();

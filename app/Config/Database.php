@@ -53,6 +53,7 @@ class Database extends \CodeIgniter\Database\Config
 		'strictOn' => false,
 		'failover' => [],
 		'port'     => 5432,
+		'schema'   => 'public',
 	];
 
 	/**

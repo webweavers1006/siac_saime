@@ -61,7 +61,7 @@ class Pdf_Model extends BaseModel
         $builder->join('sgc_registro_cgr AS cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_ente_asdcrito AS ente', 'a.ente_adscrito_id = ente.ente_id', 'left');
     
-        $builder->where('a.borrado', 'false');
+        $builder->where('a.borrado', false);
     
         if ($idcaso) {
             $builder->where('a.idcaso', $idcaso);

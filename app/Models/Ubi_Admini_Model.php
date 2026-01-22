@@ -26,7 +26,7 @@ class Ubi_Admini_Model extends BaseModel
 	{
 		$builder = $this->dbconn('public.sgc_direcciones_administrativas as direc');
 		$builder->select(
-			"direc.id,direc.descripcion,direc.correo,case when direc.borrado='false' then 'Activo' else 'Inactivo' end as borrado "
+			"direc.id,direc.descripcion,direc.correo,case when direc.borrado = FALSE then 'Activo' else 'Inactivo' end as borrado "
 		);
 		//$builder->where(['direc.borrado' => false]);
 		$query = $builder->get();
@@ -36,7 +36,7 @@ class Ubi_Admini_Model extends BaseModel
 	{
 		$builder = $this->dbconn('public.sgc_direcciones_administrativas as direc');
 		$builder->select(
-			"direc.id,direc.descripcion,direc.correo,case when direc.borrado='false' then 'Activo' else 'Inactivo' end as borrado "
+			"direc.id,direc.descripcion,direc.correo,case when direc.borrado = FALSE then 'Activo' else 'Inactivo' end as borrado "
 		);
 		$builder->where(['direc.borrado' => false]);
 		$query = $builder->get();
@@ -51,7 +51,7 @@ class Ubi_Admini_Model extends BaseModel
 			'direc.id',
 			'direc.descripcion',
 			'direc.correo',
-			"CASE WHEN direc.borrado = 'false' THEN 'Activo' ELSE 'Inactivo' END AS borrado"
+			"CASE WHEN direc.borrado = FALSE THEN 'Activo' ELSE 'Inactivo' END AS borrado"
 		]);
     	$builder->where([
 			'direc.borrado' => false,

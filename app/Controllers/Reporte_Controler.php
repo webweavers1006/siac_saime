@@ -291,6 +291,7 @@ public function reporte_consolidado()
 				];
 				
 				
+				
 			  //BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO ATENCION PARA LA GRAFICA
 				$count_atencion = [];
 				// Verificamos si el resultado de la consulta no está vacío
@@ -302,6 +303,9 @@ public function reporte_consolidado()
 						$count_atencion[] = $atencion->count;
 					}
 				}
+
+
+
 
 				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO MASCULINO
 				$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado);
@@ -316,6 +320,7 @@ public function reporte_consolidado()
 				}
 
 
+
 				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO FEMENINO
 				$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado);
 				$count_atencion_Femenino = [];
@@ -328,6 +333,7 @@ public function reporte_consolidado()
 					}
 				}
 
+				
 				$data = [
 					'beneficiarios' => $beneficiarios,
 					'via_atencion' => $query_casos_atendidos,
@@ -337,10 +343,11 @@ public function reporte_consolidado()
 					'count_atencion_Femenino' => $count_atencion_Femenino,
 				];
 
+				
 				//	BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION
 				$query_casos_solicitud = $model->contarCasosAtencionCiudadano();
 
-					
+			
 				//BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO DE SOLICITUD PARA LA GRAFICA
 				$count_solicitud = [];
 				$nombres_solicitud = [];
@@ -353,10 +360,12 @@ public function reporte_consolidado()
 						$count_solicitud[] = $count_solic->count;
 					}
 				}
-
+	
+				
 				//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION MASCULINO
 				$query_casos_solicitud_Masculino = $model->contarCasosTipoSolicitudMasculino($desde, $hasta);
 				
+	
 				$count_solicitud_Masculino = [];
 				// Verificamos si el resultado de la consulta no está vacío
 				if (!empty($query_casos_solicitud_Masculino)) {
@@ -366,7 +375,6 @@ public function reporte_consolidado()
 						$count_solicitud_Masculino[] = $solicitud->count;
 					}
 				}
-
 
 
 
@@ -382,6 +390,7 @@ public function reporte_consolidado()
 					}
 				}
 
+			
 				$data = [
 					'beneficiarios' => $beneficiarios,
 					'via_atencion' => $query_casos_atendidos,
@@ -396,7 +405,7 @@ public function reporte_consolidado()
 					'count_solicitud_Femenino' => $count_solicitud_Femenino
 				];
 				
-
+	
 
 				//	BUSCAMOS LOS CASOS POR ESTATUS
 				$query_casos_EstatusCasos = $model->contarCasosEstatus();

@@ -38,4 +38,13 @@ class Exceptions
 	| Default: APPPATH.'Views/errors'
 	*/
 	public $errorViewPath = APPPATH . 'Views/errors';
+
+	/*
+	|--------------------------------------------------------------------------
+	| Display Errors
+	|--------------------------------------------------------------------------
+	| If true, errors will be displayed on screen in development.
+	|
+	*/
+	public $displayErrors = true;
 }

@@ -27,15 +27,15 @@ class Casos extends BaseModel
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
         $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
-        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-        $builder->where('a.borrado', 'false');
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('public.sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
+        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        $builder->where('a.borrado', false);
         $builder->orderBy('a.idcaso', 'DESC');
         $query = $builder->get();
        // echo $db->getLastQuery(); 
@@ -182,7 +182,7 @@ private function buildBaseQuery($builder)
     $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
     $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
     $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-    $builder->where('a.borrado', 'false');
+    $builder->where('a.borrado', false);
     // NO SE ORDENA NI SE PONE EL LIMIT, eso lo maneja el método principal.
 }
 
@@ -214,8 +214,8 @@ private function buildBaseQuery($builder)
         $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
         $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-        $builder->where('a.borrado', 'false');
-        $builder->where('a.idusuopr', $idusur); 
+        $builder->where('a.borrado', false);
+        $builder->where('a.idusuopr', $idusur);
         $builder->orderBy('a.idcaso', 'DESC');
         $query = $builder->get();
         return $query->getResult();
@@ -317,7 +317,7 @@ private function buildBaseQuery($builder)
         $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
         // Establece las condiciones
-        $builder->where('a.borrado', 'false');
+        $builder->where('a.borrado', false);
         $builder->where('a.casoced', $casoced);
         // Ordena los resultados
         $builder->orderBy('a.idcaso', 'desc');
@@ -350,8 +350,8 @@ private function buildBaseQuery($builder)
         $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
         $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-        $builder->where('a.borrado', 'false');
-        $builder->where('a.idcaso', $id_caso); 
+        $builder->where('a.borrado', false);
+        $builder->where('a.idcaso', $id_caso);
         $query = $builder->get();
         return $query->getRow(); 
     }
@@ -898,7 +898,7 @@ public function contarCasosAtendidos_Fecha(string $desde, string $hasta, $id_est
     $builder->join("($subquery) AS tot", 'red.red_s_id = tot.idrrss', 'left');
     
     // Filtrar solo las redes sociales que no están borradas
-    $builder->where('red.red_s_borrado', 'false');
+    $builder->where('red.red_s_borrado', false);
     
     $builder->orderBy('red.red_s_nom', 'ASC');
     
@@ -1042,38 +1042,38 @@ public function contarCasosAtendidos_MASCULINO($desde = 'null', $hasta = 'null',
     $db = \Config\Database::connect();
     $builder = $db->table('public.sgc_red_social AS rs');
 
-    // 1. SELECT: COALESCE(COUNT(c.idrrss), 0) garantiza que se muestre 0 si no hay coincidencias.
-    $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
+    // 1. SELECT: Usamos COUNT de la tabla 'c' para que el LEFT JOIN funcione (si no hay casos, dará 0)
+    $builder->select('rs.red_s_nom, COALESCE(COUNT(c.idrrss), 0) AS count');
 
-    // --- 2. LEFT JOIN con todas las condiciones de CASOS ---
+    // --- 2. CONSTRUCCIÓN DE LA CONDICIÓN DEL JOIN ---
     
-    // Construir la condición base del JOIN
-    $join_condition = 'rs.red_s_id = c.idrrss AND c.borrado = false AND c.sexo = 1';
+    // IMPORTANTE: En PostgreSQL, los booleanos no llevan comillas. 
+    // Al usar un array o dejarlo como string sin escapar manualmente, 
+    // evitamos que CI añada comillas erróneas.
+    $joinCond = 'rs.red_s_id = c.idrrss AND c.borrado = FALSE AND c.sexo = 1';
 
-    // Agregar filtros de fecha a la condición del JOIN
-    if ($desde !== 'null' && $hasta !== 'null') {
-        // Usamos la sintaxis estándar de SQL sin el escape,
-        // confiando en que CodeIgniter lo maneje en el JOIN (CI3/4 pueden requerir adaptaciones)
-        // Para mayor seguridad, es mejor usar la técnica de Subconsulta en el JOIN (ejemplo anterior).
-        $join_condition .= " AND c.casofec >= " . $db->escape($desde);
-        $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
+    // Manejo de Fechas
+    if ($desde !== 'null' && $desde !== null && $hasta !== 'null' && $hasta !== null) {
+        // Usamos escape() para seguridad contra Inyección SQL
+        $joinCond .= " AND c.casofec >= " . $db->escape($desde);
+        $joinCond .= " AND c.casofec <= " . $db->escape($hasta);
     }
 
-    // Agregar filtro de estado a la condición del JOIN
+    // Manejo de Estado
     if ($id_estado !== 'null' && $id_estado !== null) {
-        $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
+        $joinCond .= " AND c.estadoid = " . $db->escape($id_estado);
     }
     
-    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
-    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    // Aplicar el LEFT JOIN
+    // El tercer parámetro 'false' evita que CodeIgniter intente poner comillas (escapar) 
+    // a toda la cadena de la condición, lo cual es crítico en PostgreSQL.
+    $builder->join('public.sgc_casos AS c', $joinCond, 'left', false);
 
-    // 3. Agrupación y Orden:
-    // Asegurarse de que rs.red_s_id se agrupe para obtener un conteo por cada red social.
+    // 3. Agrupación y Orden
     $builder->groupBy('rs.red_s_id, rs.red_s_nom');
     $builder->orderBy('rs.red_s_nom', 'ASC');
 
-    $query = $builder->get();
-    return $query->getResult();
+    return $builder->get()->getResult();
 }
 
    /**
@@ -1089,17 +1089,16 @@ public function contarCasosAtendidos_FEMENINO($desde = 'null', $hasta = 'null', 
     $db = \Config\Database::connect();
     $builder = $db->table('public.sgc_red_social AS rs');
 
-    // 1. SELECT: COALESCE(COUNT(c.idrrss), 0) garantiza que se muestre 0 si no hay coincidencias.
+    // 1. SELECT: Contamos idrrss de la tabla 'c' para que el LEFT JOIN devuelva 0 donde no hay matches
     $builder->select('COALESCE(COUNT(c.idrrss), 0) AS count, rs.red_s_nom');
 
-    // --- 2. LEFT JOIN con todas las condiciones de CASOS (para preservar el 0 count) ---
+    // --- 2. LEFT JOIN con todas las condiciones de CASOS ---
     
-    // Construir la condición base del JOIN. La condición de género Femenino es 'c.sexo = 2'.
-    $join_condition = 'rs.red_s_id = c.idrrss AND c.borrado = false AND c.sexo = 2';
+    // Definimos sexo = 2 para femenino y borrado = FALSE (sin comillas)
+    $join_condition = 'rs.red_s_id = c.idrrss AND c.borrado = FALSE AND c.sexo = 2';
 
     // Agregar filtros de fecha a la condición del JOIN
-    if ($desde !== 'null' && $hasta !== 'null') {
-        // Usar escape explícito para seguridad en la concatenación de la cláusula ON.
+    if ($desde !== 'null' && $desde !== null && $hasta !== 'null' && $hasta !== null) {
         $join_condition .= " AND c.casofec >= " . $db->escape($desde);
         $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
     }
@@ -1109,16 +1108,17 @@ public function contarCasosAtendidos_FEMENINO($desde = 'null', $hasta = 'null', 
         $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
     }
     
-    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
-    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    /**
+     * IMPORTANTE: El cuarto parámetro 'false' evita que CodeIgniter añada 
+     * comillas dobles incorrectas en PostgreSQL a nuestra cadena $join_condition.
+     */
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left', false);
 
-    // 3. Agrupación y Orden:
+    // 3. Agrupación y Orden
     $builder->groupBy('rs.red_s_id, rs.red_s_nom');
-    // Se recomienda 'ASC' para listar en orden alfabético, como se hizo en otros métodos.
     $builder->orderBy('rs.red_s_nom', 'ASC'); 
 
-    $query = $builder->get();
-    return $query->getResult();
+    return $builder->get()->getResult();
 }
     
   /**
@@ -1166,7 +1166,7 @@ public function contarCasosTipoSolicitudFecha($desde = 'null', $hasta = 'null', 
     // Realizar el LEFT JOIN usando la subconsulta generada de forma segura
     $builder->join("($subquery) AS tot", 'tip.tipo_aten_id = tot.id_tipo_atencion', 'left');
 
-    $builder->where('tip.tipo_aten_borrado', 'false');
+    $builder->where('tip.tipo_aten_borrado', false);
     $builder->orderBy('tip.tipo_aten_nombre', 'ASC');
     
     $query = $builder->get();
@@ -1199,20 +1199,20 @@ public function contarCasosTipoSolicitudFecha($desde = 'null', $hasta = 'null', 
         // Subconsulta para obtener el conteo de casos
         $subQueryCasos = $db->table('sgc_casos')
             ->select('count(idcaso) as veces, id_tipo_atencion')
-            ->where('borrado', 'false')
+            ->where('borrado', false)
             ->groupBy('id_tipo_atencion');
 
         // Subconsulta para obtener los tipos de atención
         $subQueryTipoAtencion = $builder
             ->select('tipo_aten_nombre, tipo_aten_id')
-            ->where('tipo_aten_borrado', 'false')
+            ->where('tipo_aten_borrado', false)
             ->orderBy('tipo_aten_id', 'ASC');
 
         // Crear la consulta principal utilizando el Query Builder
         $query = $db->table('sgc_tipoatencion_usu AS tipoaten')
             ->select('tipoaten.tipo_aten_nombre, COALESCE(casos.veces, 0) AS count')
             ->join("({$subQueryCasos->getCompiledSelect()}) AS casos", 'casos.id_tipo_atencion = tipoaten.tipo_aten_id', 'left')
-            ->where('tipoaten.tipo_aten_borrado', 'false')
+            ->where('tipoaten.tipo_aten_borrado', false)
             ->orderBy('tipoaten.tipo_aten_nombre', 'ASC');
 
         // Ejecutar la consulta
@@ -1234,35 +1234,37 @@ public function contarCasosTipoSolicitudMasculino($desde = 'null', $hasta = 'nul
     $db = \Config\Database::connect();
     $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
     
+    // 1. SELECT: Usamos c.idcaso para que el conteo sea 0 si el LEFT JOIN no encuentra coincidencias
     $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
 
-    // --- CONSTRUCCIÓN DE LA CONDICIÓN ON DEL JOIN ---
-    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'1\' AND c.borrado = false';
+    // --- 2. CONSTRUCCIÓN DE LA CONDICIÓN DEL JOIN ---
     
-    // 1. Agregar filtro de Fecha
-    if ($desde !== 'null' && $hasta !== 'null') {
-        // Usamos $db->escape() para asegurar que las fechas se traten como valores seguros dentro de la cadena SQL
+    // Sexo = 1 (Masculino), Borrado = FALSE (Postgres Keyword)
+    // Se recomienda usar el número 1 sin comillas si el campo es integer
+    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = 1 AND c.borrado = FALSE';
+    
+    // Filtros de Fecha
+    if ($desde !== 'null' && $desde !== null && $hasta !== 'null' && $hasta !== null) {
         $join_condition .= " AND c.casofec >= " . $db->escape($desde);
         $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
     }
     
-    // 2. Agregar filtro de Estado
+    // Filtro de Estado
     if ($id_estado !== 'null' && $id_estado !== null) {
         $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
     }
     
-    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
-    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    // IMPORTANTE: Cuarto parámetro 'false' para evitar el error de columna "FALSE"
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left', false);
     
-    // La única condición WHERE global debe ser para la tabla principal (tip_ate)
-    // El resto de filtros ya están en el JOIN.
-    $builder->where('tip_ate.tipo_aten_borrado', false); // No es necesario el string 'false' si es un booleano
+    // 3. Filtros globales de la tabla base
+    // Aquí sí podemos usar el booleano nativo de PHP ya que CI lo maneja bien en el WHERE
+    $builder->where('tip_ate.tipo_aten_borrado', false);
 
     $builder->groupBy('tip_ate.tipo_aten_nombre');
     $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
     
-    $query = $builder->get();
-    return $query->getResult(); 
+    return $builder->get()->getResult(); 
 }
 
 
@@ -1279,44 +1281,47 @@ public function contarCasosTipoSolicitudFemenino($desde = 'null', $hasta = 'null
     $db = \Config\Database::connect();
     $builder = $db->table('sgc_tipoatencion_usu AS tip_ate');
     
+    // 1. SELECT: COALESCE asegura que los tipos de atención sin casos marquen 0
     $builder->select('tip_ate.tipo_aten_nombre, COALESCE(COUNT(c.idcaso), 0) AS count');
 
-    // --- CONSTRUCCIÓN DE LA CONDICIÓN ON DEL JOIN ---
-    // La única diferencia es c.sexo = '2'
-    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = \'2\' AND c.borrado = false';
+    // --- 2. CONSTRUCCIÓN DE LA CONDICIÓN ON DEL JOIN ---
     
-    // 1. Agregar filtro de Fecha
-    if ($desde !== 'null' && $hasta !== 'null') {
+    // Sexo = 2 (Femenino), Borrado = FALSE
+    // Nota: El sexo se pasa como entero para evitar casts innecesarios en Postgres
+    $join_condition = 'c.id_tipo_atencion = tip_ate.tipo_aten_id AND c.sexo = 2 AND c.borrado = FALSE';
+    
+    // Filtro de Fecha
+    if ($desde !== 'null' && $desde !== null && $hasta !== 'null' && $hasta !== null) {
         $join_condition .= " AND c.casofec >= " . $db->escape($desde);
         $join_condition .= " AND c.casofec <= " . $db->escape($hasta);
     }
     
-    // 2. Agregar filtro de Estado
+    // Filtro de Estado
     if ($id_estado !== 'null' && $id_estado !== null) {
         $join_condition .= " AND c.estadoid = " . $db->escape($id_estado);
     }
     
-    // Aplicar el LEFT JOIN con todas las condiciones en la cláusula ON
-    $builder->join('public.sgc_casos AS c', $join_condition, 'left');
+    // IMPORTANTE: El cuarto parámetro 'false' evita que CI escape la cadena
+    // y transforme FALSE en "FALSE" (que causaría el ErrorException)
+    $builder->join('public.sgc_casos AS c', $join_condition, 'left', false);
     
-    // La única condición WHERE global debe ser para la tabla principal (tip_ate)
+    // 3. Filtros de la tabla base
     $builder->where('tip_ate.tipo_aten_borrado', false);
 
     $builder->groupBy('tip_ate.tipo_aten_nombre');
     $builder->orderBy('tip_ate.tipo_aten_nombre', 'ASC');
     
-    $query = $builder->get();
-    return $query->getResult(); 
+    return $builder->get()->getResult(); 
 }
     // Método que cuenta los Casos POR ESTATUS
     public function contarCasosEstatus()
     {
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_estatus AS estatus');
+        $builder = $db->table('public.sgc_estatus AS estatus');
         $builder->select('estatus.estnom, COALESCE(casos.veces, 0) AS count');
         $builder->join('(SELECT COUNT(c.idcaso) AS veces, c.idest 
-                        FROM sgc_casos c 
-                        WHERE c.borrado = false 
+                        FROM public.sgc_casos c 
+                        WHERE c.borrado = FALSE 
                         GROUP BY c.idest) AS casos', 'casos.idest = estatus.idest', 'left');
         $builder->where('estatus.borrado', false);
         $builder->orderBy('estatus.estnom', 'ASC');
@@ -1330,11 +1335,11 @@ public function contarCasosTipoSolicitudFemenino($desde = 'null', $hasta = 'null
     public function consultar_estatus_caso_estados($desde = null, $hasta = null)
     {
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_estatus AS estatus');
+        $builder = $db->table('public.sgc_estatus AS estatus');
         $builder->select('COALESCE(estatus.estnom, \'No Aplica\') AS estnom, estados.estadonom, estados.estadoid, casos.casofec, COALESCE(casos.veces, 0) AS count');
         $builder->join('(SELECT COUNT(c.idcaso) AS veces, c.idest, c.estadoid, c.casofec 
-                        FROM sgc_casos c 
-                        where c.borrado=false
+                        FROM public.sgc_casos c 
+                        where c.borrado = FALSE
                         GROUP BY c.idest, c.estadoid, c.casofec) AS casos', 'casos.idest = estatus.idest', 'left');
         $builder->join('public.sgc_estados AS estados', 'casos.estadoid = estados.estadoid', 'right');
         $builder->where('estatus.borrado', false);
@@ -1355,9 +1360,9 @@ public function contarCasosTipoSolicitudFemenino($desde = 'null', $hasta = 'null
     public function ContarCasos_Estadal_Tipo_Beneficiario($desde = null, $hasta = null)
     { 
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos AS c');
+        $builder = $db->table('public.sgc_casos AS c');
         $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, COALESCE(tb.tipo_beneficiario_nombre, \'No Aplica\') AS tipo_beneficiario_nombre, estados.estadonom');
-        $builder->join('sgc_tipo_beneficiarios AS tb', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
+        $builder->join('public.sgc_tipo_beneficiarios AS tb', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
         $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
         $builder->where('COALESCE(c.borrado, FALSE)', false);
         $builder->where('COALESCE(tb.tipo_beneficiario_borrado, FALSE)', false);
@@ -1373,13 +1378,13 @@ public function contarCasosTipoSolicitudFemenino($desde = 'null', $hasta = 'null
     }
 
  
-// //BUSCAMOS LOS CASOS ESTADALES POR ORGANISMO DEL PODER POPULAR
+    // //BUSCAMOS LOS CASOS ESTADALES POR ORGANISMO DEL PODER POPULAR
 public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
 { 
     $db = \Config\Database::connect();
-    $builder = $db->table('sgc_casos AS c');
+    $builder = $db->table('public.sgc_casos AS c');
     $builder->select('COUNT(c.caso_org_id) AS count, COALESCE(org.org_nombre) AS org_nombre, estados.estadonom');
-    $builder->join('sgc_org_pod_popular AS org', 'c.caso_org_id = org.org_id', 'right');
+    $builder->join('public.sgc_org_pod_popular AS org', 'c.caso_org_id = org.org_id', 'right');
     $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
     $builder->where('COALESCE(c.borrado, FALSE)', false);
     $builder->where('COALESCE(org.org_borrado, FALSE)', false);
@@ -1407,10 +1412,10 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
     public function ContarCasos_Estadal_Tipo_Prop_Intelectual($desde = null, $hasta = null)
     { 
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos AS c');
+        $builder = $db->table('public.sgc_casos AS c');
         $builder->select('COUNT(tp_proint.tipo_prop_nombre) AS count, tp_proint.tipo_prop_nombre, estados.estadonom');
-        $builder->join('sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
-        $builder->join('sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
+        $builder->join('public.sgc_tipo_prop_caso AS tip_caso', 'c.idcaso = tip_caso.idcaso');
+        $builder->join('public.sgc_tipo_prop_intelec AS tp_proint', 'tip_caso.idtippropint = tp_proint.tipo_prop_id');
         $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
         $builder->where('c.borrado', false);
         if ($desde != 'null' && $hasta != 'null') {
@@ -1431,9 +1436,9 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
     public function ContarasosTipoSolicitud_Estadal($desde = null, $hasta = null)
     {
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos AS c');
+        $builder = $db->table('public.sgc_casos AS c');
         $builder->select('COALESCE(COUNT(c.id_tipo_atencion), 0) AS count, COALESCE(aten.tipo_aten_nombre, \'No Aplica\') AS tipo_aten_nombre, estados.estadonom');
-        $builder->join('sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'right');
+        $builder->join('public.sgc_tipoatencion_usu AS aten', 'c.id_tipo_atencion = aten.tipo_aten_id', 'right');
         $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
         $builder->where('COALESCE(c.borrado, FALSE)', false);
         $builder->where('COALESCE(aten.tipo_aten_borrado, FALSE)', false);
@@ -1454,9 +1459,9 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
     public function Contarcasos_Detalle_Tipo_Atencion_Estadal($desde = null, $hasta = null)
     {
         $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos AS c');
+        $builder = $db->table('public.sgc_casos AS c');
         $builder->select('COALESCE(COUNT(c.tipo_atend_id), 0) AS count, COALESCE(deta.tipo_atend_nombre, \'No Aplica\') AS tipo_atend_nombre, estados.estadonom');
-        $builder->join('sgc_tipoatenciondetalle AS deta', 'c.tipo_atend_id = deta.tipo_atend_id', 'right');
+        $builder->join('public.sgc_tipoatenciondetalle AS deta', 'c.tipo_atend_id = deta.tipo_atend_id', 'right');
         $builder->join('public.sgc_estados AS estados', 'c.estadoid = estados.estadoid', 'right');
         $builder->where('COALESCE(c.borrado, FALSE)', false);
         $builder->where('COALESCE(deta.tipo_atend_borrado, FALSE)', false);
@@ -1628,13 +1633,13 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
 {
     
     $db = \Config\Database::connect();
-    $builder = $db->table('sgc_tipo_beneficiarios AS tb');
+    $builder = $db->table('public.sgc_tipo_beneficiarios AS tb');
     $builder->select('COALESCE(COUNT(c.tipo_beneficiario), 0) AS count, tb.tipo_beneficiario_nombre');
-    $builder->join('sgc_casos AS c', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
+    $builder->join('public.sgc_casos AS c', 'c.tipo_beneficiario = tb.tipo_beneficiario_id', 'right');
     
    
     $builder->groupStart();
-    $builder->where('c.borrado', 'false');
+    $builder->where('c.borrado', false);
     if ($desde != 'null' && $hasta != 'null') {
         $builder->where('c.casofec >=', $desde);
         $builder->where('c.casofec <=', $hasta);
@@ -1647,7 +1652,7 @@ public function ContarCasos_Estadal_Organismo_PP($desde = null, $hasta = null)
    
     
     // Esta condición se aplica a la tabla de beneficiarios
-    $builder->where('tb.tipo_beneficiario_borrado', 'false');
+    $builder->where('tb.tipo_beneficiario_borrado', false);
     
     $builder->groupBy('tb.tipo_beneficiario_nombre');
     $builder->orderBy('tb.tipo_beneficiario_nombre', 'ASC');
@@ -1815,7 +1820,7 @@ public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'n
         $subQuery = $db->table('sgc_casos AS c')
             ->select('COUNT(c.idcaso) AS usuario, c.estadoid')
             ->where('c.tipo_beneficiario', 1)
-            ->where('c.borrado', 'false');
+            ->where('c.borrado', false);
         if ($desde != 'null' && $hasta != 'null') {
             $subQuery->where('c.casofec >=', $desde);
             $subQuery->where('c.casofec <=', $hasta);
@@ -1959,7 +1964,7 @@ public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'n
             ->select('COUNT(c.idcaso) AS cuenta, t.idtippropint, c.estadoid')
             ->join('sgc_tipo_prop_caso AS t', 'c.idcaso = t.idcaso')
             ->where('t.idtippropint', 5)
-            ->where('c.borrado', 'false');
+            ->where('c.borrado', false);
         if ($desde != 'null' && $hasta != 'null') {
             $subQuery->where('c.casofec >=', $desde);
             $subQuery->where('c.casofec <=', $hasta);
@@ -2194,7 +2199,7 @@ public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'n
         $builder->where('c.casofec >=', $desde);
         $builder->where('c.casofec <=', $hasta);
         $builder->where('v.idrrss', '3');
-        $builder->where('c.borrado', 'false');
+        $builder->where('c.borrado', false);
         $builder->groupBy('c.casofec, TO_CHAR(c.casofec, \'Day\')');
         $builder->orderBy('c.casofec', 'ASC');
         $query = $builder->get();
