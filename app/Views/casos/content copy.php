@@ -150,8 +150,6 @@ $session = session();
 </style>
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/edicion_casos.css">
-<!-- Estilos de mejoras visuales para la vista de casos -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mejoras_casos.css">
 
 
 <div class="content-wrapper">
@@ -174,11 +172,10 @@ $session = session();
       <!-- /.row -->
       <div class="row">
         <div class="col-lg-12 col-sm-12 col-md-12 p-2">
-          <div class="siac-main-card">
-            <div class="siac-main-header" >
-              <div class="d-flex justify-content-between" style="width: 100%;">
-                <h3><i class="fas fa-angle-double-right"></i> Pantalla de Casos</h3>
-                <button type="submit" id="btn_agregar" class="siac-btn-primary"><i class="fas fa-plus"></i> Agregar</button></h3>
+          <div class="card">
+            <div class="card-casos border-0" >
+              <div class="d-flex justify-content-between">
+                <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i> Pantalla de Casos <button type="submit" id="btn_agregar" class="btn btn-sm btn-primary btn_agregar">Agregar</button></h3>
                 <input type="hidden" name="" id="rol_usuario" value="<?php echo($session->get('userrol'));?>">
                 </h3>
                 <input type="hidden" name="" id="mensaje_documento" value="<?php echo $mensaje ?>">
@@ -188,22 +185,22 @@ $session = session();
               <div class="row">
                   <div class="col-lg-12 col-sm-12 col-md-12 ">
                     
-                        <table class="display table-responsive siac-table-container" id="table_casos" style="width:100%">
-                        <thead class="siac-table">
+                        <table class="display table-responsive" id="table_casos" style="width:100%" style="margin-top: 20px">
+                        <thead>
                           <tr>
-                            <th class="col" style="width: 1%;">Nº</th>
-                            <th class="text-center" style="width: 1%;">Cédula</th>
-                            <th class="text-center" style="width: 12%;">Beneficiario</th>
-                            <th class="text-center" style="width: 3%;">Teléfono</th>
-                            <th class="text-center" style="width: 8%;">Propiedad Intelectual</th>
-                            <th class="text-center" style="width: 4%;">Tipo de Atención</th>
-                            <th class="text-center" style="width: 3%;">Fecha</th>
-                            <th class="text-center" style="width: 3%;">Estatus</th>
-                            <th class="text-center" style="width: 6%;">Operador</th>
-                            <th class="text-center" style="width: 6%;">Acciones</th>
+                            <td class="col" style="width: 1%;">Nº</td>
+                            <td class="text-center" style="width: 1%;">Cédula</td>
+                            <td class="text-center" style="width: 12%;">Beneficiario</td>
+                            <td class="text-center" style="width: 3%;">Teléfono</td>
+                            <td class="text-center" style="width: 8%;">Propiedad Intelectual</td>
+                            <td class="text-center" style="width: 4%;">Tipo de Atención</td>
+                            <td class="text-center" style="width: 3%;">Fecha</td>
+                            <td class="text-center" style="width: 3%;">Estatus</td>
+                            <td class="text-center" style="width: 6%;">Operador</td>
+                            <td class="text-center" style="width: 6%;">Acciones</td>
                           </tr>
                         </thead>
-                        <tbody id="listar_casos" class="siac-table">
+                        <tbody id="listar_casos">
                         </tbody>
                       </table>
                     </div>
@@ -230,9 +227,9 @@ $session = session();
             </div>
             <div class="modal-body">
                 <input type="hidden" id="id_caso">
-                <div class="siac-section-card">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-user-tie"></i> Información del Beneficiario
                         </h5>
                     </div>
@@ -268,19 +265,19 @@ $session = session();
                     <input type="hidden" id="monto_aprobado_anterior" name="" value="">
                     <input type="hidden" id="actcoordenadas">
                     <input type="hidden" class="form-control" id="id_hijos_detalle_atencion">
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="nombre-persona">Nombre</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="nombre-persona" id="nombre-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
+                                <label for="nombre-persona">Nombre</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-persona" id="nombre-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="apellido-persona">Apellido</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="apellido-persona" id="apellido-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
+                                <label for="apellido-persona">Apellido</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="apellido-persona" id="apellido-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
                             </div>
                             <div class="col-lg-3 col-sm-6 col-md-6 mb-2">
-                                <label class="siac-label" for="tipo-persona">Tipo Persona</label>
-                                <select class="siac-select" id="tipo-persona" name="tipo-persona">
+                                <label for="tipo-persona">Tipo Persona</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-persona" name="tipo-persona">
                                     <option value="V">V - Venezolano</option>
                                     <option value="E">E - Extranjero</option>
                                     <option value="J">J - Juridico</option>
@@ -288,31 +285,31 @@ $session = session();
                                 </select>
                             </div>
                             <div class="col-lg-3 col-sm-6 col-md-6 mb-2">
-                                <label class="siac-label" for="cedula-persona">Nº cedula o Rif</label>
-                                <input type="text" class="siac-input" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
+                                <label for="cedula-persona">Nº cedula o Rif</label>
+                                <input type="text" class="form-control" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-4 mb-2">
-                                <label class="siac-label" for="edad">Edad</label>
-                                <input type="text" disabled class="siac-input" onkeyup="mayus(this);" name="edad" id="edad" onkeypress="return valideKey(event);" autocomplete="off" required>
+                                <label for="edad">Edad</label>
+                                <input type="text" disabled class="form-control" onkeyup="mayus(this);" name="edad" id="edad" onkeypress="return valideKey(event);" autocomplete="off" required>
                             </div>
                             <div class="col-lg-3 col-md-4 col-sm-8 mb-2">
-                                <label class="siac-label" for="fecha-nacimiento">Fecha de Nac.</label>
-                                <input class="siac-input" type="date" name="fecha-nacimiento" id="fecha-nacimiento" required>
+                                <label for="fecha-nacimiento">Fecha de Nac.</label>
+                                <input class="form-control" type="date" name="fecha-nacimiento" id="fecha-nacimiento" required>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="profesion">Profesión</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
+                                <label for="profesion">Profesión</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="sexo">Genero</label>
-                                <select class="siac-select" id="sexo" name="sexo">
+                                <label for="sexo">Genero</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="sexo" name="sexo">
                                     <option value="1">Masculino</option>
                                     <option value="2">Femenino</option>
                                 </select>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="t-beneficiario">Tipo de Beneficiario</label>
-                                <select class="siac-select" id="t-beneficiario" name="t-beneficiario">
+                                <label for="t-beneficiario">Tipo de Beneficiario</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="t-beneficiario" name="t-beneficiario">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
@@ -320,35 +317,35 @@ $session = session();
                     </div>
                 </div>
 
-                <div class="siac-section-card siac-mt-3">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-id-card"></i> Información de Contacto y Atención
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="telefono-persona">Teléfono</label>
-                                <input type="text" class="siac-input" onkeypress="return valideKey(event);" maxlength="12" pattern="\d{12}" title="Debe ingresar exactamente 12 dígitos" name="telefono" id="telefono" autocomplete="off">
+                                <label for="telefono-persona">Teléfono</label>
+                                <input type="text" class="form-control" onkeypress="return valideKey(event);" maxlength="12" pattern="\d{12}" title="Debe ingresar exactamente 12 dígitos" name="telefono" id="telefono" autocomplete="off">
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="fecha-recibido">Fecha de Recibido</label>
-                                <input class="siac-input" type="date" name="fecha-recibido" id="fecha-recibido" required>
+                                <label for="fecha-recibido">Fecha de Recibido</label>
+                                <input class="form-control" type="date" name="fecha-recibido" id="fecha-recibido" required>
                             </div>
                             <div class="col-lg-6 col-md-12 col-sm-12 mb-2">
-                                <label class="siac-label" for="correo">Correo Electronico</label>
-                                <input type="email" class="siac-input" name="correo" id="correo" autocomplete="off" required>
+                                <label for="correo">Correo Electronico</label>
+                                <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="red-social">Via de Atencion</label>
-                                <select class="siac-select" name="red-social" id="red-social">
+                                <label for="red-social">Via de Atencion</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" name="red-social" id="red-social">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-9 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="office">Atención al Ciudadano</label>
-                                <select class="siac-select" name="office" id="office">
+                                <label for="office">Atención al Ciudadano</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" name="office" id="office">
                                     <option value="1">Dirección de Atención al Ciudadano</option>
                                     <option value="2">Coordinador Estadal</option>
                                 </select>
@@ -357,39 +354,39 @@ $session = session();
                     </div>
                 </div>
             
-                <div class="siac-section-card siac-mt-3">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-map-marked-alt"></i> Ubicación
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-12 col-sm-12 col-md-12">
                                 <label for="direccion" style="display: none;">Dirección</label>
-                                <input type="text" style="display: none;" class="siac-input" name="direccion" id="direccion" autocomplete="off">
+                                <input type="text" style="display: none;" class="form-control" name="direccion" id="direccion" autocomplete="off">
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
-                                <label class="siac-label" for="pais-caso">País</label>
-                                <select  id="pais-caso" name="pais-caso" class="siac-select">
+                                <label for="pais-caso">País</label>
+                                <select  id="pais-caso" name="pais-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="1" selected>Venezuela</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
-                                <label class="siac-label" for="estado-caso">Estado</label>
-                                <select id="estado-caso" name="estado-caso" class="siac-select">
+                                <label for="estado-caso">Estado</label>
+                                <select id="estado-caso" name="estado-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0" disabled>Seleccione Estado</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
-                                <label class="siac-label" for="municipio-caso">Municipio</label>
-                                <select id="municipio-caso" name="municipio-caso" class="siac-select">
+                                <label for="municipio-caso">Municipio</label>
+                                <select id="municipio-caso" name="municipio-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Municipio</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 mb-2">
-                                <label class="siac-label" for="parroquia-caso">Parroquia</label>
-                                <select id="parroquia-caso" name="parroquia-caso" class="siac-select">
+                                <label for="parroquia-caso">Parroquia</label>
+                                <select id="parroquia-caso" name="parroquia-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Parroquia</option>
                                 </select>
                             </div>
@@ -397,29 +394,29 @@ $session = session();
                     </div>
                 </div>
 
-                <div class="siac-section-card siac-mt-3">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-file-alt"></i> Detalles del Caso
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="tipo-atencion-usu">Tipo de Atención</label>
-                                <select class="siac-select" id="tipo-atencion-usu" name="tipo-atencion-usu">
+                                <label for="tipo-atencion-usu">Tipo de Atención</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-atencion-usu" name="tipo-atencion-usu">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-5 col-md-6 col-sm-12 mb-2 prop_int oculto">
-                                <label class="siac-label" for="tipo-pi">Tipo de Propiedad Intelectual</label>
-                                <select disabled class="siac-select" id="tipo-pi" name="tipo-pi">
+                                <label for="tipo-pi">Tipo de Propiedad Intelectual</label>
+                                <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="tipo-pi" name="tipo-pi">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2 org_pp">
-                                <label class="siac-label" for="organismo-caso">Organismo del Poder Popular</label>
-                                <select id="organismo-caso" name="organismo-caso" class="siac-select">
+                                <label for="organismo-caso">Organismo del Poder Popular</label>
+                                <select id="organismo-caso" name="organismo-caso" class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300">
                                     <option value="0">Seleccione Organismo</option>
                                 </select>
                             </div>
@@ -428,46 +425,46 @@ $session = session();
 
 
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2 detalle_atencion oculto">
-                                <label class="siac-label" for="edit_detelle_atencion">Detalle Atencion</label>
-                                <select disabled class="siac-select" id="edit_detelle_atencion" name="detalles_atencion">
+                                <label for="edit_detelle_atencion">Detalle Atencion</label>
+                                <select disabled class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="edit_detelle_atencion" name="detalles_atencion">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-12">
-                                <label class="siac-label" for="requerimiento-usuario">Descripción del Caso</label>
-                                <textarea type="text" class="siac-input" name="requerimiento-usuario" id="requerimiento-usuario" required rows="3" style="min-height: 100px;"></textarea>
+                                <label for="requerimiento-usuario">Descripción del Caso</label>
+                                <textarea type="text" class="form-control" name="requerimiento-usuario" id="requerimiento-usuario" required rows="3"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="siac-section-card siac-mt-3" id="cgr" style="display: block;">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3" id="cgr" style="display: block;">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-question-circle"></i> Asesoría
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="ente_adscrito_id">Ente adscrito</label>
-                                <select class="siac-select" id="ente_adscrito_id" name="competencia-cgr" value="0">
+                                <label for="ente_adscrito_id">Ente adscrito</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="ente_adscrito_id" name="competencia-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                 </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="competencia-cgr">Competencia de CGR</label>
-                                <select class="siac-select" id="competencia-cgr" name="competencia-cgr" value="0">
+                                <label for="competencia-cgr">Competencia de CGR</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="competencia-cgr" name="competencia-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <option value="1">Si</option>
                                     <option value="2">No</option>
                                 </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="asume-cgr">Asume CGR</label>
-                                <select class="siac-select" id="asume-cgr" name="asume-cgr" value="0">
+                                <label for="asume-cgr">Asume CGR</label>
+                                <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="asume-cgr" name="asume-cgr" value="0">
                                     <option value="0" selected disabled>Seleccione</option>
                                     <option value="1">Si</option>
                                     <option value="2">No</option>
@@ -824,73 +821,73 @@ $session = session();
 
 </div>
 
-                <div class="siac-section-card siac-mt-3" id="denuncias" style="display: none;">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3" id="denuncias" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-exclamation-triangle"></i> Denuncia
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label">A quien afecta el hecho:</label>
-                                <div class="siac-radio-group">
-                                    <label class="siac-radio-label"><input type="radio" id="option-personal" value="Personal" name="option" class="siac-radio"> Personal</label>
-                                    <label class="siac-radio-label"><input type="radio" id="option-comunidad" value="Comunidad" name="option" class="siac-radio"> Comunidad</label>
-                                    <label class="siac-radio-label"><input type="radio" id="option-terceros" value="Terceros" name="option" class="siac-radio"> Terceros</label>
+                                <label>A quien afecta el hecho:</label>
+                                <div>
+                                    <input type="radio" id="option-personal" value="Personal" name="option">&nbsp;&nbsp;<span>Personal</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="radio" id="option-comunidad" value="Comunidad" name="option">&nbsp;&nbsp;<span>Comunidad</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="radio" id="option-terceros" value="Terceros" name="option">&nbsp;&nbsp;<span>Terceros</span>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="fecha-hechos">Fecha de los hechos</label>
-                                <input class="siac-input" type="date" name="fecha-hechos" id="fecha-hechos" value=" ">
+                                <label for="fecha-hechos">Fecha de los hechos</label>
+                                <input class="form-control" type="date" name="fecha-hechos" id="fecha-hechos" value=" ">
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-12 mb-2">
-                                <label class="siac-label" for="denu-involucrados">Indique personas, Organismos o Instituciones, Involucradas en los hechos:</label>
-                                <textarea type="text" class="siac-input" onkeyup="mayus(this);" name="denu-involucrados" id="denu-involucrados" required rows="2"></textarea>
+                                <label for="denu-involucrados">Indique personas, Organismos o Instituciones, Involucradas en los hechos:</label>
+                                <textarea type="text" class="form-control" onkeyup="mayus(this);" name="denu-involucrados" id="denu-involucrados" required rows="2"></textarea>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-12">
-                                <h6 class="siac-text-muted">EN CASO DE TRATARSE DE UNA INSTANCIA DEL PODER POPULAR INDIQUE:</h6>
+                                <h6>EN CASO DE TRATARSE DE UNA INSTANCIA DEL PODER POPULAR INDIQUE:</h6>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="nombre-instancia">Nombre de la instancia del Poder Popular</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="nombre-instancia" id="nombre-instancia" autocomplete="off">
+                                <label for="nombre-instancia">Nombre de la instancia del Poder Popular</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-instancia" id="nombre-instancia" autocomplete="off">
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="rif-instancia">Rif:</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="rif-instancia" id="rif-instancia" autocomplete="off">
+                                <label for="rif-instancia">Rif:</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="rif-instancia" id="rif-instancia" autocomplete="off">
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="ente-financiador">Ente Financiador:</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" value=" " name="ente-financiador" id="ente-financiador" autocomplete="off">
+                                <label for="ente-financiador">Ente Financiador:</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" value=" " name="ente-financiador" id="ente-financiador" autocomplete="off">
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="nombre-proyecto">Nombre del Proyecto:</label>
-                                <input type="text" class="siac-input" onkeyup="mayus(this);" name="nombre-proyecto" id="nombre-proyecto" autocomplete="off">
+                                <label for="nombre-proyecto">Nombre del Proyecto:</label>
+                                <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-proyecto" id="nombre-proyecto" autocomplete="off">
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                                <label class="siac-label" for="monto-aprovado">Monto Aprobado:</label>
-                                <input type="text" class="siac-input" onkeypress="return valideKey(event);" name="monto-aprovado" id="monto-aprovado" onkeypress="noNumeros(event)" autocomplete="off">
+                                <label for="monto-aprovado">Monto Aprobado:</label>
+                                <input type="text" class="form-control" onkeypress="return valideKey(event);" name="monto-aprovado" id="monto-aprovado" onkeypress="noNumeros(event)" autocomplete="off">
                             </div>
                         </div>
                     </div>
                 </div>
-            <div class="siac-docs-card">
-            <div class="siac-docs-header">
-                <h5>
+            <div class="card mt-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0 d-flex align-items-center">
                     <i class="fas fa-file-upload me-2"></i> Documentos Adjuntos
                 </h5>
             </div>
-            <div class="siac-docs-body">
+            <div class="card-body">
                 <form id="miFormulario" enctype="multipart/form-data" class="mb-4">
-                    <label class="siac-label" for="archivo">Seleccionar y Subir Archivo</label>
+                    <label for="archivo" class="form-label fw-bold">Seleccionar y Subir Archivo</label>
                     <div class="input-group">
-                        <input type="file" class="siac-file-input" id="archivo" name="archivo" aria-describedby="btn_subir_archivos">
+                        <input type="file" class="form-control" id="archivo" name="archivo" aria-describedby="btn_subir_archivos">
                         <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">
-                        <button type="button" id="subir_archivos" class="siac-btn-primary">
+                        <button type="button" id="subir_archivos" class="btn btn-primary">
                             <i class="fas fa-cloud-upload-alt me-1"></i> Subir
                         </button>
                     </div>
@@ -900,10 +897,10 @@ $session = session();
 
                 <div class="row g-3 align-items-center">
                     <div class="col-auto">
-                        <label class="siac-label" for="docu-casos">Documentos del Caso</label>
+                        <label for="docu-casos" class="col-form-label fw-bold">Documentos del Caso</label>
                     </div>
                     <div class="col-md-5 col-lg-4"> 
-                            <select class="siac-select" style="width: 350px;" id="docu-casos" name="docu-casos">
+                            <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" style="width: 350px;" id="docu-casos" name="docu-casos">
                                 <option value="0" selected disabled>Seleccione</option>
                                 </select>
                     </div>
@@ -912,20 +909,20 @@ $session = session();
             </div>
 
 
-    <div class="siac-punto-card siac-mt-3" style="display: none">
-        <div class="siac-punto-header">
-            <h5>
+    <div class="card mt-3 shadow-xs punto  "style="display: none">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
                 <i class="fas fa-file-upload me-2"></i> Punto de Cuenta
             </h5>
         </div>
-        <div class="siac-punto-body">
+        <div class="card-body">
             
             <div class="row">
                 
                 <div class="col-md-5">
                     <div class="mb-3">
                         
-                        <select class="siac-select" id="punto-cuenta-select" name="id_punto_cuenta">
+                        <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="punto-cuenta-select" name="id_punto_cuenta">
                             <option value="" selected disabled>-- Elija una opción --</option>
                             </select>
                     </div>
@@ -935,7 +932,7 @@ $session = session();
                 <div class="col-md-5">
                     <div class="mb-3">
                         
-                        <select class="siac-select" id="documentos-select" name="docu_ruta" disabled>
+                        <select class="compact-form-control border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-300" id="documentos-select" name="docu_ruta" disabled>
                             <option value="" selected disabled>-- Documento no disponible --</option>
                             </select>
                     </div>
@@ -951,43 +948,41 @@ $session = session();
 
             
  
-                <div class="siac-section-card siac-mt-3 coordenadas" id="map-section">
-                    <div class="siac-section-header">
-                        <h5>
+                <div class="card card-section mt-3 coordenadas" id="map-section">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-primary">
                             <i class="fas fa-map-pin"></i> Coordenadas de la ubicación
                         </h5>
                     </div>
-                    <div class="siac-section-body">
+                    <div class="card-body">
                          <div class="row">
                             <div class="col-lg-12 col-sm-12 col-md-12 mapa_ayuda">
                                 <form id="guardar_ayudas" method="POST" role="form">
                                     <div class="modal-body p-0"> 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.css">
                                         <script src="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.js"></script>
-                                        <div class="siac-map-wrapper mb-2"> 
+                                        <div class="form-container mb-2 p-2"> 
                                             <div class="row align-items-end">
                                                 <div class="col-lg-3 col-md-6 mb-2">
-                                                    <label class="siac-label" for="latitude">Latitud:</label>
-                                                    <input type="text" id="latitude" name="latitude" class="siac-input" placeholder="Ej: 10.4806">
+                                                    <label for="latitude">Latitud:</label>
+                                                    <input type="text" id="latitude" name="latitude" class="form-control" placeholder="Ej: 10.4806">
                                                 </div>
                                                 <div class="col-lg-3 col-md-6 mb-2">
-                                                    <label class="siac-label" for="longitude">Longitud:</label>
-                                                    <input type="text" id="longitude" name="longitude" class="siac-input" placeholder="Ej: -66.9036">
+                                                    <label for="longitude">Longitud:</label>
+                                                    <input type="text" id="longitude" name="longitude" class="form-control" placeholder="Ej: -66.9036">
                                                 </div>
                                                 <div class="col-lg-4 col-md-8 mb-2">
-                                                    <label class="siac-label" for="locationName">Nombre del lugar:</label>
-                                                    <input type="text" id="locationName" name="locationName" class="siac-input" placeholder="Ej: La Vega, Los Mangos">
+                                                    <label for="locationName">Nombre del lugar:</label>
+                                                    <input type="text" id="locationName" name="locationName" class="form-control" placeholder="Ej: La Vega, Los Mangos">
                                                 </div>
                                                 <br>
                                                 <div class="col-lg-2 col-md-4 mb-2 d-flex justify-content-end">
-                                                     <button id="ubicar-btn" type="button" class="siac-btn-primary mr-1"><i class="fas fa-map-marker-alt"></i></button>
-                                                    <button id="limpiar-btn" type="button" class="siac-btn-primary" style="background: #6c757d;"><i class="fas fa-eraser"></i></button>
+                                                     <button id="ubicar-btn" type="button" class="btn btn-sm btn-primary mr-1"><i class="fas fa-map-marker-alt"></i></button>
+                                                    <button id="limpiar-btn" type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eraser"></i></button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="siac-map-container">
-                                            <div id="map"></div>
-                                        </div>
+                                        <div id='map'></div>
                                     </div>
                                 </form>
                             </div>
@@ -995,8 +990,8 @@ $session = session();
                     </div>
                 </div>
 
-                <div class="siac-notification siac-mt-3">
-                    <h4><i class="fas fa-info-circle"></i> Extensiones Permitidas</h4>
+                <div class="notification-card mt-3">
+                    <h4>Extensiones Permitidas</h4>
                     <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt</p>
                     <p class="extensions2">Tamaño Maximo 10MB</p>
                 </div>

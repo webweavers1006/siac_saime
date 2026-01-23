@@ -1,40 +1,420 @@
 <?php
 $session = session();
 $userdata = $session->get();
-
-
 ?>
 
 
 
 
 
+<style>
+  .text-highlight {
+    font-weight: bold;
+    color: #003366;
+    background-color: #e7f3ff;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .notification-item p {
+    line-height: 1.5;
+    margin-bottom: 5px;
+  }
+  .notification-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .notification-item:hover {
+    background-color: #f8f9fa;
+  }
+  .notification-item.unread {
+    background-color: #e8f4fd;
+    border-left: 3px solid #007bff;
+  }
+  .notification-item h6 {
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+  .notification-item .time {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 5px;
+  }
+  .notification-item .notif-message {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+  }
+  .notification-item .notif-message strong {
+    color: #007bff;
+    font-weight: 600;
+  }
+  .notification-badge {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+  }
+  .notification-icon {
+    position: relative;
+    padding: 8px 12px;
+  }
+  .notification-icon i {
+    font-size: 20px;
+    color: #6c757d;
+  }
+  .notification-icon.has-notifications i {
+    color: #007bff;
+  }
+  .notification-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 380px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    overflow: hidden;
+  }
+  .notification-menu .dropdown-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px 15px;
+  }
+  .notif-negrilla-azul {
+    font-weight: bold !important;
+    color: #003366 !important;
+  }
+  #notification-list .notif-negrilla-azul {
+    font-weight: bold !important;
+    color: #003366 !important;
+  }
+  .notification-item .notif-message .notif-negrilla-azul {
+    font-weight: bold !important;
+    color: #003366 !important;
+  }
+</style>
 <meta charset="utf-8">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/navar.css">
+<!-- SweetAlert2 para alertas emergentes (local) -->
+<script src="<?php echo base_url(); ?>/theme/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- FontAwesome para iconos (local) -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>/theme/plugins/fontawesome-free/css/all.min.css">
+
 <body class="hold-transition sidebar-mini layout-fixed">
   <div class="wrapper">
-  <nav class="main-header navbar navbar-expand-lg navbar-white navbar-light">
-  <ul class="navbar-nav">
+  <nav class="main-header navbar navbar-expand-lg navbar-white navbar-light" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 15px;">
+  
+  <!-- Lado izquierdo: Menú hamburguesa -->
+  <ul class="navbar-nav" style="margin-right: 10px;">
     <li class="nav-item">
       <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
     </li>
   </ul>
-  <input type="text" name="" disabled="disabled" style="width: 350px; background-color: transparent; border: none;" value="">
- <img src="<?= base_url('img/cintillo_tradicional.png') ?>" 
-     height="60" 
-     width="auto" 
-     class="cintillo-compacto">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <h5><a href="#Foo" onclick="cerrarSesion();" style="color: black;" class="nav-primary">Salir</a></h5>
-      </li>
-    </ul>
+  
+<!-- Cintillo más ancho -->
+  <div class="cintillo-container" style="display: flex; justify-content: center; align-items: center; width: 100%; max-width: 100%; margin: 0 20px;">
+    <img src="<?= base_url('img/cintillo_tradicional.png') ?>" 
+         alt="Cintillo Institucional" 
+         style="width: 100%; max-width: 100%; height: auto; max-height: 100px; object-fit: contain;">
+</div>
+  
+  <!-- Lado derecho: Notificaciones + Salir -->
+  <div style="display: flex; align-items: center;">
+    <!-- Bandeja de Notificaciones -->
+    <div class="notification-dropdown" style="margin-right: 25px;">
+      <div class="notification-icon" onclick="toggleNotifications()" title="Notificaciones">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+      </div>
+      <div class="notification-menu" id="notification-menu" style="display: none;">
+        <div style="padding: 15px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 8px 8px 0 0;">
+          <strong style="font-size: 15px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
+          <a href="#" onclick="marcarTodasLeidas(); return false;" style="font-size: 12px; color: #fff; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; text-decoration: none;">Marcar todas como leídas</a>
+        </div>
+        <div id="notification-list">
+          <!-- Las notificaciones se cargarán aquí -->
+          <div class="empty-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No hay notificaciones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="margin-right: 10px;">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item">
+          <h5><a href="#Foo" onclick="cerrarSesion();" style="color: black;" class="nav-primary">Salir</a></h5>
+        </li>
+      </ul>
+    </div>
   </div>
+</nav>
   <script>
+    // Variables globales
+    let notificationsOpen = false;
+
+    // Función para mostrar/ocultar notificaciones
+    function toggleNotifications() {
+      const menu = document.getElementById('notification-menu');
+      if (menu.style.display === 'none') {
+        menu.style.display = 'block';
+        notificationsOpen = true;
+        cargarNotificaciones();
+      } else {
+        menu.style.display = 'none';
+        notificationsOpen = false;
+      }
+    }
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(event) {
+      const dropdown = document.querySelector('.notification-dropdown');
+      const menu = document.getElementById('notification-menu');
+      if (dropdown && !dropdown.contains(event.target)) {
+        menu.style.display = 'none';
+        notificationsOpen = false;
+      }
+    });
+
+    // Cargar notificaciones
+    function cargarNotificaciones() {
+      fetch('<?php echo base_url(); ?>/notificaciones/obtenerMisNotificaciones', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === 'success') {
+          renderNotificaciones(data.data);
+          actualizarContador();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Renderizar notificaciones en el dropdown - mostrar todas las no leídas
+    function renderNotificaciones(notificaciones) {
+      const container = document.getElementById('notification-list');
+      
+      // Debug: mostrar en consola lo que llega del servidor
+      console.log('Notificaciones recibidas:', notificaciones);
+      
+      if (!notificaciones || notificaciones.length === 0) {
+        container.innerHTML = `
+          <div class="empty-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No hay notificaciones</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      notificaciones.forEach(notif => {
+        // Solo mostrar si no está leída (manejar string 'f' y boolean false)
+        const estaLeida = notif.leida === true || notif.leida === 't' || notif.leida === 'true';
+        if (estaLeida) return;
+        
+        const tipoClass = notif.tipo_notificacion === 'REMISION' ? 'text-primary' : 'text-warning';
+        const tipoIcon = notif.tipo_notificacion === 'REMISION' ? 'fa-file-import' : 'fa-tasks';
+        
+        // Construir mensaje completo con dirección origen si existe
+        let mensajeCompleto = notif.mensaje;
+        
+        // Si la dirección origen viene en un campo separado, agregarla al mensaje
+        if (notif.direccion_origen_nombre && !mensajeCompleto.includes('Remitido por:') && !mensajeCompleto.includes('Agregado por:') && !mensajeCompleto.includes('Actualizado por:')) {
+          if (notif.tipo_notificacion === 'REMISION') {
+            mensajeCompleto += '. Remitido por: <span class="notif-negrilla-azul">' + notif.direccion_origen_nombre + '</span>';
+          } else if (notif.tipo_notificacion === 'SEGUIMIENTO') {
+            mensajeCompleto += '. Agregado por: <span class="notif-negrilla-azul">' + notif.direccion_origen_nombre + '</span>';
+          }
+        }
+        
+        // Aplicar estilo a los nombres de dirección que ya vienen en el mensaje
+        // Patrón: "Remitido por: [nombre]" -> solo [nombre] en negrilla azul
+        mensajeCompleto = mensajeCompleto.replace(/(Remitido por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
+        mensajeCompleto = mensajeCompleto.replace(/(Agregado por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
+        mensajeCompleto = mensajeCompleto.replace(/(Actualizado por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
+        
+        html += `
+          <div class="notification-item unread" 
+               onclick="verNotificacion(${notif.id}, '${notif.tipo_notificacion}', ${notif.id_caso})">
+            <h6><span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span></h6>
+            <p class="notif-message">${mensajeCompleto}</p>
+            <div class="time">${formatDate(notif.fecha_creacion)}</div>
+          </div>
+        `;
+      });
+      
+      if (html === '') {
+        container.innerHTML = `
+          <div class="empty-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No hay notificaciones</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = html;
+      }
+    }
+
+    // Actualizar contador de notificaciones
+    function actualizarContador() {
+      fetch('<?php echo base_url(); ?>/notificaciones/contarNotificaciones', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const badge = document.getElementById('notification-count');
+        const icon = document.querySelector('.notification-icon');
+        
+        if (data.total > 0) {
+          badge.textContent = data.total;
+          badge.style.display = 'block';
+          // Agregar clase para resaltar la campanita
+          icon.classList.add('has-notifications');
+        } else {
+          badge.style.display = 'none';
+          // Quitar clase cuando no hay notificaciones
+          icon.classList.remove('has-notifications');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Ver notificación y redirigir
+    function verNotificacion(id, tipo, idCaso) {
+      // Marcar como leída
+      fetch('<?php echo base_url(); ?>/notificaciones/marcarLeida', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'data=' + btoa(JSON.stringify({ id_notificacion: id }))
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Cerrar dropdown
+        document.getElementById('notification-menu').style.display = 'none';
+        notificationsOpen = false;
+        actualizarContador();
+        
+        // Redirigir según el tipo
+        if (tipo === 'REMISION' || tipo === 'SEGUIMIENTO') {
+          window.location.href = '<?php echo base_url(); ?>/verCaso/' + idCaso;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Marcar todas como leídas
+    function marcarTodasLeidas() {
+      fetch('<?php echo base_url(); ?>/notificaciones/marcarTodasLeidas', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === 'success') {
+          // Actualizar la interfaz
+          cargarNotificaciones();
+          actualizarContador();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Formatear fecha
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now - date;
+      
+      // Menos de 1 minuto
+      if (diff < 60000) {
+        return 'Hace un momento';
+      }
+      // Menos de 1 hora
+      if (diff < 3600000) {
+        const minutes = Math.floor(diff / 60000);
+        return 'Hace ' + minutes + ' minutos';
+      }
+      // Menos de 24 horas
+      if (diff < 86400000) {
+        const hours = Math.floor(diff / 3600000);
+        return 'Hace ' + hours + ' horas';
+      }
+      // Más de 24 horas
+      return date.toLocaleDateString('es-VE', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Mostrar notificaciones al inicio (directamente el dropdown)
+    function mostrarAlertaNotificaciones() {
+      // Verificar si estamos en las páginas de inicio permitidas
+      const rutaActual = window.location.pathname;
+      const esPaginaInicio = rutaActual.includes('/pantalla_bienvenida') || rutaActual.includes('/inicio') || rutaActual === '/' || rutaActual === '/siac_v2';
+      
+      // Solo mostrar automáticamente en las páginas de inicio
+      if (!esPaginaInicio) {
+        return;
+      }
+      
+      fetch('<?php echo base_url(); ?>/notificaciones/contarNotificaciones', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.total > 0) {
+          // Hay notificaciones, mostrar directamente el dropdown
+          document.getElementById('notification-menu').style.display = 'block';
+          notificationsOpen = true;
+          cargarNotificaciones();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Actualizar contador inmediatamente al cargar
+      actualizarContador();
+      
+      // Actualizar contador cada 30 segundos
+      setInterval(actualizarContador, 30000);
+      
+      // Verificar notificaciones para mostrar alerta automáticamente (solo una vez)
+      setTimeout(mostrarAlertaNotificaciones, 1000);
+    });
+
     function cerrarSesion() {
       Swal.fire({
         title: '¿Deseas salir?',
@@ -386,6 +766,8 @@ $userdata = $session->get();
 
 
 
+
+
          
            <!-- *********************MENU ADUDIENCIAS*************** -->
           <?php if ($session->get('acceso_audi') == 't' ) { ?>
@@ -549,3 +931,4 @@ $userdata = $session->get();
       </div>
     </aside>
 </body>
+

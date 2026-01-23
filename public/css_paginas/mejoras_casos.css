@@ -1,0 +1,661 @@
+/**
+ * MEJORAS VISUALES ELEGANTES PARA LA VISTA DE CASOS
+ * Diseño limpio y profesional
+ * Uso de clases personalizadas con prefijo 'siac-' para evitar conflictos
+ */
+
+/* ============================================
+   CLASES BASE CON PREFIJO SIAC
+   ============================================ */
+
+/* Contenedor principal de la vista */
+.siac-casos-wrapper {
+    background: transparent;
+}
+
+/* Card principal */
+.siac-main-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+}
+
+/* Header del card principal */
+.siac-main-header {
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    border-bottom: 2px solid #083B7A;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.siac-main-header h3 {
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.siac-main-header h3 i {
+    color: #083B7A;
+    font-size: 1.3rem;
+}
+
+/* ============================================
+   BOTONES ELEGANTES
+   ============================================ */
+
+.siac-btn-primary {
+    background: #083B7A;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(8, 59, 122, 0.2);
+}
+
+.siac-btn-primary:hover {
+    background: #062a52;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(8, 59, 122, 0.3);
+}
+
+/* ============================================
+   TABLA ELEGANTE
+   ============================================ */
+
+.siac-table-container {
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #eee;
+}
+
+.siac-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.siac-table thead tr {
+    background: #083B7A;
+}
+
+.siac-table thead th {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.siac-table thead th:first-child {
+    border-radius: 12px 0 0 0;
+}
+
+.siac-table thead th:last-child {
+    border-radius: 0 12px 0 0;
+}
+
+.siac-table tbody tr {
+    border-bottom: 1px solid #f5f5f5;
+    transition: background-color 0.2s ease;
+}
+
+.siac-table tbody tr:hover {
+    background-color: #fafbfc;
+}
+
+.siac-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.siac-table tbody td {
+    padding: 12px;
+    color: #444;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Badges de estatus */
+.siac-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.siac-badge-pendiente {
+    background: #fef9e7;
+    color: #b7950b;
+}
+
+.siac-badge-proceso {
+    background: #e8f4fd;
+    color: #1a73e8;
+}
+
+.siac-badge-completado {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.siac-badge-cancelado {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* ============================================
+   CARDS DE SECCIÓN (FORMULARIOS)
+   ============================================ */
+
+.siac-section-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.siac-section-header {
+    background: linear-gradient(180deg, #f8f9fa 0%, #f1f3f4 100%);
+    padding: 14px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.siac-section-header h5 {
+    color: #083B7A;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.siac-section-header h5 i {
+    color: #5c6bc0;
+    font-size: 1rem;
+}
+
+.siac-section-body {
+    padding: 20px;
+    background: #ffffff;
+}
+
+/* ============================================
+   INPUTS Y SELECTS ELEGANTES
+   ============================================ */
+
+.siac-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.siac-input:focus {
+    outline: none;
+    border-color: #083B7A;
+    box-shadow: 0 0 0 3px rgba(8, 59, 122, 0.08);
+}
+
+.siac-input:hover {
+    border-color: #bbb;
+}
+
+.siac-input:disabled {
+    background: #f8f8f8;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.siac-select {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.2s ease;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    appearance: none;
+    cursor: pointer;
+}
+
+.siac-select:focus {
+    outline: none;
+    border-color: #083B7A;
+    box-shadow: 0 0 0 3px rgba(8, 59, 122, 0.08);
+}
+
+.siac-select:disabled {
+    background-color: #f8f8f8;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Labels */
+.siac-label {
+    display: block;
+    color: #555;
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+/* ============================================
+   NOTIFICACIÓN DE EXTENSIONES
+   ============================================ */
+
+.siac-notification {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 20px;
+}
+
+.siac-notification h4 {
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.siac-notification p {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin: 4px 0;
+}
+
+.siac-notification p:last-child {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* ============================================
+   CONTENEDOR DE MAPA
+   ============================================ */
+
+.siac-map-container {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.siac-map-wrapper {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 1px solid #eee;
+}
+
+#siac-map {
+    border-radius: 8px;
+    height: 300px;
+    width: 100%;
+}
+
+/* ============================================
+   CARD DE DOCUMENTOS
+   ============================================ */
+
+.siac-docs-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.siac-docs-header {
+    background: #083B7A;
+    color: #ffffff;
+    padding: 12px 20px;
+}
+
+.siac-docs-header h5 {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.siac-docs-body {
+    padding: 20px;
+}
+
+/* Input file */
+.siac-file-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.siac-file-input:hover {
+    border-color: #083B7A;
+    background: #f5f7fa;
+}
+
+/* ============================================
+   CARD DE PUNTO DE CUENTA
+   ============================================ */
+
+.siac-punto-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.siac-punto-header {
+    background: #083B7A;
+    color: #ffffff;
+    padding: 12px 20px;
+}
+
+.siac-punto-header h5 {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.siac-punto-body {
+    padding: 20px;
+}
+
+/* ============================================
+   FORMULARIO DE MEDIAÇÃO (APODERADOS)
+   ============================================ */
+
+.siac-mediation-container {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.siac-mediation-section {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.siac-mediation-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.siac-mediation-title {
+    background: #f8f9fa;
+    border-left: 3px solid #083B7A;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 16px;
+}
+
+.siac-mediation-title h3 {
+    color: #333;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ============================================
+   CHECKBOX PERSONALIZADO
+   ============================================ */
+
+.siac-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.siac-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #083B7A;
+    cursor: pointer;
+}
+
+.siac-checkbox-label {
+    font-size: 0.9rem;
+    color: #444;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* ============================================
+   RADIO BUTTONS DE DENUNCIA
+   ============================================ */
+
+.siac-radio-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.siac-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.siac-radio {
+    accent-color: #083B7A;
+    transform: scale(1.1);
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN PEQUEÑOS
+   ============================================ */
+
+.siac-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    margin: 2px;
+}
+
+.siac-action-btn-view {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.siac-action-btn-view:hover {
+    background: #1976d2;
+    color: #fff;
+}
+
+.siac-action-btn-edit {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.siac-action-btn-edit:hover {
+    background: #f57c00;
+    color: #fff;
+}
+
+.siac-action-btn-delete {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.siac-action-btn-delete:hover {
+    background: #d32f2f;
+    color: #fff;
+}
+
+.siac-action-btn-remit {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.siac-action-btn-remit:hover {
+    background: #388e3c;
+    color: #fff;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .siac-main-header {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .siac-main-header h3 {
+        font-size: 1.25rem;
+    }
+    
+    .siac-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .siac-section-body {
+        padding: 16px;
+    }
+    
+    .siac-table-container {
+        border-radius: 8px;
+    }
+    
+    .siac-table thead th {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .siac-mediation-container {
+        padding: 16px;
+    }
+    
+    .siac-radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* ============================================
+   ANIMACIONES SUAVES
+   ============================================ */
+
+@keyframes siac-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.siac-fade-in {
+    animation: siac-fadeIn 0.3s ease-out;
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+.siac-hidden {
+    display: none;
+}
+
+.siac-mt-3 {
+    margin-top: 16px;
+}
+
+.siac-mb-2 {
+    margin-bottom: 8px;
+}
+
+.siac-text-muted {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   ESPACIADO DE GRILLAS
+   ============================================ */
+
+.siac-row {
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.siac-row > [class*="col-"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+

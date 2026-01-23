@@ -1,8 +1,8 @@
 <!-- Content Wrapper. Contains page content -->
 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js"></script>
+<script src="<?php echo base_url(); ?>/theme/plugins/chart.js/dist/chart.min.js"></script>
+<script src="<?php echo base_url(); ?>/theme/plugins/pdfmake/pdf.min.js"></script>
 
 <div class="content-wrapper">
 

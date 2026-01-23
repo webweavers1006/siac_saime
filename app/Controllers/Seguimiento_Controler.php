@@ -1,9 +1,12 @@
 <?php
 
+
+
 namespace App\Controllers;
 
 use App\Models\Seguimientos;
 use App\Models\Auditoria_sistema_Model;
+use App\Models\Notificaciones_Model;
 use CodeIgniter\API\ResponseTrait;
 
 class Seguimiento_Controler extends BaseController
@@ -31,6 +34,8 @@ class Seguimiento_Controler extends BaseController
     {
         $segModel = new Seguimientos();
         $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+        $notifModel = new Notificaciones_Model();
+        
         if ($this->request->isAJAX() and $this->session->get('logged')) {
               //$datos = json_decode(base64_decode($this->request->getPost('data')));
              
@@ -49,6 +54,10 @@ class Seguimiento_Controler extends BaseController
                     $auditoria['audi_user_id']   = session('iduser');
                     $auditoria['audi_accion']   = 'INGRESO UN NUEVO SEGUIMIENTO';
                     $Auditoria_sistema_Model = $model_Auditoria_sistema_Model->agregar($auditoria);
+                    
+                    // Crear notificación para usuarios con roles 1, 3, 5
+                    $this->crearNotificacionSeguimiento($datos["caseid"], $datos["segcomment"]);
+                    
                     return $this->respond(["message" => "Seguimiento cargado exitosamente"], 200);
                 } else {
                     return $this->respond(["message" => "Hubo un error al cargar el seguimiento"], 500);
@@ -56,6 +65,44 @@ class Seguimiento_Controler extends BaseController
             }
         } else {
             return redirect()->to('/');
+        }
+    }
+
+    /**
+     * Crear notificación de seguimiento para usuarios con roles 1, 3, 5
+     */
+    private function crearNotificacionSeguimiento($id_caso, $comentario)
+    {
+        $notifModel = new Notificaciones_Model();
+        $casoModel = new \App\Models\Casos();
+        
+        // Obtener información del caso
+        $caso = $casoModel->obtenerCaso_id($id_caso);
+        if ($caso) {
+            $nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+            
+            // Obtener nombre de la dirección del usuario que agrega el seguimiento
+            $direccion_usuario_id = $this->session->get('id_direccion_administrativa');
+            $nombre_direccion_usuario = $notifModel->obtenerNombreDireccion($direccion_usuario_id);
+            
+            // Incluir el ID del caso y la dirección en el mensaje
+            $mensaje = "Nuevo seguimiento en el caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . ". Agregado por: " . $nombre_direccion_usuario;
+            
+            // Obtener usuarios con roles 1, 3, 5
+            $usuarios_roles = $notifModel->obtenerUsuariosPorRoles([1, 3, 5]);
+            
+            // Crear notificación para cada usuario
+            foreach ($usuarios_roles as $usuario) {
+                $notifModel->insertarNotificacion([
+                    "id_caso" => $id_caso,
+                    "tipo_notificacion" => "SEGUIMIENTO",
+                    "mensaje" => $mensaje,
+                    "leida" => false,
+                    "fecha_creacion" => date('Y-m-d H:i:s'),
+                    "id_usuario_destino" => $usuario->idusuopr,
+                    "direccion_origen" => $direccion_usuario_id
+                ]);
+            }
         }
     }
 

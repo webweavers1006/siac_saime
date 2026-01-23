@@ -2,8 +2,8 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mapa.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<link href="/static/css/styles.css" rel="stylesheet">
+<link rel="stylesheet" href="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>/static/css/styles.css">
   <style>
     table.dataTable thead,
     table.dataTable tfoot {
@@ -39,9 +39,7 @@
                                 <div id="map">
                                     
                                 </div>
-                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-                                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-                                crossorigin=""></script>
+<script src="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.js"></script>
                                 <script src="/static/js/ruta.js"></script>
                                 <script src="/static/js/map-core.js"></script>
                                 <script src="/static/js/modal-config.js"></script>

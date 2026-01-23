@@ -1,6 +1,162 @@
 .sidebar-dark-light {
     background: linear-gradient(to right, #003366, #003366, #003366);
 }
+.cintillo-container {
+    width: 100%;        /* Ocupa todo el ancho disponible */
+    overflow: hidden;   /* Evita scroll horizontal innecesario */
+    line-height: 0;     /* Elimina espacios en blanco debajo de la imagen */
+    display: flex;      /* Usar flexbox para centrar */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center;     /* Centrar verticalmente */
+}
+
+.cintillo-compacto {
+    width: 100%;        /* Ocupa todo el ancho del contenedor */
+    height: auto;       /* Mantiene la proporción para que no se vea deformada */
+    display: block;
+    /* Altura aumentada para que se vea más amplia */
+    max-height: 150px;  
+    object-fit: contain; /* Mantiene la proporción sin distorsionar */
+}
+
+/* En pantallas muy pequeñas, ajustar un poco */
+@media (max-width: 768px) {
+    .cintillo-container {
+        margin: 0 5px;
+    }
+    .cintillo-compacto {
+        max-height: 100px;
+    }
+}
+
+/* Estilos para el navbar */
+.main-header.navbar {
+    padding: 5px 15px;
+    background: linear-gradient(to right, #f8f9fa, #f8f9fa, #f8f9fa);
+    border-bottom: 1px solid #dee2e6;
+}
+
+.navbar-nav {
+    align-items: center;
+}
+
+/* Estilos para el dropdown de notificaciones */
+.notification-dropdown {
+    position: relative;
+    margin-right: 15px;
+    margin-left: 5px; /* Más a la izquierda */
+}
+
+@media (max-width: 768px) {
+    .notification-dropdown {
+        margin-left: 5px;
+    }
+}
+
+.notification-icon {
+    font-size: 24px;
+    color: #495057;
+    cursor: pointer;
+    position: relative;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+/* Efecto cuando hay notificaciones pendientes */
+.notification-icon.has-notifications {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    animation: pulse 2s infinite;
+}
+
+.notification-icon.has-notifications:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+    transform: scale(1.1);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.notification-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    z-index: 1000;
+}
+
+.notification-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-item.unread {
+    background-color: #e7f3ff;
+    border-left: 3px solid #007bff;
+}
+
+.notification-item h6 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.notification-item p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.notification-item .time {
+    font-size: 10px;
+    color: #999;
+    margin-top: 5px;
+}
+
+.empty-notifications {
+    padding: 30px;
+    text-align: center;
+    color: #999;
+}
+
+.empty-notifications i {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
 
 /* .main-header {
     background: linear-gradient(to right, #003366, #003366, #003366);

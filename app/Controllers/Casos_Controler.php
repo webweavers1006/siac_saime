@@ -24,6 +24,7 @@ use App\Models\Mediacion;
 use App\Models\SapiControversiaModel;
 
 use App\Models\NizaClasses;
+use App\Models\Notificaciones_Model;
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';
@@ -163,9 +164,9 @@ public function Informacion_Usuarios($casoced=null)
 
 curl_close($ch);
 	
-	// 	
-	
-		
+// 
+
+
 }
 
 
@@ -1169,6 +1170,12 @@ public function DetalleCasoConsolidado($idcaso)
 					$datosSeguimiento['segfec'] =$segfec ;
 					$datosSeguimiento['idusuopr']   = session('iduser');
 					$seguimientos_caso = $seguimientos->insertarSeguimiento($datosSeguimiento);
+					
+					// ===================================================================
+					// CREAR NOTIFICACIÓN DE REMISIÓN DE CASO
+					// ===================================================================
+					$this->crearNotificacionRemision($datos["id_caso"], $datos["direccion"], $nombre_direccion["nombre_direccion"]);
+					
 					//BUSCAMOS LA DESCRIPCION DEL CASO 
 					$buscar_descripcioncaso=$casoModel->buscar_correo($datos["id_caso"]);
 					if(empty($buscar_descripcioncaso->getResult()))
@@ -1307,6 +1314,12 @@ public function DetalleCasoConsolidado($idcaso)
 									$datosSeguimiento['segfec'] =$segfec ;
 									$datosSeguimiento['idusuopr']   = session('iduser');
 									$seguimientos_caso = $seguimientos->insertarSeguimiento($datosSeguimiento);
+									
+									// ===================================================================
+									// CREAR NOTIFICACIÓN DE REMISIÓN DE CASO (RE-REMISIÓN)
+									// ===================================================================
+									$this->crearNotificacionRemision($datos["id_caso"], $datos["direccion"], $nombre_direccion["nombre_direccion"]);
+									
 									//BUSCAMOS EL CORREO DE LA DIRECCION AL CUAL FUE REMITIDO EL CASO
 									$buscar_correo=	$direcciones->buscar_correo($datos["direccion"]);
 									if (isset($buscar_correo)) 
@@ -1623,5 +1636,45 @@ public function buscar_datos_usuarios()
 
 
 // 
+
+
+	/**
+	 * Crear notificación cuando se remite un caso a una dirección
+	 * Notifica a todos los usuarios de la dirección destino
+	 */
+	private function crearNotificacionRemision($id_caso, $direccion_id, $nombre_direccion)
+	{
+		$notifModel = new Notificaciones_Model();
+		$casoModel = new Casos();
+		
+		// Obtener información del caso
+		$caso = $casoModel->obtenerCaso_id($id_caso);
+		if ($caso) {
+			$nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+			
+			// Obtener nombre de la dirección de origen (la que remite el caso)
+			$direccion_origen_id = $this->session->get('id_direccion_administrativa');
+			$nombre_direccion_origen = $notifModel->obtenerNombreDireccion($direccion_origen_id);
+			
+			// Mensaje con la dirección de origen
+			$mensaje = "Se le ha remitido el caso #" . $id_caso . " de: " . $nombre_beneficiario . " a su dirección (" . $nombre_direccion . "). Remitido por: " . $nombre_direccion_origen;
+			
+			// Obtener usuarios de la dirección destino
+			$usuarios_direccion = $notifModel->obtenerUsuariosPorDireccion($direccion_id);
+			
+			// Crear notificación para cada usuario de la dirección
+			foreach ($usuarios_direccion as $usuario) {
+				$notifModel->insertarNotificacion([
+					"id_caso" => $id_caso,
+					"tipo_notificacion" => "REMISION",
+					"mensaje" => $mensaje,
+					"leida" => false,
+					"fecha_creacion" => date('Y-m-d H:i:s'),
+					"id_usuario_destino" => $usuario->idusuopr,
+					"direccion_origen" => $direccion_origen_id
+				]);
+			}
+		}
+	}
 }
 

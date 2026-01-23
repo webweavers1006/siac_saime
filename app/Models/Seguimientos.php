@@ -13,8 +13,10 @@ class Seguimientos extends BaseModel
         $builder->select("to_char(sg.segfec, 'dd-mm-yyyy') as fecha_segui");
         $builder->select('b.estllamnom as desc_est_llamada');
         $builder->select("CONCAT(usuop.usuopnom, ' ', usuop.usuopape) AS user_name");
+        $builder->select('dir.descripcion as direccion_usuario');
         $builder->join('sgc_estatus_llamadas b', 'sg.idestllam = b.idestllam');
         $builder->join('sgc_usuario_operador usuop', 'sg.idusuopr = usuop.idusuopr');
+        $builder->join('sgc_direcciones_administrativas dir', 'usuop.id_direccion_administrativa = dir.id', 'left');
         $builder->join('sgc_casos d', 'sg.idcaso = d.idcaso');
         $builder->join('sgc_estatus e', 'd.idest = e.idest');
         $builder->where('sg.idcaso', $idcaso);

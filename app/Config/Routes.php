@@ -362,6 +362,16 @@ $routes->get('/casos_categorias', 'Audiencias_Controler::casos_categorias');
 $routes->get('/vista_casos_remitidos', 'Casos_Remitidos::vista_casos_remitidos');
 $routes->get('/listar_Casos_Remitidos', 'Casos_Remitidos::listar_Casos_Remitidos');
 
+/*
+* --------------------------------------------------------------------
+* MODULO NOTIFICACIONES
+* --------------------------------------------------------------------
+*/
+$routes->get('/notificaciones/obtenerMisNotificaciones', 'Notificaciones_Controler::obtenerMisNotificaciones');
+$routes->get('/notificaciones/contarNotificaciones', 'Notificaciones_Controler::contarNotificaciones');
+$routes->post('/notificaciones/marcarLeida', 'Notificaciones_Controler::marcarLeida');
+$routes->post('/notificaciones/marcarTodasLeidas', 'Notificaciones_Controler::marcarTodasLeidas');
+
 
 
 

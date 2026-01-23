@@ -67,4 +67,14 @@ public function Listar_Tipo_Atencion_filtro()
 		return $query;
 	}
 
+	//Metodo para obtener un estatus por su ID
+	public function obtenerEstatusPorId($idest){
+		$db = \Config\Database::connect();
+		$builder = $db->table('sgc_estatus');
+		$builder->select('*');
+		$builder->where('idest', $idest);
+		$query = $builder->get();
+		return $query->getRow();
+	}
+
 }

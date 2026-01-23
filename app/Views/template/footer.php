@@ -20,7 +20,7 @@
 <script src="<?php echo base_url(); ?>/datatable_responsive/js/dataTables.fixedHeader.min.js"></script>
 <script src="<?php echo base_url(); ?>/datatable_responsive/js/dataTables.responsive.min.js"></script>
 <script src="<?php echo base_url(); ?>/datatable_responsive/js/responsive.bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="<?php echo base_url(); ?>/theme/plugins/axios/dist/axios.min.js"></script>
 
 
 

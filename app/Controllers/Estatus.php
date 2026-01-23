@@ -7,6 +7,7 @@ use App\Models\Seguimientos;
 use App\Models\Casos;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\Auditoria_sistema_Model;
+use App\Models\Notificaciones_Model;
 
 
 require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
@@ -241,8 +242,11 @@ public function editTipoEstatus()
                     }   
 
                         break;
-            
+
                 }
+
+                    // Crear notificación para usuarios con roles 1, 3, 5
+                    $this->crearNotificacionCambioEstatus($datos["caseid"], $data['idest']);
 
                     if (isset($segQuery)) {
                         $repuesta['mensaje']      = 1;
@@ -256,6 +260,107 @@ public function editTipoEstatus()
             } else {
                 return $this->respond(["message" => "Hubo un error al cambiar el estatus"], 500);
             }
+        }
+    }
+
+    /**
+     * Crear notificación de cambio de estatus para usuarios con roles 1, 3, 5
+     */
+    private function crearNotificacionCambioEstatus($id_caso, $nuevo_estatus)
+    {
+        // Función helper para escribir en archivo de log
+        $writeLog = function($message) {
+            $logFile = '/var/www/html/siac_v2/writable/logs/debug_notificaciones.log';
+            $timestamp = date('Y-m-d H:i:s');
+            file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
+        };
+
+        $writeLog("=== INICIO crearNotificacionCambioEstatus ===");
+        $writeLog("id_caso: $id_caso, nuevo_estatus: $nuevo_estatus");
+
+        try {
+            $casoModel = new Casos();
+
+            // Obtener información del caso
+            $caso = $casoModel->obtenerCaso_id($id_caso);
+            $writeLog("caso encontrado: " . ($caso ? 'SI' : 'NO'));
+
+            if (!$caso) {
+                $writeLog("ERROR: No se encontró el caso: $id_caso");
+                return;
+            }
+
+            $nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+            $writeLog("nombre_beneficiario: $nombre_beneficiario");
+
+            // Obtener nombre del estatus
+            $estatusModel = new Status();
+            $estatus = $estatusModel->obtenerEstatusPorId($nuevo_estatus);
+            $nombre_estatus = $estatus ? $estatus->estnom : 'Estatus #' . $nuevo_estatus;
+            $writeLog("nombre_estatus: $nombre_estatus");
+
+            // Obtener nombre de la dirección del usuario que realiza el cambio
+            $direccion_usuario_id = $this->session->get('id_direccion_administrativa');
+            $writeLog("direccion_usuario_id: $direccion_usuario_id");
+
+            // Obtener nombre de dirección directamente
+            $db = \Config\Database::connect();
+            $builder = $db->table('sgc_direcciones_administrativas');
+            $builder->select('descripcion');
+            $builder->where('id', $direccion_usuario_id);
+            $queryDir = $builder->get();
+            $rowDir = $queryDir->getRow();
+            $nombre_direccion_usuario = $rowDir ? $rowDir->descripcion : 'Sin dirección';
+            $writeLog("nombre_direccion_usuario: $nombre_direccion_usuario");
+
+            // Incluir el ID del caso, el nuevo estatus y la dirección en el mensaje
+            // Mensaje mejorado para evitar confusiones sobre quién cambió el estatus
+            $mensaje = "El caso #$id_caso - Beneficiario: $nombre_beneficiario fue actualizado al estatus: $nombre_estatus. Actualizado por: $nombre_direccion_usuario";
+            $writeLog("mensaje: $mensaje");
+
+            // Obtener usuarios con roles 1, 3, 5 - consulta directa
+            $builderUsuarios = $db->table('sgc_usuario_operador');
+            $builderUsuarios->select('idusuopr, id_direccion_administrativa');
+            $builderUsuarios->whereIn('idrol', [1, 3, 5]);
+            $builderUsuarios->where('usuopborrado', false);
+            $queryUsuarios = $builderUsuarios->get();
+            $usuarios_roles = $queryUsuarios->getResult();
+            $writeLog("usuarios_roles encontrados: " . count($usuarios_roles));
+
+            if (empty($usuarios_roles)) {
+                $writeLog("ERROR: No hay usuarios con roles 1, 3, 5 activos en el sistema");
+            }
+
+            // Crear notificación para cada usuario
+            $builderNotif = $db->table('sgc_notificaciones');
+            foreach ($usuarios_roles as $usuario) {
+                $writeLog("Creando notificación para usuario: " . $usuario->idusuopr);
+
+                $datosNotificacion = [
+                    "id_caso" => $id_caso,
+                    "tipo_notificacion" => "SEGUIMIENTO",
+                    "mensaje" => $mensaje,
+                    "leida" => false,
+                    "fecha_creacion" => date('Y-m-d H:i:s'),
+                    "id_usuario_destino" => $usuario->idusuopr,
+                    "direccion_origen" => $direccion_usuario_id
+                ];
+
+                $writeLog("Datos a insertar: " . json_encode($datosNotificacion));
+
+                $result = $builderNotif->insert($datosNotificacion);
+                $writeLog("Resultado de insert: " . ($result ? 'EXITO' : 'ERROR'));
+
+                if (!$result) {
+                    $error = $db->error();
+                    $writeLog("Error al insertar notificación: " . json_encode($error));
+                }
+            }
+
+            $writeLog("=== FIN crearNotificacionCambioEstatus ===");
+        } catch (\Exception $e) {
+            $writeLog("EXCEPCION: " . $e->getMessage());
+            $writeLog("Stack trace: " . $e->getTraceAsString());
         }
     }
 
