@@ -327,18 +327,35 @@ $userdata = $session->get();
 
     // Marcar todas como leídas
     function marcarTodasLeidas() {
+      // Obtener token CSRF
+      const csrfToken = document.querySelector('input[name="<?php echo csrf_token(); ?>"]')?.value || '<?php echo csrf_hash(); ?>';
+      
+      const formData = new FormData();
+      formData.append('<?php echo csrf_token(); ?>', csrfToken);
+      
       fetch('<?php echo base_url(); ?>/notificaciones/marcarTodasLeidas', {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        body: formData
       })
       .then(response => response.json())
       .then(data => {
-        if (data.message === 'success') {
-          // Actualizar la interfaz
-          cargarNotificaciones();
-          actualizarContador();
+        console.log('Respuesta:', data);
+        if (data.message === 'success' || data.message.indexOf('marcadas como leídas') !== -1) {
+          // Limpiar el dropdown inmediatamente
+          document.getElementById('notification-list').innerHTML = `
+            <div class="empty-notifications">
+              <i class="fas fa-bell-slash"></i>
+              <p>No hay notificaciones</p>
+            </div>
+          `;
+          // Ocultar el badge
+          document.getElementById('notification-count').style.display = 'none';
+          // Ocultar el menú
+          document.getElementById('notification-menu').style.display = 'none';
+          notificationsOpen = false;
         }
       })
       .catch(error => console.error('Error:', error));

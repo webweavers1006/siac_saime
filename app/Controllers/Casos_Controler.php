@@ -1150,6 +1150,9 @@ public function DetalleCasoConsolidado($idcaso)
 			$remitirCase["direccion_id"]     = $datos["direccion"];
 			$nombre_direccion["nombre_direccion"]     = utf8_decode($datos["nombre_direccion"]);
 			$remitirCase["idusuop"]    = $this->session->get('iduser');
+
+
+       
 			//verificamos si el caso habia sido remitido anteriormente  
 			$buscar_caso_remitido = $caso_remitido->buscar_caso_remitido($datos["id_caso"]);
 			//Si no a sido remitido hacemor un insert	

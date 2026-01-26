@@ -69,7 +69,7 @@ $session = session();
                             <td class="text-center" style="width: 3%;">Fecha</td>
                             <td class="text-center" style="width: 3%;">Estatus</td>
                             <td class="text-center" style="width: 6%;">Operador</td>
-                            <td class="text-center" style="width: 1%;">Acciones</td>
+                            <td class="text-center" style="width: 10%;">Acciones</td>
                           </tr>
                         </thead>
                         <tbody id="listar_casos">
@@ -478,3 +478,35 @@ $session = session();
     e.value = e.value.toUpperCase();
   }
 </script>
+
+<div class="modal fade" id="remitir_caso">
+        <div class="modal-dialog  modal-dialog-centered modal-md">
+          <div class="modal-content">
+            <form id="caso-remitido" method="POST">
+              <div class="modal-header">
+                <h4 class="modal-title">Remitir Caso</h4>
+                <input type="hidden" id="idcaso" name="" value="">
+                <button type=" button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="direcciones_caso">Direcciones administrativas</label>
+                  <select id="direcciones_caso" name="direcciones_caso" class="form-control">
+                    <?php echo $listar_direcciones; ?>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button type="reset" class="btn btn-sm  btn-default" data-dismiss="modal">Cerrar</button>
+                
+                <button type="submit" class="btn  btn-sm  btn-primary">Guardar</button>
+              <label id="mensaje" style="display: none;">Espere un momento, esta ventana se cerrará automáticamente</label>
+              </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>

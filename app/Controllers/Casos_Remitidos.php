@@ -39,6 +39,7 @@ class Casos_Remitidos extends BaseController
 		$casoModel = new Documentos_casos_Model();
 		if ($this->session->get('logged')) {
 			$direccionesModel = new Ubi_Admini_Model();
+			
 			//Obtenemos las direcciones  para mostrarlos en el modal
 			unset($query);
 			$query = $direccionesModel->buscar_correo($id_direccion);
@@ -47,8 +48,27 @@ class Casos_Remitidos extends BaseController
 			{
 				$direccion=$row->descripcion;	
 			}
+
+			
+		   $query_direcciones = $direccionesModel->listar_direcciones_administrativas();
+	
+			
+			$direccionesopt = '';
+			if (isset($query_direcciones)) {
+				foreach ($query_direcciones->getResult() as $row) {
+					$direccionesopt .= '<option value="' . $row->id . '">' . htmlentities($row->descripcion) . '</option>';
+				}
+			} else {
+				$direccionesopt .= '<option value="NULL">Sin estatus</option>';
+			}
+
+
+
+			
 			$data["mensaje"] = '';
 			$data["direccion"] = $direccion;
+			$data["listar_direcciones"] = $direccionesopt;
+		
 			echo view('template/header');
 			echo view('template/nav_bar');
 			echo view('casos_remitidos/content', $data);

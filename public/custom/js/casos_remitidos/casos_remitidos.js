@@ -471,38 +471,57 @@ function Listar_Casos(estatus=null) {
 
         },
 
-        columns: [
+       columns: [
+    { data: 'casos_id', width: "5%" },
+    { data: 'cedula', width: "10%" },
+    { data: 'nombre', width: "20%" },
+    { data: 'casotel', width: "10%" },
+    { data: 'tipo_prop_nombre', width: "15%" },
+    { data: 'tipo_aten_nombre', width: "12%" },
+    { data: 'casofec', width: "5%" },
+    { data: 'estnom', width: "3%" },
+    { data: 'user_name', width: "10%" },
+    {
+        data: null,
+        orderable: false, // Recomendado para columnas de acción
+        render: function(data, type, row) {
+            // Usamos template literals (`) para evitar el caos de las comillas y concatenaciones
+            return `
+                <a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style="font-size:1px" 
+                    data-toggle="tooltip" title="Seguimientos" 
+                    data-casoape="${row.casoape}" data-casonom="${row.casonom}" data-cedula="${row.casoced}" 
+                    data-caso_nacionalidad="${row.caso_nacionalidad}" data-sexo="${row.sexo}" data-casotel="${row.casotel}" 
+                    data-casofec_normal="${row.casofec_normal}" data-idrrss="${row.idrrss}" data-ofiid="${row.ofiid}" 
+                    data-estadoid="${row.estadoid}" data-tipo_prop_id="${row.tipo_prop_id}" data-id_tipo_atencion="${row.id_tipo_atencion}" 
+                    data-casodesc="${row.casodesc}" data-municipioid="${row.municipioid}" data-parroquiaid="${row.parroquiaid}" 
+                    data-idcaso="${row.casos_id}">
+                    <i class="material-icons">search</i>
+                </a>
 
-            { data: 'casos_id', width: "5%" },
+                <a href="javascript:;" class="btn btn-xs btn-secondary Editar" style="font-size:1px" 
+                    data-toggle="tooltip" title="Editar" 
+                    data-paisid="${row.paisid}" data-tipo_atend_borrado="${row.tipo_atend_borrado}" data-act_pro_int="${row.act_pro_int}" 
+                    data-fecha_nacimiento_normal="${row.fecha_nacimiento_normal}" data-tipo_atend_id="${row.tipo_atend_id}" 
+                    data-edad="${row.edad}" data-fecha_nacimiento="${row.fecha_nacimiento}" data-profesion="${row.profesion}" 
+                    data-denu_involucrados="${row.denu_involucrados}" data-denu_monto_aprovado="${row.denu_monto_aprovado}" 
+                    data-denu_nombre_proyecto="${row.denu_nombre_proyecto}" data-denu_ente_financiador="${row.denu_ente_financiador}" 
+                    data-denu_rif_instancia="${row.denu_rif_instancia}" data-denu_instancia_popular="${row.denu_instancia_popular}" 
+                    data-denu_fecha_hechos="${row.denu_fecha_hechos}" data-denu_afecta_terceros="${row.denu_afecta_terceros}" 
+                    data-denu_afecta_comunidad="${row.denu_afecta_comunidad}" data-denu_afecta_persona="${row.denu_afecta_persona}" 
+                    data-asume_cgr="${row.asume_cgr}" data-competencia_cgr="${row.competencia_cgr}" data-ente_adscrito_id="${row.ente_adscrito_id}" 
+                    data-correo="${row.correo}" data-direccion="${row.direccion}" data-tipo_beneficiario="${row.tipo_beneficiario}" 
+                    data-idcaso="${row.idcaso}">
+                    <i class="material-icons">attach_file</i>
+                </a>
 
-            { data: 'cedula', width: "10%" },
-
-            { data: 'nombre', width: "20%" },
-
-            { data: 'casotel', width: "10%" },
-
-            { data: 'tipo_prop_nombre', width: "15%" },
-
-            { data: 'tipo_aten_nombre', width: "15%" },
-
-            { data: 'casofec', width: "10%" },
-
-            { data: 'estnom', width: "10%" },
-
-            { data: 'user_name', width: "10%" },
-
-            {
-                
-                data: null,
-              
-                render: function(data, type, row) {
-                return  '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" style=" font-size:1px" data-toggle="tooltip" title="Seguimientos"  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.casos_id + '> <i class="material-icons ">search</i> </a>'  + ' ' +
-                '<a href="javascript:;" class="btn btn-xs btn-secondary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"   paisid="' + row.paisid + '"   tipo_atend_borrado="' + row.tipo_atend_borrado + '"   act_pro_int="' + row.act_pro_int + '"   fecha_nacimiento_normal="' + row.fecha_nacimiento_normal + '"  tipo_atend_id="' + row.tipo_atend_id + '"  edad="' + row.edad + '"  fecha_nacimiento="' + row.fecha_nacimiento + '" profesion="' + row.profesion + '"    denu_involucrados="' + row.denu_involucrados + '" denu_monto_aprovado = "' + row.denu_monto_aprovado + '" denu_nombre_proyecto = "' + row.denu_nombre_proyecto + '" denu_ente_financiador ="' + row.denu_ente_financiador + '" denu_rif_instancia = "' + row.denu_rif_instancia + '" denu_instancia_popular = "' + row.denu_instancia_popular + '" denu_fecha_hechos=' + row.denu_fecha_hechos + '  denu_afecta_terceros="' + row.denu_afecta_terceros + '" denu_afecta_comunidad=' + row.denu_afecta_comunidad + ' denu_afecta_persona=' + row.denu_afecta_persona + ' asume_cgr=' + row.asume_cgr + '    competencia_cgr=' + row.competencia_cgr + '  ente_adscrito_id=' + row.ente_adscrito_id + ' correo="' + row.correo + '"  direccion="' + row.direccion + '"  tipo_beneficiario=' + row.tipo_beneficiario + '  casoape="' + row.casoape + '" casonom="' + row.casonom + '"   cedula="' + row.casoced + '" caso_nacionalidad="' + row.caso_nacionalidad + '" sexo=' + row.sexo + ' casotel="' + row.casotel + '" casofec_normal=' + row.casofec_normal + ' idrrss=' + row.idrrss + ' ofiid=' + row.ofiid + ' estadoid=' + row.estadoid + ' tipo_prop_id=' + row.tipo_prop_id + '  id_tipo_atencion=' + row.id_tipo_atencion + ' casodesc="' + row.casodesc + '" municipioid=' + row.municipioid + ' parroquiaid=' + row.parroquiaid + ' idcaso=' + row.idcaso + '> <i class="material-icons " >attach_file</i></a>'
-                        
-                }
-            }
-
-        ],
+                <a href="javascript:;" class="btn btn-xs btn-success Remitir" style="font-size:1px" 
+                    data-toggle="tooltip" title="Remitir" 
+                    data-idcaso="${row.casos_id}" data-tipo_atend_id="${row.tipo_atend_id}">
+                    <i class="material-icons">redo</i>
+                </a>`;
+        }
+    }
+],
 
         
         "language": {
@@ -2539,4 +2558,84 @@ $("#estatus").on('change', function(e) {
   
         Listar_Casos(estatus); // Fetch data first
     
+});
+
+
+
+//METODO PARA ABRIR EL MODAL PARA REMITIR EL CASO
+$('#listar_casos').on('click', '.Remitir', function(e) {
+    e.preventDefault();
+
+    let idcaso = $(this).attr('data-idcaso');
+   
+    $("#remitir_caso").modal("show");
+    $("#remitir_caso").find('#idcaso').val(idcaso);
+});
+//Evento de envio del formulario
+$(document).on("submit", "#caso-remitido", function(e) {
+    e.preventDefault();
+    let datos = {
+        "id_caso": $("#idcaso").val(),
+        "direccion": $("#direcciones_caso").val(),
+        "nombre_direccion": $('#direcciones_caso option:selected').text()
+    }
+    $.ajax({
+        url: "/remitirCaso",
+        method: "POST",
+        dataType: "JSON",
+        data:{data:btoa(unescape(encodeURIComponent(JSON.stringify(datos))))},
+        beforeSend: function() {
+            $("button[type=submit]").attr('disabled', 'true');
+            $("#mensaje").show();
+            
+        },
+        success: function(respuesta) {
+            
+            if (respuesta.mensaje === 1) {
+                Swal.fire({
+                    icon: "success",
+                    type: 'success',
+                    html: '<strong>EL CASO Nª' + ' ' + ' ' + respuesta.idcaso + ' ' + 'HA SIDO REMITIDO </strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    //timer: 3500,
+                });
+                setTimeout(function() {
+                    window.location = "/vista_casos_remitidos";
+                }, 1600);
+            } else if (respuesta.mensaje === 2) {
+                Swal.fire({
+                    icon: "error",
+                    type: 'error',
+                    html: '<strong>Hubo un error al intentar remitir el caso .</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 4000,
+                });
+
+                setTimeout(function() {
+                    window.location = "/vista_casos_remitidos";
+                }, 3000);
+            }else if (respuesta.mensaje === 3){
+                Swal.fire({
+                    icon: "error",
+                    type: 'error',
+                    html: '<strong>LA DIRECCION ADMINISTRATIVA NO TIENE CORREO ASOCIADO .</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 3800,
+                });
+
+                setTimeout(function() {
+                    window.location = "/vista_casos_remitidos";
+                }, 1600);
+            }
+
+
+        }
+    });
+
 });
