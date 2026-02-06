@@ -19,27 +19,52 @@ class Notificaciones_Controler extends BaseController
             $model = new Notificaciones_Model();
             $id_usuario = $this->session->get('iduser');
             $userrol = $this->session->get('userrol');
+            $id_direccion = $this->session->get('id_direccion_administrativa');
             
             // Depuración temporal
             log_message('debug', "===== DEBUG NOTIFICACIONES =====");
             log_message('debug', "Usuario ID: " . $id_usuario);
             log_message('debug', "User Rol: " . $userrol);
+            log_message('debug', "Direccion: " . $id_direccion);
             
-            // Roles que pueden ver seguimientos: 1, 3, 5
-            $roles_permitidos = [1, 3, 5];
-            $puede_ver_seguimientos = in_array($userrol, $roles_permitidos);
+            // Roles de supervisión
+            $roles_supervision = [1, 3, 5];
+            $es_supervision = in_array($userrol, $roles_supervision);
+            $es_rol2 = ($userrol == 2);
             
-            log_message('debug', "Puede ver seguimientos: " . ($puede_ver_seguimientos ? 'SI' : 'NO'));
+            log_message('debug', "Es supervision: " . ($es_supervision ? 'SI' : 'NO'));
+            log_message('debug', "Es Rol 2: " . ($es_rol2 ? 'SI' : 'NO'));
             
-            if ($puede_ver_seguimientos) {
-                // Pasar los roles permitidos para que muestre seguimientos
-                $notificaciones = $model->obtenerNotificacionesPorUsuario($id_usuario, $roles_permitidos);
+            // Determinar filtros según el rol
+            if ($es_supervision) {
+                // Roles 1, 3, 5: Ver seguimientos y remisiones de otras direcciones
+                // Excluir autoacciones
+                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                    $id_usuario, 
+                    $roles_supervision,
+                    $id_direccion,
+                    $userrol
+                );
+            } elseif ($es_rol2) {
+                // Rol 2: Ver solo seguimientos de sus casos
+                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                    $id_usuario, 
+                    [2], // Marcar como rol 2
+                    $id_direccion,
+                    $userrol
+                );
             } else {
-                // No pasar roles, solo verá REMISION
-                $notificaciones = $model->obtenerNotificacionesPorUsuario($id_usuario, []);
+                // Otras direcciones: Solo remisiones a su dirección
+                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                    $id_usuario, 
+                    [],
+                    $id_direccion,
+                    $userrol
+                );
             }
             
             log_message('debug', "Notificaciones encontradas: " . count($notificaciones));
+            log_message('debug', "===== FIN DEBUG NOTIFICACIONES =====");
             
             return $this->respond([
                 "message" => "success",
@@ -59,15 +84,24 @@ class Notificaciones_Controler extends BaseController
             $model = new Notificaciones_Model();
             $id_usuario = $this->session->get('iduser');
             $userrol = $this->session->get('userrol');
+            $id_direccion = $this->session->get('id_direccion_administrativa');
             
-            // Roles que pueden ver seguimientos: 1, 3, 5
-            $roles_permitidos = [1, 3, 5];
-            $puede_ver_seguimientos = in_array($userrol, $roles_permitidos);
+            // Roles de supervisión
+            $roles_supervision = [1, 3, 5];
+            $es_supervision = in_array($userrol, $roles_supervision);
+            $es_rol2 = ($userrol == 2);
             
-            if ($puede_ver_seguimientos) {
-                $count = $model->contarNoLeidas($id_usuario, $roles_permitidos);
+            $count = 0;
+            
+            if ($es_supervision) {
+                // Roles 1, 3, 5: Contar seguimientos y remisiones
+                $count = $model->contarNoLeidas($id_usuario, $roles_supervision, $id_direccion, $userrol);
+            } elseif ($es_rol2) {
+                // Rol 2: Contar solo seguimientos de sus casos
+                $count = $model->contarNoLeidas($id_usuario, [2], $id_direccion, $userrol);
             } else {
-                $count = $model->contarNoLeidas($id_usuario, []);
+                // Otras direcciones: Contar solo remisiones
+                $count = $model->contarNoLeidas($id_usuario, [], $id_direccion, $userrol);
             }
             
             return $this->respond([

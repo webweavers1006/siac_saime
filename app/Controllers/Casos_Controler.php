@@ -1643,7 +1643,13 @@ public function buscar_datos_usuarios()
 
 	/**
 	 * Crear notificación cuando se remite un caso a una dirección
-	 * Notifica a todos los usuarios de la dirección destino
+	 * Notifica a todos los usuarios de la dirección destino, al autor original Y a supervisión global
+	 * 
+	 * Reglas implementadas:
+	 * 1. Notificar a usuarios de la dirección DESTINO
+	 * 2. Notificar al AUTOR ORIGINAL del caso (si tiene Rol 2)
+	 * 3. Notificar a Roles 1, 3, 5 (SUPERVISIÓN GLOBAL) - SIEMPRE
+	 * 4. Evitar auto-notificaciones
 	 */
 	private function crearNotificacionRemision($id_caso, $direccion_id, $nombre_direccion)
 	{
@@ -1652,32 +1658,143 @@ public function buscar_datos_usuarios()
 		
 		// Obtener información del caso
 		$caso = $casoModel->obtenerCaso_id($id_caso);
-		if ($caso) {
-			$nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+		if (!$caso) {
+			log_message('warning', "No se pudo obtener información del caso {$id_caso} para crear notificación de remisión");
+			return;
+		}
+		
+		// Datos del usuario actual (quien remite el caso)
+		$idusuopr_actual = $this->session->get('iduser');
+		$id_rol_actual = $this->session->get('userrol');
+		$direccion_origen_id = $this->session->get('id_direccion_administrativa');
+		$nombre_direccion_origen = $notifModel->obtenerNombreDireccion($direccion_origen_id);
+		
+		// Autor original del caso
+		$id_caso_autor = $caso->idusuopr ?? 0;
+		
+		// Verificar si el autor es diferente de quien remite
+		$autor_es_diferente = ($id_caso_autor != $idusuopr_actual);
+		
+		// Nombre del beneficiario
+		$nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+		
+		// Mensaje para destinatarios (dirección destino)
+		$mensaje_destinatarios = "Se le ha remitido el caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . " a su dirección (" . $nombre_direccion . "). Remitido por: " . $nombre_direccion_origen;
+		
+		log_message('debug', "=== CREAR NOTIFICACIÓN REMISIÓN ===");
+		log_message('debug', "Caso ID: {$id_caso}");
+		log_message('debug', "Autor original: {$id_caso_autor}");
+		log_message('debug', "Usuario actual: {$idusuopr_actual}");
+		log_message('debug', "Autor diferente: " . ($autor_es_diferente ? 'SÍ' : 'NO'));
+		
+		$notificaciones_creadas = 0;
+		
+		// 1. NOTIFICAR A USUARIOS DE LA DIRECCIÓN DESTINO
+		$usuarios_direccion = $notifModel->obtenerUsuariosPorDireccion($direccion_id);
+		
+		foreach ($usuarios_direccion as $usuario) {
+			// Evitar auto-notificación
+			if ($usuario->idusuopr == $idusuopr_actual) {
+				log_message('debug', "Skipping self-notification for user: {$idusuopr_actual}");
+				continue;
+			}
 			
-			// Obtener nombre de la dirección de origen (la que remite el caso)
-			$direccion_origen_id = $this->session->get('id_direccion_administrativa');
-			$nombre_direccion_origen = $notifModel->obtenerNombreDireccion($direccion_origen_id);
+			$insertado = $notifModel->insertarNotificacion([
+				"id_caso" => $id_caso,
+				"tipo_notificacion" => "REMISION",
+				"mensaje" => $mensaje_destinatarios,
+				"leida" => false,
+				"fecha_creacion" => date('Y-m-d H:i:s'),
+				"id_usuario_destino" => $usuario->idusuopr,
+				"direccion_origen" => $direccion_origen_id,
+				"id_usuario_accion" => $idusuopr_actual,
+				"id_rol_accion" => $id_rol_actual,
+				"id_caso_autor" => $id_caso_autor
+			]);
 			
-			// Mensaje con la dirección de origen
-			$mensaje = "Se le ha remitido el caso #" . $id_caso . " de: " . $nombre_beneficiario . " a su dirección (" . $nombre_direccion . "). Remitido por: " . $nombre_direccion_origen;
-			
-			// Obtener usuarios de la dirección destino
-			$usuarios_direccion = $notifModel->obtenerUsuariosPorDireccion($direccion_id);
-			
-			// Crear notificación para cada usuario de la dirección
-			foreach ($usuarios_direccion as $usuario) {
-				$notifModel->insertarNotificacion([
-					"id_caso" => $id_caso,
-					"tipo_notificacion" => "REMISION",
-					"mensaje" => $mensaje,
-					"leida" => false,
-					"fecha_creacion" => date('Y-m-d H:i:s'),
-					"id_usuario_destino" => $usuario->idusuopr,
-					"direccion_origen" => $direccion_origen_id
-				]);
+			if ($insertado) {
+				$notificaciones_creadas++;
 			}
 		}
+		
+		log_message('debug', "Notificaciones creadas para dirección destino: {$notificaciones_creadas}");
+		
+		// 2. NOTIFICAR AL AUTOR ORIGINAL DEL CASO (ROL 2)
+		// Solo si el autor es diferente de quien remite Y el autor tiene Rol 2
+		if ($autor_es_diferente && $id_caso_autor > 0) {
+			$autor = $notifModel->obtenerUsuarioPorId($id_caso_autor);
+			
+			if ($autor && isset($autor->idrol) && $autor->idrol == 2 && !(isset($autor->usuopborrado) && $autor->usuopborrado === true)) {
+				// El autor tiene Rol 2, necesita recibir notificación
+				$mensaje_autor = "Su caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . " ha sido remitido a la dirección: " . $nombre_direccion . ". Remitido por: " . $nombre_direccion_origen;
+				
+				// No crear duplicado si ya fue notificado como destinatario
+				$ya_notificado = false;
+				foreach ($usuarios_direccion as $usuario) {
+					if ($usuario->idusuopr == $id_caso_autor) {
+						$ya_notificado = true;
+						break;
+					}
+				}
+				
+				if (!$ya_notificado) {
+					$insertado = $notifModel->insertarNotificacion([
+						"id_caso" => $id_caso,
+						"tipo_notificacion" => "REMISION",
+						"mensaje" => $mensaje_autor,
+						"leida" => false,
+						"fecha_creacion" => date('Y-m-d H:i:s'),
+						"id_usuario_destino" => $id_caso_autor,
+						"direccion_origen" => $direccion_origen_id,
+						"id_usuario_accion" => $idusuopr_actual,
+						"id_rol_accion" => $id_rol_actual,
+						"id_caso_autor" => $id_caso_autor
+					]);
+					
+					if ($insertado) {
+						$notificaciones_creadas++;
+						log_message('debug', "Notificación de remisión enviada al autor (Rol 2): {$id_caso_autor}");
+					}
+				} else {
+					log_message('debug', "Autor (Rol 2) ya notificado como destinatario de la dirección");
+				}
+			} else {
+				log_message('debug', "El autor {$id_caso_autor} no tiene Rol 2 o está borrado, no se notifica");
+			}
+		}
+		
+		// 3. NOTIFICACIÓN A SUPERVISIÓN GLOBAL (ROLES 1, 3, 5)
+		// Los supervisores SIEMPRE reciben notificación de remisión para auditar movimientos
+		$usuarios_supervision = $notifModel->obtenerUsuariosPorRoles([1, 3, 5]);
+		$mensaje_supervision = "El caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . " fue remitido de " . $nombre_direccion_origen . " a " . $nombre_direccion;
+		
+		foreach ($usuarios_supervision as $supervisor) {
+			// Excluir auto-notificación (si el supervisor es quien remite)
+			if ($supervisor->idusuopr == $idusuopr_actual) {
+				continue;
+			}
+			
+			$insertado = $notifModel->insertarNotificacion([
+				"id_caso" => $id_caso,
+				"tipo_notificacion" => "REMISION",
+				"mensaje" => $mensaje_supervision,
+				"leida" => false,
+				"fecha_creacion" => date('Y-m-d H:i:s'),
+				"id_usuario_destino" => $supervisor->idusuopr,
+				"direccion_origen" => $direccion_origen_id,
+				"id_usuario_accion" => $idusuopr_actual,
+				"id_rol_accion" => $id_rol_actual,
+				"id_caso_autor" => $id_caso_autor
+			]);
+			
+			if ($insertado) {
+				$notificaciones_creadas++;
+			}
+		}
+		
+		log_message('debug', "Notificaciones creadas para supervisión global: " . count($usuarios_supervision));
+		log_message('debug', "Total notificaciones de remisión creadas: {$notificaciones_creadas}");
+		log_message('debug', "=== FIN CREAR NOTIFICACIÓN REMISIÓN ===");
 	}
 }
 

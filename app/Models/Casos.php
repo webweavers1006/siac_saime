@@ -330,7 +330,7 @@ private function buildBaseQuery($builder)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
-        $builder->select('a.tipo_beneficiario, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.idusuopr,a.tipo_beneficiario, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
         $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id');
         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
@@ -470,9 +470,17 @@ public function getReporteData($params)
     $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
     $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
     $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
-    $builder->select("CASE WHEN a.sexo='1' THEN 'M' ELSE 'F' END as sexo");
+    $builder->select("CASE WHEN a.sexo='1' THEN 'MASCULINO' WHEN a.sexo='2' THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+    
+    // Nuevos SELECTs para columnas adicionales
+    $builder->select('pais.paisnom as pais_nombre');
+    $builder->select('est.estadonom as estado_nombre');
+    $builder->select('mun.municipionom as municipio_nombre');
+    $builder->select('par.parroquianom as parroquia_nombre');
+    $builder->select("CASE WHEN rs.red_s_nom IS NULL THEN 'No aplica' ELSE rs.red_s_nom END as via_atencion_nombre");
+    $builder->select("CASE WHEN org.org_nombre IS NULL THEN 'No aplica' ELSE org.org_nombre END as organismo_pp_nombre");
     
     // Joins (Se mantienen)
     $builder->join('sgc_estatus b', 'b.idest = a.idest', 'inner');
@@ -483,6 +491,14 @@ public function getReporteData($params)
     $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
     $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
     $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
+    
+    // Nuevos JOINs para columnas adicionales
+    $builder->join('sgc_paises as pais', 'a.pais = pais.paisid', 'left');
+    $builder->join('sgc_estados as est', 'a.estadoid = est.estadoid', 'left');
+    $builder->join('sgc_municipio as mun', 'a.municipioid = mun.municipioid', 'left');
+    $builder->join('sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
+    $builder->join('sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
+    $builder->join('sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
 
     // Cláusulas WHERE Base
     $builder->where('a.borrado', false);

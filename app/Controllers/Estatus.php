@@ -20,8 +20,6 @@ class Estatus extends BaseController
 {
     use ResponseTrait;
 
-
-
 //Metodo que muestra la vista de los tipos de direcciones
 public function vista_tipo_Estatus()
 {
@@ -65,9 +63,6 @@ public function Listar_Tipo_Atencion_filtro()
     }
     echo json_encode($atencion);
 }
-
-
-
 
 //Metodo para añadir tipo de atencion
 public function add_Tipo_Estatus()
@@ -124,11 +119,6 @@ public function editTipoEstatus()
         return redirect()->to('/');
     }
 }
-
-
-
-
-
 
     public function cambioEstatus()
     {
@@ -222,7 +212,7 @@ public function editTipoEstatus()
                                     $io_mail->Password = $el_pass;
                                     $io_mail->SMTPOptions = $smtpOptions;
                                     $io_mail->setFrom($el_remitente);
-                                    $io_mail->AddAddress($correo); // Agrega la dirección de correo de destino
+                                    $io_mail->AddAddress($correo);
                                     $io_mail->FromName = "No Reply";
                                     $io_mail->Subject = utf8_decode("SU CASO Nª".' '.$datos["caseid"].' '.' HA SIDO CERRADO');
                                     $io_mail->Body = view('email_caso_cerrado/recover',$dataEmail);
@@ -234,7 +224,7 @@ public function editTipoEstatus()
                                     
                                     }
                             } catch (Exception $e) {
-                                echo 'Error al establecer la conexión SMTP: ' . $e->getMessage();
+                                echo 'Error al establecer la conexion SMTP: ' . $e->getMessage();
                             }
                                 
                                 }
@@ -245,17 +235,15 @@ public function editTipoEstatus()
 
                 }
 
-                    // Crear notificación para usuarios con roles 1, 3, 5
+                    // Crear notificacion para usuarios con roles 1, 3, 5
                     $this->crearNotificacionCambioEstatus($datos["caseid"], $data['idest']);
 
                     if (isset($segQuery)) {
                         $repuesta['mensaje']      = 1;
                         return json_encode($repuesta);
-                        //return $this->respond(["message" => "Estatus cambiado exitosamente"], 200);
                     } else {
                         $repuesta['mensaje']      = 2;
                         return json_encode($repuesta);
-                        //return $this->respond(["message" => "Hubo un error al cambiar el estatus"], 500);
                     }
             } else {
                 return $this->respond(["message" => "Hubo un error al cambiar el estatus"], 500);
@@ -264,104 +252,169 @@ public function editTipoEstatus()
     }
 
     /**
-     * Crear notificación de cambio de estatus para usuarios con roles 1, 3, 5
+     * Crear notificacion de cambio de estatus
+     * 
+     * REGLAS FINALES:
+     * 1. Seguimiento: 1,3,5 SIEMPRE + Rol 2 (autor) si es diferente
+     * 2. Remision: 1,3,5 SIEMPRE + Rol 2 (autor) SIEMPRE + Nuevo Destino
+     * 3. Cierre Rol 2: Nadie
+     * 4. Cierre Rol 10: 1,3,5 + Rol 2 (autor) - OBLIGATORIO
      */
     private function crearNotificacionCambioEstatus($id_caso, $nuevo_estatus)
     {
-        // Función helper para escribir en archivo de log
-        $writeLog = function($message) {
-            $logFile = '/var/www/html/siac_v2/writable/logs/debug_notificaciones.log';
-            $timestamp = date('Y-m-d H:i:s');
-            file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
-        };
-
-        $writeLog("=== INICIO crearNotificacionCambioEstatus ===");
-        $writeLog("id_caso: $id_caso, nuevo_estatus: $nuevo_estatus");
-
-        try {
-            $casoModel = new Casos();
-
-            // Obtener información del caso
-            $caso = $casoModel->obtenerCaso_id($id_caso);
-            $writeLog("caso encontrado: " . ($caso ? 'SI' : 'NO'));
-
-            if (!$caso) {
-                $writeLog("ERROR: No se encontró el caso: $id_caso");
-                return;
-            }
-
-            $nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
-            $writeLog("nombre_beneficiario: $nombre_beneficiario");
-
-            // Obtener nombre del estatus
-            $estatusModel = new Status();
-            $estatus = $estatusModel->obtenerEstatusPorId($nuevo_estatus);
-            $nombre_estatus = $estatus ? $estatus->estnom : 'Estatus #' . $nuevo_estatus;
-            $writeLog("nombre_estatus: $nombre_estatus");
-
-            // Obtener nombre de la dirección del usuario que realiza el cambio
-            $direccion_usuario_id = $this->session->get('id_direccion_administrativa');
-            $writeLog("direccion_usuario_id: $direccion_usuario_id");
-
-            // Obtener nombre de dirección directamente
-            $db = \Config\Database::connect();
-            $builder = $db->table('sgc_direcciones_administrativas');
-            $builder->select('descripcion');
-            $builder->where('id', $direccion_usuario_id);
-            $queryDir = $builder->get();
-            $rowDir = $queryDir->getRow();
-            $nombre_direccion_usuario = $rowDir ? $rowDir->descripcion : 'Sin dirección';
-            $writeLog("nombre_direccion_usuario: $nombre_direccion_usuario");
-
-            // Incluir el ID del caso, el nuevo estatus y la dirección en el mensaje
-            // Mensaje mejorado para evitar confusiones sobre quién cambió el estatus
-            $mensaje = "El caso #$id_caso - Beneficiario: $nombre_beneficiario fue actualizado al estatus: $nombre_estatus. Actualizado por: $nombre_direccion_usuario";
-            $writeLog("mensaje: $mensaje");
-
-            // Obtener usuarios con roles 1, 3, 5 - consulta directa
-            $builderUsuarios = $db->table('sgc_usuario_operador');
-            $builderUsuarios->select('idusuopr, id_direccion_administrativa');
-            $builderUsuarios->whereIn('idrol', [1, 3, 5]);
-            $builderUsuarios->where('usuopborrado', false);
-            $queryUsuarios = $builderUsuarios->get();
-            $usuarios_roles = $queryUsuarios->getResult();
-            $writeLog("usuarios_roles encontrados: " . count($usuarios_roles));
-
-            if (empty($usuarios_roles)) {
-                $writeLog("ERROR: No hay usuarios con roles 1, 3, 5 activos en el sistema");
-            }
-
-            // Crear notificación para cada usuario
-            $builderNotif = $db->table('sgc_notificaciones');
-            foreach ($usuarios_roles as $usuario) {
-                $writeLog("Creando notificación para usuario: " . $usuario->idusuopr);
-
-                $datosNotificacion = [
+        $notifModel = new Notificaciones_Model();
+        $casoModel = new Casos();
+        $estatusModel = new Status();
+        
+        log_message('debug', "=== INICIO crearNotificacionCambioEstatus ===");
+        log_message('debug', "id_caso: $id_caso, nuevo_estatus: $nuevo_estatus");
+        
+        // Obtener informacion del caso
+        $caso = $casoModel->obtenerCaso_id($id_caso);
+        if (!$caso) {
+            log_message('warning', "No se encontro el caso: $id_caso");
+            return;
+        }
+        
+        // Datos del usuario actual (quien realiza el cambio de estatus)
+        $idusuopr_actual = $this->session->get('iduser');
+        $id_rol_actual = $this->session->get('userrol');
+        $direccion_usuario_id = $this->session->get('id_direccion_administrativa');
+        $nombre_direccion_usuario = $notifModel->obtenerNombreDireccion($direccion_usuario_id);
+        
+        // Autor original del caso
+        $id_caso_autor = $caso->idusuopr ?? 0;
+        
+        $nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
+        
+        // Obtener nombre del estatus
+        $estatus = $estatusModel->obtenerEstatusPorId($nuevo_estatus);
+        $nombre_estatus = $estatus ? $estatus->estnom : 'Estatus #' . $nuevo_estatus;
+        
+        // Determinar tipo de notificacion
+        $es_cierre = ($nuevo_estatus == 2);
+        $tipo_notificacion = "CIERRE";
+        
+        // Mensaje base
+        $mensaje_base = "El caso #$id_caso - Beneficiario: $nombre_beneficiario fue actualizado al estatus: $nombre_estatus. Actualizado por: $nombre_direccion_usuario";
+        
+        log_message('debug', "Autor original: $id_caso_autor");
+        log_message('debug', "Usuario actual: $idusuopr_actual");
+        log_message('debug', "Es cierre: " . ($es_cierre ? 'SI' : 'NO'));
+        log_message('debug', "Rol del usuario que cierra: $id_rol_actual");
+        
+        $notificaciones_creadas = 0;
+        $usuarios_supervision = [];
+        
+        // =====================================================================
+        // REGLA: Si NO es cierre, notificar a supervision (igual que seguimiento)
+        // =====================================================================
+        if (!$es_cierre) {
+            $usuarios_supervision = $notifModel->obtenerUsuariosPorRoles([1, 3, 5]);
+            
+            foreach ($usuarios_supervision as $usuario) {
+                // REGLA 3: Self-exclusion
+                if ($usuario->idusuopr == $idusuopr_actual) {
+                    continue;
+                }
+                
+                $insertado = $notifModel->insertarNotificacion([
                     "id_caso" => $id_caso,
-                    "tipo_notificacion" => "SEGUIMIENTO",
-                    "mensaje" => $mensaje,
+                    "tipo_notificacion" => $tipo_notificacion,
+                    "mensaje" => $mensaje_base,
                     "leida" => false,
                     "fecha_creacion" => date('Y-m-d H:i:s'),
                     "id_usuario_destino" => $usuario->idusuopr,
-                    "direccion_origen" => $direccion_usuario_id
-                ];
-
-                $writeLog("Datos a insertar: " . json_encode($datosNotificacion));
-
-                $result = $builderNotif->insert($datosNotificacion);
-                $writeLog("Resultado de insert: " . ($result ? 'EXITO' : 'ERROR'));
-
-                if (!$result) {
-                    $error = $db->error();
-                    $writeLog("Error al insertar notificación: " . json_encode($error));
+                    "direccion_origen" => $direccion_usuario_id,
+                    "id_usuario_accion" => $idusuopr_actual,
+                    "id_rol_accion" => $id_rol_actual,
+                    "id_caso_autor" => $id_caso_autor
+                ]);
+                
+                if ($insertado) {
+                    $notificaciones_creadas++;
                 }
             }
-
-            $writeLog("=== FIN crearNotificacionCambioEstatus ===");
-        } catch (\Exception $e) {
-            $writeLog("EXCEPCION: " . $e->getMessage());
-            $writeLog("Stack trace: " . $e->getTraceAsString());
         }
+        
+        // =====================================================================
+        // REGLA DE CIERRE: Depende del rol de quien cierra
+        // =====================================================================
+        if ($es_cierre) {
+            
+            // -----------------------------------------------------------------------------
+            // ESCENARIO 1: CIERRE POR ROL 2 -> No notificar a nadie
+            // -----------------------------------------------------------------------------
+            if ($id_rol_actual == 2) {
+                log_message('debug', "Cierre por Rol 2 - No se notifica a supervision ni al autor");
+            }
+            
+            // -----------------------------------------------------------------------------
+            // ESCENARIO 2: CIERRE POR ROL 10 (o cualquier otro rol excepto 2)
+            // REGLA: Notificar a 1,3,5 (supervision) Y al Rol 2 (autor original)
+            // -----------------------------------------------------------------------------
+            else {
+                log_message('debug', "Cierre por Rol 10 u otro - Notificando a supervision Y autor");
+                
+                // 2A. Notificar a Supervision (1,3,5)
+                $usuarios_supervision = $notifModel->obtenerUsuariosPorRoles([1, 3, 5]);
+                
+                foreach ($usuarios_supervision as $usuario) {
+                    // REGLA 3: Self-exclusion
+                    if ($usuario->idusuopr == $idusuopr_actual) {
+                        continue;
+                    }
+                    
+                    $insertado = $notifModel->insertarNotificacion([
+                        "id_caso" => $id_caso,
+                        "tipo_notificacion" => $tipo_notificacion,
+                        "mensaje" => $mensaje_base,
+                        "leida" => false,
+                        "fecha_creacion" => date('Y-m-d H:i:s'),
+                        "id_usuario_destino" => $usuario->idusuopr,
+                        "direccion_origen" => $direccion_usuario_id,
+                        "id_usuario_accion" => $idusuopr_actual,
+                        "id_rol_accion" => $id_rol_actual,
+                        "id_caso_autor" => $id_caso_autor
+                    ]);
+                    
+                    if ($insertado) {
+                        $notificaciones_creadas++;
+                    }
+                }
+                
+                // 2B. Notificar al Autor Original (Rol 2)
+                // REGLA: El autor SIEMPRE debe saber cuando su caso es cerrado por otro
+                if ($id_caso_autor > 0 && $id_caso_autor != $idusuopr_actual) {
+                    $autor = $notifModel->obtenerUsuarioPorId($id_caso_autor);
+                    
+                    if ($autor && isset($autor->idrol) && $autor->idrol == 2 && !(isset($autor->usuopborrado) && $autor->usuopborrado === true)) {
+                        $mensaje_autor = "Su caso #$id_caso - Beneficiario: $nombre_beneficiario fue CERRADO por: $nombre_direccion_usuario";
+                        
+                        $insertado = $notifModel->insertarNotificacion([
+                            "id_caso" => $id_caso,
+                            "tipo_notificacion" => $tipo_notificacion,
+                            "mensaje" => $mensaje_autor,
+                            "leida" => false,
+                            "fecha_creacion" => date('Y-m-d H:i:s'),
+                            "id_usuario_destino" => $id_caso_autor,
+                            "direccion_origen" => $direccion_usuario_id,
+                            "id_usuario_accion" => $idusuopr_actual,
+                            "id_rol_accion" => $id_rol_actual,
+                            "id_caso_autor" => $id_caso_autor
+                        ]);
+                        
+                        if ($insertado) {
+                            $notificaciones_creadas++;
+                            log_message('debug', "Notificacion de CIERRE enviada al autor (Rol 2): {$id_caso_autor}");
+                        }
+                    }
+                }
+            }
+        }
+        
+        log_message('debug', "Total notificaciones creadas: {$notificaciones_creadas}");
+        log_message('debug', "=== FIN crearNotificacionCambioEstatus ===");
     }
 
     public function enviar_correo_portal($caseid,$tipocorreo)
@@ -419,7 +472,7 @@ public function editTipoEstatus()
                         $io_mail->Password = $el_pass;
                         $io_mail->SMTPOptions = $smtpOptions;
                         $io_mail->setFrom($el_remitente);
-                        $io_mail->AddAddress($correo); // Agrega la dirección de correo de destino
+                        $io_mail->AddAddress($correo);
                         $io_mail->FromName = "No Reply";
                         $io_mail->Subject = utf8_decode("SU CASO Nª".' '.$caseid.' '.' HA SIDO CREADO');
                         $io_mail->Body = view('email_caso_creado/recover',$dataEmail);
@@ -427,14 +480,12 @@ public function editTipoEstatus()
                         if ($io_mail->send()) {
                             $url = base_url('email_caso_creado/recover');
                             $link = "<a href='$url' </a>";
-                            //return $this->respond(["message" => "Revisa tu correo para seguir los pasos de recuperación. $link"], 200);
                         } else {
-                            $repuesta['mensaje']      = 4;
-                            return json_encode($repuesta);
-                            //return $this->respond(["message" => "No se pudo enviar el correo, pongase en contacto con el administrador del sistema para más información"], 404);
+                           $repuesta['mensaje']      = 4;
+                           return json_encode($repuesta);
                         }
                     } catch (Exception $e) {
-                        echo 'Error al establecer la conexión SMTP: ' . $e->getMessage();
+                        echo 'Error al establecer la conexion SMTP: ' . $e->getMessage();
                     }              
                 }
           }  
@@ -444,7 +495,7 @@ public function editTipoEstatus()
         else if ($tipocorreo=='2'||$tipocorreo==2)
         {
             $token=$this->request->getServer('HTTP_AUTHORIZATION');
-            // Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
+            // Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorizacion
             $contexto = stream_context_create([
                 'http' => [
                     'method'  => 'GET',
@@ -496,9 +547,9 @@ public function editTipoEstatus()
                         $io_mail->Password = $el_pass;
                         $io_mail->SMTPOptions = $smtpOptions;
                         $io_mail->setFrom($el_remitente);
-                        $io_mail->AddAddress($correo); // Agrega la dirección de correo de destino
+                        $io_mail->AddAddress($correo);
                         $io_mail->FromName = "No Reply";
-                        $io_mail->Subject = utf8_decode("SU AUDIENCIA Nº".''.$dataEmail["caso"].' '.' HA SIDO REGISTRADA');
+                        $io_mail->Subject = utf8_decode("SU AUDIENCIA N".''.$dataEmail["caso"].' '.' HA SIDO REGISTRADA');
                         $io_mail->Body = view('email_audiencia_creada/audiencia_creada',$dataEmail);
                         $io_mail->AltBody = 'Este es un mensaje de prueba enviado desde el servidor SMTP';
                         if ($io_mail->send()) {
@@ -506,12 +557,11 @@ public function editTipoEstatus()
                             $link = "<a href='$url' </a>";
                             return $this->respond(["message" => "REGISTRO EXISTOSO."], 200);
                         } else {
-                           // $repuesta['mensaje']      = 4;
-                           // return json_encode($repuesta);
-                            //return $this->respond(["message" => "No se pudo enviar el correo, pongase en contacto con el administrador del sistema para más información"], 404);
+                           $repuesta['mensaje']      = 4;
+                           return json_encode($repuesta);
                         }
                     } catch (Exception $e) {
-                        echo 'Error al establecer la conexión SMTP: ' . $e->getMessage();
+                        echo 'Error al establecer la conexion SMTP: ' . $e->getMessage();
                     }
         }
           

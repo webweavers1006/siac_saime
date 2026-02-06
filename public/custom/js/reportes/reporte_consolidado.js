@@ -313,7 +313,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                 footer: true,
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
                 },
                 alignment: 'center',
 
@@ -392,7 +392,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
 
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
                 },
                 excelStyles: {
                     "template": [
@@ -455,10 +455,17 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     { data: 'nombre' },
     { data: 'casotel' },
     { data: 'tipo_prop_nombre' },
+    { data: 'sexo' },
+    { data: 'via_atencion_nombre' },
     { data: 'tipo_aten_nombre' },
+    { data: 'descripcion' },
+    { data: 'pais_nombre' },
+    { data: 'estado_nombre' },
+    { data: 'municipio_nombre' },
+    { data: 'parroquia_nombre' },
+    { data: 'organismo_pp_nombre' },
     { data: 'casofec' },
     { data: 'estnom' },
-    { data: 'descripcion' },
     { data: 'user_name' },
     { 
         // Columna para el botón de acción

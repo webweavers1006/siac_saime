@@ -734,11 +734,18 @@
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Tipo Ben</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">Beneficiario</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">Teléfono</td>
-                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 6%;">Propiedad Intelectual</td>
-                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 2%;">T.Atención</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Propiedad Intelectual</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Género</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Vía de Atención</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Tipo de Atención</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Dirección Adm.</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">País</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Estado</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Municipio</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Parroquia</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Organismo PP</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Fecha</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Estatus</td>
-                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">Dirección Remitida</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Operador</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Detalle</td>
                     </tr>
