@@ -736,8 +736,6 @@ $('#listar_seguimientos').on('click', '.Bloquear', function(e) {
 
 
 
-
-//FUNCION PARA LLENAR EL COMBO DE LOS MUNICIPIOS EN FUNSION DEL ID DEL ESTADO
 function buscar_documentos_casos(e) {
 
 let idcaso = $('#id-caso').val();

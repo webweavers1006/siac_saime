@@ -498,21 +498,7 @@ function Listar_Casos(estatus=null) {
                     <i class="material-icons">search</i>
                 </a>
 
-                <a href="javascript:;" class="btn btn-xs btn-secondary Editar" style="font-size:1px" 
-                    data-toggle="tooltip" title="Editar" 
-                    data-paisid="${row.paisid}" data-tipo_atend_borrado="${row.tipo_atend_borrado}" data-act_pro_int="${row.act_pro_int}" 
-                    data-fecha_nacimiento_normal="${row.fecha_nacimiento_normal}" data-tipo_atend_id="${row.tipo_atend_id}" 
-                    data-edad="${row.edad}" data-fecha_nacimiento="${row.fecha_nacimiento}" data-profesion="${row.profesion}" 
-                    data-denu_involucrados="${row.denu_involucrados}" data-denu_monto_aprovado="${row.denu_monto_aprovado}" 
-                    data-denu_nombre_proyecto="${row.denu_nombre_proyecto}" data-denu_ente_financiador="${row.denu_ente_financiador}" 
-                    data-denu_rif_instancia="${row.denu_rif_instancia}" data-denu_instancia_popular="${row.denu_instancia_popular}" 
-                    data-denu_fecha_hechos="${row.denu_fecha_hechos}" data-denu_afecta_terceros="${row.denu_afecta_terceros}" 
-                    data-denu_afecta_comunidad="${row.denu_afecta_comunidad}" data-denu_afecta_persona="${row.denu_afecta_persona}" 
-                    data-asume_cgr="${row.asume_cgr}" data-competencia_cgr="${row.competencia_cgr}" data-ente_adscrito_id="${row.ente_adscrito_id}" 
-                    data-correo="${row.correo}" data-direccion="${row.direccion}" data-tipo_beneficiario="${row.tipo_beneficiario}" 
-                    data-idcaso="${row.idcaso}">
-                    <i class="material-icons">attach_file</i>
-                </a>
+               
 
                 <a href="javascript:;" class="btn btn-xs btn-success Remitir" style="font-size:1px" 
                     data-toggle="tooltip" title="Remitir" 
@@ -573,7 +559,7 @@ function Listar_Casos(estatus=null) {
 //METODO PARA ABRIR EL MODAL PARA LA   EDICION DEL CASO
 $('#listar_casos').on('click', '.Imprimir', function(e) {
     e.preventDefault();
-    let idcaso = $(this).attr('idcaso');
+    let idcaso = $(this).data('idcaso');
     window.open('generar_pdf/' + idcaso, '_blank');
     // window.location = '/generar_pdf/' + idcaso, '_blank'
 });
@@ -581,14 +567,14 @@ $('#listar_casos').on('click', '.Imprimir', function(e) {
 //METODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS
 $('#listar_casos').on('click', '.Seguimientos', function(e) {
     e.preventDefault();
-    let idcaso = $(this).attr('idcaso');
+    let idcaso = $(this).data('idcaso');
     window.location = '/verCaso/' + idcaso;
 
 });
 
 //METODO PARA ELIMINAR UN SEGUIMIENTO
 $('#listar_casos').on('click', '.Bloquear', function(e) {
-    let idcaso = $(this).attr('idcaso');
+    let idcaso = $(this).data('idcaso');
     let borrado = 'true'
     let datos = {
         idcaso: idcaso,
@@ -730,7 +716,7 @@ $('#listar_casos').on('click', '.Editar', function(e) {
     let municipioid_anterior = municipioid
     let parroquiaid = $(this).attr('parroquiaid');
     let parroquiaid_anterior = parroquiaid
-    let idcaso = $(this).attr('idcaso');
+    let idcaso = $(this).data('idcaso');
 
     let tipo_beneficiario = $(this).attr('tipo_beneficiario');
    

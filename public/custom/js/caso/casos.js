@@ -1857,20 +1857,28 @@ $('#listar_casos').on('click', '.Imprimir', function(e) {
 });
 
 
-var selectElement = document.getElementById('docu-casos');
-selectElement.addEventListener('change', function() {
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
-    var url = selectedOption.text;
-    var ruta = 'documentos_casos/' + url; // Reemplaza "
-    window.open(ruta, "_blank");
+// Evento para abrir documentos del caso (delegación de eventos para elementos dinámicos)
+$(document).on('change', '#docu-casos', function() {
+    var url = $(this).val();
+    console.log('URL seleccionada:', url);
+    // Verificar que el valor no sea vacío, null, 0 o "Seleccione"
+    if (url && url !== '' && url !== '0' && url.toLowerCase() !== 'seleccione') {
+        var ruta = 'documentos_casos/' + url;
+        console.log('Abriendo documento:', ruta);
+        window.open(ruta, "_blank");
+    } else {
+        console.log('Valor no válido para abrir documento');
+    }
 });
 
 var selectElement = document.getElementById('documentos-select');
 selectElement.addEventListener('change', function() {
     var selectedOption = selectElement.options[selectElement.selectedIndex];
-    var url = selectedOption.text;
-    var ruta = 'documentos_punto_cuenta/' + url; // Reemplaza "
-    window.open(ruta, "_blank");
+    var url = selectedOption.value;
+    if (url && url !== '0') {
+        var ruta = 'documentos_punto_cuenta/' + url;
+        window.open(ruta, "_blank");
+    }
 });
 
 

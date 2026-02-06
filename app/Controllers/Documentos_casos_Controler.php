@@ -35,10 +35,10 @@ public function ver_documentos($idcaso = null)
             $query = $model_docu_casos->buscar_documentos_casos($datos["idcaso"]);
 
             if (isset($query)) {
-                $opt .= '<option value="0" selected disabled>Seleccione</option>';
+                $opt .= '<option value="" selected disabled>Seleccione</option>';
                 foreach ($query->getResult() as $row) {
 
-                    $opt .= '<option value="' . $row->docu_id . '">' . ucfirst(strtolower($row->docu_ruta)) . '</option>';
+                    $opt .= '<option value="' . $row->docu_ruta . '">' . ucfirst(strtolower($row->docu_ruta)) . '</option>';
                 }
                 unset($model);
                 return $this->respond(["message" => "success", "data" => $opt], 200);
