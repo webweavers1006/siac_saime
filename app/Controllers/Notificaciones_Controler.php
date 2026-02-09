@@ -168,6 +168,56 @@ class Notificaciones_Controler extends BaseController
     }
 
     /**
+     * Obtener todas las notificaciones (leídas y no leídas)
+     */
+    public function obtenerTodasMisNotificaciones()
+    {
+        if ($this->session->get('logged')) {
+            $model = new Notificaciones_Model();
+            $id_usuario = $this->session->get('iduser');
+            $userrol = $this->session->get('userrol');
+            $id_direccion = $this->session->get('id_direccion_administrativa');
+            
+            // Roles de supervisión
+            $roles_supervision = [1, 3, 5];
+            $es_supervision = in_array($userrol, $roles_supervision);
+            $es_rol2 = ($userrol == 2);
+            
+            $notificaciones = [];
+            
+            if ($es_supervision) {
+                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                    $id_usuario, 
+                    $roles_supervision,
+                    $id_direccion,
+                    $userrol
+                );
+            } elseif ($es_rol2) {
+                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                    $id_usuario, 
+                    [2],
+                    $id_direccion,
+                    $userrol
+                );
+            } else {
+                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                    $id_usuario, 
+                    [],
+                    $id_direccion,
+                    $userrol
+                );
+            }
+            
+            return $this->respond([
+                "message" => "success",
+                "data" => $notificaciones
+            ], 200);
+        } else {
+            return redirect()->to('/');
+        }
+    }
+
+    /**
      * Obtener notificaciones para mostrar al inicio (para SweetAlert)
      */
     public function obtenerNotificacionesAlerta()

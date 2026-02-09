@@ -368,6 +368,7 @@ $routes->get('/listar_Casos_Remitidos', 'Casos_Remitidos::listar_Casos_Remitidos
 * --------------------------------------------------------------------
 */
 $routes->get('/notificaciones/obtenerMisNotificaciones', 'Notificaciones_Controler::obtenerMisNotificaciones');
+$routes->get('/notificaciones/obtenerTodasMisNotificaciones', 'Notificaciones_Controler::obtenerTodasMisNotificaciones');
 $routes->get('/notificaciones/contarNotificaciones', 'Notificaciones_Controler::contarNotificaciones');
 $routes->post('/notificaciones/marcarLeida', 'Notificaciones_Controler::marcarLeida');
 $routes->post('/notificaciones/marcarTodasLeidas', 'Notificaciones_Controler::marcarTodasLeidas');

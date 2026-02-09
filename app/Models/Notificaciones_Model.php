@@ -134,7 +134,7 @@ class Notificaciones_Model extends BaseModel
         
         // Filtro comun: solo notificaciones del usuario destinatario
         $builder->where('n.id_usuario_destino', $id_usuario);
-        $builder->orderBy('n.fecha_creacion', 'DESC');
+        $builder->orderBy('n.fecha_creacion', 'ASC');
         $builder->limit(50);
         
         $query = $builder->get();
@@ -253,9 +253,116 @@ class Notificaciones_Model extends BaseModel
         $builder->join('sgc_direcciones_administrativas dir_origen', 'n.direccion_origen = dir_origen.id', 'left');
         $builder->where('n.id_usuario_destino', $id_usuario);
         $builder->where('n.leida', false);
-        $builder->orderBy('n.fecha_creacion', 'DESC');
+        $builder->orderBy('n.fecha_creacion', 'ASC');
         $query = $builder->get();
         return $query->getResult();
+    }
+
+    /**
+     * Obtener TODAS las notificaciones (leidas y no leidas) por usuario
+     */
+    public function obtenerTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_notificaciones n');
+        $builder->select('n.*');
+        $builder->select('dir_origen.descripcion as direccion_origen_nombre');
+        
+        // JOIN con casos para verificar autoria
+        $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        
+        // JOIN con usuario operador para verificar rol del autor del caso
+        $builder->join('sgc_usuario_operador autor_caso', 'n.id_caso_autor = autor_caso.idusuopr', 'left');
+        
+        // JOIN con usuario operador para verificar rol del usuario que realiza la accion
+        $builder->join('sgc_usuario_operador usuario_accion', 'n.id_usuario_accion = usuario_accion.idusuopr', 'left');
+        
+        $builder->join('sgc_direcciones_administrativas dir_origen', 'n.direccion_origen = dir_origen.id', 'left');
+        
+        // Determinar el rol del usuario (usar parametro o sesion)
+        $rol_usuario = $userrol ?? ($this->session->get('userrol') ?? 0);
+        $direccion_usuario = $id_direccion_usuario ?? ($this->session->get('id_direccion_administrativa') ?? 0);
+        
+        $es_supervision = in_array($rol_usuario, [1, 3, 5]);
+        $es_rol2 = ($rol_usuario == 2);
+        $es_rol10 = ($rol_usuario == 10);
+        
+        // APLICAR REGLAS DE VISUALIZACION (igual que en obtenerNotificacionesPorUsuario)
+        if ($es_supervision) {
+            // === ROLES 1, 3, 5: SUPERVISION ===
+            
+            // Excluir autoacciones: el usuario no ve notificaciones de sus propias acciones
+            $builder->where('n.id_usuario_accion !=', $id_usuario);
+            
+            // REGLA CLAVE: Excluir registros donde id_rol_accion == 2 Y tipo_notificacion == 'CIERRE'
+            $builder->groupStart();
+            $builder->where("NOT (n.id_rol_accion = 2 AND n.tipo_notificacion = 'CIERRE')", null, false);
+            $builder->groupEnd();
+            
+            // Supervision puede ver REMISION, SEGUIMIENTO Y CIERRE
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+                $builder->groupEnd();
+            } else {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+                $builder->groupEnd();
+            }
+            
+        } elseif ($es_rol2) {
+            // === ROL 2: AUTOR DEL CASO ===
+            
+            $builder->where('c.idusuopr', $id_usuario);
+            $builder->where('n.id_usuario_accion !=', $id_usuario);
+            
+            $builder->groupStart();
+            $builder->where('n.tipo_notificacion', 'SEGUIMIENTO');
+            $builder->orWhere('n.tipo_notificacion', 'REMISION');
+            $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+            $builder->groupEnd();
+            
+        } elseif ($es_rol10) {
+            // === ROL 10: DIRECCION ===
+            
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->groupEnd();
+            } else {
+                $builder->where('n.tipo_notificacion', 'REMISION');
+            }
+            
+        } else {
+            // === OTRAS DIRECCIONES ===
+            
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->groupEnd();
+            } else {
+                $builder->where('n.tipo_notificacion', 'REMISION');
+            }
+        }
+        
+        // Filtro comun: solo notificaciones del usuario destinatario (SIN filtrar por leida)
+        $builder->where('n.id_usuario_destino', $id_usuario);
+        $builder->orderBy('n.fecha_creacion', 'ASC');
+        $builder->limit(100); // Mayor límite para mostrar todas
+        
+        $query = $builder->get();
+        $result = $query->getResult();
+        
+        log_message('debug', 'SQL Todas Notificaciones: ' . $db->getLastQuery());
+        log_message('debug', 'Todas las notificaciones encontradas para usuario ' . $id_usuario . ' (Rol ' . $rol_usuario . '): ' . count($result));
+        
+        return $result;
     }
 
     /**

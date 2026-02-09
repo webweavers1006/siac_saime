@@ -99,6 +99,41 @@ $userdata = $session->get();
     font-weight: bold !important;
     color: #003366 !important;
   }
+  /* Estilos para botones de filtro de notificaciones */
+  .notification-filters {
+    display: flex;
+    gap: 8px;
+    padding: 10px 15px;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+  }
+  .notification-filter-btn {
+    flex: 1;
+    padding: 6px 12px;
+    font-size: 12px;
+    border: 1px solid #007bff;
+    border-radius: 15px;
+    background: white;
+    color: #007bff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .notification-filter-btn:hover {
+    background: #e8f4fd;
+  }
+  .notification-filter-btn.active {
+    background: #007bff;
+    color: white;
+  }
+  /* Estilo para notificaciones leídas */
+  .notification-item.read {
+    background-color: #f8f9fa;
+    opacity: 0.7;
+  }
+  .notification-item.read:hover {
+    background-color: #e9ecef;
+  }
 </style>
 <meta charset="utf-8">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/navar.css">
@@ -134,9 +169,20 @@ $userdata = $session->get();
         <span class="notification-badge" id="notification-count" style="display: none;">0</span>
       </div>
       <div class="notification-menu" id="notification-menu" style="display: none;">
-        <div style="padding: 15px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 8px 8px 0 0;">
-          <strong style="font-size: 15px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
-          <a href="#" onclick="marcarTodasLeidas(); return false;" style="font-size: 12px; color: #fff; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; text-decoration: none;">Marcar todas como leídas</a>
+        <div style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 8px 8px 0 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 15px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
+            <a href="#" onclick="marcarTodasLeidas(); return false;" style="font-size: 12px; color: #fff; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; text-decoration: none;">Marcar todas como leídas</a>
+          </div>
+          <!-- Botones de filtro -->
+          <div class="notification-filters">
+            <button class="notification-filter-btn active" id="filter-unread" onclick="filtrarNotificaciones('unread')">
+              <i class="fas fa-envelope"></i> No leídas
+            </button>
+            <button class="notification-filter-btn" id="filter-all" onclick="filtrarNotificaciones('all')">
+              <i class="fas fa-inbox"></i> Todas
+            </button>
+          </div>
         </div>
         <div id="notification-list">
           <!-- Las notificaciones se cargarán aquí -->
@@ -164,6 +210,8 @@ $userdata = $session->get();
   <script>
     // Variables globales
     let notificationsOpen = false;
+    let currentFilter = 'unread'; // 'unread' o 'all'
+    let todasLasNotificaciones = []; // Almacena todas las notificaciones para filtrado
 
     // Función para mostrar/ocultar notificaciones
     function toggleNotifications() {
@@ -188,36 +236,68 @@ $userdata = $session->get();
       }
     });
 
-    // Cargar notificaciones
+    // Cargar notificaciones según el filtro actual
     function cargarNotificaciones() {
-      fetch('<?php echo base_url(); ?>/notificaciones/obtenerMisNotificaciones', {
+      const endpoint = currentFilter === 'all' 
+        ? '<?php echo base_url(); ?>/notificaciones/obtenerTodasMisNotificaciones'
+        : '<?php echo base_url(); ?>/notificaciones/obtenerMisNotificaciones';
+      
+      fetch(endpoint, {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message === 'success') {
-          renderNotificaciones(data.data);
-          actualizarContador();
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(text => {
+        try {
+          const data = JSON.parse(text);
+          if (data.message === 'success') {
+            // Guardar todas las notificaciones si es el filtro "Todas"
+            if (currentFilter === 'all') {
+              todasLasNotificaciones = data.data;
+            }
+            renderNotificaciones(data.data);
+            actualizarContador();
+          }
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
+          console.log('Raw response:', text);
         }
       })
       .catch(error => console.error('Error:', error));
     }
 
-    // Renderizar notificaciones en el dropdown - mostrar todas las no leídas
+    // Filtrar notificaciones
+    function filtrarNotificaciones(filtro) {
+      currentFilter = filtro;
+      
+      // Actualizar estilos de botones
+      document.getElementById('filter-unread').classList.toggle('active', filtro === 'unread');
+      document.getElementById('filter-all').classList.toggle('active', filtro === 'all');
+      
+      // Recargar notificaciones según el filtro
+      cargarNotificaciones();
+    }
+
+    // Renderizar notificaciones en el dropdown
     function renderNotificaciones(notificaciones) {
       const container = document.getElementById('notification-list');
       
       // Debug: mostrar en consola lo que llega del servidor
       console.log('Notificaciones recibidas:', notificaciones);
+      console.log('Filtro actual:', currentFilter);
       
       if (!notificaciones || notificaciones.length === 0) {
         container.innerHTML = `
           <div class="empty-notifications">
             <i class="fas fa-bell-slash"></i>
-            <p>No hay notificaciones</p>
+            <p>${currentFilter === 'all' ? 'No hay notificaciones registradas' : 'No hay notificaciones sin leer'}</p>
           </div>
         `;
         return;
@@ -225,12 +305,18 @@ $userdata = $session->get();
 
       let html = '';
       notificaciones.forEach(notif => {
-        // Solo mostrar si no está leída (manejar string 'f' y boolean false)
+        // Determinar si está leída
         const estaLeida = notif.leida === true || notif.leida === 't' || notif.leida === 'true';
-        if (estaLeida) return;
         
-        const tipoClass = notif.tipo_notificacion === 'REMISION' ? 'text-primary' : 'text-warning';
-        const tipoIcon = notif.tipo_notificacion === 'REMISION' ? 'fa-file-import' : 'fa-tasks';
+        // Si el filtro es 'unread', solo mostrar no leídas
+        if (currentFilter === 'unread' && estaLeida) {
+          return;
+        }
+        
+        const tipoClass = notif.tipo_notificacion === 'REMISION' ? 'text-primary' : 
+                         (notif.tipo_notificacion === 'CIERRE' ? 'text-danger' : 'text-warning');
+        const tipoIcon = notif.tipo_notificacion === 'REMISION' ? 'fa-file-import' : 
+                         (notif.tipo_notificacion === 'CIERRE' ? 'fa-check-circle' : 'fa-tasks');
         
         // Construir mensaje completo con dirección origen si existe
         let mensajeCompleto = notif.mensaje;
@@ -245,17 +331,20 @@ $userdata = $session->get();
         }
         
         // Aplicar estilo a los nombres de dirección que ya vienen en el mensaje
-        // Patrón: "Remitido por: [nombre]" -> solo [nombre] en negrilla azul
         mensajeCompleto = mensajeCompleto.replace(/(Remitido por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
         mensajeCompleto = mensajeCompleto.replace(/(Agregado por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
         mensajeCompleto = mensajeCompleto.replace(/(Actualizado por:\s*)([^<\.]+)/g, '$1<span class="notif-negrilla-azul">$2</span>');
         
+        // Determinar clase según estado de lectura
+        const leidaClass = estaLeida ? 'read' : 'unread';
+        const leidaIcon = estaLeida ? '<i class="fas fa-check" style="color: #28a745; margin-right: 5px;"></i>' : '';
+        
         html += `
-          <div class="notification-item unread" 
+          <div class="notification-item ${leidaClass}" 
                onclick="verNotificacion(${notif.id}, '${notif.tipo_notificacion}', ${notif.id_caso})">
-            <h6><span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span></h6>
+            <h6><span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span> ${leidaIcon}</h6>
             <p class="notif-message">${mensajeCompleto}</p>
-            <div class="time">${formatDate(notif.fecha_creacion)}</div>
+            <div class="time">${formatDate(notif.fecha_creacion)}${estaLeida ? ' · Leída' : ''}</div>
           </div>
         `;
       });
@@ -264,7 +353,7 @@ $userdata = $session->get();
         container.innerHTML = `
           <div class="empty-notifications">
             <i class="fas fa-bell-slash"></i>
-            <p>No hay notificaciones</p>
+            <p>${currentFilter === 'all' ? 'No hay notificaciones registradas' : 'No hay notificaciones sin leer'}</p>
           </div>
         `;
       } else {
@@ -301,7 +390,7 @@ $userdata = $session->get();
 
     // Ver notificación y redirigir
     function verNotificacion(id, tipo, idCaso) {
-      // Marcar como leída
+      // Marcar como leída (si falla, continuamos con la redirección)
       fetch('<?php echo base_url(); ?>/notificaciones/marcarLeida', {
         method: 'POST',
         headers: {
@@ -310,19 +399,29 @@ $userdata = $session->get();
         },
         body: 'data=' + btoa(JSON.stringify({ id_notificacion: id }))
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          console.warn('Error al marcar como leída, continuando...');
+        }
+        return response.json().catch(() => ({}));
+      })
       .then(data => {
+        console.log('Notificación marcada como leída');
+      })
+      .catch(error => {
+        console.warn('Error en fetch de marcarLeida:', error);
+      })
+      .finally(() => {
         // Cerrar dropdown
         document.getElementById('notification-menu').style.display = 'none';
         notificationsOpen = false;
         actualizarContador();
         
-        // Redirigir según el tipo
+        // Redirigir según el tipo (SIEMPRE)
         if (tipo === 'REMISION' || tipo === 'SEGUIMIENTO') {
           window.location.href = '<?php echo base_url(); ?>/verCaso/' + idCaso;
         }
-      })
-      .catch(error => console.error('Error:', error));
+      });
     }
 
     // Marcar todas como leídas
