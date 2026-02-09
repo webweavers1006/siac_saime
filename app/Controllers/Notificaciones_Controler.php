@@ -21,11 +21,16 @@ class Notificaciones_Controler extends BaseController
             $userrol = $this->session->get('userrol');
             $id_direccion = $this->session->get('id_direccion_administrativa');
             
+            // Obtener parámetros de paginación
+            $pagina = $this->request->getGet('pagina') ?? 1;
+            $por_pagina = $this->request->getGet('por_pagina') ?? 10;
+            
             // Depuración temporal
             log_message('debug', "===== DEBUG NOTIFICACIONES =====");
             log_message('debug', "Usuario ID: " . $id_usuario);
             log_message('debug', "User Rol: " . $userrol);
             log_message('debug', "Direccion: " . $id_direccion);
+            log_message('debug', "Pagina: " . $pagina . ", Por pagina: " . $por_pagina);
             
             // Roles de supervisión
             $roles_supervision = [1, 3, 5];
@@ -39,36 +44,49 @@ class Notificaciones_Controler extends BaseController
             if ($es_supervision) {
                 // Roles 1, 3, 5: Ver seguimientos y remisiones de otras direcciones
                 // Excluir autoacciones
-                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                $resultado = $model->obtenerNotificacionesPorUsuario(
                     $id_usuario, 
                     $roles_supervision,
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             } elseif ($es_rol2) {
                 // Rol 2: Ver solo seguimientos de sus casos
-                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                $resultado = $model->obtenerNotificacionesPorUsuario(
                     $id_usuario, 
                     [2], // Marcar como rol 2
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             } else {
                 // Otras direcciones: Solo remisiones a su dirección
-                $notificaciones = $model->obtenerNotificacionesPorUsuario(
+                $resultado = $model->obtenerNotificacionesPorUsuario(
                     $id_usuario, 
                     [],
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             }
             
-            log_message('debug', "Notificaciones encontradas: " . count($notificaciones));
+            log_message('debug', "Notificaciones encontradas: " . count($resultado['data']));
+            log_message('debug', "Total paginas: " . $resultado['total_paginas']);
             log_message('debug', "===== FIN DEBUG NOTIFICACIONES =====");
             
             return $this->respond([
                 "message" => "success",
-                "data" => $notificaciones
+                "data" => $resultado['data'],
+                "pagination" => [
+                    "total" => $resultado['total'],
+                    "pagina" => $resultado['pagina'],
+                    "por_pagina" => $resultado['por_pagina'],
+                    "total_paginas" => $resultado['total_paginas']
+                ]
             ], 200);
         } else {
             return redirect()->to('/');
@@ -178,39 +196,55 @@ class Notificaciones_Controler extends BaseController
             $userrol = $this->session->get('userrol');
             $id_direccion = $this->session->get('id_direccion_administrativa');
             
+            // Obtener parámetros de paginación
+            $pagina = $this->request->getGet('pagina') ?? 1;
+            $por_pagina = $this->request->getGet('por_pagina') ?? 10;
+            
             // Roles de supervisión
             $roles_supervision = [1, 3, 5];
             $es_supervision = in_array($userrol, $roles_supervision);
             $es_rol2 = ($userrol == 2);
             
-            $notificaciones = [];
+            $resultado = [];
             
             if ($es_supervision) {
-                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                $resultado = $model->obtenerTodasLasNotificaciones(
                     $id_usuario, 
                     $roles_supervision,
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             } elseif ($es_rol2) {
-                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                $resultado = $model->obtenerTodasLasNotificaciones(
                     $id_usuario, 
                     [2],
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             } else {
-                $notificaciones = $model->obtenerTodasLasNotificaciones(
+                $resultado = $model->obtenerTodasLasNotificaciones(
                     $id_usuario, 
                     [],
                     $id_direccion,
-                    $userrol
+                    $userrol,
+                    $pagina,
+                    $por_pagina
                 );
             }
             
             return $this->respond([
                 "message" => "success",
-                "data" => $notificaciones
+                "data" => $resultado['data'],
+                "pagination" => [
+                    "total" => $resultado['total'],
+                    "pagina" => $resultado['pagina'],
+                    "por_pagina" => $resultado['por_pagina'],
+                    "total_paginas" => $resultado['total_paginas']
+                ]
             ], 200);
         } else {
             return redirect()->to('/');

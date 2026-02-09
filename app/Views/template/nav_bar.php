@@ -20,7 +20,7 @@ $userdata = $session->get();
     margin-bottom: 5px;
   }
   .notification-item {
-    padding: 12px 15px;
+    padding: 14px 16px;
     border-bottom: 1px solid #e9ecef;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -30,16 +30,16 @@ $userdata = $session->get();
   }
   .notification-item.unread {
     background-color: #e8f4fd;
-    border-left: 3px solid #007bff;
+    border-left: 4px solid #007bff;
   }
   .notification-item h6 {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-size: 13px;
   }
   .notification-item .time {
     font-size: 11px;
     color: #6c757d;
-    margin-top: 5px;
+    margin-top: 6px;
   }
   .notification-item .notif-message {
     font-size: 13px;
@@ -54,19 +54,25 @@ $userdata = $session->get();
     background-color: #dc3545;
     color: white;
     border-radius: 50%;
-    padding: 2px 6px;
+    padding: 3px 7px;
     font-size: 11px;
     position: absolute;
     top: -5px;
     right: -5px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .notification-icon {
     position: relative;
-    padding: 8px 12px;
+    padding: 10px 14px;
   }
   .notification-icon i {
-    font-size: 20px;
+    font-size: 22px;
     color: #6c757d;
+    transition: color 0.3s ease;
+  }
+  .notification-icon:hover i {
+    color: #007bff;
   }
   .notification-icon.has-notifications i {
     color: #007bff;
@@ -75,17 +81,20 @@ $userdata = $session->get();
     position: absolute;
     right: 0;
     top: 100%;
-    width: 380px;
+    width: 420px;
+    max-height: 70vh;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     z-index: 1000;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .notification-menu .dropdown-header {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
-    padding: 12px 15px;
+    padding: 16px 18px;
   }
   .notif-negrilla-azul {
     font-weight: bold !important;
@@ -103,36 +112,126 @@ $userdata = $session->get();
   .notification-filters {
     display: flex;
     gap: 8px;
-    padding: 10px 15px;
+    padding: 12px 15px;
     border-bottom: 1px solid #dee2e6;
     background: #f8f9fa;
   }
   .notification-filter-btn {
     flex: 1;
-    padding: 6px 12px;
+    padding: 8px 12px;
     font-size: 12px;
     border: 1px solid #007bff;
-    border-radius: 15px;
+    border-radius: 20px;
     background: white;
     color: #007bff;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    font-weight: 500;
   }
   .notification-filter-btn:hover {
     background: #e8f4fd;
   }
   .notification-filter-btn.active {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
+    border-color: transparent;
   }
   /* Estilo para notificaciones leídas */
   .notification-item.read {
-    background-color: #f8f9fa;
-    opacity: 0.7;
+    background-color: #fafbfc;
+    opacity: 0.8;
   }
   .notification-item.read:hover {
-    background-color: #e9ecef;
+    background-color: #f1f3f4;
+  }
+  /* Indicador de leída */
+  .leida-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  .notification-item.unread .leida-indicator {
+    background-color: #007bff;
+  }
+  .notification-item.read .leida-indicator {
+    background-color: #28a745;
+  }
+  /* Estilos de paginación */
+  .notification-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-top: 1px solid #e9ecef;
+    background: #fafbfc;
+  }
+  .pagination-info {
+    font-size: 12px;
+    color: #6c757d;
+  }
+  .pagination-controls {
+    display: flex;
+    gap: 6px;
+  }
+  .pagination-btn {
+    padding: 5px 10px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #007bff;
+  }
+  .pagination-btn:hover:not(:disabled) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .pagination-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  /* Estilos empty state */
+  .empty-notifications {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+  }
+  .empty-notifications i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+  .empty-notifications p {
+    margin: 0;
+    font-size: 14px;
+  }
+  /* Scrollbar personalizado */
+  #notification-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  #notification-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  #notification-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  #notification-list::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
+  #notification-list {
+    flex: 1;
+    overflow-y: auto;
   }
 </style>
 <meta charset="utf-8">
@@ -169,10 +268,10 @@ $userdata = $session->get();
         <span class="notification-badge" id="notification-count" style="display: none;">0</span>
       </div>
       <div class="notification-menu" id="notification-menu" style="display: none;">
-        <div style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 8px 8px 0 0;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <strong style="font-size: 15px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
-            <a href="#" onclick="marcarTodasLeidas(); return false;" style="font-size: 12px; color: #fff; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; text-decoration: none;">Marcar todas como leídas</a>
+        <div style="padding: 16px 18px; border-bottom: 1px solid #dee2e6; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border-radius: 12px 12px 0 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <strong style="font-size: 16px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
+            <a href="#" onclick="marcarTodasLeidas(); return false;" style="font-size: 12px; color: #fff; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; text-decoration: none;">Marcar todas como leídas</a>
           </div>
           <!-- Botones de filtro -->
           <div class="notification-filters">
@@ -184,12 +283,18 @@ $userdata = $session->get();
             </button>
           </div>
         </div>
-        <div id="notification-list">
+        <!-- Contenedor scrollable para notificaciones -->
+        <div id="notification-list" style="flex: 1; overflow-y: auto; max-height: 45vh;">
           <!-- Las notificaciones se cargarán aquí -->
           <div class="empty-notifications">
             <i class="fas fa-bell-slash"></i>
             <p>No hay notificaciones</p>
           </div>
+        </div>
+        <!-- Barra de paginación -->
+        <div class="notification-pagination" id="notification-pagination" style="display: none;">
+          <div class="pagination-info" id="pagination-info"></div>
+          <div class="pagination-controls" id="pagination-controls"></div>
         </div>
       </div>
     </div>
@@ -211,14 +316,17 @@ $userdata = $session->get();
     // Variables globales
     let notificationsOpen = false;
     let currentFilter = 'unread'; // 'unread' o 'all'
-    let todasLasNotificaciones = []; // Almacena todas las notificaciones para filtrado
+    let currentPage = 1;
+    let notificationsData = [];
+    let paginationData = null;
 
     // Función para mostrar/ocultar notificaciones
     function toggleNotifications() {
       const menu = document.getElementById('notification-menu');
       if (menu.style.display === 'none') {
-        menu.style.display = 'block';
+        menu.style.display = 'flex';
         notificationsOpen = true;
+        currentPage = 1; // Resetear a primera página
         cargarNotificaciones();
       } else {
         menu.style.display = 'none';
@@ -242,7 +350,10 @@ $userdata = $session->get();
         ? '<?php echo base_url(); ?>/notificaciones/obtenerTodasMisNotificaciones'
         : '<?php echo base_url(); ?>/notificaciones/obtenerMisNotificaciones';
       
-      fetch(endpoint, {
+      // Agregar parámetros de paginación
+      const url = endpoint + '?pagina=' + currentPage + '&por_pagina=10';
+      
+      fetch(url, {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
@@ -258,12 +369,20 @@ $userdata = $session->get();
         try {
           const data = JSON.parse(text);
           if (data.message === 'success') {
-            // Guardar todas las notificaciones si es el filtro "Todas"
-            if (currentFilter === 'all') {
-              todasLasNotificaciones = data.data;
+            // Si hay datos de paginación, guardarlos
+            if (data.pagination) {
+              paginationData = data.pagination;
+            } else {
+              paginationData = null;
             }
-            renderNotificaciones(data.data);
+            
+            // Determinar qué datos usar
+            const notificaciones = data.data || data || [];
+            notificationsData = notificaciones;
+            
+            renderNotificaciones(notificaciones);
             actualizarContador();
+            actualizarPaginacion();
           }
         } catch (e) {
           console.error('Error parsing JSON:', e);
@@ -276,6 +395,7 @@ $userdata = $session->get();
     // Filtrar notificaciones
     function filtrarNotificaciones(filtro) {
       currentFilter = filtro;
+      currentPage = 1; // Resetear a primera página
       
       // Actualizar estilos de botones
       document.getElementById('filter-unread').classList.toggle('active', filtro === 'unread');
@@ -285,9 +405,92 @@ $userdata = $session->get();
       cargarNotificaciones();
     }
 
+    // Cambiar página
+    function cambiarPagina(pagina) {
+      if (pagina < 1 || (paginationData && pagina > paginationData.total_paginas)) return;
+      
+      currentPage = pagina;
+      cargarNotificaciones();
+      
+      // Scroll al inicio de la lista
+      const container = document.getElementById('notification-list');
+      container.scrollTop = 0;
+    }
+
+    // Actualizar controles de paginación - CORREGIDO
+    function actualizarPaginacion() {
+      const paginationEl = document.getElementById('pagination-controls');
+      const infoEl = document.getElementById('pagination-info');
+      const container = document.getElementById('notification-pagination');
+      
+      // Ocultar si NO hay datos de paginación O si no hay notificaciones que mostrar
+      if (!paginationData || !paginationData.total || notificationsData.length === 0) {
+        container.style.display = 'none';
+        paginationData = null; // Resetear para evitar persistencia
+        return;
+      }
+      
+      // Mostrar el contenedor si hay notificaciones
+      container.style.display = 'flex';
+      
+      const { total, pagina, por_pagina, total_paginas } = paginationData;
+      
+      // Info de paginación
+      const inicio = Math.min((pagina - 1) * por_pagina + 1, total);
+      const fin = Math.min(pagina * por_pagina, total);
+      infoEl.innerHTML = `<span>${inicio}-${fin} de ${total}</span>`;
+      
+      // Controles de paginación
+      let controlsHTML = `
+        <button class="pagination-btn" onclick="cambiarPagina(${pagina - 1})" ${pagina === 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      `;
+      
+      // Mostrar páginas cercanas
+      const paginasAMostrar = [];
+      for (let i = Math.max(1, pagina - 2); i <= Math.min(total_paginas, pagina + 2); i++) {
+        paginasAMostrar.push(i);
+      }
+      
+      // Primera página si no está en el rango
+      if (paginasAMostrar[0] > 1) {
+        controlsHTML += `<button class="pagination-btn" onclick="cambiarPagina(1)">1</button>`;
+        if (paginasAMostrar[0] > 2) {
+          controlsHTML += `<span style="padding: 5px; color: #6c757d;">...</span>`;
+        }
+      }
+      
+      // Páginas del rango
+      paginasAMostrar.forEach(p => {
+        controlsHTML += `
+          <button class="pagination-btn ${p === pagina ? 'active' : ''}" onclick="cambiarPagina(${p})">
+            ${p}
+          </button>
+        `;
+      });
+      
+      // Última página si no está en el rango
+      if (paginasAMostrar[ paginasAMostrar.length - 1 ] < total_paginas) {
+        if (paginasAMostrar[ paginasAMostrar.length - 1 ] < total_paginas - 1) {
+          controlsHTML += `<span style="padding: 5px; color: #6c757d;">...</span>`;
+        }
+        controlsHTML += `<button class="pagination-btn" onclick="cambiarPagina(${total_paginas})">${total_paginas}</button>`;
+      }
+      
+      controlsHTML += `
+        <button class="pagination-btn" onclick="cambiarPagina(${pagina + 1})" ${pagina >= total_paginas ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+      
+      paginationEl.innerHTML = controlsHTML;
+    }
+
     // Renderizar notificaciones en el dropdown
     function renderNotificaciones(notificaciones) {
       const container = document.getElementById('notification-list');
+      const paginationContainer = document.getElementById('notification-pagination');
       
       // Debug: mostrar en consola lo que llega del servidor
       console.log('Notificaciones recibidas:', notificaciones);
@@ -300,6 +503,9 @@ $userdata = $session->get();
             <p>${currentFilter === 'all' ? 'No hay notificaciones registradas' : 'No hay notificaciones sin leer'}</p>
           </div>
         `;
+        // Ocultar paginador si no hay notificaciones
+        paginationContainer.style.display = 'none';
+        paginationData = null;
         return;
       }
 
@@ -337,14 +543,17 @@ $userdata = $session->get();
         
         // Determinar clase según estado de lectura
         const leidaClass = estaLeida ? 'read' : 'unread';
-        const leidaIcon = estaLeida ? '<i class="fas fa-check" style="color: #28a745; margin-right: 5px;"></i>' : '';
+        const leidaIcon = estaLeida ? '<i class="fas fa-check" style="color: #28a745; margin-left: 5px;"></i>' : '';
         
         html += `
           <div class="notification-item ${leidaClass}" 
                onclick="verNotificacion(${notif.id}, '${notif.tipo_notificacion}', ${notif.id_caso})">
-            <h6><span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span> ${leidaIcon}</h6>
+            <h6>
+              <span class="leida-indicator"></span>
+              <span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span>${leidaIcon}
+            </h6>
             <p class="notif-message">${mensajeCompleto}</p>
-            <div class="time">${formatDate(notif.fecha_creacion)}${estaLeida ? ' · Leída' : ''}</div>
+            <div class="time">${formatDate(notif.fecha_creacion)}</div>
           </div>
         `;
       });
@@ -356,6 +565,9 @@ $userdata = $session->get();
             <p>${currentFilter === 'all' ? 'No hay notificaciones registradas' : 'No hay notificaciones sin leer'}</p>
           </div>
         `;
+        // Ocultar paginador si no hay notificaciones que mostrar
+        paginationContainer.style.display = 'none';
+        paginationData = null;
       } else {
         container.innerHTML = html;
       }
@@ -388,9 +600,13 @@ $userdata = $session->get();
       .catch(error => console.error('Error:', error));
     }
 
-    // Ver notificación y redirigir
+    // Ver notificación y redirigir - CORREGIDO
     function verNotificacion(id, tipo, idCaso) {
-      // Marcar como leída (si falla, continuamos con la redirección)
+      // Cerrar dropdown inmediatamente para mejor UX
+      document.getElementById('notification-menu').style.display = 'none';
+      notificationsOpen = false;
+      
+      // Marcar como leída en segundo plano (sin esperar respuesta)
       fetch('<?php echo base_url(); ?>/notificaciones/marcarLeida', {
         method: 'POST',
         headers: {
@@ -398,30 +614,18 @@ $userdata = $session->get();
           'X-Requested-With': 'XMLHttpRequest'
         },
         body: 'data=' + btoa(JSON.stringify({ id_notificacion: id }))
-      })
-      .then(response => {
-        if (!response.ok) {
-          console.warn('Error al marcar como leída, continuando...');
-        }
-        return response.json().catch(() => ({}));
-      })
-      .then(data => {
-        console.log('Notificación marcada como leída');
-      })
-      .catch(error => {
-        console.warn('Error en fetch de marcarLeida:', error);
-      })
-      .finally(() => {
-        // Cerrar dropdown
-        document.getElementById('notification-menu').style.display = 'none';
-        notificationsOpen = false;
-        actualizarContador();
-        
-        // Redirigir según el tipo (SIEMPRE)
-        if (tipo === 'REMISION' || tipo === 'SEGUIMIENTO') {
-          window.location.href = '<?php echo base_url(); ?>/verCaso/' + idCaso;
-        }
+      }).catch(error => {
+        console.warn('Error al marcar como leída:', error);
       });
+      
+      // Actualizar contador
+      actualizarContador();
+      
+      // Redirigir según el tipo de notificación
+      if (tipo === 'REMISION' || tipo === 'SEGUIMIENTO') {
+        window.location.href = '<?php echo base_url(); ?>/verCaso/' + idCaso;
+      }
+      // Para CIERRE u otros tipos, no redirigimos (o puedes agregar lógica específica)
     }
 
     // Marcar todas como leídas

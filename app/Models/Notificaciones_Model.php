@@ -32,7 +32,7 @@ class Notificaciones_Model extends BaseModel
      *   Y id_usuario_accion sea diferente al usuario actual.
      * - Rol 10: Ver registros donde id_usuario_destino sea el usuario actual.
      */
-    public function obtenerNotificacionesPorUsuario($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
+    public function obtenerNotificacionesPorUsuario($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null, $pagina = 1, $por_pagina = 10)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
@@ -134,8 +134,14 @@ class Notificaciones_Model extends BaseModel
         
         // Filtro comun: solo notificaciones del usuario destinatario
         $builder->where('n.id_usuario_destino', $id_usuario);
-        $builder->orderBy('n.fecha_creacion', 'ASC');
-        $builder->limit(50);
+        
+        // Contar total para paginación
+        $total = $builder->countAllResults(false);
+        
+        // Aplicar orden DESC (más recientes primero) y paginación
+        $builder->orderBy('n.fecha_creacion', 'DESC');
+        $offset = ($pagina - 1) * $por_pagina;
+        $builder->limit($por_pagina, $offset);
         
         $query = $builder->get();
         $result = $query->getResult();
@@ -143,7 +149,13 @@ class Notificaciones_Model extends BaseModel
         log_message('debug', 'SQL Notificaciones: ' . $db->getLastQuery());
         log_message('debug', 'Notificaciones encontradas para usuario ' . $id_usuario . ' (Rol ' . $rol_usuario . '): ' . count($result));
         
-        return $result;
+        return [
+            'data' => $result,
+            'total' => $total,
+            'pagina' => $pagina,
+            'por_pagina' => $por_pagina,
+            'total_paginas' => ceil($total / $por_pagina)
+        ];
     }
 
     /**
@@ -253,7 +265,7 @@ class Notificaciones_Model extends BaseModel
         $builder->join('sgc_direcciones_administrativas dir_origen', 'n.direccion_origen = dir_origen.id', 'left');
         $builder->where('n.id_usuario_destino', $id_usuario);
         $builder->where('n.leida', false);
-        $builder->orderBy('n.fecha_creacion', 'ASC');
+        $builder->orderBy('n.fecha_creacion', 'DESC');
         $query = $builder->get();
         return $query->getResult();
     }
@@ -261,7 +273,7 @@ class Notificaciones_Model extends BaseModel
     /**
      * Obtener TODAS las notificaciones (leidas y no leidas) por usuario
      */
-    public function obtenerTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
+    public function obtenerTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null, $pagina = 1, $por_pagina = 10)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
@@ -353,16 +365,102 @@ class Notificaciones_Model extends BaseModel
         
         // Filtro comun: solo notificaciones del usuario destinatario (SIN filtrar por leida)
         $builder->where('n.id_usuario_destino', $id_usuario);
-        $builder->orderBy('n.fecha_creacion', 'ASC');
-        $builder->limit(100); // Mayor límite para mostrar todas
+        
+        // Contar total para paginación
+        $total = $builder->countAllResults(false);
+        
+        // Aplicar orden y paginación
+        $builder->orderBy('n.fecha_creacion', 'DESC');
+        $offset = ($pagina - 1) * $por_pagina;
+        $builder->limit($por_pagina, $offset);
         
         $query = $builder->get();
         $result = $query->getResult();
         
         log_message('debug', 'SQL Todas Notificaciones: ' . $db->getLastQuery());
-        log_message('debug', 'Todas las notificaciones encontradas para usuario ' . $id_usuario . ' (Rol ' . $rol_usuario . '): ' . count($result));
+        log_message('debug', 'Notificaciones para usuario ' . $id_usuario . ' (Pag ' . $pagina . '/' . ceil($total / $por_pagina) . '): ' . count($result));
         
-        return $result;
+        return [
+            'data' => $result,
+            'total' => $total,
+            'pagina' => $pagina,
+            'por_pagina' => $por_pagina,
+            'total_paginas' => ceil($total / $por_pagina)
+        ];
+    }
+
+    /**
+     * Contar todas las notificaciones (leídas y no leídas)
+     */
+    public function contarTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_notificaciones n');
+        $builder->selectCount('n.id', 'total');
+        
+        // JOIN con casos para verificar autoria
+        $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        
+        // Determinar el rol del usuario
+        $rol_usuario = $userrol ?? ($this->session->get('userrol') ?? 0);
+        $es_supervision = in_array($rol_usuario, [1, 3, 5]);
+        $es_rol2 = ($rol_usuario == 2);
+        $es_rol10 = ($rol_usuario == 10);
+        
+        if ($es_supervision) {
+            $builder->where('n.id_usuario_accion !=', $id_usuario);
+            $builder->groupStart();
+            $builder->where("NOT (n.id_rol_accion = 2 AND n.tipo_notificacion = 'CIERRE')", null, false);
+            $builder->groupEnd();
+            
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+                $builder->groupEnd();
+            } else {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+                $builder->groupEnd();
+            }
+        } elseif ($es_rol2) {
+            $builder->where('c.idusuopr', $id_usuario);
+            $builder->where('n.id_usuario_accion !=', $id_usuario);
+            
+            $builder->groupStart();
+            $builder->where('n.tipo_notificacion', 'SEGUIMIENTO');
+            $builder->orWhere('n.tipo_notificacion', 'REMISION');
+            $builder->orWhere('n.tipo_notificacion', 'CIERRE');
+            $builder->groupEnd();
+        } elseif ($es_rol10) {
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->groupEnd();
+            } else {
+                $builder->where('n.tipo_notificacion', 'REMISION');
+            }
+        } else {
+            if (!empty($roles_permitidos)) {
+                $builder->groupStart();
+                $builder->where('n.tipo_notificacion', 'REMISION');
+                $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
+                $builder->groupEnd();
+            } else {
+                $builder->where('n.tipo_notificacion', 'REMISION');
+            }
+        }
+        
+        $builder->where('n.id_usuario_destino', $id_usuario);
+        
+        $query = $builder->get();
+        $result = $query->getRow();
+        
+        return $result->total ?? 0;
     }
 
     /**
