@@ -148,66 +148,248 @@ $session = session();
     
 
 </style>
+<style>
+    /* Estructura del Header Premium */
+    .premium-top-header {
+        background: linear-gradient(135deg, #002244 0%, #003366 50%, #004488 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 15px 15px 0 0; /* Solo redondeado arriba para unirlo a la tabla */
+        box-shadow: 0 10px 25px rgba(0, 34, 68, 0.2);
+    }
+
+    .header-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        align-items: center;
+    }
+
+    /* Badge central con Glassmorphism */
+    .direction-badge-large {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 8px 25px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+    }
+    .direction-badge-large strong { 
+        font-size: 1.4rem; 
+        font-weight: 800; 
+        color: #fff;
+        display: block; 
+    }
+
+    /* Botón Agregar estilo Pill blanco */
+    .siac-btn-primary {
+        background: white !important;
+        color: #003366 !important;
+        font-weight: 800;
+        font-size: 0.8rem;
+        padding: 10px 20px;
+        border-radius: 50px;
+        border: none;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+    .siac-btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+    }
+
+    /* Cursor del efecto de escritura */
+    .typing-cursor {
+        display: inline-block; width: 3px; height: 1.1em; background-color: #3498db;
+        margin-left: 5px; animation: blink-cursor 0.8s infinite; vertical-align: middle;
+    }
+    @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    @media (max-width: 992px) {
+        .header-grid { grid-template-columns: 1fr; gap: 15px; text-align: center; }
+        .text-right { text-align: center; }
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+ 
+
+    
+   
+
+    /* Animación de escritura */
+    .typing-cursor {
+        display: inline-block; width: 3px; height: 1.1em; background-color: var(--accent-blue);
+        margin-left: 5px; animation: blink-cursor 0.8s infinite; vertical-align: middle;
+    }
+    @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+</style>
+
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/edicion_casos.css">
 <!-- Estilos de mejoras visuales para la vista de casos -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mejoras_casos.css">
-
-
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
+    <div class="content-header">
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-sm-6"></div>
+                <div class="col-sm-6"></div>
+            </div>
+        </div>
+    </div>
 
-  <!-- Main content  fluid-->
-  <div class="content">
-    <div class="container-fluid">
-      <!-- /.row -->
-      <div class="row">
-        <div class="col-lg-12 col-sm-12 col-md-12 p-2">
-          <div class="siac-main-card">
-            <div class="siac-main-header" >
-              <div class="d-flex justify-content-between" style="width: 100%;">
-                <h3><i class="fas fa-angle-double-right"></i> Pantalla de Casos</h3>
-                <button type="submit" id="btn_agregar" class="siac-btn-primary"><i class="fas fa-plus"></i> Agregar</button></h3>
-                <input type="hidden" name="" id="rol_usuario" value="<?php echo($session->get('userrol'));?>">
-                </h3>
-                <input type="hidden" name="" id="mensaje_documento" value="<?php echo $mensaje ?>">
-<!--  -->
-                
-              </div>
-              <div class="row">
-                  <div class="col-lg-12 col-sm-12 col-md-12 ">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-md-12 p-2">
                     
-                        <table class="display table-responsive siac-table-container" id="table_casos" style="width:100%">
+                    <div class="siac-main-card">
+                        
+                        <header class="premium-top-header">
+                            <div class="header-grid">
+                                
+                                <div class="title-area">
+                                    <h3 class="m-0 text-white">
+                                        <i class="fas fa-folder-open mr-2 text-info"></i> 
+                                        Pantalla de Casos
+                                    </h3>
+                                    <small class="text-white-50 text-uppercase tracking-widest" style="font-size: 0.65rem;">
+                                        Gestión de Expedientes
+                                    </small>
+                                </div>
+
+                                <div class="direction-center">
+                                    </div>
+
+                                <div class="text-right">
+                                    <button type="submit" id="btn_agregar" class="siac-btn-primary shadow-sm">
+                                        <i class="fas fa-plus-circle mr-1"></i> Agregar Caso
+                                    </button>
+                                    
+                                    <input type="hidden" id="rol_usuario" value="<?php echo($session->get('userrol'));?>">
+                                    <input type="hidden" id="mensaje_documento" value="<?php echo $mensaje ?>">
+                                </div>
+
+                            </div>
+                        </header>
+                        
+                        </div> </div>
+            </div>
+        </div>
+
+<div class="card-body p-0"> <div class="row px-4 py-3">
+        <div class="col-lg-12 col-sm-12 col-md-12">
+            
+            <div class="bg-white rounded-lg shadow-sm border p-3">
+                <div class="siac-table-container">
+                    <table class="display table-professional datatable-full-width" id="table_casos" style="width:100%">
                         <thead class="siac-table">
-                          <tr>
-                            <th class="col" style="width: 1%;">Nº</th>
-                            <th class="text-center" style="width: 1%;">Cédula</th>
-                            <th class="text-center" style="width: 12%;">Beneficiario</th>
-                            <th class="text-center" style="width: 3%;">Teléfono</th>
-                            <th class="text-center" style="width: 8%;">Propiedad Intelectual</th>
-                            <th class="text-center" style="width: 4%;">Tipo de Atención</th>
-                            <th class="text-center" style="width: 3%;">Fecha</th>
-                            <th class="text-center" style="width: 3%;">Estatus</th>
-                            <th class="text-center" style="width: 6%;">Operador</th>
-                            <th class="text-center" style="width: 6%;">Acciones</th>
-                          </tr>
+                            <tr>
+                                <th style="width: 50px; white-space: nowrap;">Nº</th>
+                                
+                                <th class="text-center" style="width: 90px; white-space: nowrap;">Cédula</th>
+                                
+                                <th class="text-center" style="min-width: 200px;">Beneficiario</th>
+                                
+                                <th class="text-center" style="width: 100px; white-space: nowrap;">Teléfono</th>
+                                
+                                <th class="text-center" style="width: 120px; white-space: nowrap;">Propiedad Intelectual</th>
+                                
+                                <th class="text-center" style="width: 120px; white-space: nowrap;">Tipo de Atención</th>
+                                
+                                <th class="text-center" style="width: 90px; white-space: nowrap;">Fecha</th>
+                                
+                                <th class="text-center" style="width: 100px; white-space: nowrap;">Estatus</th>
+                                
+                                <th class="text-center" style="width: 100px; white-space: nowrap;">Operador</th>
+                                
+                                <th class="text-center" style="width: 140px; white-space: nowrap; text-align: right;">Acciones</th>
+                            </tr>
                         </thead>
                         <tbody id="listar_casos" class="siac-table">
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                            </tbody>
+                    </table>
+                </div>
+            </div> </div>
+    </div>
+</div>
+                  <!-- Custom CSS for full-width DataTables -->
+                  <style>
+                      /* Ensure DataTables uses full container width */
+                      .datatable-full-width {
+                          width: 100% !important;
+                          table-layout: auto;
+                          min-width: 100%;
+                      }
+                      
+                      /* Fix for nested table container */
+                      .siac-table-container {
+                          width: 100% !important;
+                          max-width: 100%;
+                          overflow-x: auto;
+                      }
+                      
+                      /* Ensure proper column distribution */
+                      #table_casos {
+                          width: 100% !important;
+                          table-layout: auto;
+                      }
+                      
+                      /* Responsive wrapper for DataTables */
+                      .dataTables_wrapper {
+                          width: 100% !important;
+                          min-width: 100%;
+                      }
+                      
+                      /* Ensure all wrapper elements use full width */
+                      .dataTables_scroll,
+                      .dataTables_scrollBody,
+                      .dataTables_scrollHead,
+                      .dataTables_scrollHeadInner {
+                          width: 100% !important;
+                          max-width: 100% !important;
+                      }
+                      
+                      /* Fix for Bootstrap grid conflict */
+                      .siac-main-card .row {
+                          margin-right: 0;
+                          margin-left: 0;
+                      }
+                      
+                      /* Ensure columns use full width on all screen sizes */
+                      @media (min-width: 768px) {
+                          .siac-table-container {
+                              width: 100% !important;
+                              max-width: 100% !important;
+                          }
+                      }
+                      
+                      @media (min-width: 992px) {
+                          .siac-table-container {
+                              width: 100% !important;
+                              max-width: 100% !important;
+                          }
+                      }
+                      
+                      @media (min-width: 1200px) {
+                          .siac-table-container {
+                              width: 100% !important;
+                              max-width: 100% !important;
+                          }
+                      }
+                  </style>
           </div>
             </div>
           
@@ -1104,41 +1286,64 @@ $session = session();
       </div>
       <!-- /.modal-dialog -->
     </div>
-
-    <!--/.Remitir caso-->
-    <?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
-      <div class="modal fade" id="remitir_caso">
-        <div class="modal-dialog  modal-dialog-centered modal-md">
-          <div class="modal-content">
-            <form id="caso-remitido" method="POST">
-              <div class="modal-header">
-                <h4 class="modal-title">Remitir Caso</h4>
-                <input type="hidden" id="idcaso" name="" value="">
-                <button type=" button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group">
-                  <label for="direcciones_caso">Direcciones administrativas</label>
-                  <select id="direcciones_caso" name="direcciones_caso" class="form-control">
-                    <?php echo $direcciones; ?>
-                  </select>
-                </div>
-              </div>
-              <div class="modal-footer justify-content-between">
-                <button type="reset" class="btn btn-sm  btn-default" data-dismiss="modal">Cerrar</button>
-                
-                <button type="submit" class="btn  btn-sm  btn-primary">Guardar</button>
-              <label id="mensaje" style="display: none;">Espere un momento, esta ventana se cerrará automáticamente</label>
-              </div>
-            </form>
-          </div>
-          <!-- /.modal-content -->
+<?php if ($session->get('userrol') == 1 or $session->get('userrol') == 3 or $session->get('userrol') == 5) { ?>
+  <div class="modal fade" id="remitir_caso" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+        
+        <div class="modal-header border-0" style="background: linear-gradient(135deg, #002244 0%, #003366 100%); padding: 1.5rem;">
+          <h4 class="modal-title font-weight-bold text-white" style="font-size: 1.2rem;">
+            <i class="fas fa-paper-plane mr-2 text-info"></i> Remitir Caso
+          </h4>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        <!-- /.modal-dialog -->
+
+        <form id="caso-remitido" method="POST">
+          <input type="hidden" id="idcaso" name="id_caso_remitir" value="">
+          
+          <div class="modal-body p-4" style="background-color: #f8fafc;">
+            <div class="text-center mb-4">
+              <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle mb-3" style="width: 60px; height: 60px; border: 2px dashed #3498db;">
+                <i class="fas fa-university fa-lg text-primary"></i>
+              </div>
+              <p class="text-muted small">Seleccione la unidad administrativa que recibirá el expediente para su gestión.</p>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="direcciones_caso" class="font-weight-bold text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                Dirección Administrativa Receptora
+              </label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text bg-white border-right-0"><i class="fas fa-sitemap text-primary"></i></span>
+                </div>
+                <select id="direcciones_caso" name="direcciones_caso" class="form-control border-left-0 font-weight-bold" style="height: 45px; color: #003366; border-radius: 0 8px 8px 0;">
+                  <?php echo $direcciones; ?>
+                </select>
+              </div>
+            </div>
+
+            <div id="mensaje" class="alert mt-3 border-0 shadow-sm" style="display: none; border-radius: 10px; font-size: 0.85rem;">
+                </div>
+          
+          </div>
+
+          <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+            <button type="button" class="btn btn-light px-4 font-weight-bold" data-dismiss="modal" style="border-radius: 50px; color: #64748b;">
+              Cancelar
+            </button>
+            
+            <button type="submit" class="btn px-4 font-weight-bold shadow-sm" style="background: #003366; color: white; border-radius: 50px; transition: all 0.3s;">
+              <i class="fas fa-check-circle mr-1"></i> Confirmar Remisión
+            </button>
+          </div>
+        </form>
       </div>
-    <?php } ?>
+    </div>
+  </div>
+<?php } ?>
   </div>
   <!-- /.content -->
 </div>

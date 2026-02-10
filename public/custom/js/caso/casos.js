@@ -577,8 +577,17 @@ function Listar_Casos() {
     let rol_usuario = $('#rol_usuario').val();
     let ruta_imagen = rootpath;
     var encabezado = '';
-    let table = $('#table_casos').DataTable({
-        responsive: true,
+let table = $('#table_casos').DataTable({
+        responsive: {
+            details: {
+                type: 'column',
+                target: -1 // La última columna será el expander
+            }
+        },
+        width: '100%',
+        autoWidth: false,
+        scrollCollapse: true,
+        fixedHeader: false,
       
       
         buttons: {
@@ -675,7 +684,7 @@ function Listar_Casos() {
         "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
         "ordering": false,
         "info": true,
-        "autoWidth": true,
+        "autoWidth": false,
         "serverSide": true,
         "ajax": {
             "url": "/listar_Casos_Usuarios",
@@ -763,7 +772,58 @@ function Listar_Casos() {
         let info = table.page.info();
         localStorage.setItem('datatable_page', info.page);
     });
+    
+// Adjust columns after initialization to ensure proper width distribution
+    table.columns.adjust();
+    
+    // Re-adjust columns on window resize
+    $(window).on('resize', function() {
+        table.columns.adjust();
+    });
 }
+
+/**
+ * Manejador de evento para el expander de filas en móvil
+ * Toggle para expandir/contraer la fila y mostrar acciones
+ */
+$(document).on('click', '.expand-btn', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var btn = $(this);
+    var tr = btn.closest('tr');
+    var row = table.row(tr);
+    var rowId = 'mobile-details-' + row.data().idcaso;
+    
+    // Toggle the row
+    if (row.child.isShown()) {
+        // Cerrar - remover la fila de detalles
+        row.child.hide();
+        tr.removeClass('shown');
+        btn.html('<i class="fas fa-plus"></i>');
+        btn.removeClass('expanded');
+    } else {
+        // Abrir - crear y mostrar la fila de detalles
+        var acciones = tr.find('.btn-inline-actions').html();
+        
+        var detallesHtml = `
+            <tr class="row-details" id="${rowId}">
+                <td colspan="10">
+                    <div class="mobile-details">
+                        <div class="actions-container btn-inline-actions">
+                            ${acciones}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `;
+        
+        $(detallesHtml).insertAfter(tr);
+        tr.addClass('shown');
+        btn.html('<i class="fas fa-minus"></i>');
+        btn.addClass('expanded');
+    }
+});
 
 let competencia_cgr = '';
 let asume_cgr = '';
@@ -3195,73 +3255,62 @@ $('#listar_casos').on('click', '.Remitir', function(e) {
     $("#remitir_caso").modal("show");
     $("#remitir_caso").find('#idcaso').val(idcaso);
 });
-//Evento de envio del formulario
 $(document).on("submit", "#caso-remitido", function(e) {
     e.preventDefault();
+    
+    // Referencias a elementos del modal para no repetir código
+    let $botonSubmit = $(this).find("button[type=submit]");
+    let $mensajeContenedor = $("#mensaje");
+
     let datos = {
         "id_caso": $("#idcaso").val(),
         "direccion": $("#direcciones_caso").val(),
         "nombre_direccion": $('#direcciones_caso option:selected').text()
     }
+
     $.ajax({
         url: "/remitirCaso",
         method: "POST",
         dataType: "JSON",
-        data:{data:btoa(unescape(encodeURIComponent(JSON.stringify(datos))))},
+        data: { data: btoa(unescape(encodeURIComponent(JSON.stringify(datos)))) },
         beforeSend: function() {
-            $("button[type=submit]").attr('disabled', 'true');
-            $("#mensaje").show();
-            
+            // Deshabilitar botón y mostrar estado de carga dentro del modal
+            $botonSubmit.attr('disabled', 'true').html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+            $mensajeContenedor.removeClass('alert-success alert-danger').addClass('alert-info').html('<i class="fas fa-sync fa-spin mr-2"></i> Procesando remisión... por favor espere.').fadeIn();
         },
         success: function(respuesta) {
             
             if (respuesta.mensaje === 1) {
-                Swal.fire({
-                    icon: "success",
-                    type: 'success',
-                    html: '<strong>EL CASO Nª' + ' ' + ' ' + respuesta.idcaso + ' ' + 'HA SIDO REMITIDO </strong>',
-                    toast: true,
-                    position: "center",
-                    showConfirmButton: false,
-                    //timer: 3500,
-                });
+                // ÉXITO DENTRO DEL MODAL
+                $mensajeContenedor.removeClass('alert-info alert-danger').addClass('alert-success')
+                    .html('<strong><i class="fas fa-check-circle"></i> ¡ÉXITO!</strong> El caso Nº ' + respuesta.idcaso + ' ha sido remitido correctamente.');
+                
                 setTimeout(function() {
                     window.location = "/casos";
                 }, 1600);
+
             } else if (respuesta.mensaje === 2) {
-                Swal.fire({
-                    icon: "error",
-                    type: 'error',
-                    html: '<strong>Hubo un error al intentar remitir el caso .</strong>',
-                    toast: true,
-                    position: "center",
-                    showConfirmButton: false,
-                    timer: 4000,
-                });
+                // ERROR DE SISTEMA DENTRO DEL MODAL
+                $mensajeContenedor.removeClass('alert-info alert-success').addClass('alert-danger')
+                    .html('<strong><i class="fas fa-exclamation-triangle"></i> ERROR:</strong> Hubo un problema al intentar remitir el caso.');
+                
+                $botonSubmit.removeAttr('disabled').text('Confirmar Remisión');
 
-                setTimeout(function() {
-                    window.location = "/casos";
-                }, 3000);
-            }else if (respuesta.mensaje === 3){
-                Swal.fire({
-                    icon: "error",
-                    type: 'error',
-                    html: '<strong>LA DIRECCION ADMINISTRATIVA NO TIENE CORREO ASOCIADO .</strong>',
-                    toast: true,
-                    position: "center",
-                    showConfirmButton: false,
-                    timer: 3800,
-                });
-
-                setTimeout(function() {
-                    window.location = "/casos";
-                }, 1600);
+            } else if (respuesta.mensaje === 3) {
+                // ERROR DE CONFIGURACIÓN DENTRO DEL MODAL
+                $mensajeContenedor.removeClass('alert-info alert-success').addClass('alert-danger')
+                    .html('<strong><i class="fas fa-envelope-slash"></i> SIN CORREO:</strong> La dirección seleccionada no tiene un correo asociado.');
+                
+                $botonSubmit.removeAttr('disabled').text('Confirmar Remisión');
             }
-
-
+        },
+        error: function() {
+            // Error de red o servidor (500)
+            $mensajeContenedor.removeClass('alert-info').addClass('alert-danger')
+                .html('<strong><i class="fas fa-bug"></i> Error crítico:</strong> No se pudo conectar con el servidor.');
+            $botonSubmit.removeAttr('disabled').text('Confirmar Remisión');
         }
     });
-
 });
 
 $("#fecha-nacimiento").on('change', function() {

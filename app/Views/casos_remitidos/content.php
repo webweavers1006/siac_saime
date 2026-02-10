@@ -1,512 +1,280 @@
-<!-- Content Wrapper. Contains page content -->
-<?php
-$session = session();
-?>
+<?php $session = session(); ?>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-
-<!-- <link rel="stylesheet" href="<php echo base_url(); ?>/datatable_responsive/css/responsive.bootstrap4.css"> -->
 <style>
-  table.dataTable thead,
-  table.dataTable tfoot {
-    background: linear-gradient(to right, #a9b6c2, #a9b6c2, #a9b6c2);
-  }
+    /* ==============================================================
+       SISTEMA DE DISEÑO PREMIUM CORPORATIVO (PHP 8.4 / CI4)
+       ============================================================== */
+    :root {
+        --corporate-blue: #003366;
+        --gradient-header: linear-gradient(135deg, #002244 0%, #003366 50%, #004488 100%);
+        --accent-blue: #3498db;
+        --bg-light: #f4f7fa;
+        --card-radius: 15px;
+        --primary-dark: #2c3e50;
+    }
+
+    .content-wrapper { 
+        background-color: var(--bg-light) !important; 
+        min-height: 100vh;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        padding: 20px;
+    }
+
+    .table-container-slim {
+        max-width: 98%; 
+        margin: 0 auto;
+    }
+
+    /* --- HEADER PREMIUM --- */
+    .premium-top-header {
+        background: var(--gradient-header);
+        color: white;
+        padding: 1.2rem 2rem;
+        border-radius: var(--card-radius);
+        box-shadow: 0 10px 25px rgba(0, 34, 68, 0.15);
+        margin-bottom: 20px;
+    }
+
+    .header-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        align-items: center;
+    }
+
+    .title-area h2 { font-size: 1.3rem !important; font-weight: 800; letter-spacing: -0.5px; }
+    .direction-center { text-align: center; }
+    .direction-badge-large {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 8px 25px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .direction-badge-large strong { font-size: 1.4rem; font-weight: 800; line-height: 1.1; display: block; }
+
+    /* ==============================================================
+       ESTILOS DE LA TABLA COMPACTA
+       ============================================================== */
+    .card-premium-table {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background: #fff;
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* ALINEACIÓN DE CONTROLES (MOSTRAR Y BUSCAR) */
+    .dataTables_wrapper .row:first-child {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .dataTables_length { float: left; }
+    .dataTables_filter { float: right; text-align: right; }
+
+    .dataTables_filter input {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        width: 220px !important;
+        outline: none;
+        font-size: 0.85rem;
+    }
+
+    .dataTables_length select {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+        outline: none;
+        font-size: 0.85rem;
+    }
+
+    /* DISEÑO DEL ENCABEZADO DE TABLA */
+    .table-professional thead th {
+        background-color: #f1f5f9 !important;
+        color: var(--corporate-blue) !important;
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        font-size: 0.70rem !important;
+        letter-spacing: 0.5px;
+        padding: 0.75rem 0.5rem !important; /* Compacto */
+        border-bottom: 2px solid #cbd5e1 !important;
+        white-space: nowrap;
+    }
+
+    /* DISEÑO DE CELDAS */
+    .table-professional td {
+        padding: 0.6rem 0.5rem !important;
+        vertical-align: middle !important;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .table-professional tbody tr:hover {
+        background-color: #f8fafc !important;
+    }
+
+    /* Ajuste para Responsive de DataTables */
+    #table_casos tbody td:first-child {
+        padding-left: 35px !important;
+        position: relative;
+    }
+
+    /* --- MODALES --- */
+    .modal-content { border: none; border-radius: 1rem; overflow: hidden; }
+    .modal-header { background: var(--primary-dark); color: white; }
+    .section-title {
+        font-size: 0.75rem; font-weight: 800; color: var(--accent-blue);
+        text-transform: uppercase; border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 5px; margin-bottom: 15px;
+    }
+
+    /* Animación de escritura */
+    .typing-cursor {
+        display: inline-block; width: 3px; height: 1.1em; background-color: var(--accent-blue);
+        margin-left: 5px; animation: blink-cursor 0.8s infinite; vertical-align: middle;
+    }
+    @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 </style>
 
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
+    <div class="table-container-slim">
+        
+        <header class="premium-top-header">
+            <div class="header-grid">
+                <div class="title-area">
+                    <h2 class="m-0"><i class="fas fa-folder-open mr-2 text-info"></i> Casos Remitidos</h2>
+                    <small class="text-white-50">SISTEMA DE GESTIÓN ADMINISTRATIVA</small>
+                </div>
 
-  <!-- Main content  fluid-->
-  <div class="content">
-    <div class="container-fluid">
-      <!-- /.row -->
-      <div class="row">
-        <div class="col-lg-12 col-sm-12 col-md-12 p-2">
-          <div class="card">
-          
-            <div class="card-header border-0">
-              <div class="d-flex justify-content-between">
-              <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i>Casos Remitidos </h3>
-              <h5 class="text-primary"> <?php echo $direccion;?></h5>
-              <div class="col-lg-2 col-sm-2 col-md-2">
-                                <label for="estatus">Estatus:</label>
-                                <select class="form-control" id="estatus" name="estatus">
-                                    <option value="0" selected disabled>seleccione</option>
-                                    <option value="1">Abierto</option>
-                                    <option value="2">Cerrado</option>
-                                </select>
-                            </div> 
-                <input type="hidden" name="" id="rol_usuario" value="<?php echo($session->get('userrol'));?>">
-                </h3>
-                <input type="hidden" name="" id="mensaje_documento" value="<?php echo $mensaje ?>">
+                <div class="direction-center">
+                    <div class="direction-badge-large">
+                        <span class="d-block small text-uppercase" style="letter-spacing:3px; opacity:0.8; font-size: 0.6rem;">Unidad Administrativa</span>
+                        <strong id="typing-direccion" data-text="<?= $direccion ?? 'DIRECCIÓN GENERAL'; ?>"></strong>
+                    </div>
+                </div>
 
-                
-              </div>
-              
-              <div class="row">
-                  <div class="col-lg-12 col-sm-12 col-md-12 ">
-                    
-                        <table class="display table-responsive" id="table_casos" style="width:100%" style="margin-top: 20px">
-                        <thead>
-                          <tr>
-                            <td class="col" style="width: 1%;">Nº</td>
-                            <td class="text-center" style="width: 1%;">Cédula</td>
-                            <td class="text-center" style="width: 12%;">Beneficiario</td>
-                            <td class="text-center" style="width: 3%;">Teléfono</td>
-                            <td class="text-center" style="width: 8%;">Propiedad Intelectual</td>
-                            <td class="text-center" style="width: 4%;">Tipo de Atención</td>
-                            <td class="text-center" style="width: 3%;">Fecha</td>
-                            <td class="text-center" style="width: 3%;">Estatus</td>
-                            <td class="text-center" style="width: 6%;">Operador</td>
-                            <td class="text-center" style="width: 10%;">Acciones</td>
-                          </tr>
-                        </thead>
-                        <tbody id="listar_casos">
+                <div class="text-right">
+                    <div class="d-inline-block bg-white px-3 py-1 rounded-pill shadow-sm border">
+                        <label for="estatus" class="mr-1 mb-0 font-weight-bold text-muted" style="font-size: 0.65rem;">FILTRAR:</label>
+                        <select class="border-0 font-weight-bold" id="estatus" style="outline:none; color: var(--corporate-blue); cursor: pointer; font-size: 0.75rem;">
+                            <option value="0">TODOS</option>
+                            <option value="1">ABIERTOS</option>
+                            <option value="2">CERRADOS</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-premium-table">
+            <div class="table-responsive">
+                <table class="table table-professional" id="table_casos">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th>Identificación</th>
+                            <th style="min-width: 200px;">Beneficiario</th> 
+                            <th>Teléfono</th>
+                            <th>Propiedad</th>
+                            <th>Atención</th>
+                            <th>Fecha</th>
+                            <th class="text-center">Estatus</th>
+                            <th>Operador</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listar_casos">
                         </tbody>
-                      </table>
-                    </div>
-                  </div>
-          </div>
+                </table>
             </div>
-          
-            
         </div>
-      </div>
-      <!-- /.row -->
-    </div><!-- /.container-fluid -->
-    <style>
-      #editCase {
-      overflow-y: auto;
-      max-height: auto; /* adjust the max-height value as needed */
-    }
-    </style>
- 
-
- <!-- Modal para editar casos-->
- <div class="modal fade" id="editCase">
-      <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="text-secondary"><i class="fas fa-angle-double-right"></i> EDICION DE CASO</h4>
-
-            <br>
-
-          </div>
-          <div class="card-body  ">
-            <!--Form-->
-            <div class="row">
-              <div class="col-lg-12 col-sm-12 col-md-12 ">
-                <div class="card "style="  pointer-events: none; opacity: 0.6;" >
-                  <!-- <form role="form" id="editar_caso" name="editar_caso"> -->
-                  <input type="hidden" id="id_caso">
-                 
-                    <div class="form-group">
-                     
-                        <div class="form-group">
-                          <input type="hidden" id="nombre_anterior" name="" value="">
-                          <input type="hidden" id="tipo_atend_borrado" name="" value="">
-                          <input type="hidden" id="apellido_anterior" name="" value="">
-                          <input type="hidden" id="tipo_persona_anterior" name="" value="">
-                          <input type="hidden" id="cedula_anterior" name="" value="">
-                          <input type="hidden" id="t_beneficiario_anterior" name="" value="">
-                          <input type="hidden" id="genero_anterior" name="" value="">
-                          <input type="hidden" id="telefono_anterior" name="" value="">
-                          <input type="hidden" id="fecha_anterior" name="" value="">
-                          <input type="hidden" id="via_atencion_anterior" name="" value="">
-                          <input type="hidden" id="ofiid_anterior" name="" value="">
-                          <input type="hidden" id="correo_anterior" name="" value="">
-                          <input type="hidden" id="direccion_anterior" name="" value="">
-                          <input type="hidden" id="estado_anterior" name="" value="">
-                          <input type="hidden" id="municipio_anterior" name="" value="">
-                          <input type="hidden" id="parroquia_anterior" name="" value="">
-                          <input type="hidden" id="descripcion_anterior" name="" value="">
-                          <input type="hidden" id="Tipo_prop_anterior" name="" value="">
-                          <input type="hidden" id="Tipo_antenc_anterior" name="" value="">
-                          <!-- CAMPOS PARA DE ASESORIA PARA VALIDAR SI FUERON MODIFICADOS -->
-                          <input type="hidden" id="ente_anterior" name="" value="">
-                          <input type="hidden" id="cgr_anterior" name="" value="">
-                          <input type="hidden" id="azume_anterior" name="" value="">
-                          <!-- CAMPOS PARA DE DENUNCIAS PARA VALIDAR SI FUERON MODIFICADOS -->
-                          <input type="hidden" id="afecta_hechos_anterior" name="" value="" autocomplete="off">
-                          <input type="hidden" id="fecha_hechos_anterior" name="" value="">
-                          <input type="hidden" id="involucrados_anterior" name="" value="">
-                          <input type="hidden" id="nombre_instancia_anterior" name="" value="">
-                          <input type="hidden" id="rif_instancia_anterior" name="" value="">
-                          <input type="hidden" id="ente_financiador_anterior" name="" value="">
-                          <input type="hidden" id="nombre_proyecto_anterior" name="" value="">
-                          <input type="hidden" id="monto_aprobado_anterior" name="" value="">
-                          <div class="row">
-
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="nombre-persona">Nombre</label>
-                              <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-persona" id="nombre-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="apellido-persona">Apellido</label>
-                              <input type="text" class="form-control" onkeyup="mayus(this);" name="apellido-persona" id="apellido-persona" onkeypress="noNumeros(event)" autocomplete="off" required>
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="tipo-persona">Tipo Persona</label>
-                              <select class="form-control" id="tipo-persona" name="tipo-persona">
-                                <option value="V">V - Venezolano</option>
-                                <option value="E">E - Extranjero</option>
-                                <option value="J">J - Juridico</option>
-                                <option value="G">G - Gobierno</option>
-                              </select>
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="cedula-persona">Nº cedula o Rif</label>
-                              <input type="text" class="form-control" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
-                            </div>
-                            <div class="col-lg-1 col-sm-1 col-md-1">
-                              <label for="edad">Edad</label>
-                              <input type="text" disabled class="form-control" onkeyup="mayus(this);" name="edad" id="edad" onkeypress="return valideKey(event);" autocomplete="off" required>
-                          </div>
-                          
-                          <div class="col-lg-2 col-sm-2 col-md-2">
-                              <label for="fecha-nacimiento">Fecha de Nac.</label>
-                              <input class="form-control" type="date" name="fecha-nacimiento" id="fecha-nacimiento" required>
-                          </div>
-                          <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="apellido-persona">Profesión</label>
-                              <input type="text" class="form-control" onkeyup="mayus(this);" name="profesion" id="profesion" onkeypress="noNumeros(event)" autocomplete="off" required>
-                          </div>
-
-
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                         
-                                <label for="t-beneficiario">Tipo de Beneficiario</label>
-                                <select class="form-control" id="t-beneficiario" name="t-beneficiario">
-                                    <option value="0" disabled>Seleccione</option>
-                                </select>
-                            
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="tipo-persona">Genero</label>
-                              <select class="form-control" id="sexo" name="tipo-persona">
-                                <option value="1">Masculino</option>
-                                <option value="2">Femenino</option>
-                              </select>
-                            </div>
-
-
-
-                            <div class="col-lg-3 col-sm-3 col-md-3">
-                              <label for="telefono-persona">Telefono</label>
-                              <input type="text" class="form-control" onkeypress="return valideKey(event);" name="telefono" id="telefono" autocomplete="off">
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-md-2">
-                              <label for="fecha-recibido">Fecha de Recibido</label>
-                              <input class="form-control" type="date" name="fecha-recibido" id="fecha-recibido" required>
-                            </div>
-                          <div class="col-lg-3 col-sm-3 col-md-3">
-                          <label for="red-social">Via de Atencion</label>
-                          <select class="form-control" name="red-social" id="red-social">
-                            <option value="0" disabled>Seleccione</option>
-
-                          </select>
-                        </div>
-                        <div class="col-lg-4 col-sm-4 col-md-4">
-                          <label for="">Atención al Cuidadano</label>
-                          <select class="form-control" name="office" id="office">
-                            <option value="1">Dirección de Atención al Ciudadano</option>
-                            <option value="2">Coordinador Estadal</option>
-                          </select>
-                        </div>
-                        <div class="col-lg-5 col-sm-5 col-md-5">
-                          <label for="tipo-pi">Correo Electronico</label>
-                          <input type="email" class="form-control" name="correo" id="correo" autocomplete="off" required>
-                        </div>
-
-                        </div>   
-
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="row">
-                        <div class="col-lg-12 col-sm-12 col-md-12">
-                          <label for="direccion" style="display: none;">Dirección</label>
-                          <input type="text" style="display: none;" class="form-control" name="direccion" id="direccion" autocomplete="off">
-                        </div>
-                      </div>
-                      <div class="row">
-
-                        <div class="col-4">
-                          <label for="pais-caso">País</label>
-                          <select id="pais-caso"  name="pais-caso" class="form-control">
-                            <option value="1" selected >Venezuela</option>
-                          </select>
-                        </div>
-                        <div class="col-4">
-                          <label for="estado-caso">Estado</label>
-                          <select id="estado-caso" name="estado-caso" class="form-control">
-                            <option value="0" disabled>Seleccione Estado</option>
-                          </select>
-                        </div>
-                        <div class="col-4">
-                          <label for="municipio-caso">Municipio</label>
-                          <select id="municipio-caso" name="municipio-caso" class="form-control">
-                            <option value="0">Seleccione Municipio</option>
-                          </select>
-                        </div>
-                        <div class="col-4">
-                          <label for="parroquia-caso">Parroquia</label>
-                          <select id="parroquia-caso" name="parroquia-caso" class="form-control">
-                            <option value="0">Seleccione Parroquia</option>
-                          </select>
-                        </div>
-
-                        <div class="col-lg-4 col-sm-4 col-md-4">
-                          <label for="tipo-pi">Tipo de Atención</label>
-                          <select class="form-control" id="tipo-atencion-usu" name="tipo-atencioni-usu">
-                            <option value="0" disabled>Seleccione</option>
-                          </select>
-                        </div>  
-                   
-
-                        <div class="col-lg-4 col-sm-4 col-md-4 prop_int oculto">
-                          <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
-                          <select disabled class="form-control " id="tipo-pi" name="tipo-pi">
-                              <option value="0" disabled>Seleccione</option>
-                          </select>
-                      </div>
-
-                      <div class="col-lg-4 col-sm-4 col-md-4 detalle_atencion oculto">
-                          <label for="tipo-pi">Detalle Atencion</label>
-                          <select disabled class="form-control" id="edit_detelle_atencion" name="detalles_atencion">
-                              <option value="0" disabled>Seleccione</option>
-                          </select>
-                      </div>
-
-                      
-                        <input type="hidden"  class="form-control"  id="id_hijos_detalle_atencion" >
-                      </div>
-                    </div>
-                    <!-- FORMULARIO PARA EL CASO DE ASESORIA -->
-                    <div class="row" id="cgr" style="display: block;">
-
-                      <div class="col-lg-4 col-sm-4 col-md-4">
-                        <label for="competancia-cgr">Ente asdcrito</label>
-                        <select class="form-control" id="ente_adscrito_id" name="competencia-cgr" value="0">
-                          <option value=" 0" selected disabled>Seleccione</option>
-                        </select>
-                      </div>
-                      <div class="col-lg-3 col-sm-3 col-md-3">
-                        <label for="competancia-cgr">Competencia de CGR</label>
-                        <select class="form-control" id="competencia-cgr" name="competencia-cgr" value="0">
-                          <option value="0" selected disabled>Seleccione</option>
-                          <option value="1">Si</option>
-                          <option value="2">No</option>
-                        </select>
-                      </div>
-                      <div class="col-lg-3 col-sm-3 col-md-3">
-                        <label for="asume-cgr">Asume CGR</label>
-                        <select class="form-control" id="asume-cgr" name="asume-cgr" value="0">
-                          <option value="0" selected disabled>Seleccione</option>
-                          <option value="1">Si</option>
-                          <option value="2">No</option>
-                        </select>
-                      </div>
-                    </div>
-                    <!-- FORMULARIO PARA EL CASO DE DENUNCIAS -->
-                    <div class="row" id="denuncias" style="display: none;">
-                      <div class="col-lg-6">
-                        &nbsp;&nbsp; <label for="asume-cgr">A quien afecta el hecho:</label>&nbsp;&nbsp;&nbsp;
-                        <input type="radio" id="option-personal" value="Personal" name="option">&nbsp;&nbsp;&nbsp;
-                        <span>Personal</span>&nbsp;&nbsp;&nbsp;
-                        <input type="radio" id="option-comunidad" value="Comunidad" name="option">&nbsp;&nbsp;&nbsp;
-                        <span>Comunidad</span>&nbsp;&nbsp;&nbsp;
-                        <input type="radio" id="option-terceros" value="Terceros" name="option">&nbsp;&nbsp;&nbsp;
-                        <span>Terceros</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                      </div>
-                      <label for="fecha-hechos">Fecha de los hechos</label>
-                      <div class="col-lg-3">
-                        <input class="form-control" type="date" name="fecha-hechos" id="fecha-hechos" value=" ">
-                      </div>
-
-                      <div class="col-10">
-                        &nbsp;&nbsp;<label for="denu-involucrados">Indique personas , Organismos o Instituciones , Involucradas en los hechos :</label>
-                        <textarea type="text" class="form-control" onkeyup="mayus(this);" name="denu-involucrados" id="denu-involucrados" required>
-                                  </textarea>
-                      </div>
-                      <div class="col-11">
-                        <br>
-                        <label>EN CASO DE TRATARSE DE UNA INSTANCIA DEL PODER POPULAR INDIQUE :</label>
-                        <div class=" row">
-                          <div class="col-lg-5 col-sm-5 col-md-5">
-                            <label for="nombre-instancia">Nombre de la instancia del Poder Popular</label>
-                            <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-instancia" id="nombre-instancia" autocomplete="off">
-                          </div>
-                          <div class="col-lg-3 col-sm-3 col-md-3">
-                            <label for="rif-instancia">Rif:</label>
-                            <input type="text" class="form-control" onkeyup="mayus(this);" name="rif-instancia" id="rif-instancia" autocomplete="off">
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-md-4">
-                            <label for="ente-financiador">Ente Financiador:</label>
-                            <input type="text" class="form-control" onkeyup="mayus(this);" value=" " name="ente-financiador" id="ente-financiador" autocomplete="off">
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-lg-5 col-sm-5 col-md-5">
-                            <label for="nombre-proyecto">Nombre del Proyecto:</label>
-                            <input type="text" class="form-control" onkeyup="mayus(this);" name="nombre-proyecto" id="nombre-proyecto" autocomplete="off">
-                          </div>
-                          <div class="col-lg-3 col-sm-3 col-md-3">
-                            <label for="monto-aprovado">Monto Aprobado:</label>
-                            <input type="text" class="form-control" onkeypress="return valideKey(event);" name="monto-aprovado" id="monto-aprovado" onkeypress="noNumeros(event)" autocomplete="off">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-
-                    <div class="row">
-                      <div class="col-12">
-                        <label for="planteamiento-caso">Descripción del Caso</label>
-                        <textarea type="text" class="form-control" name="requerimiento-usuario" id="requerimiento-usuario" required>
-                  </textarea>
-                      </div>
-                    </div>
-                    <br>
-
-
-
-
-                    
-                  </div>
-                    <div class="row" style="pointer-events: auto; opacity: 1;">
-                        <form id="miFormulario" enctype="multipart/form-data">
-                            <input type="file" class="mi-estilo" id="archivo" name="archivo">
-                            <input type="hidden" id="id_caso_pdf" name="id_caso_pdf">&nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="button" id="subir_archivos" enctype="multipart/form-data" class="btn btn-sm btn-primary" value="Subir archivo">
-                        </form>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label for="t-beneficiario">DOCUMENTOS CASO</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <select class="form-control" style="width: 270px;" id="docu-casos" name="docu-casos">
-                            <option value="0" selected disabled>Seleccione</option>
-                        </select>
-                        <br />
-                    </div>
-<style>
-.notification-card {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 80%; /* Cambia el ancho a un porcentaje */
-    max-width: 600px; /* Establece un ancho máximo si es necesario */
-}
-.notification-card h2 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    color: #333;
-}
-.notification-card p {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
-}
-.extensions {
-    margin-top: 10px;
-    font-weight: bold;
-}
-</style>
-                    
-                    <div class="notification-card">
-                      <h2>Extensiones Permitidas</h2>
-                      <p class="extensions">.jpg, .jpeg, .png, .pdf, .doc, .docx, .ods, .xls, .xlsx, .mp4, .mp3, .m4a, .m4v, .mov, .wmv, .avi, .mkv, .swf, .odt</p>
-                    </div>
-                    
-                    <div class="modal-footer ">
-                    <!-- <button class="btn btn-light" type="reset">Limpiar</button> -->
-                    <button class="btn  btn-sm btn-primary" id="editar_caso" type="submit">Guardar</button>
-                    <button type="button" class="btn  btn-sm  btn-danger" data-dismiss="modal">Cerrar</button>
-                  </div>
-                 
-                  <!-- </form> -->
-               
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
     </div>
-    
-  </div>
-  <!-- /.content -->
 </div>
 
-
-<!-- ***** FUNCION PARA SOLO NUMEROS***-** -->
-<script type="text/javascript">
-  function valideKey(evt) {
-    var code = (evt.which) ? evt.which : evt.keyCode;
-    if (code == 8) { // backspace.
-      return true;
-    } else if (code >= 48 && code <= 57) { // is a number.
-      return true;
-    } else { // other keys.
-      return false;
-    }
-  }
-</script>
-<!-- ***** FUNCION PARA SOLO LETRAS***-** -->
-<script>
-  function noNumeros(event) {
-    const tecla = event.keyCode || event.which;
-    if (tecla >= 48 && tecla <= 57) {
-      event.preventDefault();
-    }
-  }
-</script>
-<!-- ***** FUNCION PARA CONVERTIR EN MAYUSCULA***-** -->
-<script>
-  function mayus(e) {
-    e.value = e.value.toUpperCase();
-  }
-</script>
-
-<div class="modal fade" id="remitir_caso">
-        <div class="modal-dialog  modal-dialog-centered modal-md">
-          <div class="modal-content">
-            <form id="caso-remitido" method="POST">
-              <div class="modal-header">
-                <h4 class="modal-title">Remitir Caso</h4>
-                <input type="hidden" id="idcaso" name="" value="">
-                <button type=" button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
+<div class="modal fade" id="editCase" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title font-weight-bold"><i class="fas fa-edit mr-2"></i> Gestión de Caso</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form id="form_editar_completo">
+                    <input type="hidden" id="id_caso">
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="section-title"><i class="fas fa-user mr-2"></i> Información del Solicitante</div>
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label class="small font-weight-bold">Nombre</label>
+                                <input type="text" class="form-control form-control-sm" id="nombre-persona" onkeyup="mayus(this)" required>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label class="small font-weight-bold">Apellido</label>
+                                <input type="text" class="form-control form-control-sm" id="apellido-persona" onkeyup="mayus(this)" required>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <label class="small font-weight-bold">Tipo</label>
+                                <select class="form-control form-control-sm" id="tipo-persona">
+                                    <option value="V">V</option><option value="E">E</option><option value="J">J</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label class="small font-weight-bold">Cédula o RIF</label>
+                                <input type="text" class="form-control form-control-sm" id="cedula-persona" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-white border-0">
+                <button type="button" class="btn btn-light btn-sm px-4" data-dismiss="modal">Cancelar</button>
+                <button type="submit" form="form_editar_completo" class="btn btn-primary btn-sm px-5 shadow-sm" id="editar_caso">
+                    <i class="fas fa-save mr-2"></i> Guardar Cambios
                 </button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group">
-                  <label for="direcciones_caso">Direcciones administrativas</label>
-                  <select id="direcciones_caso" name="direcciones_caso" class="form-control">
-                    <?php echo $listar_direcciones; ?>
-                  </select>
-                </div>
-              </div>
-              <div class="modal-footer justify-content-between">
-                <button type="reset" class="btn btn-sm  btn-default" data-dismiss="modal">Cerrar</button>
-                
-                <button type="submit" class="btn  btn-sm  btn-primary">Guardar</button>
-              <label id="mensaje" style="display: none;">Espere un momento, esta ventana se cerrará automáticamente</label>
-              </div>
-            </form>
-          </div>
-          <!-- /.modal-content -->
+            </div>
         </div>
-        <!-- /.modal-dialog -->
-      </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Efecto de Escritura
+        const target = document.getElementById('typing-direccion');
+        const textToWrite = target.getAttribute('data-text') || '';
+        if(textToWrite) {
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            target.after(cursor);
+            let index = 0;
+            function typeWriter() {
+                if (index < textToWrite.length) {
+                    target.textContent += textToWrite.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, 40);
+                } else {
+                    setTimeout(() => cursor.style.display = 'none', 1000);
+                }
+            }
+            setTimeout(typeWriter, 300);
+        }
+
+        // 2. Inicialización de DataTable (Asegúrate de tener jQuery y DataTables cargados)
+        // $('#table_casos').DataTable({
+        //     "dom": '<"d-flex justify-content-between align-items-center mb-3"lf>rtip',
+        //     "language": {
+        //         "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
+        //     },
+        //     "pageLength": 10
+        // });
+    });
+
+    function mayus(e) { e.value = e.value.toUpperCase(); }
+</script>

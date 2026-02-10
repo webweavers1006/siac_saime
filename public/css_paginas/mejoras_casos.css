@@ -8,6 +8,46 @@
    CLASES BASE CON PREFIJO SIAC
    ============================================ */
 
+/* Full-width DataTables support */
+.datatable-full-width {
+    width: 100% !important;
+    table-layout: fixed;
+    min-width: 100%;
+}
+
+/* Ensure table container uses full width */
+.siac-table-container {
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: visible;
+}
+
+/* Ensure table uses full width */
+#table_casos {
+    width: 100% !important;
+    table-layout: auto;
+}
+
+/* DataTables wrapper full width */
+.dataTables_wrapper {
+    width: 100% !important;
+}
+
+/* Ensure all wrapper elements use full width */
+.dataTables_scroll,
+.dataTables_scrollBody,
+.dataTables_scrollHead,
+.dataTables_scrollHeadInner {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Fix for Bootstrap grid conflict */
+.siac-main-card .row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
 /* Contenedor principal de la vista */
 .siac-casos-wrapper {
     background: transparent;
@@ -76,7 +116,7 @@
 }
 
 /* ============================================
-   TABLA ELEGANTE
+   TABLA ELEGANTE - MEJORAS DE ESTÉTICA
    ============================================ */
 
 .siac-table-container {
@@ -86,27 +126,35 @@
     background: #ffffff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     border: 1px solid #eee;
+    /* Contenedor responsivo para scroll horizontal */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .siac-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
+    min-width: 1200px; /* Ancho mínimo para evitar compresión excesiva */
 }
 
 .siac-table thead tr {
-    background: #083B7A;
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #083B7A;
 }
 
 .siac-table thead th {
-    color: #ffffff;
-    font-weight: 600;
-    padding: 14px 12px;
+    color: #495057;
+    font-weight: 700;
+    padding: 12px 10px;
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
+    vertical-align: middle;
+    /* Borde inferior definido */
+    border-bottom: 2px solid #083B7A;
 }
 
 .siac-table thead th:first-child {
@@ -118,12 +166,12 @@
 }
 
 .siac-table tbody tr {
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.2s ease;
 }
 
 .siac-table tbody tr:hover {
-    background-color: #fafbfc;
+    background-color: #f8f9fa;
 }
 
 .siac-table tbody tr:last-child {
@@ -131,10 +179,151 @@
 }
 
 .siac-table tbody td {
-    padding: 12px;
+    padding: 14px 12px; /* Aumentado padding para mejor respiración */
     color: #444;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: middle; /* Alineación vertical al centro */
+    line-height: 1.4;
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN - ALINEACIÓN HORIZONTAL
+   ============================================ */
+
+.siac-table .btn-group,
+.siac-table .action-buttons {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.siac-table .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    margin: 0 2px;
+    padding: 0;
+}
+
+.siac-table .action-btn i {
+    margin: 0;
+    font-size: 14px;
+}
+
+.siac-table .action-btn-view {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.siac-table .action-btn-view:hover {
+    background: #1976d2;
+    color: #fff;
+}
+
+.siac-table .action-btn-edit {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.siac-table .action-btn-edit:hover {
+    background: #f57c00;
+    color: #fff;
+}
+
+.siac-table .action-btn-delete {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.siac-table .action-btn-delete:hover {
+    background: #d32f2f;
+    color: #fff;
+}
+
+.siac-table .action-btn-remit {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.siac-table .action-btn-remit:hover {
+    background: #388e3c;
+    color: #fff;
+}
+
+.siac-table .action-btn-print {
+    background: #f5f5f5;
+    color: #616161;
+}
+
+.siac-table .action-btn-print:hover {
+    background: #616161;
+    color: #fff;
+}
+
+/* ============================================
+   MEJORAS ADICIONALES PARA CELDAS
+   ============================================ */
+
+/* Asegurar alineación vertical en todas las celdas */
+.siac-table th,
+.siac-table td {
+    vertical-align: middle !important;
+}
+
+/* Estilo para celdas con texto largo */
+.siac-table td[data-breakword="true"] {
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Hover effect más sutil */
+.siac-table tbody tr:hover td {
+    background-color: #fafbfc;
+}
+
+/* ============================================
+   RESPONSIVIDAD MEJORADA
+   ============================================ */
+
+/* Wrapper responsivo para pantallas pequeñas */
+.table-responsive-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin: 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.table-responsive-wrapper .siac-table {
+    min-width: 100%;
+}
+
+/* Indicador visual de scroll horizontal */
+.table-responsive-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+    pointer-events: none;
+    display: none;
+}
+
+.table-responsive-wrapper:hover::after {
+    display: block;
 }
 
 /* Badges de estatus */
@@ -657,5 +846,343 @@
 .siac-row > [class*="col-"] {
     padding-left: 8px;
     padding-right: 8px;
+}
+
+/* ============================================
+   MEJORAS PARA ANCHO DE TABLA DATATABLES
+   ============================================ */
+
+/* Contenedor del DataTable */
+.dataTables_wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Contenedor de la tabla con menos padding para llegar más al borde */
+.siac-table-container {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Selector de registros (Mostrar X) - ALINEACIÓN ESTÁNDAR UX */
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+/* Buscador (Search) - ALINEACIÓN ESTÁNDAR UX */
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    text-align: right;
+}
+
+/* Forzar que la tabla ocupe todo el espacio */
+table.dataTable {
+    width: 100% !important;
+    margin: 0 !important;
+    clear: both;
+}
+
+/* Info a la izquierda */
+.dataTables_wrapper .dataTables_info {
+    float: left;
+    padding-top: 0.5em;
+    margin-left: 10px;
+}
+
+/* Paginación a la derecha */
+.dataTables_wrapper .dataTables_paginate {
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+/* Limpiar floats después de los elementos */
+.dataTables_wrapper::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Alineación de los botones de acción en una sola fila */
+table.dataTable td:last-child {
+    white-space: nowrap;
+    text-align: right !important;
+}
+
+/* ============================================
+   ESTILOS PARA CELDAS DEL TBODY - ANCHOS DINÁMICOS
+   ============================================ */
+
+/* Columna Beneficiario: la más ancha, texto justificado/izquierda */
+table.dataTable tbody td:nth-child(3) {
+    min-width: 200px;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Columna Cédula: fit-content (ancho mínimo) */
+table.dataTable tbody td:nth-child(2) {
+    width: 90px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Columna Teléfono: fit-content */
+table.dataTable tbody td:nth-child(4) {
+    width: 100px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Columnas con white-space nowrap (no rompen línea) */
+table.dataTable tbody td:nth-child(1),   /* Nº */
+table.dataTable tbody td:nth-child(5),   /* Propiedad Intelectual */
+table.dataTable tbody td:nth-child(6),   /* Tipo de Atención */
+table.dataTable tbody td:nth-child(7),   /* Fecha */
+table.dataTable tbody td:nth-child(8),   /* Estatus */
+table.dataTable tbody td:nth-child(9) {  /* Operador */
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Acciones: alineada a la derecha */
+table.dataTable tbody td:nth-child(10) {
+    text-align: right !important;
+    width: 140px;
+}
+
+/* ============================================
+   RESPONSIVE EXPANDER PARA MÓVIL
+   ============================================ */
+
+/* Estilo base para el botón de expander */
+table.dataTable .expand-btn {
+    background: #083B7A;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+table.dataTable .expand-btn:hover {
+    background: #062a52;
+}
+
+/* Ocultar expander por defecto en escritorio */
+table.dataTable .mobile-expander {
+    display: none;
+}
+
+/* Indicador de que hay más contenido disponible */
+table.dataTable tbody tr.parent-row {
+    cursor: pointer;
+}
+
+table.dataTable tbody tr.shown td:last-child {
+    background-color: #f8f9fa;
+}
+
+/* ============================================
+   MEDIA QUERIES PARA MÓVIL
+   ============================================ */
+
+/* Estilos para pantallas grandes (escritorio) - Más de 768px */
+@media screen and (min-width: 769px) {
+    /* En escritorio, ocultamos el expander */
+    table.dataTable .mobile-expander {
+        display: none !important;
+    }
+    
+    /* Los detalles móviles siempre ocultos en escritorio */
+    .mobile-details {
+        display: none !important;
+    }
+    
+    /* Ocultar fila de detalles */
+    table.dataTable tbody tr.row-details {
+        display: none;
+    }
+}
+
+/* Estilos para tablets y móviles - Menos de 768px */
+@media screen and (max-width: 768px) {
+    /* Contenedor responsivo */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        margin: 20px 0;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* En móvil, columna Acciones centrada */
+    table.dataTable tbody td:last-child {
+        text-align: center !important;
+        vertical-align: middle !important;
+        width: 60px !important;
+    }
+    
+    /* Mostrar el botón de expander en móvil */
+    table.dataTable .mobile-expander {
+        display: inline-flex !important;
+    }
+    
+    /* Ocultar botones inline en móvil (se muestran en el expander) */
+    table.dataTable tbody td:last-child .btn-inline-actions {
+        display: none !important;
+    }
+    
+    /* Estilos para los detalles expandidos en móvil */
+    .mobile-details {
+        display: none;
+        padding: 12px 15px;
+        background-color: #f8f9fa;
+        border-top: 2px solid #083B7A;
+    }
+    
+    .mobile-details .detail-label {
+        font-weight: 600;
+        color: #083B7A;
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+        margin-right: 8px;
+    }
+    
+    .mobile-details .detail-value {
+        font-size: 0.85rem;
+        color: #444;
+        margin-bottom: 8px;
+    }
+    
+    /* Contenedor de acciones en detalles móviles */
+    .mobile-details .actions-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .mobile-details .actions-container .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        min-width: 80px;
+    }
+    
+    /* Mostrar fila de detalles cuando se expande */
+    table.dataTable tbody tr.row-details {
+        display: none;
+    }
+    
+    table.dataTable tbody tr.row-details.shown {
+        display: table-row;
+    }
+    
+    /* Reducir padding en tablas para móviles */
+    .siac-table thead th {
+        padding: 8px 6px;
+        font-size: 0.7rem;
+    }
+    
+    .siac-table tbody td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+    
+    /* Ocultar columnas menos importantes en móvil */
+    table.dataTable tbody td:nth-child(4),  /* Teléfono */
+    table.dataTable tbody td:nth-child(5),  /* Propiedad Intelectual */
+    table.dataTable tbody td:nth-child(6),  /* Tipo de Atención */
+    table.dataTable tbody td:nth-child(9) { /* Operador */
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 80px;
+        text-overflow: ellipsis;
+    }
+    
+    table.dataTable thead th:nth-child(4),
+    table.dataTable thead th:nth-child(5),
+    table.dataTable thead th:nth-child(6),
+    table.dataTable thead th:nth-child(9) {
+        display: none;
+    }
+    
+    /* Reducir anchos de columnas en móvil */
+    table.dataTable tbody td:nth-child(1),
+    table.dataTable tbody td:nth-child(2),
+    table.dataTable tbody td:nth-child(7),
+    table.dataTable tbody td:nth-child(8) {
+        width: auto !important;
+        min-width: 60px !important;
+    }
+}
+
+/* Estilos específicos para móviles muy pequeños */
+@media screen and (max-width: 480px) {
+    .siac-main-header {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .siac-main-header h3 {
+        font-size: 1.25rem;
+    }
+    
+    .siac-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .siac-section-body {
+        padding: 16px;
+    }
+    
+    .siac-table-container {
+        border-radius: 8px;
+    }
+    
+    .siac-table thead th {
+        padding: 6px 4px;
+        font-size: 0.65rem;
+    }
+    
+    .siac-table tbody td {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+    }
+    
+    /* Acciones más pequeñas en móvil muy pequeño */
+    table.dataTable .expand-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .mobile-details .actions-container {
+        flex-direction: column;
+    }
+    
+    .mobile-details .actions-container .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
