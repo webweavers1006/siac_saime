@@ -1463,10 +1463,31 @@ public function listar_Casos_Usuarios()
     $idrol = (session('userrol'));
     $idusur = (session('iduser'));
     
-    // Obtener el nombre de la columna por la que se ordenará
-    $columns = ['a.idcaso', 'a.casofec', 'CONCAT(a.casonom, " ", a.casoape)', 'b.estnom', 'd.tipo_atend_borrado']; // Asegúrate de que los nombres de las columnas coincidan con las de tu consulta SQL
-    $order_column = $columns[$order[0]['column']];
-    $order_direction = $order[0]['dir'];
+    // Mapeo completo de todas las columnas que DataTables puede solicitar (índice => nombre de columna SQL)
+    // NOTA: user_name es un ALIAS, no existe físicamente. Se ordena por la expresión completa.
+    $columns = [
+        0 => 'a.idcaso',                    // idcaso
+        1 => 'a.casoced',                   // cedula
+        2 => 'CONCAT(a.casonom, \' \', a.casoape)',  // nombre
+        3 => 'a.casotel',                   // casotel
+        4 => 'tpinte.tipo_prop_nombre',      // tipo_prop_nombre
+        5 => 't_antusu.tipo_aten_nombre',   // tipo_aten_nombre
+        6 => 'a.casofec',                   // casofec
+        7 => 'b.estnom',                    // estnom
+        8 => 'CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape)',  // user_name (alias del operador)
+        9 => 'a.idcaso'                      // columna de acciones (no ordenable realmente)
+    ];
+    
+    // Validar que el índice de columna solicitado exista
+    $orderColumnIndex = isset($order[0]['column']) ? $order[0]['column'] : 0;
+    
+    // Si el índice no existe en el mapeo, usar por defecto la columna 0 (idcaso)
+    if (!isset($columns[$orderColumnIndex])) {
+        $orderColumnIndex = 0;
+    }
+    
+    $order_column = $columns[$orderColumnIndex];
+    $order_direction = isset($order[0]['dir']) ? $order[0]['dir'] : 'desc';
 
     // Lógica para obtener los datos según el rol del usuario
     if ($idrol == 1 || $idrol == 3 || $idrol == 5) { 

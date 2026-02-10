@@ -69,12 +69,14 @@ class Seguimiento_Controler extends BaseController
     }
 
     /**
-     * Crear notificación de seguimiento para usuarios con roles 1, 3, 5 Y al autor original del caso (Rol 2)
+     * Crear notificación de seguimiento para usuarios con roles 1, 3, 5, al autor original del caso (Rol 2)
+     * Y a la dirección administrativa del caso (Rol 10)
      * 
      * Reglas implementadas:
      * 1. Notificar a Roles de Supervisión (1, 3, 5) - GLOBAL
      * 2. Notificar al AUTOR ORIGINAL del caso (si tiene Rol 2)
-     * 3. Evitar auto-notificaciones
+     * 3. Notificar a la DIRECCIÓN ADMINISTRATIVA del caso (Rol 10) cuando es diferente de la dirección del usuario actual
+     * 4. Evitar auto-notificaciones
      */
     private function crearNotificacionSeguimiento($id_caso, $comentario)
     {
@@ -97,20 +99,30 @@ class Seguimiento_Controler extends BaseController
         // Autor original del caso
         $id_caso_autor = $caso->idusuopr ?? 0;
         
+        // Dirección administrativa del caso (quien tiene asignado el caso)
+        $id_direccion_caso = $caso->id_direccion_administrativa ?? 0;
+        
         // Verificar si el autor es diferente de quien agrega el seguimiento
         $autor_es_diferente = ($id_caso_autor != $idusuopr_actual);
         
+        // Verificar si la dirección del caso es diferente de la dirección del usuario actual
+        $direccion_caso_es_diferente = ($id_direccion_caso != $direccion_usuario_id);
+        
         $nombre_beneficiario = $caso->nombre ?? 'Caso #' . $id_caso;
         $mensaje_supervision = "Nuevo seguimiento en el caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . ". Agregado por: " . $nombre_direccion_usuario;
+        $mensaje_direccion = "Nuevo seguimiento en el caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . ". Agregado por: " . $nombre_direccion_usuario;
         
         log_message('debug', "=== CREAR NOTIFICACIÓN SEGUIMIENTO ===");
         log_message('debug', "Caso ID: {$id_caso}");
         log_message('debug', "Autor original: {$id_caso_autor}");
+        log_message('debug', "Dirección del caso: {$id_direccion_caso}");
         log_message('debug', "Usuario actual: {$idusuopr_actual}");
+        log_message('debug', "Dirección usuario actual: {$direccion_usuario_id}");
         log_message('debug', "Autor diferente: " . ($autor_es_diferente ? 'SÍ' : 'NO'));
+        log_message('debug', "Dirección diferente: " . ($direccion_caso_es_diferente ? 'SÍ' : 'NO'));
         
         $notificaciones_creadas = 0;
-        $usuarios_supervision = [];
+        $usuarios_notificados = [];
         
         // 1. NOTIFICAR A ROLES DE SUPERVISIÓN (1, 3, 5) - GLOBAL
         // Supervisión SIEMPRE recibe notificación de seguimiento para auditar movimientos
@@ -138,6 +150,7 @@ class Seguimiento_Controler extends BaseController
             
             if ($insertado) {
                 $notificaciones_creadas++;
+                $usuarios_notificados[] = $usuario->idusuopr;
             }
         }
         
@@ -178,6 +191,7 @@ class Seguimiento_Controler extends BaseController
                     
                     if ($insertado) {
                         $notificaciones_creadas++;
+                        $usuarios_notificados[] = $id_caso_autor;
                         log_message('debug', "Notificación de seguimiento enviada al autor (Rol 2): {$id_caso_autor}");
                     }
                 } else {
@@ -194,6 +208,45 @@ class Seguimiento_Controler extends BaseController
                 }
                 log_message('debug', "Autor {$id_caso_autor} NO notificado: {$razon}");
             }
+        }
+        
+        // 3. NOTIFICAR A LA DIRECCIÓN ADMINISTRATIVA DEL CASO (ROL 10)
+        // Solo si la dirección del caso es diferente de la dirección del usuario actual
+        if ($direccion_caso_es_diferente && $id_direccion_caso > 0) {
+            $usuarios_direccion = $notifModel->obtenerUsuariosPorDireccion($id_direccion_caso);
+            $nombre_direccion_caso = $notifModel->obtenerNombreDireccion($id_direccion_caso);
+            $mensaje_direccion = "Nuevo seguimiento en el caso #" . $id_caso . " - Beneficiario: " . $nombre_beneficiario . ". Agregado por: " . $nombre_direccion_usuario;
+            
+            foreach ($usuarios_direccion as $usuario) {
+                // Excluir auto-notificación
+                // Excluir si ya fue notificado (ej: si es supervisor o autor)
+                $ya_notificado = in_array($usuario->idusuopr, $usuarios_notificados);
+                
+                if ($ya_notificado) {
+                    log_message('debug', "Usuario {$usuario->idusuopr} ya notificado, saltando notificación de dirección");
+                    continue;
+                }
+                
+                $insertado = $notifModel->insertarNotificacion([
+                    "id_caso" => $id_caso,
+                    "tipo_notificacion" => "SEGUIMIENTO",
+                    "mensaje" => $mensaje_direccion,
+                    "leida" => false,
+                    "fecha_creacion" => date('Y-m-d H:i:s'),
+                    "id_usuario_destino" => $usuario->idusuopr,
+                    "direccion_origen" => $direccion_usuario_id,
+                    "id_usuario_accion" => $idusuopr_actual,
+                    "id_rol_accion" => $id_rol_actual,
+                    "id_caso_autor" => $id_caso_autor
+                ]);
+                
+                if ($insertado) {
+                    $notificaciones_creadas++;
+                    $usuarios_notificados[] = $usuario->idusuopr;
+                }
+            }
+            
+            log_message('debug', "Notificaciones creadas para dirección {$nombre_direccion_caso}: " . count($usuarios_direccion));
         }
         
         log_message('debug', "Total notificaciones de seguimiento creadas: {$notificaciones_creadas}");

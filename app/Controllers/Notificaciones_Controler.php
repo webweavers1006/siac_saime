@@ -36,9 +36,11 @@ class Notificaciones_Controler extends BaseController
             $roles_supervision = [1, 3, 5];
             $es_supervision = in_array($userrol, $roles_supervision);
             $es_rol2 = ($userrol == 2);
+            $es_rol10 = ($userrol == 10);
             
             log_message('debug', "Es supervision: " . ($es_supervision ? 'SI' : 'NO'));
             log_message('debug', "Es Rol 2: " . ($es_rol2 ? 'SI' : 'NO'));
+            log_message('debug', "Es Rol 10: " . ($es_rol10 ? 'SI' : 'NO'));
             
             // Determinar filtros según el rol
             if ($es_supervision) {
@@ -57,6 +59,16 @@ class Notificaciones_Controler extends BaseController
                 $resultado = $model->obtenerNotificacionesPorUsuario(
                     $id_usuario, 
                     [2], // Marcar como rol 2
+                    $id_direccion,
+                    $userrol,
+                    $pagina,
+                    $por_pagina
+                );
+            } elseif ($es_rol10) {
+                // Rol 10 (Dirección): Ver remisiones Y seguimientos de casos asignados a su dirección
+                $resultado = $model->obtenerNotificacionesPorUsuario(
+                    $id_usuario, 
+                    [10], // Marcar como rol 10 para que pueda ver seguimientos
                     $id_direccion,
                     $userrol,
                     $pagina,
@@ -108,6 +120,7 @@ class Notificaciones_Controler extends BaseController
             $roles_supervision = [1, 3, 5];
             $es_supervision = in_array($userrol, $roles_supervision);
             $es_rol2 = ($userrol == 2);
+            $es_rol10 = ($userrol == 10);
             
             $count = 0;
             
@@ -117,6 +130,9 @@ class Notificaciones_Controler extends BaseController
             } elseif ($es_rol2) {
                 // Rol 2: Contar solo seguimientos de sus casos
                 $count = $model->contarNoLeidas($id_usuario, [2], $id_direccion, $userrol);
+            } elseif ($es_rol10) {
+                // Rol 10 (Dirección): Contar remisiones Y seguimientos
+                $count = $model->contarNoLeidas($id_usuario, [10], $id_direccion, $userrol);
             } else {
                 // Otras direcciones: Contar solo remisiones
                 $count = $model->contarNoLeidas($id_usuario, [], $id_direccion, $userrol);
@@ -204,6 +220,7 @@ class Notificaciones_Controler extends BaseController
             $roles_supervision = [1, 3, 5];
             $es_supervision = in_array($userrol, $roles_supervision);
             $es_rol2 = ($userrol == 2);
+            $es_rol10 = ($userrol == 10);
             
             $resultado = [];
             
@@ -220,6 +237,16 @@ class Notificaciones_Controler extends BaseController
                 $resultado = $model->obtenerTodasLasNotificaciones(
                     $id_usuario, 
                     [2],
+                    $id_direccion,
+                    $userrol,
+                    $pagina,
+                    $por_pagina
+                );
+            } elseif ($es_rol10) {
+                // Rol 10 (Dirección): Ver remisiones Y seguimientos
+                $resultado = $model->obtenerTodasLasNotificaciones(
+                    $id_usuario, 
+                    [10],
                     $id_direccion,
                     $userrol,
                     $pagina,

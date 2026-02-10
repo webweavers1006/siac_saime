@@ -522,7 +522,7 @@ $userdata = $session->get();
         const tipoClass = notif.tipo_notificacion === 'REMISION' ? 'text-primary' : 
                          (notif.tipo_notificacion === 'CIERRE' ? 'text-danger' : 'text-warning');
         const tipoIcon = notif.tipo_notificacion === 'REMISION' ? 'fa-file-import' : 
-                         (notif.tipo_notificacion === 'CIERRE' ? 'fa-check-circle' : 'fa-tasks');
+                        (notif.tipo_notificacion === 'CIERRE' ? 'fa-check-circle' : 'fa-tasks');
         
         // Construir mensaje completo con dirección origen si existe
         let mensajeCompleto = notif.mensaje;

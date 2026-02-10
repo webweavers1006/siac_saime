@@ -104,16 +104,18 @@ class Notificaciones_Model extends BaseModel
             $builder->groupEnd();
             
         } elseif ($es_rol10) {
-            // === ROL 10: DIRECCION ===
+            // === ROL 10: DIRECCIÓN ===
             
             // Ver notificaciones donde es destinatario directo
-            // Solo ver remisiones Y seguimientos de casos asignados a su direccion
-            if (!empty($roles_permitidos)) {
+            // Cuando roles_permitidos contiene 10, permitir ver REMISION Y SEGUIMIENTO
+            // Esto permite que el Rol 10 vea seguimientos de casos en su dirección
+            if (!empty($roles_permitidos) && in_array(10, $roles_permitidos)) {
                 $builder->groupStart();
                 $builder->where('n.tipo_notificacion', 'REMISION');
                 $builder->orWhere('n.tipo_notificacion', 'SEGUIMIENTO');
                 $builder->groupEnd();
             } else {
+                // Comportamiento por defecto: solo remisiones (compatibilidad hacia atrás)
                 $builder->where('n.tipo_notificacion', 'REMISION');
             }
             

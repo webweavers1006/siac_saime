@@ -34,13 +34,12 @@ class Casos extends BaseModel
         $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
         $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('public.sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
-        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
         $builder->where('a.borrado', false);
         $builder->orderBy('a.idcaso', 'DESC');
         $query = $builder->get();
-       // echo $db->getLastQuery(); 
         return $query->getResult();
     }
+    
 public function obtenerCasosServerSide($start, $length, $search, $order_column, $order_direction)
 {
     $db = \Config\Database::connect();
@@ -56,27 +55,26 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
     $builder->distinct();
     $this->buildBaseQuery($builder);
 
-    // --- 3. APLICACIÓN DEL FILTRO DE BÚSQUEDA ---
+    // --- 3. APLICACIÓN DEL FILTRO DE BÚSQUEDA (Insensible a mayúsculas/minúsculas) ---
     if (!empty($search)) {
-        // Preparamos el término de búsqueda para LIKE: minúsculas y comodines (%)
-        $searchEscaped = $db->escapeLikeString($search);
-        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        $searchLower = strtolower($search);
+        $searchEscaped = $db->escapeLikeString($searchLower);
+        $searchPattern = '%' . $searchEscaped . '%';
         
-        // Construimos la cláusula WHERE compleja de forma literal
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
-            
-            -- Filtros Clave para Tipo de Atención (COALESCE/LOWER/CAST aplicado)
-            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(CAST(d.tipo_atend_borrado AS TEXT)), '') LIKE '{$searchPattern}' OR 
-            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}'
+            LOWER(TRIM(a.casoced)) LIKE '{$searchPattern}' OR
+            LOWER(a.casonom) LIKE '{$searchPattern}' OR
+            LOWER(a.casoape) LIKE '{$searchPattern}' OR
+            LOWER(b.estnom) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(t_antusu.tipo_aten_nombre, '')) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(CAST(d.tipo_atend_borrado AS TEXT), '')) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(tpinte.tipo_prop_nombre, '')) LIKE '{$searchPattern}' OR
+            LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) LIKE '{$searchPattern}' OR
+            LOWER(u_ope.usuopnom) LIKE '{$searchPattern}' OR
+            LOWER(u_ope.usuopape) LIKE '{$searchPattern}'
         ";
         
-        // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
         $builder->where("({$whereClause})", NULL, FALSE);
     }
     
@@ -85,7 +83,21 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
     $recordsFiltered = $tempBuilderFiltered->countAllResults();
     
     // --- 5. ORDENACIÓN Y PAGINACIÓN ---
-    $builder->orderBy($order_column, $order_direction);
+    // CORRECCIÓN: Validar columnas permitidas para evitar SQL injection
+    // user_name es un alias de CONCAT, no se puede usar directamente en ORDER BY
+    $allowed_columns = [
+        'a.idcaso', 'a.casoced', "CONCAT(a.casonom, ' ', a.casoape)", 'a.casotel',
+        'tpinte.tipo_prop_nombre', 't_antusu.tipo_aten_nombre', 'a.casofec', 'b.estnom',
+        "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)", 'a.idcaso'
+    ];
+    
+    // Si la columna no está permitida, usar a.idcaso por defecto
+    if (in_array($order_column, $allowed_columns)) {
+        $builder->orderBy($order_column, $order_direction);
+    } else {
+        $builder->orderBy('a.idcaso', $order_direction);
+    }
+    
     $builder->limit($length, $start);
     
     // Obtener los datos paginados
@@ -98,6 +110,7 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
         'data' => $data
     ];
 }
+    
 public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $length, $search, $order_column, $order_direction)
 {
     $db = \Config\Database::connect();
@@ -113,28 +126,28 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
     $builder = $db->table('sgc_casos as a');
     $builder->distinct();
     $this->buildBaseQuery($builder);
-    $builder->where('a.idusuopr', $idusur); // Filtro por usuario permanente
+    $builder->where('a.idusuopr', $idusur);
 
     // --- 3. APLICACIÓN DEL FILTRO DE BÚSQUEDA ---
     if (!empty($search)) {
-        $searchEscaped = $db->escapeLikeString($search);
-        $searchPattern = '%' . strtolower($searchEscaped) . '%';
+        $searchLower = strtolower($search);
+        $searchEscaped = $db->escapeLikeString($searchLower);
+        $searchPattern = '%' . $searchEscaped . '%';
         
-        // Construimos la cláusula WHERE compleja de forma literal
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
-            
-            -- Filtros Clave para Tipo de Atención (COALESCE/LOWER/CAST aplicado)
-            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(CAST(d.tipo_atend_borrado AS TEXT)), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}'
+            LOWER(TRIM(a.casoced)) LIKE '{$searchPattern}' OR
+            LOWER(a.casonom) LIKE '{$searchPattern}' OR
+            LOWER(a.casoape) LIKE '{$searchPattern}' OR
+            LOWER(b.estnom) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(t_antusu.tipo_aten_nombre, '')) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(CAST(d.tipo_atend_borrado AS TEXT), '')) LIKE '{$searchPattern}' OR
+            LOWER(COALESCE(tpinte.tipo_prop_nombre, '')) LIKE '{$searchPattern}' OR
+            LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) LIKE '{$searchPattern}' OR
+            LOWER(u_ope.usuopnom) LIKE '{$searchPattern}' OR
+            LOWER(u_ope.usuopape) LIKE '{$searchPattern}'
         ";
         
-        // Aplicamos la cláusula WHERE de forma literal
         $builder->where("({$whereClause})", NULL, FALSE);
     }
     
@@ -143,10 +156,21 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
     $recordsFiltered = $tempBuilderFiltered->countAllResults();
     
     // --- 5. ORDENACIÓN Y PAGINACIÓN ---
-    $builder->orderBy($order_column, $order_direction);
+    // CORRECCIÓN: Validar columnas permitidas
+    $allowed_columns = [
+        'a.idcaso', 'a.casoced', "CONCAT(a.casonom, ' ', a.casoape)", 'a.casotel',
+        'tpinte.tipo_prop_nombre', 't_antusu.tipo_aten_nombre', 'a.casofec', 'b.estnom',
+        "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)", 'a.idcaso'
+    ];
+    
+    if (in_array($order_column, $allowed_columns)) {
+        $builder->orderBy($order_column, $order_direction);
+    } else {
+        $builder->orderBy('a.idcaso', $order_direction);
+    }
+    
     $builder->limit($length, $start);
     
-    // Obtener los datos paginados
     $query = $builder->get();
     $data = $query->getResult();
     
@@ -156,9 +180,10 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
         'data' => $data
     ];
 }
+    
 private function buildBaseQuery($builder)
 {
-    // Tu código actual de SELECT y JOIN
+    // CORRECCIÓN: Usar esquema 'public.' en TODOS los JOINs para consistencia
     $builder->select('d.tipo_atend_borrado, a.idcaso, a.tipo_beneficiario,a.tipo_atend_id, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
     $builder->select('a.pais,a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
     $builder->select('a.caso_org_id,a.edad, to_char(a.fecha_nacimiento, \'dd/mm/yyyy\') as fecha_nacimiento, a.fecha_nacimiento as fecha_nacimiento_normal');
@@ -174,16 +199,17 @@ private function buildBaseQuery($builder)
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
     $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
-    $builder->join('sgc_estatus b', 'b.idest = a.idest');
-    $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-    $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-    $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-    $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-    $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-    $builder->join('sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
-    $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+    
+    // CORRECCIÓN: Agregar 'public.' a TODOS los JOINs y corregir JOIN de denuncias
+    $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+    $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+    $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+    $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+    $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+    $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+    $builder->join('public.sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
+    $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
     $builder->where('a.borrado', false);
-    // NO SE ORDENA NI SE PONE EL LIMIT, eso lo maneja el método principal.
 }
 
     //Metodo para obtener todos los casos por usuario
@@ -207,13 +233,15 @@ private function buildBaseQuery($builder)
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
         $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        
+        // CORRECCIÓN: Usar esquema public.
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
         $builder->where('a.borrado', false);
         $builder->where('a.idusuopr', $idusur);
         $builder->orderBy('a.idcaso', 'DESC');
@@ -235,15 +263,18 @@ private function buildBaseQuery($builder)
         $builder->select('denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado, CONCAT(a.casonom, \' \', a.casoape) AS nombre');
         $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name, CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
         $builder->select('a.casofec as casofec_normal, b.estnom, tpinte.tipo_prop_id');
-        $builder->join('sgc_direcciones_administrativas as dire', 'cr.direccion_id = dire.id');
-        $builder->join('sgc_casos as a', 'cr.casos_id = a.idcaso');
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        
+        // CORRECCIÓN: Usar esquema public.
+        $builder->join('public.sgc_direcciones_administrativas as dire', 'cr.direccion_id = dire.id');
+        $builder->join('public.sgc_casos as a', 'cr.casos_id = a.idcaso');
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+        
         $builder->where('cr.direccion_id', $id_direccion); 
         $builder->where('cr.vigencia', true);
         $builder->orWhere('cr.vigencia IS NULL');
@@ -252,85 +283,54 @@ private function buildBaseQuery($builder)
         return $query->getResult();
     }
 
-
     //Metodo para obtener toda la informacion del caso para la web 
     public function Informacion_Usuarios($casoced)
     {
-    // Validar que la cédula sea un número entero
-    if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
-
-    die("La cédula debe ser un número entero válido.");
-
-    }
+        if (!filter_var($casoced, FILTER_VALIDATE_INT)) {
+            die("La cédula debe ser un número entero válido.");
+        }
         $db = \Config\Database::connect();
-        // Utiliza el Query Builder
         $builder = $db->table('sgc_casos a');
         
-        // Selecciona las columnas
         $builder->select([
-            'a.tipo_beneficiario',
-            'a.idcaso',
-            'a.casotel',
-            'TRIM(a.casoced) AS casoced',
-            'a.casonom',
-            'a.casoape',
-            'a.casodesc',
-            'a.caso_nacionalidad',
-            'a.idrrss',
-            'a.ofiid',
-            'a.estadoid',
-            'a.id_tipo_atencion',
-            'a.municipioid',
-            'a.parroquiaid',
-            'a.direccion',
-            'a.correo',
-            'a.ente_adscrito_id',
+            'a.tipo_beneficiario', 'a.idcaso', 'a.casotel', 'TRIM(a.casoced) AS casoced',
+            'a.casonom', 'a.casoape', 'a.casodesc', 'a.caso_nacionalidad', 'a.idrrss',
+            'a.ofiid', 'a.estadoid', 'a.id_tipo_atencion', 'a.municipioid', 'a.parroquiaid',
+            'a.direccion', 'a.correo', 'a.ente_adscrito_id',
             "CONCAT(a.caso_nacionalidad, a.casoced) AS cedula",
-            'cgr.competencia_cgr',
-            'cgr.asume_cgr',
-            'denu.denu_afecta_persona',
-            'denu.denu_afecta_comunidad',
-            'denu.denu_afecta_terceros',
-            'denu.denu_involucrados',
-            'denu.denu_fecha_hechos',
-            'denu.denu_instancia_popular',
-            'denu.denu_rif_instancia',
-            'denu.denu_ente_financiador',
-            'denu.denu_nombre_proyecto',
-            'denu.denu_monto_aprovado',
+            'cgr.competencia_cgr', 'cgr.asume_cgr',
+            'denu.denu_afecta_persona', 'denu.denu_afecta_comunidad', 'denu.denu_afecta_terceros',
+            'denu.denu_involucrados', 'denu.denu_fecha_hechos', 'denu.denu_instancia_popular',
+            'denu.denu_rif_instancia', 'denu.denu_ente_financiador', 'denu.denu_nombre_proyecto', 'denu.denu_monto_aprovado',
             "CONCAT(a.casonom, ' ', a.casoape) AS nombre",
             "CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape) AS user_name",
             "CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END AS sexo",
             "TO_CHAR(a.casofec, 'dd/mm/yyyy') AS casofec",
-            'a.casofec AS casofec_normal',
-            'b.estnom',
-            'tpinte.tipo_prop_nombre',
-            'tpinte.tipo_prop_id',
-            't_antusu.tipo_aten_nombre'
+            'a.casofec AS casofec_normal', 'b.estnom',
+            'tpinte.tipo_prop_nombre', 'tpinte.tipo_prop_id', 't_antusu.tipo_aten_nombre'
         ]);
-        // Realiza los joins
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('sgc_tipo_prop_caso tpc', 'a.idcaso = tpc.idcaso');
-        $builder->join('sgc_tipo_prop_intelec tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
-        $builder->join('sgc_tipoatencion_usu t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
-        // Establece las condiciones
+        
+        // CORRECCIÓN: Usar esquema public.
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('public.sgc_tipo_prop_caso tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('public.sgc_tipo_prop_intelec tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('public.sgc_tipoatencion_usu t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+        
         $builder->where('a.borrado', false);
         $builder->where('a.casoced', $casoced);
-        // Ordena los resultados
         $builder->orderBy('a.idcaso', 'desc');
-        // Ejecuta la consulta y obtiene los resultados
         $query = $builder->get();
         return $query->getResult();
     }
 
-        public function obtenerCaso_id($id_caso)
+    public function obtenerCaso_id($id_caso)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
-        $builder->select('a.idusuopr,a.tipo_beneficiario, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+        $builder->select('a.idusuopr, a.tipo_beneficiario, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
         $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
         $builder->select('a.municipioid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id');
         $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
@@ -343,13 +343,20 @@ private function buildBaseQuery($builder)
         $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
         $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
-        $builder->join('sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
-        $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
-        $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('sgc_casos_denuncias denu', 'a.idcaso = denu_id_caso', 'left');
+        // Agregamos la dirección administrativa del caso (de remitidos o del usuario original)
+        $builder->select('COALESCE(cr.direccion_id, u_ope.id_direccion_administrativa) AS id_direccion_administrativa');
+        
+        // CORRECCIÓN: Usar esquema public.
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+        // JOIN para obtener la dirección de remisión (si existe y está vigente)
+        $builder->join('public.sgc_casos_remitidos cr', 'a.idcaso = cr.casos_id AND cr.vigencia = TRUE', 'left', false);
+        
         $builder->where('a.borrado', false);
         $builder->where('a.idcaso', $id_caso);
         $query = $builder->get();
@@ -360,20 +367,31 @@ private function buildBaseQuery($builder)
     public function obtener_utimo_id()
     {
         $builder = $this->dbconn('public.sgc_casos');
-        $builder->select(
-            " MAX(idcaso) as ultimo_id"
-        );
+        $builder->select(" MAX(idcaso) as ultimo_id");
         $query = $builder->get();
         return $query;
     }
 
-        public function obtener_ultimos_casos(string $iduser)
+    public function obtener_ultimos_casos(string $iduser)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_casos as a');
         $builder->select('a.idcaso, a.casotel, a.casoced');
         $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
         $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+        $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal');
+        $builder->select('b.estnom, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre');
+        
+        // CORRECCIÓN: Usar esquema public.
+        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+        $builder->join('public.sgc_usuario_operador c', 'a.idusuopr = c.idusuopr');
+        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso');
+        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id');
+        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+        
+        $builder->where('a.idusuopr', $iduser); 
+        $builder->orderBy('a.idcaso', 'DESC');
+        $builder->limit(20);
         $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal');
         $builder->select('b.estnom, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre');
         $builder->join('sgc_estatus b', 'b.idest = a.idest');

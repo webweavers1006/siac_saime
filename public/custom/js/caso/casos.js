@@ -673,7 +673,7 @@ function Listar_Casos() {
         dom: 'lfrBtip',
         "searching": true,
         "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
-        "ordering": true,
+        "ordering": false,
         "info": true,
         "autoWidth": true,
         "serverSide": true,
