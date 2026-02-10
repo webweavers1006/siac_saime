@@ -199,6 +199,65 @@
     </div>
 </div>
 
+  <div class="modal fade" id="remitir_caso" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+        
+        <div class="modal-header border-0" style="background: linear-gradient(135deg, #002244 0%, #003366 100%); padding: 1.5rem;">
+          <h4 class="modal-title font-weight-bold text-white" style="font-size: 1.2rem;">
+            <i class="fas fa-paper-plane mr-2 text-info"></i> Remitir Caso
+          </h4>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form id="caso-remitido" method="POST">
+          <input type="hidden" id="idcaso" name="id_caso_remitir" value="">
+          
+          <div class="modal-body p-4" style="background-color: #f8fafc;">
+            <div class="text-center mb-4">
+              <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle mb-3" style="width: 60px; height: 60px; border: 2px dashed #3498db;">
+                <i class="fas fa-university fa-lg text-primary"></i>
+              </div>
+              <p class="text-muted small">Seleccione la unidad administrativa que recibirá el expediente para su gestión.</p>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="direcciones_caso" class="font-weight-bold text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                Dirección Administrativa Receptora
+              </label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text bg-white border-right-0"><i class="fas fa-sitemap text-primary"></i></span>
+                </div>
+                <select id="direcciones_caso" name="direcciones_caso" class="form-control border-left-0 font-weight-bold" style="height: 45px; color: #003366; border-radius: 0 8px 8px 0;">
+                  <?php echo $listar_direcciones; ?>
+                </select>
+              </div>
+            </div>
+
+            <div id="mensaje" class="alert mt-3 border-0 shadow-sm" style="display: none; border-radius: 10px; font-size: 0.85rem;">
+                </div>
+          
+          </div>
+
+          <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+            <button type="button" class="btn btn-light px-4 font-weight-bold" data-dismiss="modal" style="border-radius: 50px; color: #64748b;">
+              Cancelar
+            </button>
+            
+            <button type="submit" class="btn px-4 font-weight-bold shadow-sm" style="background: #003366; color: white; border-radius: 50px; transition: all 0.3s;">
+              <i class="fas fa-check-circle mr-1"></i> Confirmar Remisión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
 <div class="modal fade" id="editCase" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content shadow-lg">
