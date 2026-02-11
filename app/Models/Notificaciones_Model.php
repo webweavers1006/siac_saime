@@ -4,6 +4,9 @@ namespace App\Models;
 
 class Notificaciones_Model extends BaseModel
 {
+    // Roles que NO deben ver notificaciones
+    private $roles_bloqueados = [4, 6, 9];
+
     /**
      * Insertar una nueva notificación
      */
@@ -34,6 +37,17 @@ class Notificaciones_Model extends BaseModel
      */
     public function obtenerNotificacionesPorUsuario($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null, $pagina = 1, $por_pagina = 10)
     {
+        // Verificar si el rol está bloqueado de ver notificaciones
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return [
+                'data' => [],
+                'total' => 0,
+                'pagina' => $pagina,
+                'por_pagina' => $por_pagina,
+                'total_paginas' => 0
+            ];
+        }
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
         $builder->select('n.*');
@@ -170,6 +184,11 @@ class Notificaciones_Model extends BaseModel
      */
     public function contarNoLeidas($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
     {
+        // Verificar si el rol está bloqueado de ver notificaciones
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return 0;
+        }
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
         $builder->selectCount('n.id', 'total');
@@ -259,6 +278,11 @@ class Notificaciones_Model extends BaseModel
      */
     public function obtenerNotificacionesNoLeidas($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
     {
+        // Verificar si el rol está bloqueado de ver notificaciones
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return [];
+        }
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
         $builder->select('n.*, c.casonom, c.casoape');
@@ -277,6 +301,17 @@ class Notificaciones_Model extends BaseModel
      */
     public function obtenerTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null, $pagina = 1, $por_pagina = 10)
     {
+        // Verificar si el rol está bloqueado de ver notificaciones
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return [
+                'data' => [],
+                'total' => 0,
+                'pagina' => $pagina,
+                'por_pagina' => $por_pagina,
+                'total_paginas' => 0
+            ];
+        }
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
         $builder->select('n.*');
@@ -396,6 +431,11 @@ class Notificaciones_Model extends BaseModel
      */
     public function contarTodasLasNotificaciones($id_usuario, $roles_permitidos = [], $id_direccion_usuario = null, $userrol = null)
     {
+        // Verificar si el rol está bloqueado de ver notificaciones
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return 0;
+        }
+        
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_notificaciones n');
         $builder->selectCount('n.id', 'total');

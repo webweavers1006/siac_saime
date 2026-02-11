@@ -10,6 +10,33 @@ class Notificaciones_Controler extends BaseController
 {
     use ResponseTrait;
 
+    // Roles que NO deben ver notificaciones
+    private $roles_bloqueados = [4, 6, 9];
+    
+    // Usuarios específicos que NO deben ver notificaciones (por ID)
+    private $usuarios_bloqueados = [47];
+
+    /**
+     * Verificar si el usuario tiene acceso a notificaciones
+     */
+    private function tieneAccesoNotificaciones()
+    {
+        $userrol = $this->session->get('userrol');
+        $id_usuario = $this->session->get('iduser');
+        
+        // Verificar por rol
+        if (in_array($userrol, $this->roles_bloqueados)) {
+            return false;
+        }
+        
+        // Verificar por ID de usuario específico
+        if (in_array($id_usuario, $this->usuarios_bloqueados)) {
+            return false;
+        }
+        
+        return true;
+    }
+
     /**
      * Obtener notificaciones del usuario logueado - CON DEPURACIÓN
      */
@@ -20,6 +47,21 @@ class Notificaciones_Controler extends BaseController
             $id_usuario = $this->session->get('iduser');
             $userrol = $this->session->get('userrol');
             $id_direccion = $this->session->get('id_direccion_administrativa');
+            
+            // Verificar si el rol O usuario está bloqueado de ver notificaciones
+            $esta_bloqueado = in_array($userrol, $this->roles_bloqueados) || in_array($id_usuario, $this->usuarios_bloqueados);
+            if ($esta_bloqueado) {
+                return $this->respond([
+                    "message" => "success",
+                    "data" => [],
+                    "pagination" => [
+                        "total" => 0,
+                        "pagina" => 1,
+                        "por_pagina" => 10,
+                        "total_paginas" => 0
+                    ]
+                ], 200);
+            }
             
             // Obtener parámetros de paginación
             $pagina = $this->request->getGet('pagina') ?? 1;
@@ -115,6 +157,15 @@ class Notificaciones_Controler extends BaseController
             $id_usuario = $this->session->get('iduser');
             $userrol = $this->session->get('userrol');
             $id_direccion = $this->session->get('id_direccion_administrativa');
+            
+            // Verificar si el rol O usuario está bloqueado de ver notificaciones
+            $esta_bloqueado = in_array($userrol, $this->roles_bloqueados) || in_array($id_usuario, $this->usuarios_bloqueados);
+            if ($esta_bloqueado) {
+                return $this->respond([
+                    "message" => "success",
+                    "total" => 0
+                ], 200);
+            }
             
             // Roles de supervisión
             $roles_supervision = [1, 3, 5];
@@ -212,6 +263,21 @@ class Notificaciones_Controler extends BaseController
             $userrol = $this->session->get('userrol');
             $id_direccion = $this->session->get('id_direccion_administrativa');
             
+            // Verificar si el rol O usuario está bloqueado de ver notificaciones
+            $esta_bloqueado = in_array($userrol, $this->roles_bloqueados) || in_array($id_usuario, $this->usuarios_bloqueados);
+            if ($esta_bloqueado) {
+                return $this->respond([
+                    "message" => "success",
+                    "data" => [],
+                    "pagination" => [
+                        "total" => 0,
+                        "pagina" => 1,
+                        "por_pagina" => 10,
+                        "total_paginas" => 0
+                    ]
+                ], 200);
+            }
+            
             // Obtener parámetros de paginación
             $pagina = $this->request->getGet('pagina') ?? 1;
             $por_pagina = $this->request->getGet('por_pagina') ?? 10;
@@ -287,6 +353,12 @@ class Notificaciones_Controler extends BaseController
             $model = new Notificaciones_Model();
             $id_usuario = $this->session->get('iduser');
             $userrol = $this->session->get('userrol');
+            
+            // Verificar si el rol O usuario está bloqueado de ver notificaciones
+            $esta_bloqueado = in_array($userrol, $this->roles_bloqueados) || in_array($id_usuario, $this->usuarios_bloqueados);
+            if ($esta_bloqueado) {
+                return [];
+            }
             
             // Roles que pueden ver seguimientos: 1, 3, 5
             $roles_permitidos = [1, 3, 5];

@@ -1,6 +1,10 @@
 <?php
 $session = session();
 $userdata = $session->get();
+
+
+
+
 ?>
 
 
@@ -233,6 +237,11 @@ $userdata = $session->get();
     flex: 1;
     overflow-y: auto;
   }
+  
+  /* Ocultar notificaciones para roles bloqueados */
+  .notification-hidden {
+    display: none !important;
+  }
 </style>
 <meta charset="utf-8">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/navar.css">
@@ -261,8 +270,13 @@ $userdata = $session->get();
   
   <!-- Lado derecho: Notificaciones + Salir -->
   <div style="display: flex; align-items: center;">
+    <?php 
+    $rol_bloqueado = in_array($session->get('userrol'), [4, 6, 9]);
+    $usuario_bloqueado = in_array($session->get('iduser'), [47]);
+    ?>
+    <?php if (!$rol_bloqueado && !$usuario_bloqueado): ?>
     <!-- Bandeja de Notificaciones -->
-    <div class="notification-dropdown" style="margin-right: 25px;">
+    <div class="notification-dropdown" style="margin-right: 25px;" id="notification-dropdown-container">
       <div class="notification-icon" onclick="toggleNotifications()" title="Notificaciones">
         <i class="fas fa-bell"></i>
         <span class="notification-badge" id="notification-count" style="display: none;">0</span>
@@ -298,6 +312,7 @@ $userdata = $session->get();
         </div>
       </div>
     </div>
+    <?php endif; ?>
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="margin-right: 10px;">
       <span class="navbar-toggler-icon"></span>
@@ -319,6 +334,24 @@ $userdata = $session->get();
     let currentPage = 1;
     let notificationsData = [];
     let paginationData = null;
+    
+    // Roles que NO deben ver notificaciones (pasados desde PHP)
+    const rolesBloqueados = <?php echo json_encode([4, 6, 9]); ?>;
+    const usuariosBloqueados = <?php echo json_encode([47]); ?>;
+    const userRol = <?php echo json_encode($session->get('userrol') ?? 0); ?>;
+    const userId = <?php echo json_encode($session->get('iduser') ?? 0); ?>;
+    
+    // Verificar si el rol O usuario está bloqueado
+    const rolBloqueado = rolesBloqueados.includes(userRol);
+    const usuarioBloqueado = usuariosBloqueados.includes(userId);
+    
+    // OCULTAR ícono de notificaciones para roles/usuarios bloqueados (doble seguridad)
+    if (rolBloqueado || usuarioBloqueado) {
+      const dropdownContainer = document.getElementById('notification-dropdown-container');
+      if (dropdownContainer) {
+        dropdownContainer.classList.add('notification-hidden');
+      }
+    }
 
     // Función para mostrar/ocultar notificaciones
     function toggleNotifications() {
@@ -575,6 +608,11 @@ $userdata = $session->get();
 
     // Actualizar contador de notificaciones
     function actualizarContador() {
+      // No ejecutar si el rol está bloqueado
+      if (rolBloqueado) {
+        return;
+      }
+      
       fetch('<?php echo base_url(); ?>/notificaciones/contarNotificaciones', {
         method: 'GET',
         headers: {
@@ -700,6 +738,11 @@ $userdata = $session->get();
       const rutaActual = window.location.pathname;
       const esPaginaInicio = rutaActual.includes('/pantalla_bienvenida') || rutaActual.includes('/inicio') || rutaActual === '/' || rutaActual === '/siac_v2';
       
+      // No mostrar automáticamente si el rol está bloqueado
+      if (rolBloqueado) {
+        return;
+      }
+      
       // Solo mostrar automáticamente en las páginas de inicio
       if (!esPaginaInicio) {
         return;
@@ -725,14 +768,17 @@ $userdata = $session->get();
 
     // Ejecutar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-      // Actualizar contador inmediatamente al cargar
-      actualizarContador();
-      
-      // Actualizar contador cada 30 segundos
-      setInterval(actualizarContador, 30000);
-      
-      // Verificar notificaciones para mostrar alerta automáticamente (solo una vez)
-      setTimeout(mostrarAlertaNotificaciones, 1000);
+      // Solo ejecutar si el rol NO está bloqueado
+      if (!rolBloqueado) {
+        // Actualizar contador inmediatamente al cargar
+        actualizarContador();
+        
+        // Actualizar contador cada 30 segundos
+        setInterval(actualizarContador, 30000);
+        
+        // Verificar notificaciones para mostrar alerta automáticamente (solo una vez)
+        setTimeout(mostrarAlertaNotificaciones, 1000);
+      }
     });
 
     function cerrarSesion() {
