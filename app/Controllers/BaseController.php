@@ -72,10 +72,17 @@ class BaseController extends Controller
 	
 		protected function checkOrigin()
 		{
-			$origin = $_SERVER['HTTP_HOST'] ?? '';
+			$http_host = $_SERVER['HTTP_HOST'] ?? '';
+			$remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
 		
-			// Verifica si el origen está en la whitelist
-			if (!in_array($origin, $this->whitelist)) {
+			// Verificar si el HTTP_HOST está en la whitelist
+			$host_autorizado = in_array($http_host, $this->whitelist);
+			
+			// Verificar si la IP del cliente está en la whitelist
+			$ip_autorizada = in_array($remote_addr, $this->whitelist);
+		
+			// Permitir acceso si cumple al menos una condición
+			if (!$host_autorizado && !$ip_autorizada) {
 				exit('Acceso no autorizado');
 			}
 		}
