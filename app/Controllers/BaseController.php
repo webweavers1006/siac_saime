@@ -51,6 +51,8 @@ class BaseController extends Controller
 			'186.167.8.181', 
 			'172.16.0.186',
 			'172.16.0.135',
+			'172.26.112.1',
+			'10.100.2.89',
 			'desarrollo-siac.sapi.gob.ve', 
 			'172.16.0.51',
 		];
