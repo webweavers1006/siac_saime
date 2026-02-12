@@ -55,6 +55,8 @@ class Notificaciones_Model extends BaseModel
         
         // JOIN con casos para verificar autoria
         $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        // FILTRO: Solo mostrar notificaciones de casos NO borrados
+        $builder->where('c.borrado', false);
         
         // JOIN con usuario operador para verificar rol del autor del caso
         $builder->join('sgc_usuario_operador autor_caso', 'n.id_caso_autor = autor_caso.idusuopr', 'left');
@@ -197,6 +199,8 @@ class Notificaciones_Model extends BaseModel
         
         // JOIN con casos para verificar autoria
         $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        // FILTRO: Solo contar notificaciones de casos NO borrados
+        $builder->where('c.borrado', false);
         
         // Determinar el rol del usuario
         $rol_usuario = $userrol ?? ($this->session->get('userrol') ?? 0);
@@ -288,6 +292,8 @@ class Notificaciones_Model extends BaseModel
         $builder->select('n.*, c.casonom, c.casoape');
         $builder->select('dir_origen.descripcion as direccion_origen_nombre');
         $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        // FILTRO: Solo mostrar notificaciones de casos NO borrados
+        $builder->where('c.borrado', false);
         $builder->join('sgc_direcciones_administrativas dir_origen', 'n.direccion_origen = dir_origen.id', 'left');
         $builder->where('n.id_usuario_destino', $id_usuario);
         $builder->where('n.leida', false);
@@ -319,6 +325,8 @@ class Notificaciones_Model extends BaseModel
         
         // JOIN con casos para verificar autoria
         $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        // FILTRO: Solo mostrar notificaciones de casos NO borrados
+        $builder->where('c.borrado', false);
         
         // JOIN con usuario operador para verificar rol del autor del caso
         $builder->join('sgc_usuario_operador autor_caso', 'n.id_caso_autor = autor_caso.idusuopr', 'left');
@@ -442,6 +450,8 @@ class Notificaciones_Model extends BaseModel
         
         // JOIN con casos para verificar autoria
         $builder->join('sgc_casos c', 'n.id_caso = c.idcaso', 'left');
+        // FILTRO: Solo contar notificaciones de casos NO borrados
+        $builder->where('c.borrado', false);
         
         // Determinar el rol del usuario
         $rol_usuario = $userrol ?? ($this->session->get('userrol') ?? 0);
@@ -634,3 +644,4 @@ class Notificaciones_Model extends BaseModel
         return $query->getRow();
     }
 }
+
