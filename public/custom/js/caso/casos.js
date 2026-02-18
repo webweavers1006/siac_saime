@@ -734,7 +734,7 @@ let table = $('#table_casos').DataTable({
             }
         ],
         language: {
-            sProcessing: "Procesando...",
+           // sProcessing: "Procesando...",
             sLengthMenu: "Mostrar _MENU_ registros",
             sZeroRecords: "No se encontraron resultados",
             sEmptyTable: "Ningún dato disponible en esta tabla",

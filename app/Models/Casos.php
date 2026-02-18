@@ -45,10 +45,10 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
     $db = \Config\Database::connect();
     
     // --- 1. CONTEO TOTAL DE REGISTROS (recordsTotal) ---
-    $builderTotal = $db->table('sgc_casos as a');
-    $builderTotal->distinct();
-    $this->buildBaseQuery($builderTotal);
-    $recordsTotal = $builderTotal->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para consistencia con getReporteData y getReporteOperadorData
+    $recordsTotalQuery = $db->query("SELECT COUNT(DISTINCT a.idcaso) as total FROM sgc_casos a WHERE a.borrado = FALSE");
+    $recordsTotalRow = $recordsTotalQuery->getRow();
+    $recordsTotal = $recordsTotalRow ? $recordsTotalRow->total : 0;
     
     // --- 2. INICIALIZACIÓN DEL BUILDER PARA FILTRO Y PÁGINA ---
     $builder = $db->table('sgc_casos as a');
@@ -61,26 +61,74 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
         $searchEscaped = $db->escapeLikeString($searchLower);
         $searchPattern = '%' . $searchEscaped . '%';
         
+        // Búsqueda consistente con getReporteData y getReporteOperadorData
+        // Incluye: tipo_beneficiario_nombre, via_atencion_nombre (red_s_nom)
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            LOWER(TRIM(a.casoced)) LIKE '{$searchPattern}' OR
-            LOWER(a.casonom) LIKE '{$searchPattern}' OR
-            LOWER(a.casoape) LIKE '{$searchPattern}' OR
-            LOWER(b.estnom) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(t_antusu.tipo_aten_nombre, '')) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(CAST(d.tipo_atend_borrado AS TEXT), '')) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(tpinte.tipo_prop_nombre, '')) LIKE '{$searchPattern}' OR
-            LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) LIKE '{$searchPattern}' OR
-            LOWER(u_ope.usuopnom) LIKE '{$searchPattern}' OR
-            LOWER(u_ope.usuopape) LIKE '{$searchPattern}'
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}'
         ";
         
         $builder->where("({$whereClause})", NULL, FALSE);
     }
     
     // --- 4. CONTEO DE REGISTROS FILTRADOS ---
-    $tempBuilderFiltered = clone $builder;
-    $recordsFiltered = $tempBuilderFiltered->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT a.idcaso) para contar correctamente sin duplicados por JOINs
+    // Los INNER y LEFT JOINs pueden crear filas duplicadas, por lo que necesitamos COUNT DISTINCT
+    
+    // Construir la consulta SQL base para el conteo (incluyendo todos los JOINs para consistencia)
+    $sql = "SELECT COUNT(DISTINCT a.idcaso) as total 
+            FROM sgc_casos a 
+            INNER JOIN public.sgc_estatus b ON b.idest = a.idest
+            INNER JOIN public.sgc_usuario_operador u_ope ON a.idusuopr = u_ope.idusuopr
+            INNER JOIN public.sgc_tipoatencion_usu t_antusu ON a.id_tipo_atencion = t_antusu.tipo_aten_id
+            LEFT JOIN public.sgc_tipo_prop_caso tpc ON a.idcaso = tpc.idcaso
+            LEFT JOIN public.sgc_tipo_prop_intelec tpinte ON tpc.idtippropint = tpinte.tipo_prop_id
+            LEFT JOIN public.sgc_registro_cgr cgr ON a.idcaso = cgr.id_caso
+            LEFT JOIN public.sgc_tipoatenciondetalle d ON a.tipo_atend_id = d.tipo_atend_id
+            LEFT JOIN public.sgc_casos_denuncias denu ON a.idcaso = denu.denu_id_caso
+            LEFT JOIN public.sgc_tipo_beneficiarios t_bene ON a.tipo_beneficiario = t_bene.tipo_beneficiario_id
+            LEFT JOIN public.sgc_casos_remitidos caso_r ON a.idcaso = caso_r.casos_id
+            LEFT JOIN public.sgc_direcciones_administrativas ubi ON caso_r.direccion_id = ubi.id
+            LEFT JOIN public.sgc_paises pais ON a.pais = pais.paisid
+            LEFT JOIN public.sgc_estados est ON a.estadoid = est.estadoid
+            LEFT JOIN public.sgc_municipio mun ON a.municipioid = mun.municipioid
+            LEFT JOIN public.sgc_parroquias par ON a.parroquiaid = par.parroquiaid
+            LEFT JOIN public.sgc_red_social rs ON a.idrrss = rs.red_s_id
+            LEFT JOIN public.sgc_org_pod_popular org ON a.caso_org_id = org.org_id
+            WHERE a.borrado = FALSE AND (caso_r.vigencia = TRUE OR caso_r.vigencia IS NULL)";
+    
+    // Agregar condiciones de búsqueda si existen - Lógica consistente con getReporteData
+    if (!empty($search)) {
+        $searchLower = strtolower($search);
+        $searchEscaped = $db->escapeLikeString($searchLower);
+        $searchPattern = '%' . $searchEscaped . '%';
+        
+        // Búsqueda consistente con getReporteData y getReporteOperadorData
+        $whereClause = "
+            AND (CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}')";
+        $sql .= $whereClause;
+    }
+    
+    $result = $db->query($sql);
+    $row = $result->getRow();
+    $recordsFiltered = $row ? $row->total : 0;
     
     // --- 5. ORDENACIÓN Y PAGINACIÓN ---
     // CORRECCIÓN: Validar columnas permitidas para evitar SQL injection
@@ -116,11 +164,13 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
     $db = \Config\Database::connect();
     
     // --- 1. INICIALIZACIÓN DEL BUILDER PARA CONTEOS (con filtro de usuario) ---
-    $builderTotal = $db->table('sgc_casos as a');
-    $builderTotal->distinct();
-    $this->buildBaseQuery($builderTotal);
-    $builderTotal->where('a.idusuopr', $idusur); 
-    $recordsTotal = $builderTotal->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para consistencia
+    // CORRECCIÓN: Agregar filtro de vigencia para consistencia con otros reportes
+    $recordsTotalQuery = $db->query("SELECT COUNT(DISTINCT a.idcaso) as total FROM sgc_casos a 
+        LEFT JOIN public.sgc_casos_remitidos caso_r ON a.idcaso = caso_r.casos_id 
+        WHERE a.borrado = FALSE AND a.idusuopr = " . $db->escape($idusur) . " AND (caso_r.vigencia = TRUE OR caso_r.vigencia IS NULL)");
+    $recordsTotalRow = $recordsTotalQuery->getRow();
+    $recordsTotal = $recordsTotalRow ? $recordsTotalRow->total : 0;
 
     // --- 2. INICIALIZACIÓN DEL BUILDER PARA FILTRO Y PÁGINA ---
     $builder = $db->table('sgc_casos as a');
@@ -134,26 +184,71 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
         $searchEscaped = $db->escapeLikeString($searchLower);
         $searchPattern = '%' . $searchEscaped . '%';
         
+        // Búsqueda consistente con getReporteData y getReporteOperadorData
+        // Incluye: tipo_beneficiario_nombre, via_atencion_nombre (red_s_nom)
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            LOWER(TRIM(a.casoced)) LIKE '{$searchPattern}' OR
-            LOWER(a.casonom) LIKE '{$searchPattern}' OR
-            LOWER(a.casoape) LIKE '{$searchPattern}' OR
-            LOWER(b.estnom) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(t_antusu.tipo_aten_nombre, '')) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(CAST(d.tipo_atend_borrado AS TEXT), '')) LIKE '{$searchPattern}' OR
-            LOWER(COALESCE(tpinte.tipo_prop_nombre, '')) LIKE '{$searchPattern}' OR
-            LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) LIKE '{$searchPattern}' OR
-            LOWER(u_ope.usuopnom) LIKE '{$searchPattern}' OR
-            LOWER(u_ope.usuopape) LIKE '{$searchPattern}'
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}'
         ";
         
         $builder->where("({$whereClause})", NULL, FALSE);
     }
     
     // --- 4. CONTEO DE REGISTROS FILTRADOS ---
-    $tempBuilderFiltered = clone $builder;
-    $recordsFiltered = $tempBuilderFiltered->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para evitar duplicados por JOINs
+    $sqlFiltered = "SELECT COUNT(DISTINCT a.idcaso) as total 
+            FROM sgc_casos a 
+            INNER JOIN public.sgc_estatus b ON b.idest = a.idest
+            INNER JOIN public.sgc_usuario_operador u_ope ON a.idusuopr = u_ope.idusuopr
+            INNER JOIN public.sgc_tipoatencion_usu t_antusu ON a.id_tipo_atencion = t_antusu.tipo_aten_id
+            LEFT JOIN public.sgc_tipo_prop_caso tpc ON a.idcaso = tpc.idcaso
+            LEFT JOIN public.sgc_tipo_prop_intelec tpinte ON tpc.idtippropint = tpinte.tipo_prop_id
+            LEFT JOIN public.sgc_registro_cgr cgr ON a.idcaso = cgr.id_caso
+            LEFT JOIN public.sgc_tipoatenciondetalle d ON a.tipo_atend_id = d.tipo_atend_id
+            LEFT JOIN public.sgc_casos_denuncias denu ON a.idcaso = denu.denu_id_caso
+            LEFT JOIN public.sgc_tipo_beneficiarios t_bene ON a.tipo_beneficiario = t_bene.tipo_beneficiario_id
+            LEFT JOIN public.sgc_casos_remitidos caso_r ON a.idcaso = caso_r.casos_id
+            LEFT JOIN public.sgc_direcciones_administrativas ubi ON caso_r.direccion_id = ubi.id
+            LEFT JOIN public.sgc_paises pais ON a.pais = pais.paisid
+            LEFT JOIN public.sgc_estados est ON a.estadoid = est.estadoid
+            LEFT JOIN public.sgc_municipio mun ON a.municipioid = mun.municipioid
+            LEFT JOIN public.sgc_parroquias par ON a.parroquiaid = par.parroquiaid
+            LEFT JOIN public.sgc_red_social rs ON a.idrrss = rs.red_s_id
+            LEFT JOIN public.sgc_org_pod_popular org ON a.caso_org_id = org.org_id
+            WHERE a.borrado = FALSE AND a.idusuopr = " . $db->escape($idusur) . " AND (caso_r.vigencia = TRUE OR caso_r.vigencia IS NULL)";
+    
+    // Agregar filtro de búsqueda si existe - Lógica consistente con getReporteData
+    if (!empty($search)) {
+        $searchLower = strtolower($search);
+        $searchEscaped = $db->escapeLikeString($searchLower);
+        $searchPattern = '%' . $searchEscaped . '%';
+        
+        // Búsqueda consistente con getReporteData y getReporteOperadorData
+        $whereClauseFiltered = "
+            AND (CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}')";
+        $sqlFiltered .= $whereClauseFiltered;
+    }
+    
+    $resultFiltered = $db->query($sqlFiltered);
+    $rowFiltered = $resultFiltered->getRow();
+    $recordsFiltered = $rowFiltered ? $rowFiltered->total : 0;
     
     // --- 5. ORDENACIÓN Y PAGINACIÓN ---
     // CORRECCIÓN: Validar columnas permitidas
@@ -209,6 +304,24 @@ private function buildBaseQuery($builder)
     $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
     $builder->join('public.sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
     $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+    
+    // CORRECCIÓN: Agregar JOINs faltantes para consistencia con getReporteData y getReporteOperadorData
+    $builder->join('public.sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
+    $builder->join('public.sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
+    $builder->join('public.sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
+    $builder->join('public.sgc_paises as pais', 'a.pais = pais.paisid', 'left');
+    $builder->join('public.sgc_estados as est', 'a.estadoid = est.estadoid', 'left');
+    $builder->join('public.sgc_municipio as mun', 'a.municipioid = mun.municipioid', 'left');
+    $builder->join('public.sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
+    $builder->join('public.sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
+    $builder->join('public.sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
+    
+    // CORRECCIÓN: Agregar filtro de vigencia para consistencia con getReporteData y getReporteOperadorData
+    $builder->groupStart();
+    $builder->where('caso_r.vigencia', true);
+    $builder->orWhere('caso_r.vigencia IS NULL');
+    $builder->groupEnd();
+    
     $builder->where('a.borrado', false);
 }
 
@@ -473,7 +586,10 @@ public function getReporteData($params)
     }
 
     // --- Paso 1: Inicialización y Conteo Total ---
-    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para consistencia y evitar duplicados por JOINs
+    $recordsTotalQuery = $db->query("SELECT COUNT(DISTINCT a.idcaso) as total FROM sgc_casos a WHERE a.borrado = FALSE");
+    $recordsTotalRow = $recordsTotalQuery->getRow();
+    $recordsTotal = $recordsTotalRow ? $recordsTotalRow->total : 0;
     
     // --- Paso 2: Construir la consulta base (SELECTS y JOINs) ---
     $builder = $db->table('sgc_casos as a');
@@ -540,7 +656,6 @@ public function getReporteData($params)
     if (!empty($params['tipo_pi'])) {
         $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
     }
-    // ... (El resto de tus filtros dinámicos se mantienen igual) ...
 
     if (!empty($params['tipo_atencion_usu'])) {
         $builder->where('t_antusu.tipo_aten_id', $params['tipo_atencion_usu']);
@@ -597,32 +712,129 @@ public function getReporteData($params)
     }
 
 
-    // --- 3.5: Aplicar el filtro de búsqueda global de DataTables (CORRECCIÓN) ---
+        
+    // --- Paso 3.5: Aplicar el filtro de búsqueda global de DataTables ---
+    // CORRECCIÓN: La búsqueda debe ser consistente con los filtros del formulario
     if (!empty($params['search'])) {
         $search = $params['search'];
         $searchEscaped = $db->escapeLikeString($search);
         $searchPattern = '%' . strtolower($searchEscaped) . '%';
         
-        // Creamos una CLÁUSULA WHERE COMPUESTA para la búsqueda parcial, insensible al caso y con manejo de NULL/CAST.
+        // Búsqueda en el nombre de vía de atención (rs.red_s_nom) para ser consistente
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}'
-            -- Nota: Excluímos 'd.tipo_atend_borrado' ya que esa columna no está en este SELECT/JOIN del reporte.
+            COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}'
         ";
         
-        // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
         $builder->where("({$whereClause})", NULL, FALSE);
     }
-    
+
+
+        
     // --- Paso 4: Obtener el conteo de registros filtrados ---
-    $filteredBuilder = clone $builder;
-    $recordsFiltered = $filteredBuilder->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para evitar duplicados por JOINs
+    // Construimos la consulta SQL manualmente para usar DISTINCT
+    $countSql = "SELECT COUNT(DISTINCT a.idcaso) as total 
+            FROM sgc_casos a 
+            INNER JOIN sgc_estatus b ON b.idest = a.idest
+            INNER JOIN sgc_usuario_operador u_ope ON a.idusuopr = u_ope.idusuopr
+            LEFT JOIN sgc_tipo_prop_caso tpc ON a.idcaso = tpc.idcaso
+            LEFT JOIN sgc_tipo_beneficiarios t_bene ON a.tipo_beneficiario = t_bene.tipo_beneficiario_id
+            LEFT JOIN sgc_tipoatencion_usu t_antusu ON a.id_tipo_atencion = t_antusu.tipo_aten_id
+            LEFT JOIN sgc_tipo_prop_intelec tpinte ON tpc.idtippropint = tpinte.tipo_prop_id
+            LEFT JOIN sgc_casos_remitidos caso_r ON a.idcaso = caso_r.casos_id
+            LEFT JOIN sgc_direcciones_administrativas ubi ON caso_r.direccion_id = ubi.id
+            LEFT JOIN sgc_paises pais ON a.pais = pais.paisid
+            LEFT JOIN sgc_estados est ON a.estadoid = est.estadoid
+            LEFT JOIN sgc_municipio mun ON a.municipioid = mun.municipioid
+            LEFT JOIN sgc_parroquias par ON a.parroquiaid = par.parroquiaid
+            LEFT JOIN sgc_red_social rs ON a.idrrss = rs.red_s_id
+            LEFT JOIN sgc_org_pod_popular org ON a.caso_org_id = org.org_id
+            WHERE a.borrado = FALSE AND (caso_r.vigencia = TRUE OR caso_r.vigencia IS NULL)";
+    
+    // Agregar filtros del formulario
+    if (!empty($params['desde']) && !empty($params['hasta'])) {
+        $countSql .= " AND a.casofec >= " . $db->escape($params['desde']);
+        $countSql .= " AND a.casofec <= " . $db->escape($params['hasta']);
+    }
+    
+    if (!empty($params['edad_min']) && !empty($params['edad_max'])) {
+        $countSql .= " AND a.edad >= " . $db->escape($params['edad_min']);
+        $countSql .= " AND a.edad <= " . $db->escape($params['edad_max']);
+    }
+    
+    if (!empty($params['tipo_pi'])) {
+        $countSql .= " AND tpinte.tipo_prop_id = " . $db->escape($params['tipo_pi']);
+    }
+
+    if (!empty($params['tipo_atencion_usu'])) {
+        $countSql .= " AND t_antusu.tipo_aten_id = " . $db->escape($params['tipo_atencion_usu']);
+    }
+    
+    if (!empty($params['sexo'])) {
+        $countSql .= " AND a.sexo = " . $db->escape($params['sexo']);
+    }
+    
+    if (!empty($params['via_atencion'])) {
+        $countSql .= " AND a.idrrss = " . $db->escape($params['via_atencion']);
+    }
+
+    if (!empty($params['direcciones_caso'])) {
+        $countSql .= " AND caso_r.direccion_id = " . $db->escape($params['direcciones_caso']);
+    }
+    
+    if (!empty($params['tipo_beneficiario'])) {
+        $countSql .= " AND a.tipo_beneficiario = " . $db->escape($params['tipo_beneficiario']);
+    }
+    
+    if (!empty($params['atencion_cuidadano'])) {
+        $countSql .= " AND a.ofiid = " . $db->escape($params['atencion_cuidadano']);
+    }
+    
+    if (!empty($params['estatus'])) {
+        $countSql .= " AND a.idest = " . $db->escape($params['estatus']);
+    }
+    
+    if (!empty($params['id_pais'])) {
+        $countSql .= " AND a.pais = " . $db->escape($params['id_pais']);
+    }
+
+    if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
+        $countSql .= " AND a.estadoid = " . $db->escape($params['id_estado']);
+    }
+    
+    if (!empty($params['id_municipio']) && $params['id_municipio'] != '336') {
+        $countSql .= " AND a.municipioid = " . $db->escape($params['id_municipio']);
+    }
+
+    if (!empty($params['id_parroquia']) && $params['id_parroquia'] != '1135') {
+        $countSql .= " AND a.parroquiaid = " . $db->escape($params['id_parroquia']);
+    }
+
+    if (!empty($params['org_id'])) {
+        $countSql .= " AND a.caso_org_id = " . $db->escape($params['org_id']);
+    }
+    
+    if (!empty($params['detalle_atencion'])) {
+        $countSql .= " AND a.tipo_atend_id = " . $db->escape($params['detalle_atencion']);
+    }
+
+    // Agregar filtro de búsqueda global si existe
+    if (!empty($params['search'])) {
+        $countSql .= " AND ({$whereClause})";
+    }
+    
+    $result = $db->query($countSql);
+    $row = $result->getRow();
+    $recordsFiltered = $row ? $row->total : 0;
 
     // --- Paso 5: Aplicar orden y límites para la paginación ---
     if (!empty($params['order_column']) && !empty($params['order_direction'])) {
@@ -658,8 +870,10 @@ public function getReporteData($params)
     }
 
     // --- Paso 1: Inicialización y Conteo Total ---
-    // Obtenemos el total de registros no borrados de la tabla principal de forma eficiente.
-    $recordsTotal = $db->table('sgc_casos')->where('borrado', false)->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para consistencia y evitar duplicados por JOINs
+    $recordsTotalQuery = $db->query("SELECT COUNT(DISTINCT a.idcaso) as total FROM sgc_casos a WHERE a.borrado = FALSE");
+    $recordsTotalRow = $recordsTotalQuery->getRow();
+    $recordsTotal = $recordsTotalRow ? $recordsTotalRow->total : 0;
     
     // --- Paso 2: Construir la consulta base (SELECTS y JOINs) ---
     $builder = $db->table('sgc_casos as a');
@@ -674,11 +888,19 @@ public function getReporteData($params)
     $builder->select('CONCAT(a.caso_nacionalidad, a.casoced) AS cedula');
     $builder->select('CONCAT(a.casonom, \' \', a.casoape) AS nombre');
     $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name');
-    $builder->select("CASE WHEN a.sexo='1' THEN 'M' ELSE 'F' END as sexo");
+    $builder->select("CASE WHEN a.sexo='1' THEN 'MASCULINO' WHEN a.sexo='2' THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
     
-    // Joins
+    // Nuevos SELECTs para columnas adicionales (igual que getReporteData)
+    $builder->select('pais.paisnom as pais_nombre');
+    $builder->select('est.estadonom as estado_nombre');
+    $builder->select('mun.municipionom as municipio_nombre');
+    $builder->select('par.parroquianom as parroquia_nombre');
+    $builder->select("CASE WHEN rs.red_s_nom IS NULL THEN 'No aplica' ELSE rs.red_s_nom END as via_atencion_nombre");
+    $builder->select("CASE WHEN org.org_nombre IS NULL THEN 'No aplica' ELSE org.org_nombre END as organismo_pp_nombre");
+    
+    // Joins (manteniendo los existentes)
     $builder->join('sgc_estatus b', 'b.idest = a.idest', 'inner');
     $builder->join('sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr', 'inner');
     $builder->join('sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
@@ -687,6 +909,14 @@ public function getReporteData($params)
     $builder->join('sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
     $builder->join('sgc_casos_remitidos as caso_r', 'a.idcaso = caso_r.casos_id', 'left');
     $builder->join('sgc_direcciones_administrativas as ubi', 'caso_r.direccion_id = ubi.id', 'left');
+
+    // Nuevos JOINs para columnas adicionales (igual que getReporteData)
+    $builder->join('sgc_paises as pais', 'a.pais = pais.paisid', 'left');
+    $builder->join('sgc_estados as est', 'a.estadoid = est.estadoid', 'left');
+    $builder->join('sgc_municipio as mun', 'a.municipioid = mun.municipioid', 'left');
+    $builder->join('sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
+    $builder->join('sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
+    $builder->join('sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
 
     // Cláusulas WHERE Base
     $builder->where('a.borrado', false);
@@ -769,23 +999,25 @@ public function getReporteData($params)
         $builder->where('a.tipo_atend_id', $params['detalle_atencion']);
     }
 
-    // --- 3.5: Aplicar el filtro de búsqueda global de DataTables (CORRECCIÓN) ---
+    // --- 3.5: Aplicar el filtro de búsqueda global de DataTables (igual que getReporteData) ---
     if (!empty($params['search'])) {
         $search = $params['search'];
         $searchEscaped = $db->escapeLikeString($search);
         $searchPattern = '%' . strtolower($searchEscaped) . '%';
         
         // Creamos una CLÁUSULA WHERE COMPUESTA para la búsqueda parcial, insensible al caso y con manejo de NULL.
+        // CORRECCIÓN: Usar COALESCE(rs.red_s_nom, '') para consistencia con getReporteData
         $whereClause = "
             CAST(a.idcaso AS TEXT) LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(a.casoced), '') LIKE '{$searchPattern}' OR
+            COALESCE(TRIM(a.casoced), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(a.casonom), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(a.casoape), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(b.estnom), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(t_antusu.tipo_aten_nombre), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(tpinte.tipo_prop_nombre), '') LIKE '{$searchPattern}' OR
             COALESCE(LOWER(t_bene.tipo_beneficiario_nombre), '') LIKE '{$searchPattern}' OR
-            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}'
+            COALESCE(LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)), '') LIKE '{$searchPattern}' OR
+            COALESCE(LOWER(rs.red_s_nom), '') LIKE '{$searchPattern}'
         ";
         
         // Aplicamos la cláusula WHERE de forma literal (el FALSE es crucial)
@@ -793,8 +1025,105 @@ public function getReporteData($params)
     }
     
     // --- Paso 4: Obtener el conteo de registros filtrados ---
-    $filteredBuilder = clone $builder;
-    $recordsFiltered = $filteredBuilder->countAllResults();
+    // CORRECCIÓN: Usar COUNT(DISTINCT) para evitar duplicados por JOINs
+    // Construimos la consulta SQL manualmente para usar DISTINCT
+    $countSql = "SELECT COUNT(DISTINCT a.idcaso) as total 
+            FROM sgc_casos a 
+            INNER JOIN sgc_estatus b ON b.idest = a.idest
+            INNER JOIN sgc_usuario_operador u_ope ON a.idusuopr = u_ope.idusuopr
+            LEFT JOIN sgc_tipo_prop_caso tpc ON a.idcaso = tpc.idcaso
+            LEFT JOIN sgc_tipo_beneficiarios t_bene ON a.tipo_beneficiario = t_bene.tipo_beneficiario_id
+            LEFT JOIN sgc_tipoatencion_usu t_antusu ON a.id_tipo_atencion = t_antusu.tipo_aten_id
+            LEFT JOIN sgc_tipo_prop_intelec tpinte ON tpc.idtippropint = tpinte.tipo_prop_id
+            LEFT JOIN sgc_casos_remitidos caso_r ON a.idcaso = caso_r.casos_id
+            LEFT JOIN sgc_direcciones_administrativas ubi ON caso_r.direccion_id = ubi.id
+            LEFT JOIN sgc_paises pais ON a.pais = pais.paisid
+            LEFT JOIN sgc_estados est ON a.estadoid = est.estadoid
+            LEFT JOIN sgc_municipio mun ON a.municipioid = mun.municipioid
+            LEFT JOIN sgc_parroquias par ON a.parroquiaid = par.parroquiaid
+            LEFT JOIN sgc_red_social rs ON a.idrrss = rs.red_s_id
+            LEFT JOIN sgc_org_pod_popular org ON a.caso_org_id = org.org_id
+            WHERE a.borrado = FALSE AND (caso_r.vigencia = TRUE OR caso_r.vigencia IS NULL)";
+    
+    // Agregar filtros del formulario
+    if (!empty($params['usuarios'])) {
+        $countSql .= " AND a.idusuopr = " . $db->escape($params['usuarios']);
+    }
+    
+    if (!empty($params['desde']) && !empty($params['hasta'])) {
+        $countSql .= " AND a.casofec >= " . $db->escape($params['desde']);
+        $countSql .= " AND a.casofec <= " . $db->escape($params['hasta']);
+    }
+    
+    if (!empty($params['edad_min']) && !empty($params['edad_max'])) {
+        $countSql .= " AND a.edad >= " . $db->escape($params['edad_min']);
+        $countSql .= " AND a.edad <= " . $db->escape($params['edad_max']);
+    }
+    
+    if (!empty($params['tipo_pi'])) {
+        $countSql .= " AND tpinte.tipo_prop_id = " . $db->escape($params['tipo_pi']);
+    }
+
+    if (!empty($params['tipo_atencion_usu'])) {
+        $countSql .= " AND t_antusu.tipo_aten_id = " . $db->escape($params['tipo_atencion_usu']);
+    }
+    
+    if (!empty($params['sexo'])) {
+        $countSql .= " AND a.sexo = " . $db->escape($params['sexo']);
+    }
+    
+    if (!empty($params['via_atencion'])) {
+        $countSql .= " AND a.idrrss = " . $db->escape($params['via_atencion']);
+    }
+
+    if (!empty($params['direcciones_caso'])) {
+        $countSql .= " AND caso_r.direccion_id = " . $db->escape($params['direcciones_caso']);
+    }
+    
+    if (!empty($params['tipo_beneficiario'])) {
+        $countSql .= " AND a.tipo_beneficiario = " . $db->escape($params['tipo_beneficiario']);
+    }
+    
+    if (!empty($params['atencion_cuidadano'])) {
+        $countSql .= " AND a.ofiid = " . $db->escape($params['atencion_cuidadano']);
+    }
+    
+    if (!empty($params['estatus'])) {
+        $countSql .= " AND a.idest = " . $db->escape($params['estatus']);
+    }
+    
+    if (!empty($params['id_pais'])) {
+        $countSql .= " AND a.pais = " . $db->escape($params['id_pais']);
+    }
+
+    if (!empty($params['id_estado']) && $params['id_estado'] != '26') {
+        $countSql .= " AND a.estadoid = " . $db->escape($params['id_estado']);
+    }
+    
+    if (!empty($params['id_municipio']) && $params['id_municipio'] != '336') {
+        $countSql .= " AND a.municipioid = " . $db->escape($params['id_municipio']);
+    }
+
+    if (!empty($params['id_parroquia']) && $params['id_parroquia'] != '1135') {
+        $countSql .= " AND a.parroquiaid = " . $db->escape($params['id_parroquia']);
+    }
+
+    if (!empty($params['org_id'])) {
+        $countSql .= " AND a.caso_org_id = " . $db->escape($params['org_id']);
+    }
+    
+    if (!empty($params['detalle_atencion'])) {
+        $countSql .= " AND a.tipo_atend_id = " . $db->escape($params['detalle_atencion']);
+    }
+
+    // Agregar filtro de búsqueda global si existe
+    if (!empty($params['search'])) {
+        $countSql .= " AND ({$whereClause})";
+    }
+    
+    $result = $db->query($countSql);
+    $row = $result->getRow();
+    $recordsFiltered = $row ? $row->total : 0;
 
     // --- Paso 5: Aplicar orden y límites para la paginación ---
     if (!empty($params['order_column']) && !empty($params['order_direction'])) {

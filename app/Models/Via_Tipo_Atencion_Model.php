@@ -30,6 +30,8 @@ class Via_Tipo_Atencion_Model extends BaseModel
 		$builder = $db->table('sgc_via_tipo_atencion as vt_atencion');
 		$builder->select(' tu.organismo_pp,tu.act_pro_int, tu.tipo_aten_nombre, vt_atencion.id, vt_atencion.via_atencion_id, vt_atencion.tipo_atencion_id, vt_atencion.borrado');
 		$builder->join('sgc_tipoatencion_usu tu', 'vt_atencion.tipo_atencion_id = tu.tipo_aten_id');
+		// FILTRO: Solo mostrar tipos de atención NO borrados (asociados activamente)
+		$builder->where('vt_atencion.borrado', false);
 		if ($id_red_social !== null) {
 			$builder->where('vt_atencion.via_atencion_id', $id_red_social);
 		}

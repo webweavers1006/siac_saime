@@ -293,8 +293,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     var table = $('#table_casos').DataTable({
         responsive: true,
         
-        // Uso de 'dom' mejorado y consistente
-        dom: 'l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip', 
+        // Alinear con la configuración usada en casos.js para filtrado global
+        dom: 'lfrBtip', 
         
         buttons: {
             dom: {
@@ -426,25 +426,28 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     "ajax": {
         "url": "/reporte_consolidado",
         "type": "GET",
-        "data": {
-            desde: desde,
-            hasta: hasta,
-            tipo_pi: tipo_pi,
-            tipo_atencion_usu: tipo_atencion_usu,
-            sexo: sexo,
-            via_atencion: via_atencion,
-            direcciones_caso: direcciones_caso,
-            tipo_beneficiario: tipo_beneficiario,
-            atencion_cuidadano: atencion_cuidadano,
-            estatus: estatus,
-            id_pais: id_pais,
-            id_estado: id_estado,
-            id_municipio: id_municipio,
-            id_parroquia: id_parroquia,
-            edad_min: edad_min,
-            edad_max: edad_max,
-            detalle_atencion: detalle_atencion,
-            org_id: org_id
+        "data": function (d) {
+            // Mezclar parámetros internos de DataTables (paginación, orden y búsqueda)
+            // con los filtros personalizados del formulario
+            d.desde = desde;
+            d.hasta = hasta;
+            d.tipo_pi = tipo_pi;
+            d.tipo_atencion_usu = tipo_atencion_usu;
+            d.sexo = sexo;
+            d.via_atencion = via_atencion;
+            d.direcciones_caso = direcciones_caso;
+            d.tipo_beneficiario = tipo_beneficiario;
+            d.atencion_cuidadano = atencion_cuidadano;
+            d.estatus = estatus;
+            d.id_pais = id_pais;
+            d.id_estado = id_estado;
+            d.id_municipio = id_municipio;
+            d.id_parroquia = id_parroquia;
+            d.edad_min = edad_min;
+            d.edad_max = edad_max;
+            d.detalle_atencion = detalle_atencion;
+            d.org_id = org_id;
+            return d;
         }
     },
     // **COLUMNAS**
@@ -480,8 +483,13 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         }
     },
 ],
+    // Definir correctamente columnDefs a nivel raíz (no dentro de language)
+    columnDefs: [
+        { "targets": [0], "visible": false, "searchable": false }
+    ],
+    //: true,
     language: {
-        sProcessing: "Procesando...",
+        //sProcessing: "Procesando...",
         sLengthMenu: "Mostrar _MENU_ registros",
         sZeroRecords: "No se encontraron resultados",
         sEmptyTable: "Ningún dato disponible en esta tabla",
@@ -502,10 +510,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         oAria: {
             sSortAscending: ": Activar para ordenar la columna de manera ascendente",
             sSortDescending: ": Activar para ordenar la columna de manera descendente"
-        },
-        "columnDefs": [{
-            "targets": [0], "visible": false, "searchable": false
-        }, ]
+        }
     },
     initComplete: function(settings, json) {
         // Recuperar el estado de la paginación
@@ -526,7 +531,7 @@ table.on('page.dt', function() {
 // MÉTODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS
 // === OBJETO DE CONFIGURACIÓN DE IDIOMA DE DATATABLES ===
 const datatablesLanguageConfig = {
-    sProcessing: "Procesando...",
+   // sProcessing: "Procesando...",
     sLengthMenu: "Mostrar _MENU_ registros",
     sZeroRecords: "No se encontraron resultados",
     sEmptyTable: "Ningún dato disponible en esta tabla",
