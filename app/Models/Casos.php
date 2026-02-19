@@ -146,6 +146,22 @@ public function obtenerCasosServerSide($start, $length, $search, $order_column, 
         $builder->orderBy('a.idcaso', $order_direction);
     }
     
+    // ============================================================
+    // CORRECCIÓN: Manejar el caso cuando length = -1 (opción "Todos")
+    // Si length es -1, significa que el usuario quiere "Todos" los registros.
+    // Si hay búsqueda activa, usamos un límite alto para capturar todos los filtrados.
+    // Si no hay búsqueda, usamos un límite de seguridad para evitar sobrecarga.
+    // ============================================================
+    if ($length == -1) {
+        if (!empty($search)) {
+            // Si hay búsqueda, usamos un límite alto para capturar todos los filtrados
+            $length = 10000;
+        } else {
+            // Si no hay búsqueda, usamos un límite de seguridad
+            $length = 500;
+        }
+    }
+    
     $builder->limit($length, $start);
     
     // Obtener los datos paginados
@@ -262,6 +278,22 @@ public function obtenerCasos_filtrados_por_usuario_serverSide($idusur, $start, $
         $builder->orderBy($order_column, $order_direction);
     } else {
         $builder->orderBy('a.idcaso', $order_direction);
+    }
+    
+    // ============================================================
+    // CORRECCIÓN: Manejar el caso cuando length = -1 (opción "Todos")
+    // Si length es -1, significa que el usuario quiere "Todos" los registros.
+    // Si hay búsqueda activa, usamos un límite alto para capturar todos los filtrados.
+    // Si no hay búsqueda, usamos un límite de seguridad para evitar sobrecarga.
+    // ============================================================
+    if ($length == -1) {
+        if (!empty($search)) {
+            // Si hay búsqueda, usamos un límite alto para capturar todos los filtrados
+            $length = 10000;
+        } else {
+            // Si no hay búsqueda, usamos un límite de seguridad
+            $length = 500;
+        }
     }
     
     $builder->limit($length, $start);
