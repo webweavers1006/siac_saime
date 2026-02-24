@@ -301,9 +301,9 @@ $session = session();
                                 
                                 <th class="text-center" style="width: 90px; white-space: nowrap;">Cédula</th>
                                 
-                                <th class="text-center" style="min-width: 100px;">Beneficiario</th>
+                                <th class="text-center" style="width: 90px; white-space: nowrap;">Beneficiario</th>
                                 
-                                <!-- <th class="text-center" style="width: 100px; white-space: nowrap;">Teléfono</th> -->
+                                <th class="text-center" style="width: 100px; white-space: nowrap;">Teléfono</th>
                                 
                                 <th class="text-center" style="width: 120px; white-space: nowrap;">Propiedad Intelectual</th>
                                 

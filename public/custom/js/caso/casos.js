@@ -601,7 +601,7 @@ let table = $('#table_casos').DataTable({
                 footer: true,
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7,8],
                 },
                 alignment: 'center',
                 customize: function(doc) {
@@ -660,7 +660,7 @@ let table = $('#table_casos').DataTable({
                 title: 'Control de Casos',
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7,8],
                 },
                 excelStyles: {
                     "template": [
@@ -693,7 +693,7 @@ let table = $('#table_casos').DataTable({
             { data: 'idcaso' },
             { data: 'cedula' },
             { data: 'nombre' },
-            //{ data: 'casotel' },
+            { data: 'casotel' },
             { data: 'tipo_prop_nombre' },
             { data: 'tipo_aten_nombre' },
             { data: 'casofec' },
