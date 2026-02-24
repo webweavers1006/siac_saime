@@ -301,9 +301,9 @@ $session = session();
                                 
                                 <th class="text-center" style="width: 90px; white-space: nowrap;">Cédula</th>
                                 
-                                <th class="text-center" style="min-width: 200px;">Beneficiario</th>
+                                <th class="text-center" style="min-width: 100px;">Beneficiario</th>
                                 
-                                <th class="text-center" style="width: 100px; white-space: nowrap;">Teléfono</th>
+                                <!-- <th class="text-center" style="width: 100px; white-space: nowrap;">Teléfono</th> -->
                                 
                                 <th class="text-center" style="width: 120px; white-space: nowrap;">Propiedad Intelectual</th>
                                 
@@ -315,7 +315,7 @@ $session = session();
                                 
                                 <th class="text-center" style="width: 100px; white-space: nowrap;">Operador</th>
                                 
-                                <th class="text-center" style="width: 140px; white-space: nowrap; text-align: right;">Acciones</th>
+                                <th class="text-center" style="width: 140px; white-space: nowrap; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="listar_casos" class="siac-table">
@@ -326,70 +326,91 @@ $session = session();
     </div>
 </div>
                   <!-- Custom CSS for full-width DataTables -->
-                  <style>
-                      /* Ensure DataTables uses full container width */
-                      .datatable-full-width {
-                          width: 100% !important;
-                          table-layout: auto;
-                          min-width: 100%;
-                      }
-                      
-                      /* Fix for nested table container */
-                      .siac-table-container {
-                          width: 100% !important;
-                          max-width: 100%;
-                          overflow-x: auto;
-                      }
-                      
-                      /* Ensure proper column distribution */
-                      #table_casos {
-                          width: 100% !important;
-                          table-layout: auto;
-                      }
-                      
-                      /* Responsive wrapper for DataTables */
-                      .dataTables_wrapper {
-                          width: 100% !important;
-                          min-width: 100%;
-                      }
-                      
-                      /* Ensure all wrapper elements use full width */
-                      .dataTables_scroll,
-                      .dataTables_scrollBody,
-                      .dataTables_scrollHead,
-                      .dataTables_scrollHeadInner {
-                          width: 100% !important;
-                          max-width: 100% !important;
-                      }
-                      
-                      /* Fix for Bootstrap grid conflict */
-                      .siac-main-card .row {
-                          margin-right: 0;
-                          margin-left: 0;
-                      }
-                      
-                      /* Ensure columns use full width on all screen sizes */
-                      @media (min-width: 768px) {
-                          .siac-table-container {
-                              width: 100% !important;
-                              max-width: 100% !important;
-                          }
-                      }
-                      
-                      @media (min-width: 992px) {
-                          .siac-table-container {
-                              width: 100% !important;
-                              max-width: 100% !important;
-                          }
-                      }
-                      
-                      @media (min-width: 1200px) {
-                          .siac-table-container {
-                              width: 100% !important;
-                              max-width: 100% !important;
-                          }
-                      }
-                  </style>
+<style>
+    /* Ensure DataTables uses full container width */
+    .datatable-full-width {
+        width: 100% !important;
+        table-layout: auto;
+        min-width: 100%;
+    }
+    
+    /* Fix for nested table container */
+    .siac-table-container {
+        width: 100% !important;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    
+    /* Ensure proper column distribution */
+    #table_casos {
+        width: 100% !important;
+        table-layout: auto;
+    }
+    
+    /* Responsive wrapper for DataTables */
+    .dataTables_wrapper {
+        width: 100% !important;
+        min-width: 100%;
+    }
+    
+    /* Ensure all wrapper elements use full width */
+    .dataTables_scroll,
+    .dataTables_scrollBody,
+    .dataTables_scrollHead,
+    .dataTables_scrollHeadInner {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Fix for Bootstrap grid conflict */
+    .siac-main-card .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    
+    /* Ensure columns use full width on all screen sizes */
+    @media (min-width: 768px) {
+        .siac-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+    
+    @media (min-width: 992px) {
+        .siac-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+    
+    @media (min-width: 1200px) {
+        .siac-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+    
+    /* Action buttons container - ensure visibility */
+    .action-buttons-container {
+        white-space: nowrap;
+        text-align: center;
+        min-width: 140px;
+    }
+    
+    /* Force action buttons to always display inline */
+    .action-buttons-container .btn {
+        display: inline-block !important;
+        margin: 0 2px;
+    }
+    
+    /* Ensure the last column doesn't collapse */
+    #table_casos td:last-child,
+    #table_casos th:last-child {
+        width: 140px;
+        min-width: 140px;
+        white-space: nowrap;
+    }
+</style>
           </div>
             </div>
           

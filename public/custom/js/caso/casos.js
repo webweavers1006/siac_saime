@@ -578,12 +578,7 @@ function Listar_Casos() {
     let ruta_imagen = rootpath;
     var encabezado = '';
 let table = $('#table_casos').DataTable({
-        responsive: {
-            details: {
-                type: 'column',
-                target: -1 // La última columna será el expander
-            }
-        },
+        responsive: true,
         width: '100%',
         autoWidth: false,
         scrollCollapse: true,
@@ -606,7 +601,7 @@ let table = $('#table_casos').DataTable({
                 footer: true,
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7],
                 },
                 alignment: 'center',
                 customize: function(doc) {
@@ -665,7 +660,7 @@ let table = $('#table_casos').DataTable({
                 title: 'Control de Casos',
                 download: 'open',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7],
                 },
                 excelStyles: {
                     "template": [
@@ -698,7 +693,7 @@ let table = $('#table_casos').DataTable({
             { data: 'idcaso' },
             { data: 'cedula' },
             { data: 'nombre' },
-            { data: 'casotel' },
+            //{ data: 'casotel' },
             { data: 'tipo_prop_nombre' },
             { data: 'tipo_aten_nombre' },
             { data: 'casofec' },
@@ -764,6 +759,14 @@ let table = $('#table_casos').DataTable({
                 table.page(parseInt(savedPage)).draw(false);
                 localStorage.removeItem('datatable_page');
             }
+            
+            // Ensure columns are properly adjusted after data loads
+            table.columns().every(function() {
+                this.nodes().each(function(node) {
+                    $(node).css('width', '');
+                });
+            });
+            table.columns.adjust();
         }
     });
 

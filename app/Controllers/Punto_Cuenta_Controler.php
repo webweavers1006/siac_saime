@@ -148,22 +148,6 @@ class Punto_Cuenta_Controler extends BaseController
 
 }
 
- // $query_insertar_punto_cuenta = $model->agregar($punto_cuenta);
-        
-        // if ($query_insertar_punto_cuenta) {
-        //     $auditoria['audi_user_id'] = session('iduser');
-        //     // Descripción de la auditoría clara
-        //     $auditoria['audi_accion']  = 'INGRESO EL PUNTO DE CUENTA CON NÚMERO: ' . 
-        //                                  '(' . $punto_cuenta["numero_punto_cuenta"] . ') para el beneficiario: ' . 
-        //                                  $punto_cuenta["nombre"] . ' ' . $punto_cuenta["apellido"];
-            
-        //     $model_Auditoria_sistema_Model->agregar($auditoria);
-        //     $mensaje = 1; // Éxito
-        //     return json_encode($mensaje);
-        // } else {
-        //     $mensaje = 2; // Error de inserción
-        //     return json_encode($mensaje);
-        // }
 
 
 	//Metodo para editar Punto de Cuenta
