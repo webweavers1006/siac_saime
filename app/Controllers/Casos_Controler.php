@@ -252,7 +252,8 @@ curl_close($ch);
             $newCase["profesion"]   = $datos["profesion"];
             $newCase["casonumsol"]  = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
 
-            $pi_type = $datos["pi-type"];
+                    // PI type preserved from POST (portal/local)
+                    $pi_type = $datos["pi-type"];
             $act_coordenadas["act_coordenadas"]    = $datos["act_coordenadas"];
             $bandera_cgr["bandera_cgr"] = $datos["bandera_cgr"];
             $bandera_denuncia["bandera_denuncia"] = $datos["bandera_denuncia"];
@@ -282,8 +283,24 @@ curl_close($ch);
                     $fila = $_obtener_utimo_id->getRow(); 
                     $idcaso = $fila->ultimo_id; 
 
+                    // ✅ FIX: Detect Portal Web (idrrss=3 + idusuopr=18) → Preserve pi-type
+                    $is_portal_web = ($newCase["idrrss"] == 3 && $idusuopr == 18);
+                    
+                    if ($is_portal_web) {
+                        // PORTAL: Exact value from POST (1-5)
+                        $pi_type_final = intval($datos["pi-type"]);
+                        if (!in_array($pi_type_final, [1,2,3,4,5])) {
+                            $pi_type_final = 1; // Secure fallback
+                        }
+                    } else {
+                        // LOCAL: Original logic (default 1 if empty)
+                        $pi_type_final = (!empty($datos["pi-type"]) && intval($datos["pi-type"]) > 0) 
+                            ? intval($datos["pi-type"]) 
+                            : 1;
+                    }
+                    
                     $tipoPI['idcaso'] = $idcaso;
-                    $tipoPI['idtippropint'] = $pi_type;
+                    $tipoPI['idtippropint'] = $pi_type_final;
 
                     // 3.3. COORDENADAS
                     if ($act_coordenadas["act_coordenadas"] == 't') {
