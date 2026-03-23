@@ -1075,36 +1075,49 @@ $("#tipo-atencion-usu").on('change', function(e) {
 
 
 
-
-
 function llenar_detalle_atencion(e, idTipoAtencion) {
     if (e && e.preventDefault) e.preventDefault();
     
-    url = '/Listar_Detalle_Atencion_filtro';
+    // 1. Limpieza previa de errores y estados
+    $('#detalles_atencion').removeClass('is-invalid');
+    const $contenedorDetalle = $(".detelle_atencion");
+    const $selectDetalle = $('#detalles_atencion');
+    const url = '/Listar_Detalle_Atencion_filtro';
+
     $.ajax({
         url: url,
         method: 'GET',
         dataType: 'JSON',
-        beforeSend: function(data) {},
         success: function(data) {
-            if (data.length >= 1) {
-                $('#detalles_atencion').empty();
-                $('#detalles_atencion').append('<option value=0  selected disabled>Seleccione</option>');
+            // Compatibilidad PHP 8.4: Asegurar que data sea un objeto/array
+            let registros = (typeof data === 'string') ? JSON.parse(data.trim()) : data;
+
+            // 2. Filtrar PRIMERO los datos antes de decidir si mostrar el select
+            if (idTipoAtencion !== undefined && registros) {
+                registros = registros.filter(dato => dato.tipo_aten_id == idTipoAtencion);
+            }
+
+            // 3. Lógica de visibilidad basada en el resultado del filtro
+            if (registros && registros.length > 0) {
+                $contenedorDetalle.show();
+                $selectDetalle.empty().append('<option value="0" selected disabled>Seleccione</option>');
                 
-                // Filtrar por tipo de atención si se proporciona
-                if (idTipoAtencion !== undefined) {
-                    data = data.filter(dato => dato.tipo_aten_id == idTipoAtencion);
-                }
-                
-                $.each(data, function(i, item) {
-                    $(".detelle_atencion").show();
-                    $("#hijos_tipoatencion").val('SI');
-                    $('#detalles_atencion').append('<option value=' + item.tipo_atend_id + '>' + item.tipo_atend_nombre + '</option>');
+                $.each(registros, function(i, item) {
+                    $selectDetalle.append('<option value="' + item.tipo_atend_id + '">' + item.tipo_atend_nombre + '</option>');
                 });
+                
+                $("#hijos_tipoatencion").val('SI');
+            } else {
+                // 4. Si no hay datos que coincidan, ocultar y resetear TODO
+                $contenedorDetalle.hide();
+                $selectDetalle.empty().val('0');
+                $("#hijos_tipoatencion").val('NO');
             }
         },
-        error: function(xhr, status, errorThrown) {
-            console.error("Error al cargar detalle de atención:", errorThrown);
+        error: function(xhr, status, error) {
+            console.error("Error en la petición:", error);
+            $contenedorDetalle.hide();
+            $("#hijos_tipoatencion").val('NO');
         }
     });
 }
@@ -1298,13 +1311,14 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
                       beforeSend: function() {
                           
                       },
-                      success: function(respuesta) {
+                      success: function(data) {
+                         let res = JSON.parse(data.trim());
                          $("button[type=button]").attr('disabled', 'false');
-                          if (respuesta.mensaje === 1) {
+                          if (res.mensaje === 1) {
                               Swal.fire({
                                   icon: "success",
                                   type: 'success',
-                                  html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + respuesta.idcaso + '</strong>',
+                                  html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + res.idcaso + '</strong>',
                                   toast: true,
                                   position: "center",
                                   showConfirmButton: false,
@@ -1313,7 +1327,7 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
                               setTimeout(function() {
                                   window.location = "/casos";
                               }, 1500);
-                          } else if (respuesta.mensaje === 2) {
+                          } else if (res.mensaje === 2) {
                               Swal.fire({
                                   icon: "error",
                                   type: 'error',
@@ -1327,7 +1341,7 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
                                   window.location = "/casos";
                               }, 1500);
                           }
-                          else if (respuesta.mensaje === 7) {
+else if (res.mensaje === 7) {
                             Swal.fire({
                                 icon: "error",
                                 type: 'error',
@@ -1342,7 +1356,7 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
                             }, 1500);
                         }
                         //NO SE ENCONTRO EL ID DEL USUARIO
-                        else if (respuesta.mensaje === 8) {
+                        else if (res.mensaje === 8) {
                             Swal.fire({
                                 icon: "error",
                                 type: 'error',

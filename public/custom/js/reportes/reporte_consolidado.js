@@ -204,330 +204,171 @@ function llenar_pais(e, id) {
         },
     });
 }
-
-
 function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_aten_cuidadano, nombre_estatus = null, nombre_estado = null, nombre_org_id) {
 
-    // *******************************************************************
-    // 🚩 CORRECCIÓN CLAVE PARA MOMENT.JS: Especificar el formato de entrada.
-    // Usamos 'MM/DD/YY' según lo confirmado.
-    // *******************************************************************
     const FORMATO_ENTRADA = "MM/DD/YY";
-    
-    // 1. Crear los objetos Moment con el formato de entrada
     const m_desde = moment(desde, FORMATO_ENTRADA);
     const m_hasta = moment(hasta, FORMATO_ENTRADA);
 
-    // 2. Formatear solo si son fechas válidas
     let dataFormatada_desde = 'Invalid date';
     let dataFormatada_hasta = 'Invalid date';
 
-    if (m_desde.isValid()) {
-        dataFormatada_desde = m_desde.format("DD-MM-YYYY");
-    }
-    if (m_hasta.isValid()) {
-        dataFormatada_hasta = m_hasta.format("DD-MM-YYYY");
-    }
+    if (m_desde.isValid()) { dataFormatada_desde = m_desde.format("DD-MM-YYYY"); }
+    if (m_hasta.isValid()) { dataFormatada_hasta = m_hasta.format("DD-MM-YYYY"); }
 
     var encabezado = '';
-
-    // 3. Validar si AMBAS fechas son válidas para incluir en el encabezado
     if (m_desde.isValid() && m_hasta.isValid()) {
         encabezado += `Desde: ${dataFormatada_desde} hasta ${dataFormatada_hasta} `;
     }
 
-    // -------------------------------------------------------------
-    // El resto de tu lógica de encabezado (sin cambios mayores)
-    // -------------------------------------------------------------
-    if (tipo_pi != null) {
-        encabezado += 'Tipo de Propiedad: ' + nombre_propiedad + ' ';
-    }
-
-    if (tipo_atencion_usu != null) {
-        encabezado += 'Tipo de Atencion: ' + nombre_atencion + ' ';
-    }
-
-    if (sexo != null) {
-        encabezado += 'Sexo: ' + nombresexo + ' ';
-    }
-
-    if (nombre_estado != null && nombre_estado != '' && nombre_estado != 'Seleccione') {
-        encabezado += 'Estado: ' + nombre_estado + ' ';
-    }
-
-    if (edad_min != 'null' && edad_max != 'null' && edad_min != null && edad_max != null) {
-        encabezado += 'Edad: Entre ' + edad_min + ' y ' + edad_max + ' ';
-    }
-    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) {
-        encabezado += 'Via de atencion: ' + nombre_via_atencion + ' ';
-    }
-
-    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) {
-        encabezado += 'Remitido a: ' + nombre_direccion_remi + ' ';
-    }
-
-    if (tipo_beneficiario != null && tipo_beneficiario != 0) {
-        encabezado += 'Tipo beneficiario : ' + nombre_tipo_beneficiario + ' ';
-    }
-    if (atencion_cuidadano != null && atencion_cuidadano != 0) {
-        encabezado += 'Atencion Cuidadano : ' + nombre_aten_cuidadano + ' ';
-    }
-
-    if (org_id != null && org_id != 0) {
-        encabezado += 'Organismo del poder popular : ' + nombre_org_id + ' ';
-    } else {
-        org_id = 0;
-    }
-
-
-    if (estatus != null && estatus != 0) {
-        encabezado += 'Estatus : ' + nombre_estatus + ' ';
-    }
+    // Lógica de concatenación de encabezado (Se mantiene igual)
+    if (tipo_pi != null) encabezado += 'Tipo de Propiedad: ' + nombre_propiedad + ' ';
+    if (tipo_atencion_usu != null) encabezado += 'Tipo de Atencion: ' + nombre_atencion + ' ';
+    if (sexo != null) encabezado += 'Sexo: ' + nombresexo + ' ';
+    if (nombre_estado != null && nombre_estado != '' && nombre_estado != 'Seleccione') encabezado += 'Estado: ' + nombre_estado + ' ';
+    if (edad_min != 'null' && edad_max != 'null' && edad_min != null && edad_max != null) encabezado += 'Edad: Entre ' + edad_min + ' y ' + edad_max + ' ';
+    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) encabezado += 'Via de atencion: ' + nombre_via_atencion + ' ';
+    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) encabezado += 'Remitido a: ' + nombre_direccion_remi + ' ';
+    if (tipo_beneficiario != null && tipo_beneficiario != 0) encabezado += 'Tipo beneficiario : ' + nombre_tipo_beneficiario + ' ';
+    if (atencion_cuidadano != null && atencion_cuidadano != 0) encabezado += 'Atencion Cuidadano : ' + nombre_aten_cuidadano + ' ';
+    if (org_id != null && org_id != 0) { encabezado += 'Organismo del poder popular : ' + nombre_org_id + ' '; } else { org_id = 0; }
+    if (estatus != null && estatus != 0) encabezado += 'Estatus : ' + nombre_estatus + ' ';
 
     let ruta_imagen = rootpath;
-    // Si la tabla ya está inicializada, la destruimos para evitar errores de re-inicialización
+
     if ($.fn.DataTable.isDataTable('#table_casos')) {
         $('#table_casos').DataTable().destroy();
     }
     
     var table = $('#table_casos').DataTable({
         responsive: true,
-        
-        // Alinear con la configuración usada en casos.js para filtrado global
         dom: 'lfrBtip', 
-        
         buttons: {
-            dom: {
-                button: {
-                    className: 'btn-xs-xs'
-                },
-            },
-            buttons: [{
-                //definimos estilos del boton de pd
-                extend: "pdf",
-                text: 'PDF',
-                className: 'btn-xs btn-dark',
-                orientation: 'landscape',
-                pageSize: 'LETTER',
-                header: true,
-                footer: true,
-                download: 'open',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-                },
-                alignment: 'center',
-
-                customize: function(doc) {
-                    //Remove the title created by datatTables
-                    doc.content.splice(0, 1);
-                    doc.styles.title = {
-                        color: '#4c8aa0',
-                        fontSize: '18',
-                        alignment: 'center'
-                    }
-                    doc.styles['td:nth-child(2)'] = {
-                            width: '130px',
-                            'max-width': '130px'
-                        },
-                        doc.styles.tableHeader = {
-                            fillColor: '#4c8aa0',
-                            color: 'white',
-                            alignment: 'center'
-                        },
-                        // Create a header
+            dom: { button: { className: 'btn-xs-xs' } },
+            buttons: [
+                {
+                    extend: "pdf",
+                    text: 'PDF',
+                    className: 'btn-xs btn-dark',
+                    orientation: 'landscape',
+                    pageSize: 'LETTER',
+                    header: true,
+                    footer: true,
+                    download: 'open',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                    },
+                    customize: function(doc) {
+                        doc.content.splice(0, 1);
+                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
                         doc.pageMargins = [10, 115, 0, 70];
-                    doc['header'] = (function(page, pages) {
-                        doc.styles.title = {
-                            color: '#4c8aa0',
-                            fontSize: '18',
-                            alignment: 'center',
-                        }
-                        return {
-                            columns: [{
-                                    margin: [10, 3, 40, 40],
-                                    image: ruta_imagen,
-                                    width: 780,
-                                    height: 46,
-
-                                },
-                                {
-                                    margin: [-800, 50, -25, 0],
-                                    color: '#4c8aa0',
-                                    fontSize: '18',
-                                    alignment: 'center',
-                                    text: 'Consolidado de Casos',
-                                    fontSize: 18,
-                                },
-                                {
-                                    margin: [-700, 80, -25, 0],
-                                    // Se corrigió la asignación dentro del texto, usando el valor de 'encabezado'
-                                    text: insertarSaltoDeLinea(encabezado, 100), 
-                                },
-                            ],
-                        }
-                    });
-                    // Create a footer
-                    doc['footer'] = (function(page, pages) {
-                        return {
-                            columns: [{
-                                alignment: 'center',
-                                text: ['pagina ', {
-                                    text: page.toString()
-                                }, ' of ', {
-                                    text: pages.toString()
-                                }]
-                            }],
-                        }
-                    });
-
+                        doc['header'] = (function(page, pages) {
+                            return {
+                                columns: [
+                                    { margin: [10, 3, 40, 40], image: ruta_imagen, width: 780, height: 46 },
+                                    { margin: [-800, 50, -25, 0], color: '#4c8aa0', text: 'Consolidado de Casos', fontSize: 18, alignment: 'center' },
+                                    { margin: [-700, 80, -25, 0], text: insertarSaltoDeLinea(encabezado, 100) },
+                                ],
+                            }
+                        });
+                        doc['footer'] = (function(page, pages) {
+                            return { columns: [{ alignment: 'center', text: ['pagina ', page.toString(), ' of ', pages.toString()] }] };
+                        });
+                    },
                 },
-            },
-
-            {
-                //definimos estilos del boton de excel
-                extend: "excel",
-                text: 'Excel',
-                className: 'btn-xs btn-dark',
-                title: 'Consolidado de Casos',
-
-                download: 'open',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-                },
-                excelStyles: {
-                    "template": [
-                        "blue_medium",
-                        "header_blue",
-                        "title_medium"
-                    ]
-                },
-
-            }
-        ],
-        // Se consolidaron las opciones de 'dom' aquí, eliminando la duplicidad
-        // y usando la opción simplificada arriba 'dom: "l<"row"<"col-md-6"B><"col-md-6 text-right"f>>tip"'
-    },
-    "order": [
-        [0, "desc"]
-    ],
-    "paging": true,
-    "lengthChange": true,
-
-    "searching": true,
-    "lengthMenu": [
-        [10, 25, 50, -1],
-        ['10', '25', '50', 'Todos']
-    ],
-    "ordering": true,
-    "info": true,
-    "autoWidth": true,
-    //"dom": 'Bfrt<"col-md-6 inline"i> <"col-md-6 inline"p>',
-    "serverSide": true,
-    "ajax": {
-        "url": "/reporte_consolidado",
-        "type": "GET",
-        "data": function (d) {
-            // Mezclar parámetros internos de DataTables (paginación, orden y búsqueda)
-            // con los filtros personalizados del formulario
-            d.desde = desde;
-            d.hasta = hasta;
-            d.tipo_pi = tipo_pi;
-            d.tipo_atencion_usu = tipo_atencion_usu;
-            d.sexo = sexo;
-            d.via_atencion = via_atencion;
-            d.direcciones_caso = direcciones_caso;
-            d.tipo_beneficiario = tipo_beneficiario;
-            d.atencion_cuidadano = atencion_cuidadano;
-            d.estatus = estatus;
-            d.id_pais = id_pais;
-            d.id_estado = id_estado;
-            d.id_municipio = id_municipio;
-            d.id_parroquia = id_parroquia;
-            d.edad_min = edad_min;
-            d.edad_max = edad_max;
-            d.detalle_atencion = detalle_atencion;
-            d.org_id = org_id;
-            return d;
-        }
-    },
-    // **COLUMNAS**
-    "columns": [
-    { data: 'idcaso' },
-    { data: 'cedula' },
-    { data: 'tipo_beneficiario' },
-    { data: 'nombre' },
-    { data: 'casotel' },
-    { data: 'tipo_prop_nombre' },
-    { data: 'sexo' },
-    { data: 'via_atencion_nombre' },
-    { data: 'tipo_aten_nombre' },
-    { data: 'descripcion' },
-    { data: 'pais_nombre' },
-    { data: 'estado_nombre' },
-    { data: 'municipio_nombre' },
-    { data: 'parroquia_nombre' },
-    { data: 'organismo_pp_nombre' },
-    { data: 'casofec' },
-    { data: 'estnom' },
-    { data: 'user_name' },
-    { 
-        // Columna para el botón de acción
-        data: null,
-        render: function(data, type, row) {
-            // Se usa 'return' y solo se añade el idcaso como atributo
-            return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" ' +
-                   'style="font-size:1px" data-toggle="tooltip" title="Seguimientos" ' +
-                   'idcaso="' + row.idcaso + '">' + 
-                   '  <i class="material-icons">search</i> ' +
-                   '</a>';
-        }
-    },
-],
-    // Definir correctamente columnDefs a nivel raíz (no dentro de language)
-    columnDefs: [
-        { "targets": [0], "visible": false, "searchable": false }
-    ],
-    //: true,
-    language: {
-        //sProcessing: "Procesando...",
-        sLengthMenu: "Mostrar _MENU_ registros",
-        sZeroRecords: "No se encontraron resultados",
-        sEmptyTable: "Ningún dato disponible en esta tabla",
-        sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-        sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-        sInfoFiltered: "(filtrado de un total de _MAX_ registros)", // Se agregó el placeholder de filtrado
-        sInfoPostFix: "",
-        sSearch: "Buscar:",
-        sUrl: "",
-        sInfoThousands: ",",
-        sLoadingRecords: "Cargando...",
-        oPaginate: {
-            sFirst: "Primero",
-            sLast: "Último",
-            sNext: "Siguiente",
-            sPrevious: "Anterior"
+                {
+                    extend: "excel",
+                    text: 'Excel',
+                    className: 'btn-xs btn-dark',
+                    title: 'Consolidado de Casos',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                    },
+                }
+            ],
         },
-        oAria: {
-            sSortAscending: ": Activar para ordenar la columna de manera ascendente",
-            sSortDescending: ": Activar para ordenar la columna de manera descendente"
+        "order": [[0, "desc"]],
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
+        "ordering": true,
+        "info": true,
+        "autoWidth": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/reporte_consolidado",
+            "type": "GET",
+            "data": function (d) {
+                d.desde = desde; d.hasta = hasta; d.tipo_pi = tipo_pi;
+                d.tipo_atencion_usu = tipo_atencion_usu; d.sexo = sexo;
+                d.via_atencion = via_atencion; d.direcciones_caso = direcciones_caso;
+                d.tipo_beneficiario = tipo_beneficiario; d.atencion_cuidadano = atencion_cuidadano;
+                d.estatus = estatus; d.id_pais = id_pais; d.id_estado = id_estado;
+                d.id_municipio = id_municipio; d.id_parroquia = id_parroquia;
+                d.edad_min = edad_min; d.edad_max = edad_max;
+                d.detalle_atencion = detalle_atencion; d.org_id = org_id;
+                return d;
+            }
+        },
+        "columns": [
+            { data: 'idcaso' },
+            { data: 'cedula' },
+            { data: 'tipo_beneficiario' },
+            { data: 'nombre' },
+            { data: 'casotel' },
+            { data: 'tipo_prop_nombre' },
+            { data: 'sexo' },
+            { data: 'via_atencion_nombre' },
+            { data: 'tipo_aten_nombre' },
+            { data: 'descripcion' },
+            { data: 'pais_nombre' },
+            { data: 'estado_nombre' },
+            { data: 'municipio_nombre' },
+            { data: 'parroquia_nombre' },
+            { data: 'organismo_pp_nombre' },
+            { data: 'casofec' },
+            { data: 'estnom' },
+            { data: 'user_name' },
+            { 
+                data: null,
+                render: function(data, type, row) {
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" ' +
+                           'style="font-size:1px" data-toggle="tooltip" title="Seguimientos" ' +
+                           'idcaso="' + row.idcaso + '">' + 
+                           '  <i class="material-icons">search</i> ' +
+                           '</a>';
+                }
+            },
+        ],
+        columnDefs: [
+            // SE MODIFICÓ AQUÍ: visible ahora es true para que el ID se muestre
+            { "targets": [0], "visible": true, "searchable": true }
+        ],
+        language: {
+            sLengthMenu: "Mostrar _MENU_ registros",
+            sZeroRecords: "No se encontraron resultados",
+            sEmptyTable: "Ningún dato disponible en esta tabla",
+            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+            sSearch: "Buscar:",
+            oPaginate: { sFirst: "Primero", sLast: "Último", sNext: "Siguiente", sPrevious: "Anterior" }
+        },
+        initComplete: function(settings, json) {
+            let savedPage = localStorage.getItem('datatable_page');
+            if (savedPage !== null) {
+                table.page(parseInt(savedPage)).draw(false);
+                localStorage.removeItem('datatable_page');
+            }
         }
-    },
-    initComplete: function(settings, json) {
-        // Recuperar el estado de la paginación
-        let savedPage = localStorage.getItem('datatable_page');
-        if (savedPage !== null) {
-            table.page(parseInt(savedPage)).draw(false);
-            localStorage.removeItem('datatable_page');
-        }
-    }
-});
-// Guardar el estado de la paginación antes de recargar la página
-table.on('page.dt', function() {
-    let info = table.page.info();
-    localStorage.setItem('datatable_page', info.page);
-});
-}
+    });
 
+    table.on('page.dt', function() {
+        let info = table.page.info();
+        localStorage.setItem('datatable_page', info.page);
+    });
+}
 // MÉTODO PARA VER EL DETALLE DE LOS SEGUIMIENTOS
 // === OBJETO DE CONFIGURACIÓN DE IDIOMA DE DATATABLES ===
 const datatablesLanguageConfig = {

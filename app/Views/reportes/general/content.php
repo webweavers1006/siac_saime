@@ -760,25 +760,22 @@
         </div>
       </div>
 
-    <div class="modal fade" id="modal-detalle-seguimientos" tabindex="-1" role="dialog" 
-     aria-labelledby="SeguimientosModalLabel" aria-hidden="true">
-    
+  <div class="modal fade" id="modal-detalle-seguimientos" tabindex="-1" role="dialog" aria-labelledby="SeguimientosModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl max-w-7xl mx-auto modal-dialog-centered" role="document">
-        <div class="modal-content bg-white shadow-2xl w-full transform transition-all duration-300 overflow-hidden"> 
+        <div class="modal-content bg-white shadow-2xl w-full transform transition-all duration-300 overflow-hidden" style="border-radius: 12px;"> 
 
-            <div class="modal-header flex justify-between items-center p-2 border-b border-blue-100 bg-blue-700 text-white">
-    <h5 class="text-lg font-bold tracking-tight" id="SeguimientosModalLabel">
-        <i class="fas fa-angle-double-right mr-2 text-xl"></i> Seguimientos del Caso Nº
-        <span class="text-blue-700 bg-white ml-2 px-1.5 py-0.5 text-base rounded-full shadow-sm font-mono" id="caso-id-titulo">
-        </span>
-    </h5>
-    <button type="button" class="text-white opacity-90 hover:opacity-100 text-xl leading-none transition duration-150" data-dismiss="modal" aria-label="Cerrar">
-        &times;
-    </button>
-</div>
+            <div class="modal-header flex justify-between items-center p-3 border-b-0 text-white" 
+                 style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">
+                <h5 class="text-lg font-bold tracking-tight" id="SeguimientosModalLabel">
+                    <i class="fas fa-angle-double-right mr-2 text-xl"></i> Seguimientos del Caso Nº
+                    <span class="text-blue-700 bg-white ml-2 px-2 py-0.5 text-base rounded-full shadow-sm font-mono" id="caso-id-titulo"></span>
+                </h5>
+                <button type="button" class="text-white opacity-90 hover:opacity-100 text-2xl leading-none transition duration-150 outline-none" data-dismiss="modal" aria-label="Cerrar">
+                    &times;
+                </button>
+            </div>
 
             <div class="modal-body p-4">
-                
                 <div class="grid grid-cols-12 gap-4">
                     
                     <div class="col-span-12 lg:col-span-9 order-2 lg:order-1" id="tl" style="display: none;"> 
@@ -786,72 +783,115 @@
                             <i class="fas fa-list-alt mr-2 text-blue-500"></i> Historial de Seguimientos
                         </h4>
                         
-                        <div class="p-0">
-                            <div class="overflow-x-auto shadow-md rounded-md border border-gray-200">
-                                <table class="min-w-full divide-y divide-gray-200" id="table_seguimientos">
-                                    <thead class="bg-blue-50">
-                                        <tr>
-                                            <td class="px-3 py-2 text-xs font-bold text-blue-800 uppercase tracking-wider text-center w-[1%]">Nº</td>
-                                            <td class="px-3 py-2 text-xs font-bold text-blue-800 uppercase tracking-wider text-center w-[1%]">F_Seguimiento</td>
-                                            <td class="px-3 py-2 text-xs font-bold text-blue-800 uppercase tracking-wider text-center w-[4%]">Estatus/llamada</td>
-                                            <td class="px-3 py-2 text-xs font-bold text-blue-800 uppercase tracking-wider text-center w-[4%]">Usuario Operador</td>
-                                            <td class="px-3 py-2 text-xs font-bold text-blue-800 uppercase tracking-wider text-center w-[7%]">Comentario</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-100 text-sm" id="listar_seguimientos">
-                                        </tbody>
-                                </table>
-                            </div>
+                        <div class="overflow-x-auto shadow-md rounded-md border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200" id="table_seguimientos">
+                                <thead class="bg-blue-600">
+                                    <tr>
+                                        <th class="px-3 py-2 text-xs font-bold text-white uppercase tracking-wider text-center w-[1%]">Nº</th>
+                                        <th class="px-3 py-2 text-xs font-bold text-white uppercase tracking-wider text-center w-[1%]">F_Seguimiento</th>
+                                        <th class="px-3 py-2 text-xs font-bold text-white uppercase tracking-wider text-center w-[4%]">Estatus/llamada</th>
+                                        <th class="px-3 py-2 text-xs font-bold text-white uppercase tracking-wider text-center w-[4%]">Usuario Operador</th>
+                                        <th class="px-3 py-2 text-xs font-bold text-white uppercase tracking-wider text-center w-[7%]">Comentario</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-100 text-sm" id="listar_seguimientos"></tbody>
+                            </table>
                         </div>
                     </div>
                     
-                    <div class="col-span-12 lg:col-span-3 order-1 lg:order-2 p-3 lg:border-l lg:border-l-0 border-gray-200 bg-gray-50 rounded-lg shadow-inner">
-                        <h3 class="text-base font-bold text-blue-700 mb-3 border-b-2 border-gray-300 pb-1">
-                            <i class="fas fa-info-circle mr-2"></i> Información General
-                        </h3>
-                        <input type="hidden" id="id-caso" name="id-caso">
-                        <div class="text-xs text-gray-700 space-y-2">
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Fecha del caso:</b>
-                                <span class="text-black font-medium" id="detalle-fecha-caso"></span>
+                    <div class="col-span-12 lg:col-span-3 order-1 lg:order-2">
+                        <div class="card shadow-sm h-full" style="border: none; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;">
+                            <div class="p-3" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">
+                                <h3 class="text-sm font-bold text-white m-0 flex items-center">
+                                    <i class="fas fa-info-circle mr-2"></i> Información General
+                                </h3>
                             </div>
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Nombre y Apellido:</b>
-                                <span class="text-black font-medium" id="detalle-nombre"></span>
-                            </div>
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Correo Beneficiario:</b>
-                                <span class="text-black font-medium" id="detalle-correo"></span>
-                            </div>
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Estado:</b>
-                                <span class="text-black font-medium" id="detalle-estado"></span>
-                            </div>
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Municipio: </b>
-                                <span class="text-black font-medium" id="detalle-municipio"></span>
-                            </div>
-                            <div class="leading-snug border-b border-gray-200 pb-1">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Parroquia:</b>
-                                <span class="text-black font-medium" id="detalle-parroquia"></span>
-                            </div>
-                            <div class="pt-2 leading-snug">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Descripción del caso:</b>
-                                <span class="text-black font-medium" id="detalle-descripcion"></span>
-                            </div>
-                            <div class="leading-snug">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Caso Remitido a:</b>
-                                <span class="text-black font-medium" id="detalle-unidad-adm"></span>
-                            </div>
-                            <div class="pt-2">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">DOCUMENTOS CASO:</b>
-                                <select class="w-full mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-1 text-xs" id="docu-casos" name="docu-casos">
-                                    <option value="0" selected disabled>Seleccione</option>
-                                </select>
-                            </div>
-                            <div class="pt-2 leading-snug">
-                                <b class="block font-semibold text-gray-900 text-xs uppercase">Detalles adicionales:</b>
-                                <span class="text-black font-medium" id="detalle-usuario-operador"></span>
+
+                            <div class="p-3 space-y-4" style="background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);">
+                                <input type="hidden" id="id-caso" name="id-caso">
+
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg" style="background-color: #e1f5fe;">
+                                        <i class="far fa-calendar-alt" style="color: #0288d1;"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-gray-500 uppercase font-bold" style="font-size: 0.65rem;">Fecha del caso</span>
+                                        <div class="text-xs font-semibold text-gray-800" id="detalle-fecha-caso"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg" style="background-color: #e8f5e9;">
+                                        <i class="fas fa-user" style="color: #2e7d32;"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-gray-500 uppercase font-bold" style="font-size: 0.65rem;">Nombre y Apellido</span>
+                                        <div class="text-xs font-semibold text-gray-800" id="detalle-nombre"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg" style="background-color: #fff3e0;">
+                                        <i class="fas fa-envelope" style="color: #ef6c00;"></i>
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <span class="block text-gray-500 uppercase font-bold" style="font-size: 0.65rem;">Correo</span>
+                                        <div class="text-xs text-gray-800 truncate" id="detalle-correo" style="word-break: break-all;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2.5 rounded-lg border border-blue-100" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-blue-600 shadow-sm">
+                                            <i class="fas fa-map-marker-alt text-white text-[10px]"></i>
+                                        </div>
+                                        <div>
+                                            <span class="block text-blue-700 uppercase font-bold" style="font-size: 0.65rem;">Ubicación</span>
+                                            <div class="text-[11px] font-medium text-blue-900 leading-tight">
+                                                <span id="detalle-estado"></span>, <span id="detalle-municipio"></span>, <span id="detalle-parroquia"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2.5 rounded-lg border border-gray-200" style="background-color: #f0f7ff;">
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-white border border-blue-200">
+                                            <i class="fas fa-clipboard-list text-blue-500 text-[10px]"></i>
+                                        </div>
+                                        <div>
+                                            <span class="block text-blue-600 uppercase font-bold" style="font-size: 0.65rem;">Descripción del Caso</span>
+                                            <div class="text-[11px] text-gray-700 italic leading-snug" id="detalle-descripcion"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-200">
+                                        <i class="fas fa-user-shield text-gray-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-gray-500 uppercase font-bold" style="font-size: 0.65rem;">Operador</span>
+                                        <div class="text-xs font-medium text-gray-800" id="detalle-usuario-operador"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-green-500">
+                                        <i class="fas fa-paper-plane text-white text-[10px]"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-gray-500 uppercase font-bold" style="font-size: 0.65rem;">Remitido a</span>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-white font-bold mt-1" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); font-size: 10px;" id="detalle-unidad-adm"></span>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2 border-t border-gray-100">
+                                    <label for="docu-casos" class="block text-gray-500 uppercase font-bold mb-1" style="font-size: 0.65rem;">Documentos Caso</label>
+                                    <select id="docu-casos" name="docu-casos" class="w-full text-[11px] border-2 border-gray-100 rounded-md p-1.5 focus:ring-2 focus:ring-blue-400 outline-none transition-all bg-white">
+                                        <option value="0" selected disabled>Seleccione documento...</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

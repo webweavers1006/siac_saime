@@ -1542,15 +1542,14 @@ function getFormattedDate() {
                     Swal.fire({ icon: "error", html: '<strong>EL USUARIO DEBE TENER ALGÚN TIPO DE ATENCIÓN.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
                     hasError = true;
                 } 
-                // Validación 3: Tipo de PI si el Tipo de atención es 1
-                else if (tipo_atencion == 1 && tipo_prop_intelec == null) 
+// Validación dinámica Paso 2: Si .tipoproint VISIBLE, #tipo-pi obligatorio
+                else if ($('.tipoproint').is(':visible') && ($("#tipo-pi").val() === null || $("#tipo-pi").val() === '0' || $("#tipo-pi").val() === '')) 
                 {
                     $("#tipo-atencion-usu").removeClass('is-invalid');
                     $("#tipo-pi").addClass('is-invalid');
                     focusAndScroll("#tipo-pi");
                     Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
                     hasError = true;
-
                 } 
                 // Validación 4: Tipo de atención 23 (Lógica de contraparte)
                 else if (tipo_atencion == 23) {
