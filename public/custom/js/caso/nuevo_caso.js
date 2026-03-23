@@ -1090,7 +1090,7 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
         dataType: 'JSON',
         success: function(data) {
             // Compatibilidad PHP 8.4: Asegurar que data sea un objeto/array
-            let registros = (typeof data === 'string') ? JSON.parse(data.trim()) : data;
+let registros = safeParseJSON(data);
 
             // 2. Filtrar PRIMERO los datos antes de decidir si mostrar el select
             if (idTipoAtencion !== undefined && registros) {
@@ -1130,7 +1130,24 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
 
 
 
- //METODO PARA GUARDAR EL CASO 
+// 🔧 FUNCIÓN safeParseJSON() - AL TOP DEL ARCHIVO (CRÍTICO)
+function safeParseJSON(data) {
+    try {
+        if (typeof data === 'string') {
+            const trimmed = data.trim();
+            if (trimmed === '' || trimmed === 'null') return {error: true, mensaje: 8};
+            return JSON.parse(trimmed);
+        }
+        if (data && typeof data === 'object') return data;
+        console.error('Respuesta AJAX inválida:', data);
+        return {error: true, mensaje: 2};
+    } catch (e) {
+        console.error('Error parsing JSON:', e, data);
+        return {error: true, mensaje: 2};
+    }
+}
+
+//METODO PARA GUARDAR EL CASO 
  $(document).on("click", "#guardar", function(e) {
      e.preventDefault();
      let tipo_prop_intelec = $("#tipo-pi").val();
@@ -1312,64 +1329,28 @@ function llenar_detalle_atencion(e, idTipoAtencion) {
                           
                       },
                       success: function(data) {
-                         let res = JSON.parse(data.trim());
-                         $("button[type=button]").attr('disabled', 'false');
-                          if (res.mensaje === 1) {
-                              Swal.fire({
-                                  icon: "success",
-                                  type: 'success',
-                                  html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + res.idcaso + '</strong>',
-                                  toast: true,
-                                  position: "center",
-                                  showConfirmButton: false,
-                                  //timer: 3500,
-                              });
-                              setTimeout(function() {
-                                  window.location = "/casos";
-                              }, 1500);
-                          } else if (res.mensaje === 2) {
+                          const res = safeParseJSON(data);
+                          $("button[type=button]").prop('disabled', false);
+                          
+                          // ✅ UNIFICADA: Maneja mensaje 1,2,7,8 y errores
+                          if (res.error || res.mensaje !== 1) {
+                              let msg = 'Error desconocido';
+                              if (res.mensaje === 2 || res.mensaje === 7) msg = 'Error al procesar el requerimiento.';
+                              else if (res.mensaje === 8) msg = 'Usuario no encontrado.';
+                              
                               Swal.fire({
                                   icon: "error",
-                                  type: 'error',
-                                  html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                  toast: true,
-                                  position: "center",
-                                  showConfirmButton: false,
-                                  //timer: 3000,
-                              });
-                              setTimeout(function() {
-                                  window.location = "/casos";
-                              }, 1500);
+                                  html: `<strong>${msg}</strong>`,
+                                  toast: true, position: "center", timer: 3000
+                              }).then(() => window.location = "/casos");
+                              return;
                           }
-else if (res.mensaje === 7) {
-                            Swal.fire({
-                                icon: "error",
-                                type: 'error',
-                                html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                                toast: true,
-                                position: "center",
-                                showConfirmButton: false,
-                                //timer: 3000,
-                            });
-                            setTimeout(function() {
-                                window.location = "/casos";
-                            }, 1500);
-                        }
-                        //NO SE ENCONTRO EL ID DEL USUARIO
-                        else if (res.mensaje === 8) {
-                            Swal.fire({
-                                icon: "error",
-                                type: 'error',
-                                html: '<strong>Hubo un error en el proceso del registro .</strong>',
-                                toast: true,
-                                position: "center",
-                                showConfirmButton: false,
-                                //timer: 3000,
-                            });
-                            setTimeout(function() {
-                                window.location = "/casos";
-                            }, 1500);
-                        }
+                          
+                          Swal.fire({
+                              icon: "success",
+                              html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                              toast: true, position: "center", timer: 2000
+                          }).then(() => window.location = "/casos");
                       }
                   });
  
@@ -1620,32 +1601,21 @@ else if (res.mensaje === 7) {
                         // Opcional: Deshabilitar el botón aquí para evitar envíos múltiples.
                     },
                     success: function(respuesta) {
-                        // Se corrige el valor de 'disabled' a 'true' o 'false', pero es mejor usar .prop() o .removeAttr()
-                        $("button[type=button]").removeAttr('disabled'); // **Habilitar el botón**
+                        $("button[type=button]").prop('disabled', false);
                         
-                        if (respuesta.mensaje === 1) {
+                        const res = safeParseJSON(respuesta);
+                        if (res.mensaje === 1) {
                             Swal.fire({
                                 icon: "success",
-                                html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + respuesta.idcaso + '</strong>',
-                                toast: true,
-                                position: "center",
-                                showConfirmButton: false,
-                            });
-                            setTimeout(function() {
-                                window.location = "/casos";
-                            }, 1500);
-                        } else if (respuesta.mensaje === 2 || respuesta.mensaje === 7) { 
-                            // **CORRECCIÓN 6: Se agrupan los mensajes de error para evitar duplicación de código.**
+                                html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                                toast: true, position: "center", timer: 2000
+                            }).then(() => window.location = "/casos");
+                        } else {
                             Swal.fire({
                                 icon: "error",
-                                html: '<strong>Hubo un error en el registro del requerimiento del usuario.</strong>',
-                                toast: true,
-                                position: "center",
-                                showConfirmButton: false,
-                            });
-                            setTimeout(function() {
-                                window.location = "/casos";
-                            }, 1500);
+                                html: '<strong>Error al procesar mediación.</strong>',
+                                toast: true, position: "center", timer: 3000
+                            }).then(() => window.location = "/casos");
                         }
                     }
                 });
@@ -1733,49 +1703,22 @@ else if (res.mensaje === 7) {
                      
                  },
                  success: function(respuesta) {
-                     $("button[type=button]").attr('disabled', 'false');
-                     if (respuesta.mensaje === 1) {
+                     $("button[type=button]").prop('disabled', false);
+                     
+                     const res = safeParseJSON(respuesta);
+                     if (res.mensaje === 1) {
                          Swal.fire({
                              icon: "success",
-                             type: 'success',
-                             html: '<strong>Caso registrado exitosamente con el Nª' + ' ' + ' ' + respuesta.idcaso + '</strong>',
-                             toast: true,
-                             position: "center",
-                             showConfirmButton: false,
-                             //timer: 3500,
- 
-                         });
-                         setTimeout(function() {
-                             window.location = "/casos";
-                         }, 1500);
-                     } else if (respuesta.mensaje === 2) {
+                             html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                             toast: true, position: "center", timer: 2000
+                         }).then(() => window.location = "/casos");
+                     } else {
                          Swal.fire({
                              icon: "error",
-                             type: 'error',
-                             html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                             toast: true,
-                             position: "center",
-                             showConfirmButton: false,
-                             //timer: 1500,
-                         });
-                         setTimeout(function() {
-                             window.location = "/casos";
-                         }, 1500);
+                             html: '<strong>Error en el registro.</strong>',
+                             toast: true, position: "center", timer: 3000
+                         }).then(() => window.location = "/casos");
                      }
-                     else if (respuesta.mensaje === 7) {
-                        Swal.fire({
-                            icon: "error",
-                            type: 'error',
-                            html: '<strong>Hubo un error en el registro del requerimiento del usuario .</strong>',
-                            toast: true,
-                            position: "center",
-                            showConfirmButton: false,
-                            //timer: 3000,
-                        });
-                        setTimeout(function() {
-                            window.location = "/casos";
-                        }, 1500);
-                    }
                  }
              });
          }
