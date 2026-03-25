@@ -91,16 +91,8 @@ public function getAllUsers_filtro()
 			} else {
 				// Elimina cualquier espacio en blanco innecesario
 				$value = trim($value);
-				// Aplica reglas de validación y saneamiento generales
-				$value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-				// Verifica si el valor es un string
-				if (is_string($value)) {
-					// Aplica reglas de validación y saneamiento adicionales para strings
-					$value = preg_replace('/[^a-zA-Z0-9\s\.\,\-\@\$\yZz\/]/', '', $value);
-				} elseif (is_numeric($value)) {
-					// Aplica reglas de validación y saneamiento adicionales para números
-					$value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-				}
+				// NO aplicar FILTER_FLAG_STRIP_HIGH para preservar acentos
+				$value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 				$validados[$key] = $value;
 			}
 		}

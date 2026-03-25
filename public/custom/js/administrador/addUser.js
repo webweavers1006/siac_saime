@@ -313,7 +313,7 @@ $(document).on('submit', "#new-user", function(e) {
                             method: "POST",
                             dataType: "JSON",
                             data: {
-                                "data": btoa(JSON.stringify(datos))
+                                "data": btoa(unescape(encodeURIComponent(JSON.stringify(datos))))
                             },
                             beforeSend: function() {
                                 // $("button[type=submit]").attr('disabled', "true");
@@ -455,7 +455,7 @@ $(document).on('submit', "#new-user", function(e) {
                             method: "POST",
                             dataType: "JSON",
                             data: {
-                                "data": btoa(JSON.stringify(datos))
+                                "data": btoa(unescape(encodeURIComponent(JSON.stringify(datos))))
                             },
                             beforeSend: function() {
                                 // $("button[type=submit]").attr('disabled', "true");
@@ -822,7 +822,7 @@ $(document).on('submit', "#edit-user", function(e) {
                                     method: "POST",
                                     dataType: "JSON",
                                     data: {
-                                        "data": btoa(JSON.stringify(datos))
+                                        "data": btoa(unescape(encodeURIComponent(JSON.stringify(datos))))
                                     },
                                     beforeSend: function() {
                                         $("button[type=submit]").attr('disabled', "true");
@@ -903,7 +903,7 @@ $(document).on('submit', "#edit-user", function(e) {
                                     method: "POST",
                                     dataType: "JSON",
                                     data: {
-                                    data: btoa(JSON.stringify(userData)),
+                                    data: btoa(unescape(encodeURIComponent(JSON.stringify(userData)))),
                                     },
                                     beforeSend: function() {
                                     $("button[type=submit]").attr('disabled', "true");
@@ -973,7 +973,7 @@ $(document).on('submit', "#edit-user", function(e) {
                                 method: "POST",
                                 dataType: "JSON",
                                 data: {
-                                data: btoa(JSON.stringify(datos)),
+                                data: btoa(unescape(encodeURIComponent(JSON.stringify(datos)))),
                                 },
                                 beforeSend: function() {
                                 $("button[type=submit]").attr('disabled', "true");
@@ -1022,7 +1022,7 @@ $(document).on('submit', "#edit-user", function(e) {
                         method: "POST",
                         dataType: "JSON",
                         data: {
-                        data: btoa(JSON.stringify(userData)),
+                        data: btoa(unescape(encodeURIComponent(JSON.stringify(userData)))),
                         },
                         beforeSend: function() {
                         $("button[type=submit]").attr('disabled', "true");
@@ -1075,14 +1075,14 @@ $('#listar_usuarios').on('click', '.Bloquear', function(e) {
     }).then((result) => {
         if (result.value) {
             // Aquí puedes agregar la lógica para salir de la página
-            $.ajax({
-                url: "/Bloquear_User",
-                method: "POST",
-                dataType: "JSON",
-                data: {
-                    "data": btoa(JSON.stringify(datos))
-                },
-                beforeSend: function() {
+                $.ajax({
+                    url: "/Bloquear_User",
+                    method: "POST",
+                    dataType: "JSON",
+                    data: {
+                        "data": btoa(unescape(encodeURIComponent(JSON.stringify(datos))))
+                    },
+                    beforeSend: function() {
 
                 }
             }).then((response) => {

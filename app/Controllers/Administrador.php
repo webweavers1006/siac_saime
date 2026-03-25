@@ -112,7 +112,7 @@ class Administrador extends BaseController
 		$model_buscarusuario = new Usuarios();
 
 		if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), true);
 			$query_usuarios = $model_buscarusuario->obtenerUsuario($datos["useremail"]);
 
 			if (!empty($query_usuarios)) {
@@ -195,7 +195,7 @@ class Administrador extends BaseController
 		$model = new Usuarios();
 		$data = array();
 		if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), true);
 			$query = $model->obtenerUsuarioPorId($datos["userid"]);
 			if ($query->getNumRows() > 0) {
 				foreach ($query->getResult() as $row) {
@@ -266,7 +266,7 @@ class Administrador extends BaseController
     $model = new Usuarios();
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), true);
         $cambio_clave = $datos["modulo_clave"];
         if ($cambio_clave == 'true') {
             $datos_a_actualizar = array(
@@ -335,7 +335,7 @@ class Administrador extends BaseController
 {
     $model = new Usuarios();
     if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), true);
         
         $query = $model->actualizarUsuario(array(
             "idusuopr"   => $datos["idusuopr"],

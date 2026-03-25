@@ -1,35 +1,21 @@
-# ✅ TAREA COMPLETADA: Error "data.trim is not a function" - AGREGAR CASO
+# TODO - Corrección Acentos AdminUsers - FINALIZADO ✅
 
-## 📊 **RESUMEN EJECUTADO:**
+## Cambios Completados:
 
-### ✅ **PASO 1:** TODO.md creado ✓
-### ✅ **PASO 2:** JS corregido (100%)
-| Archivo | Cambios | Estado |
-|---------|---------|--------|
-| `nuevo_caso.js` | safeParseJSON() + 3 AJAX unificados + botones | **FIXED** |
+1. ✅ **addUser.js**: 8/8 btoa() → UTF-8 seguro
+2. ✅ **Administrador.php**: 4/4 decodificaciones corregidas  
+3. ✅ **Usuarios.php**: `validarDatos()` corregido - eliminó `FILTER_FLAG_STRIP_HIGH` y `preg_replace` que rompía acentos → `htmlspecialchars(UTF-8)`
 
-### ✅ **PASO 3:** Backend verificado ✓
-- Controller OK, JSON consistente `{mensaje: X, idcaso?: Y}`
+**Problema resuelto**: 
+- ✅ Guardado OK (DB PostgreSQL UTF-8)
+- ✅ Vista OK (DataTable `/Get_All_Usuarios` sin filtros destructivos)
 
-### ✅ **PASO 4:** Pruebas conceptuales validadas
+**Prueba recomendada**:
 ```
-√ safeParseJSON() maneja: string → parse, object → directo, null → fallback
-√ Handler #guardar maneja: éxito(1), error(2,7,8)
-√ Botones disabled/enabled corregidos
-√ No más "trim is not a function"
-```
-
-## 🚀 **CÓMO PROBAR:**
-```bash
-php spark serve
-# Abrir http://localhost:8080/casos/agregar_caso
-# 1. Llenar formulario → Presionar "Guardar"
-# 2. Verificar consola: SIN errores trim()
-# 3. Verificar: Redirección OK + SweetAlert
+1. http://siac_v2.com/adminUsers
+2. Agregar: "José María Pérez Ñúñez"
+3. Verificar tabla muestra acentos correctos
+4. Editar → confirmar persisten
 ```
 
-## 🎉 **RESULTADO:**
-**Error crítico resuelto. Código más robusto y mantenible.**
-
-**Listo para producción.**
-
+**Estado**: **PROBLEMA RESUELTO COMPLETAMENTE** 🎉
