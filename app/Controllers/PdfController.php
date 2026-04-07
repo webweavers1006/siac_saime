@@ -5,342 +5,197 @@ namespace App\Controllers;
 use App\Models\Pdf_Model;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\Casos_denuncias_Model;
-
 use App\Models\Mediacion;
-
 use CodeIgniter\RESTful\ResourceController;
-use VARIANT;
 
 class PdfController extends BaseController
 {
-	use ResponseTrait;
+    use ResponseTrait;
 
-
-	/*
-      * Función parar cargar los registros del Módulo en el Data Table o en las Persianas
-      */
-
-	public function generar_pdf($idcaso = null)
-	{
-		$model = new Pdf_Model();
-	
-		$model_denuncias = new Casos_denuncias_Model();
-		$query_tipo_atencion = $model->obtenerCasos($idcaso);		
-		$query_pdf = $model->obtenerCasos($idcaso);
-		
-		
-		foreach ($query_tipo_atencion as $tipoatencion) {
-			$datos_tipoatencion['id_tipo_atencion']         = $tipoatencion->id_tipo_atencion;
-		}
-
-		// Cargar la biblioteca FPDF
-		$pdf = new \FPDF('P', 'mm', 'letter');
-		$pdf->AddPage();
-		if ($datos_tipoatencion['id_tipo_atencion'] == 1)
-		{
-			$pdf->Header_Asesoria($datos_tipoatencion);
-			if (empty($query_pdf)) {
-				$pdf->cell(196, 5, utf8_decode('Sin Información Coincidente'), 1, 1, 'C', 1);
-			} else {
-				foreach ($query_pdf as $query_pdf) {
-					$caso = $query_pdf->idcaso;
-					$fecha_caso = $query_pdf->casofec;
-					$nombre = $query_pdf->nombre;
-					$cedula = $query_pdf->cedula;
-					$caso_hora = $query_pdf->caso_hora;
-					$direccion = $query_pdf->direccion;
-					$correo = $query_pdf->correo;
-					$casotel = $query_pdf->casotel;
-					$municipionom = $query_pdf->municipionom;
-					$parroquianom = $query_pdf->parroquianom;
-					$ente_nombre = $query_pdf->ente_nombre;
-					$pdf->SetXY(40, 63);
-					$pdf->Cell(10, 5, $caso, 0, 0, 'L');
-					$pdf->SetXY(96, 63);
-					$pdf->Cell(20, 5, $fecha_caso, 0, 0, 'C');
-					$pdf->SetXY(155, 63);
-					$pdf->Cell(20, 5, $caso_hora, 0, 0, 'C');
-					$pdf->SetXY(42, 83);
-					$pdf->Cell(60, 5, iconv("UTF-8", "CP1252", $nombre), 0, 0, 'C');
-					$pdf->SetXY(135, 90);
-					$pdf->Cell(20, -10, $cedula, 0, 0, 'C');
-					$pdf->SetXY(75, 99);
-					//$pdf->Cell(90, -10, $direccion, 0, 0, 'L');
-					$pdf->SetXY(27, 99);
-					$pdf->Cell(20, -10, iconv("UTF-8", "CP1252", $municipionom), 0, 0, 'C');
-					$pdf->SetXY(27, 99);
-					$pdf->Cell(130, -10, iconv("UTF-8", "CP1252", $parroquianom), 0, 0, 'C');
-					$pdf->SetXY(133, 98);
-					$pdf->Cell(20, -10, $casotel, 0, 0, 'C');
-					$pdf->SetXY(42, 108);
-					$pdf->Cell(90, -10, $correo, 0, 0, 'L');
-					$pdf->SetXY(33, 124);
-					$pdf->Cell(90, 5 - 10, $ente_nombre, 0, 0, 'L');
-					$datos_Content_Planilla['casodesc']         = $query_pdf->casodesc;
-					$datos_Content_Planilla['user_name']        = $query_pdf->user_name;
-					$datos_Content_Planilla['competencia_cgr']  = $query_pdf->competencia_cgr;
-					$datos_Content_Planilla['asume_cgr']        = $query_pdf->asume_cgr;
-					$datos_Content_Planilla['usercargo']        = $query_pdf->usercargo;
-				}
-				$pdf->Content_Asesoria($datos_Content_Planilla);
-				$pdf->SetMargins(10, 10);
-				$pdf->SetAutoPageBreak(true, 10);
-				$pdf->Footer_Planilla();
-				$this->response->setHeader('Content-Type', 'application/pdf');
-				$pdf->Output("SIAC.pdf", "I");
-			}
-		} else if ($datos_tipoatencion['id_tipo_atencion'] == 5) {
-			$pdf->Header_Denuncia($datos_tipoatencion);
-			foreach ($query_pdf as $query_pdf) {
-				$caso = $query_pdf->idcaso;
-				$fecha_caso = $query_pdf->casofec;
-				$nombre = $query_pdf->nombre;
-				$cedula = $query_pdf->cedula;
-				$caso_hora = $query_pdf->caso_hora;
-				$direccion = $query_pdf->direccion;
-				$correo = $query_pdf->correo;
-				$casotel = $query_pdf->casotel;
-				$municipionom = $query_pdf->municipionom;
-				$parroquianom = $query_pdf->parroquianom;
-				$pdf->SetXY(40, 71);
-				$pdf->Cell(10, -11, $caso, 0, 0, 'L');
-				$pdf->SetXY(96, 63);
-				$pdf->Cell(20, 5, $fecha_caso, 0, 0, 'C');
-				$pdf->SetXY(155, 71);
-				$pdf->Cell(20, -11, $caso_hora, 0, 0, 'C');
-				$pdf->SetXY(35, 90);
-				$pdf->Cell(60, -10, iconv("UTF-8", "CP1252", $nombre), 0, 0, 'C');
-				$pdf->SetXY(24, 99);
-				$pdf->Cell(235, -27, $cedula, 0, 0, 'C');
-		
-				$pdf->SetXY(25, 99);
-				$pdf->Cell(20, -10, iconv("UTF-8", "CP1252", $municipionom), 0, 0, 'C');
-				$pdf->SetXY(26, 99);
-				$pdf->Cell(130, -10, iconv("UTF-8", "CP1252", $parroquianom), 0, 0, 'C');
-				$pdf->SetXY(133, 99);
-				$pdf->Cell(20, -10, $casotel, 0, 0, 'C');
-				$pdf->SetXY(42, 117);
-				$pdf->Cell(90, -27, $correo, 0, 0, 'L');
-				$datos_Content_Planilla['casodesc']         = $query_pdf->casodesc;
-				$datos_Content_Planilla['user_name']        = $query_pdf->user_name;
-			}
-			$query_info_denuncia = $model_denuncias->info_denuncias($idcaso);
-
-
-			foreach ($query_info_denuncia as $info_denuncia) {
-				$datos_Content_Planilla['denu_afecta_persona']         = $info_denuncia->denu_afecta_persona;
-				$datos_Content_Planilla['denu_afecta_comunidad']        = $info_denuncia->denu_afecta_comunidad;
-				$datos_Content_Planilla['denu_afecta_terceros']        = $info_denuncia->denu_afecta_terceros;
-				$datos_Content_Planilla['usercargo']        = $query_pdf->usercargo;
-				$denu_fecha_hechos = $info_denuncia->denu_fecha_hechos;
-				$denu_instancia_popular = $info_denuncia->denu_instancia_popular;
-				$denu_rif_instancia = $info_denuncia->denu_rif_instancia;
-				$denu_ente_financiador = $info_denuncia->denu_ente_financiador;
-				$denu_nombre_proyecto = $info_denuncia->denu_nombre_proyecto;
-				$denu_monto_aprovado = $info_denuncia->denu_monto_aprovado;
-				$denu_involucrados = $info_denuncia->denu_involucrados;
-				$pdf->SetXY(10, 126);
-				$pdf->MultiCell(195, 5, iconv('utf-8', 'cp1252', $denu_involucrados), 0, 1, 'LRT', 'J', 0);
-				$pdf->Cell(64, 5, '3- Fecha en que ocurrieron los hechos : ', 0, 0, 'L', 0);
-				$pdf->Cell(18, 5, $denu_fecha_hechos, 1, 1, 'C');
-				$pdf->Ln(3);
-				$pdf->Cell(190, 5, iconv('utf-8', 'cp1252', 'EN CASO DE TRATARSE DE UNA INSTANCIA DEL PODER POPULAR INDIQUE  :'), 1, 1, 'C', 'C');
-				$pdf->Ln(2);
-				$pdf->Cell(50, 5, ' 4- Nombre de la instancia del Poder Popular : ', 0, 0, 'L', 0);
-				$pdf->Cell(80, 5, $denu_instancia_popular, 0, 1, 'C');
-				$pdf->Ln(2);
-				$pdf->Cell(15, 5, ' 5- RIF : ', 0, 0, 'L', 0);
-				$pdf->Cell(30, 5, $denu_rif_instancia, 0, 0, 'L');
-				$pdf->Cell(35, 5, ' 6- Ente Financiador : ', 0, 0, 'L', 0);
-				$pdf->Cell(30, 5, $denu_ente_financiador, 0, 1, 'L');
-				$pdf->Ln(2);
-				$pdf->Cell(40, 5, ' 7- Nombre del proyecto : ', 0, 0, 'L', 0);
-				$pdf->Cell(60, 5, $denu_nombre_proyecto, 0, 0, 'L');
-				$pdf->Cell(35, 5, ' 8- Monto Aprobado : ', 0, 0, 'L', 0);
-				$pdf->Cell(30, 5, $denu_monto_aprovado, 0, 0, 'L');
-				$pdf->Ln(7);
-				$pdf->Cell(190, 5, iconv('utf-8', 'cp1252', 'BREVE DESCRIPCIÓN DE LA DENUNCIA :'), 1, 1, 'C', 'C');
-				$descripcion_casodesc = iconv('utf-8', 'cp1252', $datos_Content_Planilla['casodesc']);
-				$pdf->Ln(2);
-				$pdf->MultiCell(195, 5, trim($descripcion_casodesc), 0, 1, 'LRT', 'J', 0);
-				$pdf->Ln(3);
-				$pdf->Cell(156, 5, 'Anexa documentos :     SI: ________ No ________ Original: _______ Copias: _______ Paginas: _______:', 0, 1, 'C', 'L');
-				$pdf->Ln(2);
-				$pdf->Cell(50, 9, 'Receptor: ' . '  ' . '   ' . $datos_Content_Planilla['user_name'], '  ', 0, 0, 'L', 'L');
-				$pdf->Cell(50, 5, ' ', 0, 0, 'L', 0);
-				$pdf->Cell(59, 9, 'Cargo: ' . '  ' . '   ' . $datos_Content_Planilla['usercargo'], '  ', 0, 0, 'L', 'L');
-				$pdf->Ln(10);
-				$pdf->Cell(64, 9, 'Fecha: ______________________________', 0, 0, 'C', 'L');
-				$pdf->Cell(60, 9, '  ', 0, 0, 'C', 'L');
-				$pdf->Cell(60, 9, 'Firma: ______________________________', 0, 0, 'C', 'L');
-				$pdf->Ln(12);
-				$pdf->MultiCell(190, 5, iconv('utf-8', 'cp1252', 'IMPORTANTE: SI LA DENUNCIA RESULTARE FALSA E INFUNDIDA O VERSARE SOBRE HECHOS QUE NO MERITEN AVERIGUACIÓN O CUYA SUSTANCIACIÓN NO CORRESPONDA A ESTA CONTRALORÍA SE PROCEDERÁ A DEJAR CONSTANCIA MEDIANTE AUTO EXPRESO. :'), 0, 1, 'C', 'C');
-			}
-			$pdf->Content_Denuncia($datos_Content_Planilla);
-			$pdf->SetMargins(10, 10);
-			$pdf->SetAutoPageBreak(true, 10);
-			$pdf->Footer_Planilla();
-			$this->response->setHeader('Content-Type', 'application/pdf');
-			$pdf->Output("SIAC.pdf", "I");
-		} 
-	else if ($datos_tipoatencion['id_tipo_atencion'] == 23) 
-{
-    // 1. Recolectar datos del Caso General
-    $datos_caso = [];
-    $idcaso = null;
-    $tipo_prop_nombre = '';
-
-    foreach ($query_pdf as $query_item) {
-        $idcaso = $query_item->idcaso; 
-        $datos_caso['caso']         = $query_item->idcaso;
-        $datos_caso['fecha_caso']   = $query_item->casofec;
-        $datos_caso['nombre']       = $query_item->nombre;
-        $datos_caso['cedula']       = $query_item->cedula;
-        $datos_caso['correo']       = $query_item->correo;
-        $datos_caso['casotel']      = $query_item->casotel;
-        $datos_caso['casodesc']     = $query_item->casodesc;
-        $datos_caso['user_name']    = $query_item->user_name;
+    public function generar_pdf($idcaso = null)
+    {
+        $model = new Pdf_Model();
+        $model_denuncias = new Casos_denuncias_Model();
         
-        // Campos de ubicación base
-        $datos_caso['paisnom']      = $query_item->paisnom ?? '';
-        $datos_caso['estadonom']    = $query_item->estadonom ?? '';
-        $datos_caso['municipionom'] = $query_item->municipionom ?? '';
-        $datos_caso['parroquianom'] = $query_item->parroquianom ?? '';
-        
-        $tipo_prop_nombre           = $query_item->tipo_prop_nombre; 
-        break; 
-    }
+        $query_pdf = $model->obtenerCasos($idcaso);
 
-    // 2. Instanciar el modelo de mediación
-    $mediacion = new \App\Models\Mediacion();
-    $info_mediacion = $mediacion->buscar_Info_Mediacion($idcaso);
-    $datos_mediacion = $info_mediacion[0] ?? (object)[]; 
+        if (empty($query_pdf)) {
+            return $this->failNotFound('No se encontró información para el caso.');
+        }
 
-    // --- FUNCIÓN DE APOYO PARA EVITAR COMAS VACÍAS ---
-    // Esta función revisa si hay datos, si no hay nada, devuelve 'N/A'
-    $formarUbicacion = function($p, $e, $m, $pa) {
-        $partes = [];
-        if (!empty(trim($p)))  $partes[] = trim($p);
-        if (!empty(trim($e)))  $partes[] = trim($e);
-        if (!empty(trim($m)))  $partes[] = "Mun. " . trim($m);
-        if (!empty(trim($pa))) $partes[] = "Parr. " . trim($pa);
-        
-        return empty($partes) ? 'N/A' : implode(' / ', $partes);
-    };
+        $row = (is_array($query_pdf)) ? $query_pdf[0] : $query_pdf;
+        $id_tipo_atencion = $row->id_tipo_atencion;
 
-    // 3. Mapeo de Datos a la Planilla
-    $datos_para_planilla = [
-        'caso'             => $datos_caso['caso'],
-        'fecha_caso'       => $datos_caso['fecha_caso'],
-        'casodesc'         => $datos_caso['casodesc'],
-        'user_name'        => $datos_caso['user_name'], 
-        'tipo_prop_nombre' => $tipo_prop_nombre,
+        // Inicializamos FPDF
+        $pdf = new \FPDF('P', 'mm', 'letter');
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetAutoPageBreak(true, 15);
 
-        // --- A. DATOS DEL SOLICITANTE ---
-        'A_nombre'    => $datos_caso['nombre'],
-        'A_cedula'    => $datos_caso['cedula'],
-        'A_telefono'  => $datos_caso['casotel'],
-        'A_correo'    => $datos_caso['correo'], 
-        'A_ubicacion_completa' => $formarUbicacion($datos_caso['paisnom'], $datos_caso['estadonom'], $datos_caso['municipionom'], $datos_caso['parroquianom']),
+        // Color Azul SAPI para Títulos
+        $azul_sapi = [25, 55, 90];
 
-        // --- B. APODERADO SOLICITANTE ---
-        'B_nombre'   => $datos_mediacion->nombre_apo_sol ?? '',
-        'B_CI'       => $datos_mediacion->id_apo_sol ?? '',
-        'B_IMPRE'    => $datos_mediacion->impre_abogado_apo_sol ?? '',
-        'B_telefono' => $datos_mediacion->telefono_apo_sol ?? '',
-        'B_correo'   => $datos_mediacion->correo_apo_sol ?? '',
-        'B_direccion'=> $datos_mediacion->direccion_apo_sol ?? '',
-        'B_ubicacion_completa' => $formarUbicacion(
-            $datos_mediacion->pais_apo_sol ?? '', 
-            $datos_mediacion->estado_apo_sol ?? '', 
-            $datos_mediacion->municipio_apo_sol ?? '', 
-            $datos_mediacion->parroquia_apo_sol ?? ''
-        ),
+        // --- 1. ASESORÍA ---
+        if ($id_tipo_atencion == 1) {
+            $pdf->AddPage();
+            $info_pdf = [
+                'caso'         => $row->idcaso,
+                'fecha_caso'   => $row->casofec,
+                'caso_hora'    => $row->caso_hora,
+                'nombre'       => $row->nombre,
+                'cedula'       => $row->cedula,
+                'municipionom' => $row->municipionom,
+                'parroquianom' => $row->parroquianom,
+                'casotel'      => $row->casotel,
+                'correo'       => $row->correo,
+                'ente'         => $row->ente_nombre,
+                'casodesc'     => $row->casodesc,
+                'user_name'    => $row->user_name,
+                'usercargo'    => $row->usercargo
+            ];
+            $pdf->Header_Asesoria($info_pdf); 
+            $pdf->Content_Asesoria($info_pdf);
+            $pdf->Footer_Planilla();
+        }
 
-        // --- C. CONTRAPARTE ---
-        'C_nombre'   => $datos_mediacion->nombre_contra ?? '',
-        'C_CI_RIF'   => $datos_mediacion->tipo_per_contra.$datos_mediacion->id_contra ?? '',
-        'C_telefono' => $datos_mediacion->telefono_contra ?? '',
-        'C_correo'   => $datos_mediacion->correo_contra ?? '',
-        'C_direccion'=> $datos_mediacion->direccion_contra ?? '',
-        'C_ubicacion_completa' => $formarUbicacion(
-            $datos_mediacion->pais_contra ?? '', 
-            $datos_mediacion->estado_contra ?? '', 
-            $datos_mediacion->municipio_contra ?? '', 
-            $datos_mediacion->parroquia_contra ?? ''
-        ),
+     // --- 5. DENUNCIA ---
+else if ($id_tipo_atencion == 5) {
+    $pdf->AddPage();
+    $query_info_denuncia = $model_denuncias->info_denuncias($row->idcaso);
+    $info_d = $query_info_denuncia[0] ?? null;
 
-        // --- D. APODERADO CONTRAPARTE ---
-        'D_nombre'   => $datos_mediacion->nombre_apo_contra ?? '',
-        'D_CI'       => $datos_mediacion->id_apo_contra ?? '', 
-        'D_IMPRE'    => $datos_mediacion->impre_abogado_apo_contra ?? '',
-        'D_telefono' => $datos_mediacion->telefono_apo_contra ?? '',
-        'D_correo'   => $datos_mediacion->correo_apo_contra ?? '',
-        'D_direccion'=> $datos_mediacion->direccion_apo_contra ?? '',
-        'D_ubicacion_completa' => $formarUbicacion(
-            $datos_mediacion->pais_apo_contra ?? '', 
-            $datos_mediacion->estado_apo_contra ?? '', 
-            $datos_mediacion->municipio_apo_contra ?? '', 
-            $datos_mediacion->parroquia_apo_contra ?? ''
-        ),
-    ];
+    // Cabecera principal
+    $pdf->Header_Denuncia((array)$row); 
 
-    // 4. Generación del PDF
-    $pdf->SetMargins(10, 10);
-    $pdf->SetAutoPageBreak(true, 10);
-    $pdf->Content_Planilla_SAPI($datos_para_planilla); 
-    $pdf->Footer_Mediacion();
+    // Checkboxes (Sección 1 y 2)
+    $pdf->Content_Denuncia([
+        'denu_afecta_persona'   => $info_d->denu_afecta_persona ?? 'f', 
+        'denu_afecta_comunidad' => $info_d->denu_afecta_comunidad ?? 'f', 
+        'denu_afecta_terceros'  => $info_d->denu_afecta_terceros ?? 'f'
+    ]);
+
+    // Cuadro Involucrados (Compacto)
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->SetFont('Arial', '', 8);
+    $involucrados = $info_d->denu_involucrados ?? 'N/A';
+    $pdf->MultiCell(190, 4, iconv('UTF-8', 'CP1252', $involucrados), 1, 'J');
+
+    // Sección 3: Fecha
+    $pdf->Ln(2);
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->SetTextColor(25, 55, 90);
+    $pdf->Cell(45, 5, iconv('UTF-8', 'CP1252', '3- FECHA DE LOS HECHOS: '), 0, 0, 'L');
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(30, 5, ($info_d->denu_fecha_hechos ?? 'N/A'), 'B', 1, 'L');
+
+    // Poder Popular (Compacto)
+    $pdf->Ln(2);
+    $pdf->SetFillColor(25, 55, 90);
+    $pdf->SetTextColor(255, 255, 255);
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->Cell(190, 5, iconv('UTF-8', 'CP1252', 'DATOS DEL PODER POPULAR'), 1, 1, 'C', true);
     
-    $this->response->setHeader('Content-Type', 'application/pdf');
-    $pdf->Output("SIAC_Caso_{$idcaso}.pdf", "I");
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->SetFont('Arial', '', 7);
+    $pdf->Cell(95, 5, iconv('UTF-8', 'CP1252', '  Instancia: ') . iconv('UTF-8', 'CP1252', $info_d->denu_instancia_popular ?? 'N/A'), 'LRB', 0, 'L');
+    $pdf->Cell(95, 5, '  RIF: ' . ($info_d->denu_rif_instancia ?? 'N/A'), 'RB', 1, 'L');
+    $pdf->Cell(95, 5, iconv('UTF-8', 'CP1252', '  Ente: ') . iconv('UTF-8', 'CP1252', $info_d->denu_ente_financiador ?? 'N/A'), 'LRB', 0, 'L');
+    $pdf->Cell(95, 5, '  Monto: ' . ($info_d->denu_monto_aprovado ?? '0.00'), 'RB', 1, 'L');
+
+    // Descripción
+    $pdf->Ln(2);
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->SetTextColor(25, 55, 90);
+    $pdf->Cell(190, 5, iconv('UTF-8', 'CP1252', 'BREVE DESCRIPCIÓN DE LA DENUNCIA:'), 0, 1, 'L');
+    
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->SetFont('Arial', '', 7);
+    // Limitamos la altura de la descripción para evitar que empuje el footer
+    $pdf->MultiCell(190, 3.5, iconv('UTF-8', 'CP1252', $row->casodesc), 1, 'J');
+
+    // --- SECCIÓN FIRMAS (FIJA) ---
+    // Usamos 230 para asegurar que no toque el borde de seguridad de la página
+     $pdf->Ln(40);
+   $pdf->SetFont('Arial', 'B', 7);
+
+// Ajusta el primer número (20) para moverlo más o menos a la derecha
+$pdf->Cell(20, 4, '', 0, 0); 
+
+// Reducimos un poco el ancho de las celdas (de 90 a 80) para que no se desborden por el margen derecho
+$pdf->Cell(110, 4, 'RECEPTOR: ' . iconv('UTF-8', 'CP1252', $row->user_name), 0, 0, 'L');
+$pdf->Cell(80, 4, 'CARGO: ' . iconv('UTF-8', 'CP1252', $row->usercargo), 0, 1, 'L');
+$pdf->Ln(15); // Un poco más de espacio para la firma
+
+// 2. LÍNEAS DE FIRMA: Centradas en sus respectivas columnas de 95
+$pdf->Cell(95, 4, '__________________________', 0, 0, 'C');
+$pdf->Cell(95, 4, '__________________________', 0, 1, 'C');
+
+// 3. ETIQUETAS: Centradas exactamente debajo de las líneas
+$pdf->Cell(95, 4, 'FECHA', 0, 0, 'C');
+$pdf->Cell(95, 4, 'FIRMA DEL SOLICITANTE', 0, 1, 'C');
+    // El Footer_Planilla ya no debería saltar de página
+    $pdf->Footer_Planilla();
 }
 
-		
-		
-		else {
-			$pdf->Header_Planilla($datos_tipoatencion);
-			foreach ($query_pdf as $query_pdf) {
-				$caso = $query_pdf->idcaso;
-				$fecha_caso = $query_pdf->casofec;
-				$nombre = $query_pdf->nombre;
-				$cedula = $query_pdf->cedula;
-				$caso_hora = $query_pdf->caso_hora;
-				$direccion = $query_pdf->direccion;
-				$correo = $query_pdf->correo;
-				$casotel = $query_pdf->casotel;
-				$municipionom = $query_pdf->municipionom;
-				$parroquianom = $query_pdf->parroquianom;
-				$pdf->SetXY(25, 63);
-				$pdf->Cell(10, 5, $caso, 0, 0, 'L');
-				$pdf->SetXY(58, 63);
-				$pdf->Cell(20, 5, $fecha_caso, 0, 0, 'C');
-				$pdf->SetXY(155, 71);
-				$pdf->Cell(-108, -10, $caso_hora, 0, 0, 'C');
-				$pdf->SetXY(60, 82);
-				$pdf->Cell(29, 5, iconv('utf-8', 'cp1252', $nombre), 0, 0, 'C');
-				$pdf->SetXY(125, 90);
-				$pdf->Cell(20, -10, $cedula, 0, 0, 'C');
-				$pdf->SetXY(75, 99);
-				//$pdf->Cell(90, -10, $direccion, 0, 0, 'L');
-				$pdf->SetXY(30, 99);
-				$pdf->Cell(20, -10, iconv("UTF-8", "CP1252", $municipionom), 0, 0, 'C');
-				$pdf->SetXY(25, 99);
-				$pdf->Cell(130, -10, iconv("UTF-8", "CP1252", $parroquianom), 0, 0, 'C');
-				$pdf->SetXY(133, 99);
-				$pdf->Cell(20, -10, $casotel, 0, 0, 'C');
-				$pdf->SetXY(42, 117);
-				$pdf->Cell(90, -27, $correo, 0, 0, 'L');
+        // --- 23. MEDIACIÓN ---
+        else if ($id_tipo_atencion == 23) {
+            $pdf->AddPage();
+            $mediacion_model = new \App\Models\Mediacion();
+            $info_mediacion = $mediacion_model->buscar_Info_Mediacion($row->idcaso);
+            $datos_m = $info_mediacion[0] ?? (object)[]; 
 
-				$datos_Content_Planilla['casodesc']         = $query_pdf->casodesc;
-				$datos_Content_Planilla['user_name']        = $query_pdf->user_name;
-				$datos_Content_Planilla['usercargo']        = $query_pdf->usercargo;
-			}
-			$pdf->Content_planilla($datos_Content_Planilla);
-			$pdf->SetMargins(10, 10);
-			$pdf->SetAutoPageBreak(true, 10);
-			$pdf->Footer_Planilla();
-			$this->response->setHeader('Content-Type', 'application/pdf');
-			$pdf->Output("SIAC.pdf", "I");
-		}
-	}
+            $formarUbicacion = function($p, $e, $m, $pa) {
+                $partes = array_filter([trim($p ?? ''), trim($e ?? ''), $m ? "Mun. $m" : "", $pa ? "Parr. $pa" : ""]);
+                return empty($partes) ? 'N/A' : implode(' / ', $partes);
+            };
+
+            $datos_para_planilla = [
+                'caso'             => $row->idcaso,
+                'fecha_caso'       => $row->casofec,
+                'casodesc'         => $row->casodesc,
+                'user_name'        => $row->user_name, 
+                'tipo_prop_nombre' => $row->tipo_prop_nombre,
+                'A_nombre'         => $row->nombre,
+                'A_cedula'         => $row->cedula,
+                'A_telefono'       => $row->casotel,
+                'A_correo'         => $row->correo, 
+                'A_ubicacion_completa' => $formarUbicacion($row->paisnom, $row->estadonom, $row->municipionom, $row->parroquianom),
+                'B_nombre'   => $datos_m->nombre_apo_sol ?? '',
+                'B_CI'       => $datos_m->id_apo_sol ?? '',
+                'B_IMPRE'    => $datos_m->impre_abogado_apo_sol ?? '',
+                'B_telefono' => $datos_m->telefono_apo_sol ?? '',
+                'B_correo'   => $datos_m->correo_apo_sol ?? '',
+                'B_direccion'=> $datos_m->direccion_apo_sol ?? '',
+                'B_ubicacion_completa' => $formarUbicacion($datos_m->pais_apo_sol ?? '', $datos_m->estado_apo_sol ?? '', $datos_m->municipio_apo_sol ?? '', $datos_m->parroquia_apo_sol ?? ''),
+                'C_nombre'   => $datos_m->nombre_contra ?? '',
+                'C_CI_RIF'   => ($datos_m->tipo_per_contra ?? '').($datos_m->id_contra ?? ''),
+                'C_telefono' => $datos_m->telefono_contra ?? '',
+                'C_correo'   => $datos_m->correo_contra ?? '',
+                'C_direccion'=> $datos_m->direccion_contra ?? '',
+                'C_ubicacion_completa' => $formarUbicacion($datos_m->pais_contra ?? '', $datos_m->estado_contra ?? '', $datos_m->municipio_contra ?? '', $datos_m->parroquia_contra ?? ''),
+                'D_nombre'   => $datos_m->nombre_apo_contra ?? '',
+                'D_CI'       => $datos_m->id_apo_contra ?? '', 
+                'D_IMPRE'    => $datos_m->impre_abogado_apo_contra ?? '',
+                'D_telefono' => $datos_m->telefono_apo_contra ?? '',
+                'D_correo'   => $datos_m->correo_apo_contra ?? '',
+                'D_direccion'=> $datos_m->direccion_apo_contra ?? '',
+                'D_ubicacion_completa' => $formarUbicacion($datos_m->pais_apo_contra ?? '', $datos_m->estado_apo_contra ?? '', $datos_m->municipio_apo_contra ?? '', $datos_m->parroquia_apo_contra ?? ''),
+            ];
+
+            $pdf->Content_Planilla_SAPI($datos_para_planilla); 
+            $pdf->Footer_Mediacion();
+        }
+
+        // --- OTROS ---
+        else {
+            $pdf->AddPage();
+            $pdf->Header_Planilla((array)$row); 
+            $pdf->Content_planilla((array)$row);
+            $pdf->Footer_Planilla();
+        }
+
+        $this->response->setHeader('Content-Type', 'application/pdf');
+        $pdf->Output("I", "SIAC_Caso_{$row->idcaso}.pdf");
+        exit();
+    }
 }

@@ -204,42 +204,57 @@ function llenar_pais(e, id) {
         },
     });
 }
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi, nombre_aten_cuidadano, nombre_estatus = null, nombre_estado = null, nombre_org_id) {
+// 1. Variables globales para persistencia en el PDF y paginación
+let filteredCount = 0;
+let pdfHeader = '';
 
-    const FORMATO_ENTRADA = "MM/DD/YY";
-    const m_desde = moment(desde, FORMATO_ENTRADA);
-    const m_hasta = moment(hasta, FORMATO_ENTRADA);
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0) {
 
-    let dataFormatada_desde = 'Invalid date';
-    let dataFormatada_hasta = 'Invalid date';
+    // 2. CONSTRUCCIÓN DEL ENCABEZADO DINÁMICO
+    pdfHeader = '';
+    
+    // Captura de fechas directamente desde los inputs de la interfaz
+    let fechaInicio = $('input[name="desde"]').val() || desde;
+    let fechaFin = $('input[name="hasta"]').val() || hasta;
 
-    if (m_desde.isValid()) { dataFormatada_desde = m_desde.format("DD-MM-YYYY"); }
-    if (m_hasta.isValid()) { dataFormatada_hasta = m_hasta.format("DD-MM-YYYY"); }
-
-    var encabezado = '';
-    if (m_desde.isValid() && m_hasta.isValid()) {
-        encabezado += `Desde: ${dataFormatada_desde} hasta ${dataFormatada_hasta} `;
+    if (fechaInicio && fechaInicio !== 'null') {
+        let m_d = moment(fechaInicio);
+        if(m_d.isValid()) pdfHeader += 'Desde: ' + m_d.format("DD-MM-YYYY") + ' ';
+    }
+    if (fechaFin && fechaFin !== 'null') {
+        let m_h = moment(fechaFin);
+        if(m_h.isValid()) pdfHeader += 'Hasta: ' + m_h.format("DD-MM-YYYY") + ' ';
     }
 
-    // Lógica de concatenación de encabezado (Se mantiene igual)
-    if (tipo_pi != null) encabezado += 'Tipo de Propiedad: ' + nombre_propiedad + ' ';
-    if (tipo_atencion_usu != null) encabezado += 'Tipo de Atencion: ' + nombre_atencion + ' ';
-    if (sexo != null) encabezado += 'Sexo: ' + nombresexo + ' ';
-    if (nombre_estado != null && nombre_estado != '' && nombre_estado != 'Seleccione') encabezado += 'Estado: ' + nombre_estado + ' ';
-    if (edad_min != 'null' && edad_max != 'null' && edad_min != null && edad_max != null) encabezado += 'Edad: Entre ' + edad_min + ' y ' + edad_max + ' ';
-    if (via_atencion != null && via_atencion != 'null' && via_atencion != undefined) encabezado += 'Via de atencion: ' + nombre_via_atencion + ' ';
-    if (direcciones_caso != null && direcciones_caso != 'null' && direcciones_caso != undefined) encabezado += 'Remitido a: ' + nombre_direccion_remi + ' ';
-    if (tipo_beneficiario != null && tipo_beneficiario != 0) encabezado += 'Tipo beneficiario : ' + nombre_tipo_beneficiario + ' ';
-    if (atencion_cuidadano != null && atencion_cuidadano != 0) encabezado += 'Atencion Cuidadano : ' + nombre_aten_cuidadano + ' ';
-    if (org_id != null && org_id != 0) { encabezado += 'Organismo del poder popular : ' + nombre_org_id + ' '; } else { org_id = 0; }
-    if (estatus != null && estatus != 0) encabezado += 'Estatus : ' + nombre_estatus + ' ';
+    // Función para obtener texto solo si no es "seleccione" o "0"
+    const obtenerTextoLimpio = (idSelector) => {
+        let val = $(idSelector).val();
+        let txt = $(idSelector + ' option:selected').text();
+        if (!val || val === '0' || val === '' || txt.toLowerCase().includes('seleccione')) {
+            return null;
+        }
+        return txt;
+    };
+
+    // Agregar filtros adicionales al encabezado si están activos
+    let tAtencion = obtenerTextoLimpio('#tipo-atencion-usu');
+    if (tAtencion) pdfHeader += '| Atención: ' + tAtencion + ' ';
+
+    let tGenero = obtenerTextoLimpio('#sexo');
+    if (tGenero) pdfHeader += '| Género: ' + tGenero + ' ';
+
+    let tEstatus = obtenerTextoLimpio('#estatus');
+    if (tEstatus) pdfHeader += '| Estatus: ' + tEstatus + ' ';
 
     let ruta_imagen = rootpath;
 
+    // Destruir tabla previa si existe para recargar
     if ($.fn.DataTable.isDataTable('#table_casos')) {
         $('#table_casos').DataTable().destroy();
     }
     
+    filteredCount = 0; // Reiniciar contador antes de la nueva petición AJAX
+
     var table = $('#table_casos').DataTable({
         responsive: true,
         dom: 'lfrBtip', 
@@ -250,29 +265,51 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     extend: "pdf",
                     text: 'PDF',
                     className: 'btn-xs btn-dark',
-                    orientation: 'landscape',
+                    orientation: 'landscape', // Hoja Horizontal
                     pageSize: 'LETTER',
                     header: true,
                     footer: true,
-                    download: 'open',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                        // Columnas seleccionadas para el PDF (según el orden de tu tabla)
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 15, 16], 
                     },
                     customize: function(doc) {
-                        doc.content.splice(0, 1);
-                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
-                        doc.pageMargins = [10, 115, 0, 70];
+                        doc.content.splice(0, 1); // Quitar título por defecto de DataTables
+                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center', fontSize: 10 };
+                        doc.defaultStyle.fontSize = 9;
+                        
+                        // Margen superior aumentado para dar espacio al título bajado
+                        doc.pageMargins = [20, 130, 20, 50]; 
+
                         doc['header'] = (function(page, pages) {
                             return {
                                 columns: [
-                                    { margin: [10, 3, 40, 40], image: ruta_imagen, width: 780, height: 46 },
-                                    { margin: [-800, 50, -25, 0], color: '#4c8aa0', text: 'Consolidado de Casos', fontSize: 18, alignment: 'center' },
-                                    { margin: [-700, 80, -25, 0], text: insertarSaltoDeLinea(encabezado, 100) },
+                                    { margin: [20, 10, 0, 0], image: ruta_imagen, width: 750 },
+                                    { 
+                                        // Margen superior en 75 para que el título no choque con los logos
+                                        margin: [-780, 75, 20, 0], 
+                                        color: '#4c8aa0', 
+                                        stack: [
+                                            { text: 'CONSOLIDADO DE CASOS', fontSize: 16, bold: true, alignment: 'center' },
+                                            { 
+                                                text: (pdfHeader.trim() + ' | Registros Filtrados: ' + filteredCount), 
+                                                fontSize: 9, 
+                                                alignment: 'center', 
+                                                margin: [0, 5, 0, 0],
+                                                color: '#333'
+                                            }
+                                        ]
+                                    },
                                 ],
                             }
                         });
+
                         doc['footer'] = (function(page, pages) {
-                            return { columns: [{ alignment: 'center', text: ['pagina ', page.toString(), ' of ', pages.toString()] }] };
+                            return { 
+                                columns: [
+                                    { alignment: 'center', text: ['Página ', page.toString(), ' de ', pages.toString()], margin: [0, 20] }
+                                ] 
+                            };
                         });
                     },
                 },
@@ -299,7 +336,13 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "ajax": {
             "url": "/reporte_consolidado",
             "type": "GET",
+            "dataSrc": function(json) {
+                // Captura del conteo real de registros filtrados (ej: 11)
+                filteredCount = json.recordsFiltered || 0;
+                return json.data;
+            },
             "data": function (d) {
+                // Parámetros enviados al controlador de CodeIgniter
                 d.desde = desde; d.hasta = hasta; d.tipo_pi = tipo_pi;
                 d.tipo_atencion_usu = tipo_atencion_usu; d.sexo = sexo;
                 d.via_atencion = via_atencion; d.direcciones_caso = direcciones_caso;
@@ -342,9 +385,9 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             },
         ],
         columnDefs: [
-            // SE MODIFICÓ AQUÍ: visible ahora es true para que el ID se muestre
             { "targets": [0], "visible": true, "searchable": true }
         ],
+        // Idioma original en español
         language: {
             sLengthMenu: "Mostrar _MENU_ registros",
             sZeroRecords: "No se encontraron resultados",
@@ -812,8 +855,21 @@ $(document).on('click', '.consultar', function(e) {
         alert('El campo "Edad Desde" es mayor al campo "Edad Hasta"');
     }else
     {
-    $("#table_casos").dataTable().fnDestroy();
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id, nombre_propiedad, nombre_atencion, nombresexo, nombre_via_atencion, nombre_tipo_beneficiario, nombre_direccion_remi,nombre_aten_cuidadano,nombre_estatus,nombre_estado,nombre_org_id);
+        // REBUILD PDF HEADER WITH CURRENT FILTERS
+        pdfHeader = '';
+        if (desde && desde !== 'null') pdfHeader += 'Desde: ' + moment(desde, 'MM/DD/YY').format('DD-MM-YYYY') + ' ';
+        if (hasta && hasta !== 'null') pdfHeader += 'Hasta: ' + moment(hasta, 'MM/DD/YY').format('DD-MM-YYYY') + ' ';
+        if (tipo_pi && tipo_pi !== '0') pdfHeader += 'Tipo Propiedad: ' + $('#tipo-pi option:selected').text() + ' ';
+        if (tipo_atencion_usu && tipo_atencion_usu !== '0') pdfHeader += 'Tipo Atención: ' + $('#tipo-atencion-usu option:selected').text() + ' ';
+        if (sexo && sexo !== '0') pdfHeader += 'Sexo: ' + $('#sexo option:selected').text() + ' ';
+        if (via_atencion && via_atencion !== '0') pdfHeader += 'Vía Atención: ' + $('#via-atencion option:selected').text() + ' ';
+        if (direcciones_caso && direcciones_caso !== '0') pdfHeader += 'Dirección: ' + $('#direcciones_caso option:selected').text() + ' ';
+        if (tipo_beneficiario && tipo_beneficiario !== '0') pdfHeader += 'Beneficiario: ' + $('#t-beneficiario option:selected').text() + ' ';
+        if (estatus && estatus !== '0') pdfHeader += 'Estatus: ' + $('#estatus option:selected').text() + ' ';
+        if (org_id && org_id !== '0') pdfHeader += 'Organismo PP: ' + $('#organismo-caso option:selected').text() + ' ';
+        
+        $("#table_casos").dataTable().fnDestroy();
+listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id);
     }
 
 })

@@ -306,19 +306,7 @@ $(function() {
         e.preventDefault(); 
         buscar_Tercero_Mediacion('apoderado-contraparte');
     });
-});
-
-    // Delegated handler for Consignación table (ID 24) checkboxes
-    $(document).on('change', '.check-pi', function() {
-        const $row = $(this).closest('tr');
-        const $qty = $row.find('.qty-pi');
-        if (this.checked) {
-            $qty.prop('disabled', false).val('1');
-        } else {
-            $qty.prop('disabled', true).val('0');
-        }
-    });
-
+ });
  // =================================================================
 // I. FUNCIONES DE LLENADO DE COMBOBOX (SELECTS)
 // =================================================================
@@ -959,67 +947,11 @@ function llenar_Propiedad_Intelectual(e) {
                     );
                 });
             }
-            window.propiedadIntelectualData = data; // Store for table generation
         },
         error: function(xhr, status, errorThrown) {
             console.error("Error al cargar propiedad intelectual:", errorThrown);
         },
     });
-}
-
-function generarTablaPropiedadIntelectual() {
-    if (!window.propiedadIntelectualData || window.propiedadIntelectualData.length === 0) {
-        console.error('No PI data available');
-        return;
-    }
-
-    let tableHTML = `
-        <table class="table table-sm table-bordered check-pi-container" style="margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th style="width: 20px;">Seleccionar</th>
-                    <th>Tipo de Propiedad Intelectual</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
-    $.each(window.propiedadIntelectualData, function(i, item) {
-        tableHTML += `
-                <tr data-pi-id="${item.tipo_prop_id}">
-                    <td><input type="checkbox" class="check-pi" data-pi-id="${item.tipo_prop_id}"></td>
-                    <td>${item.tipo_prop_nombre}</td>
-                    <td><input type="number" class="form-control qty-pi" data-pi-id="${item.tipo_prop_id}" value="0" disabled min="1" max="999" style="width: 80px;"></td>
-                </tr>`
-    });
-
-    tableHTML += `
-            </tbody>
-        </table>`;
-
-    $('#pi-table-container').html(tableHTML);
-
-
-}
-
-function limpiarTablaPI() {
-    $('#pi-table-container').empty();
-    $('.check-pi-container').removeClass('is-invalid');
-}
-
-function validarTablaPI() {
-    let hasValid = false;
-    $('.check-pi').each(function() {
-        let row = $(this).closest('tr');
-        if ($(this).is(':checked')) {
-            let cantidad = parseInt(row.find('.cantidad-pi').val()) || 0;
-            if (cantidad > 0) {
-                hasValid = true;
-                return false; // break
-            }
-        }
-    });
-    return hasValid;
 }
  
 // Función para llenar el combo tipo de atención usuario
@@ -1087,9 +1019,16 @@ $("#tipo-atencion-usu").on('change', function(e) {
         // Asegurarse de que las otras secciones estén ocultas si no se manejan en el toggle
         $("#denuncias").hide(); 
 
-    } else {
+    } else if (idTipoAtencion == 24) {
+        // ID 24 - CONSIGNACIÓN: Ocultar select superior, mostrar tabla
+        $('.tipoproint').closest('.col-md-4').hide();
+        $('#contenedor-tabla-consignacion').show();
+        generarTablaConsignacion();
+    }
+    else {
         // Caso 'sino': Ocultar secciones específicas
         $("#denuncias").hide();
+        $('#contenedor-tabla-consignacion').hide();
     }
     
     // 3. Lógica Común basada en Data Attributes (AFECTA A TODOS LOS CASOS)
@@ -1097,17 +1036,6 @@ $("#tipo-atencion-usu").on('change', function(e) {
     // si sus data attributes lo indican.
     $(".tipoproint").toggle(actProInt === 't');
     document.getElementById("tipo-pi").disabled = (actProInt !== 't');
-
-    // Special handling for tipo_atencion = 24: Show table instead of select
-    if (idTipoAtencion == '24') {
-        generarTablaPropiedadIntelectual();
-        $('#tipo-pi').hide();
-        $('#pi-table-container').show();
-    } else {
-        $('#pi-table-container').hide();
-        $('#tipo-pi').show();
-        limpiarTablaPI();
-    }
     $(".org_pp").toggle(organismoPp === 't');
     document.getElementById("organismo-caso").disabled = (organismoPp !== 't');
 
@@ -1139,8 +1067,94 @@ $("#tipo-atencion-usu").on('change', function(e) {
         Swal.fire('Error', errorMessage, 'error');
     });
 
+// ID 24: Ocultar detalle_atencion (no aplica)
+if (idTipoAtencion != 24) {
     // 5. Función Final (Se mantiene)
     llenar_detalle_atencion(e, idTipoAtencion);
+}
+
+// ===== LÓGICA ID 24 - CONSIGNACIÓN (Consolidada aquí) =====
+function generarTablaConsignacion() {
+    const $tbody = $('#cuerpo-tabla-consignacion');
+    $tbody.empty().append('<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>');
+    
+    $.ajax({
+        url: '/Listar_Propiedad_Intelectual_MOD',
+        method: 'GET',
+        dataType: 'JSON',
+        success: function(pis) {
+            $tbody.empty();
+            if (pis && pis.length) {
+                let html = '';
+                pis.forEach((pi, index) => {
+                    const rowId = `tramite-${pi.tipo_prop_id}-${index}`;
+                    const numTramiteDefault = `TRM-${String(pi.tipo_prop_id).padStart(3,'0')}-001`;
+                    html += `
+                        <tr id="${rowId}">
+                            <td class="text-center">
+                                <input type="checkbox" class="check-pi form-check-input" data-pi="${pi.tipo_prop_id}">
+                            </td>
+                            <td>${pi.tipo_prop_nombre}</td>
+                            <td>
+                                <input type="text" class="tramite-num form-control form-control-sm" disabled 
+                                       value="${numTramiteDefault}">
+                            </td>
+                            <td class="text-center">
+                                <input type="number" class="cant-tramite form-control form-control-sm" min="0" max="999" 
+                                       disabled value="0" style="width:80px;">
+                            </td>
+                        </tr>`;
+                });
+                $tbody.html(html);
+            } else {
+                $tbody.html('<tr><td colspan="4" class="text-center text-muted">No hay Propiedades Intelectuales disponibles</td></tr>');
+            }
+        },
+        error: function() {
+            $tbody.html('<tr><td colspan="4" class="text-center text-danger">Error cargando datos</td></tr>');
+        }
+    });
+}
+
+// Delegación de eventos para checkboxes de consignación
+$(document).on('change', '.check-pi', function() {
+    const $row = $(this).closest('tr');
+    const enable = $(this).is(':checked');
+    const $inputs = $row.find('.tramite-num, .cant-tramite');
+    
+    $inputs.prop('disabled', !enable);
+    $row.find('.cant-tramite').val(enable ? 1 : 0);
+    
+    // Actualizar resumen
+    actualizarResumenConsignacion();
+});
+
+function actualizarResumenConsignacion() {
+    const checkedRows = $('.check-pi:checked').closest('tr');
+    if (checkedRows.length) {
+        let resumen = checkedRows.map(function() {
+            return $(this).find('td:nth-child(2)').text().trim();
+        }).get().join(', ');
+        $('#lista-resumen').text(resumen);
+        $('#resumen-consignacion').show();
+    } else {
+        $('#resumen-consignacion').hide();
+    }
+}
+
+function getArrayTramites() {
+    const array_tramites = [];
+    $('.check-pi:checked').each(function() {
+        const $row = $(this).closest('tr');
+        const pi_id = $row.find('.check-pi').data('pi');
+        array_tramites.push({
+            pi_id: pi_id,
+            num_tramite: $row.find('.tramite-num').val().trim(),
+            cantidad: parseInt($row.find('.cant-tramite').val()) || 0
+        });
+    });
+    return array_tramites;
+}
 
 });
 
@@ -1226,183 +1240,596 @@ function safeParseJSON(data) {
     }
 }
 
-// METODO PARA GUARDAR EL CASO
-$(document).on("click", "#guardar", function(e) {
-    e.preventDefault();
+//METODO PARA GUARDAR EL CASO 
+ $(document).on("click", "#guardar", function(e) {
+     e.preventDefault();
+     let tipo_prop_intelec = $("#tipo-pi").val();
+     let tipo_atencion = $("#tipo-atencion-usu").val();
+     let tipo_atend_id = $("#detalles_atencion").val();
+     let requerimiento_user = $("#requerimiento-usuario").val();
+     let red_social = $("#red-social").val();
+     let estado = $("#estado-caso").val();
+     let org_id = $("#organismo-caso").val();
     
-    // Captura de variables básicas
-    let tipo_atencion = $("#tipo-atencion-usu").val();
-    let tipo_atend_id = $("#detalles_atencion").val();
-    let requerimiento_user = $("#requerimiento-usuario").val() ? $("#requerimiento-usuario").val().trim() : '';
-    let red_social = $("#red-social").val();
-    let estado = $("#estado-caso").val();
-    let org_id = $("#organismo-caso").val() || 1;
 
-    // --- LÓGICA PARA CONSIGNACIÓN (TIPO 24) CON CANTIDADES ---
-   // --- DENTRO DEL EVENTO CLICK #guardar ---
-let lista_consignacion = null; 
-if (tipo_atencion === '24') {
-    let items = [];
-    $(".check-pi:checked").each(function() {
-        let fila = $(this).closest('tr');
-        // Buscamos el input number por clase o por tipo dentro de la fila
-        let cantidad_input = fila.find('input[type="number"]');
-        let cantidad_valor = parseInt(cantidad_input.val());
+        if (org_id == null || org_id == '') {
+            org_id = 1; 
+        }
 
-        items.push({
-            id_pi: $(this).data('pi-id'),
-            cantidad: isNaN(cantidad_valor) ? 1 : cantidad_valor 
-        });
-    });
+     let sexo = $("#sexo").val();
+     requerimiento_user = requerimiento_user.trim();
+     if (red_social == null) {
+         $("#red-social").addClass('is-invalid');
+ 
+         Swal.fire({
+             icon: "error",
+             type: 'error',
+             html: '<strong>DEBE SELECCIONAR LA VIA DE ATENCION.</strong>',
+ 
+             toast: true,
+             position: "center",
+             showConfirmButton: false,
+             timer: 3500,
+         });
+     } else if (estado == null) {
+         $("#red-social").removeClass('is-invalid');
+         $("#estado-caso").addClass('is-invalid');
+         Swal.fire({
+             icon: "error",
+             type: 'error',
+             html: '<strong>EL CAMPO ESTADO ES OBLIGATORIO.</strong>',
+             toast: true,
+             position: "center",
+             showConfirmButton: false,
+             timer: 3500,
+         });
+     } 
+     else if (tipo_atencion == null) {
+         $("#tipo-pi").removeClass('is-invalid');
+         $("#tipo-atencion-usu").addClass('is-invalid');
+         Swal.fire({
+             icon: "error",
+             type: 'error',
+             html: '<strong>EL USUARIO DEBE TENER ALGUN TIPO DE ATENCION</strong>',
+             toast: true,
+             position: "center",
+             showConfirmButton: false,
+             timer: 3500,
+         })
+     } else if (requerimiento_user == '') {
+         $("#tipo-atencion-usu").removeClass('is-invalid');
+         $("#requerimiento-usuario").addClass('is-invalid');
+         $
+         Swal.fire({
+             icon: "error",
+             type: 'error',
+             html: '<strong>DEBE INDICAR LA DESCRIPCION DEL CASO .</strong>',
+             toast: true,
+             position: "center",
+             showConfirmButton: false,
+             timer: 3500,
+         });
+     } else {
+         $("button[type=button]").attr('disabled', 'false');
+         $("#red-social").removeClass('is-invalid');
+         $("#estado-caso").removeClass('is-invalid');
+         $("#tipo-pi").removeClass('is-invalid');
+         $("#tipo-atencion-usu").removeClass('is-invalid');
+         $("#requerimiento-usuario").removeClass('is-invalid');
 
-    if (items.length === 0) {
-        // ... validación de error ...
-        return false;
-    }
-    lista_consignacion = JSON.stringify(items);
-}
-    // VALIDACIONES DE CAMPOS OBLIGATORIOS
-    if (!red_social) {
-        $("#red-social").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Seleccione la vía de atención.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (!estado) {
-        $("#estado-caso").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>El estado es obligatorio.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (!tipo_atencion) {
-        $("#tipo-atencion-usu").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Seleccione el tipo de atención.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (requerimiento_user === '') {
-        $("#requerimiento-usuario").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Indique la descripción del caso.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
+         //VERIFICO SI LA ATENCION ES ASESORIA PARA TOMAR EL VALOR DE LOS CAMPOS CORREPONDIENTES
 
-    // Bloqueamos botón y limpiamos errores
-    $("button[type=button]").attr('disabled', 'true');
-    $(".is-invalid").removeClass('is-invalid');
+         let tipo_atencion_usu = $("#tipo-atencion-usu").val();
+         
+         // ID 24: Recolectar array_tramites si aplica
+         let array_tramites = [];
+         if (tipo_atencion_usu === '24') {
+             array_tramites = getArrayTramites();
+         }
+         
+         //VARIABLES PARA CGR
+         let competencia_crg =2;
+         let asume_crg= 2;
+         let ente_adscrito
+         let bandera_cgr = false;
+         //VARIABLES PARA LA DEDUNCIA
+         let option_personal
+         let option_comunidad
+         let option_terceros
+         let bandera_denuncia = false;
+         let fecha_hechos = $('#fecha-hechos').val();
+         let denu_involucrados = $('#denu-involucrados').val();
+         denu_involucrados = denu_involucrados.trim();
+         let nombre_instancia = $('#nombre-instancia').val();
+         let rif_instancia = $('#rif-instancia').val();
+         let ente_financiador = $('#ente-financiador').val();
+         let nombre_proyecto = $('#nombre-proyecto').val();
+         let monto_aprovado = $('#monto-aprovado').val();
+    
+         if (tipo_atencion === '1') 
+        {
+             if (tipo_prop_intelec == null) {
+                     $("#estado-caso").removeClass('is-invalid');
+                     $("#tipo-pi").addClass('is-invalid');
+                     Swal.fire({
+                         icon: "error",
+                         type: 'error',
+                         html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>',
+                         toast: true,
+                         position: "center",
+                         showConfirmButton: false,
+                         timer: 3500,
+                     });
+                 }else
+                 {
 
-    // Limpieza de cédula
-    let cedula = $("#cedula-persona").val();
-    if (cedula && cedula.charAt(0).match(/[a-zA-Z]/)) { cedula = cedula.slice(1); }
+                   
 
-    // OBJETO DE DATOS BASE
-    let datosBase = {
-        "social_network": red_social,
-        "date-entry": $("#fecha-recibido").val(),
-        "person-name": $("#nombre-persona").val(),
-        "person-lastname": $("#apellido-persona").val(),
-        "person-id": cedula,
-        "nacionalidad": $("#tipo-persona").val(),
-        "telephone": $("#telefono").val(),
-        "country": $("#pais-caso").val(),
-        "state": estado,
-        "county": $("#municipio-caso").val(),
-        "town": $("#parroquia-caso").val(),
-        "record-work": $("#num-tramite").val(),
-        "pi-type": $("#tipo-pi").val() || 1,
-        "user-requirement": requerimiento_user,
-        "office": $("#office").val(),
-        "tipo-atencion-usu": tipo_atencion,
-        "sexo": $("#sexo").val(),
-        "tipo_atend_id": tipo_atend_id,
-        "tipo_beneficiario": $("#t-beneficiario").val(),
-        "direccion": $("#office").val(),
-        "correo": $("#correo").val(),
-        "ente_adscrito": 0,
-        "edad": $("#edad").val(),
-        "fecha_nacimiento": $("#fecha-nacimiento").val(),
-        "profesion": $("#profesion").val(),
-        "organismo-caso": org_id,
-        "act_coordenadas": $("#actcoordenadas").val(),
-        "lista_consignacion": lista_consignacion,
-        "bandera_cgr": false,
-        "bandera_denuncia": false
-    };
 
-    // LÓGICA ADICIONAL
-    if (tipo_atencion === '1') {
-        datosBase.bandera_cgr = true;
-        datosBase.competencia_crg = $("#competencia_crg").val() || 2;
-        datosBase.asume_crg = $("#asume_crg").val() || 2;
+
+                     // competencia_crg = $("#competencia-cgr").val()
+                     // asume_crg = $("#asume-cgr").val()
+                     // if (competencia_crg == null) {
+                     //   alert('DEBE INDICAR SI APLICA O NO  LA COMPETENCIA DEL CGR')
+                     //} //else if (asume_crg == null) {
+                     // alert('DEBE INDICAR SI ASUME CGR')
+                     // } else {
+                    bandera_cgr = true;
+                     // valor_competencia = $("#competencia-cgr").val();
+                     // valor_asume = $("#asume-cgr").val();
+                     let cedula= $("#cedula-persona").val()
+                     if (cedula.charAt(0).match(/[a-zA-Z]/))
+                     {
+                         cedula = cedula.slice(1);
+                     }
+                  let datos = {
+                      "social_network": $("#red-social").val(),
+                      "date-entry": $("#fecha-recibido").val(),
+                      "person-name": $("#nombre-persona").val(),
+                      "person-lastname": $("#apellido-persona").val(),
+                      "person-id": cedula,
+                      "nacionalidad": $("#tipo-persona").val(),
+                      "telephone": $("#telefono").val(),
+                      "country": $("#pais-caso").val(),
+                      "state": $("#estado-caso").val(),
+                      "county": $("#municipio-caso").val(),
+                      "town": $("#parroquia-caso").val(),
+                      "bandera_denuncia": bandera_denuncia,
+                      "record-work": $("#num-tramite").val(),
+                      "pi-type": $("#tipo-pi").val(),
+                      "user-requirement": $("#requerimiento-usuario").val(),
+                      "office": $("#office").val(),
+                      "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
+                      "sexo": $("#sexo").val(),
+                      "bandera_cgr": bandera_cgr,
+                      "tipo_atend_id": tipo_atend_id,
+                      "edad": $("#edad").val(),
+                      "fecha_nacimiento": $("#fecha-nacimiento").val(),
+                      "profesion": $("#profesion").val(),
+                      "competencia_crg": competencia_crg,
+                      "asume_crg": asume_crg,
+                      "tipo_beneficiario": $("#t-beneficiario").val(),
+                      "direccion": $("#office").val(),
+                      "correo": $("#correo").val(),
+                      "profesion": $("#profesion").val(),
+                      "ente_adscrito": 0,
+                      "organismo-caso": org_id,
+                       "act_coordenadas": $("#actcoordenadas").val(),
+                      //"ente_adscrito": $("#ente-adscrito").val(0),
+                  }
+                  
+                  datos.array_tramites = array_tramites; // ID 24 support
+                  
+                  $.ajax({
+                      url: "/registrarCaso",
+                      method: "POST",
+                      dataType: "JSON",
+                      data: {
+                          "data": btoa(JSON.stringify(datos))
+                      },
+                      beforeSend: function() {
+                          
+                      },
+                      success: function(data) {
+                          const res = safeParseJSON(data);
+                          $("button[type=button]").prop('disabled', false);
+                          
+                          // ✅ UNIFICADA: Maneja mensaje 1,2,7,8 y errores
+                          if (res.error || res.mensaje !== 1) {
+                              let msg = 'Error desconocido';
+                              if (res.mensaje === 2 || res.mensaje === 7) msg = 'Error al procesar el requerimiento.';
+                              else if (res.mensaje === 8) msg = 'Usuario no encontrado.';
+                              
+                              Swal.fire({
+                                  icon: "error",
+                                  html: `<strong>${msg}</strong>`,
+                                  toast: true, position: "center", timer: 3000
+                              }).then(() => window.location = "/casos");
+                              return;
+                          }
+                          
+                          Swal.fire({
+                              icon: "success",
+                              html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                              toast: true, position: "center", timer: 2000
+                          }).then(() => window.location = "/casos");
+                      }
+                  });
+ 
+                 }
+ 
+            
+             } 
+            else if (tipo_atencion === '5') {
+    // 1. Obtención de valores booleanos de los checkboxes de manera concisa
+    const option_personal = $('#option-personal').prop('checked');
+    const option_comunidad = $('#option-comunidad').prop('checked');
+    const option_terceros = $('#option-terceros').prop('checked');
+    
+    // Asumiendo que 'fecha_hechos', 'denu_involucrados', 'nombre_instancia', etc.,
+    // son variables definidas en el scope superior o son obtenidas de otros inputs.
+    // **NOTA:** Aquí debes asegurarte de que estas variables existen y tienen valor.
+    
+    // 2. Validación de Afectados
+    if (!option_personal && !option_comunidad && !option_terceros) {
+        alert('Debe indicar a quien afecta el hecho');
+        return; 
     } 
-    else if (tipo_atencion === '5') {
-        datosBase.bandera_denuncia = true;
-        datosBase.denu_afecta_persona = $('#option-personal').prop('checked');
-        datosBase.denu_afecta_comunidad = $('#option-comunidad').prop('checked');
-        datosBase.denu_afecta_terceros = $('#option-terceros').prop('checked');
-        datosBase.denu_fecha_hechos = $('#fecha-hechos').val();
-        datosBase.denu_involucrados = $('#denu-involucrados').val();
-        datosBase.denu_instancia_popular = $('#nombre-instancia').val();
-        datosBase.denu_rif_instancia = $('#rif-instancia').val();
-        datosBase.denu_ente_financiador = $('#ente-financiador').val();
-        datosBase.denu_nombre_proyecto = $('#nombre-proyecto').val();
-        datosBase.denu_monto_aprovado = $('#monto-aprovado').val();
+
+    // 3. Validación de Campos Requeridos y Recolección de Errores
+    const mensajesError = [];
+
+    if (fecha_hechos === '' || fecha_hechos === undefined) {
+        mensajesError.push('Debe seleccionar la fecha en que ocurrieron los hechos.');
     }
-    else if (tipo_atencion === '23') {
-        datosBase.datos_medicion = obtenerDatosMediacion();
+    
+    if (denu_involucrados === '' || denu_involucrados === undefined) {
+        $("#denu-involucrados").addClass('is-invalid');
+        mensajesError.push('Este campo es requerido, por favor introduzca la información solicitada.');
+    } else {
+        $("#denu-involucrados").removeClass('is-invalid');
     }
 
-    // ENVÍO AL SERVIDOR
+    if (mensajesError.length > 0) {
+        alert(mensajesError.join('\n'));
+        return; // Detener el proceso si hay errores
+    }
+
+    // 4. Preparación de Variables para el Envío
+    const bandera_denuncia = true;
+    const ente_adscrito = 0; // Se mantiene en 0 según tu lógica original
+    
+    // Lógica mejorada para 'prop_intelectual'
+    let prop_intelectual = $("#tipo-pi").val();
+    if (prop_intelectual == null || prop_intelectual === 'null') {
+        prop_intelectual = 1; // Asignar valor por defecto
+    }
+
+    // Normalizar la cédula para el envío (eliminando el prefijo si existe)
+    let cedula_a_enviar = $("#cedula-persona").val();
+    if (cedula_a_enviar.charAt(0).match(/[a-zA-Z]/)) {
+        cedula_a_enviar = cedula_a_enviar.slice(1);
+    }
+
+    // 5. Construcción del Objeto de Datos
+    const datos = {
+        social_network: $("#red-social").val(),
+        'date-entry': $("#fecha-recibido").val(),
+        'person-name': $("#nombre-persona").val(),
+        'person-lastname': $("#apellido-persona").val(),
+        'person-id': cedula_a_enviar,
+        nacionalidad: $("#tipo-persona").val(),
+        telephone: $("#telefono").val(),
+        country: $("#pais-caso").val(),
+        state: $("#estado-caso").val(),
+        county: $("#municipio-caso").val(),
+        town: $("#parroquia-caso").val(),
+        'record-work': $("#num-tramite").val(),
+        'pi-type': prop_intelectual, 
+        'user-requirement': $("#requerimiento-usuario").val(),
+        office: $("#office").val(),
+        'tipo-atencion-usu': $("#tipo-atencion-usu").val(),
+        sexo: $("#sexo").val(),
+        tipo_atend_id: tipo_atend_id, // Variable que debe venir definida del scope superior
+        bandera_denuncia: bandera_denuncia,
+        option_personal: option_personal,
+        option_comunidad: option_comunidad,
+        option_terceros: option_terceros,
+        fecha_hechos: fecha_hechos,
+        denu_involucrados: denu_involucrados,
+        nombre_instancia: nombre_instancia, // Asegurar que estas variables están definidas
+        rif_instancia: rif_instancia,       // Asegurar que estas variables están definidas
+        ente_financiador: ente_financiador, // Asegurar que estas variables están definidas
+        nombre_proyecto: nombre_proyecto,    // Asegurar que estas variables están definidas
+        monto_aprovado: monto_aprovado,      // Asegurar que estas variables están definidas
+        bandera_cgr: bandera_cgr,            // Asegurar que estas variables están definidas
+        tipo_beneficiario: $("#t-beneficiario").val(),
+        direccion: $("#office").val(),
+        correo: $("#correo").val(),
+        ente_adscrito: ente_adscrito,
+        edad: $("#edad").val(),
+        fecha_nacimiento: $("#fecha-nacimiento").val(),
+        profesion: $("#profesion").val(),
+        'organismo-caso': org_id, // Asegurar que 'org_id' está definido
+        'act_coordenadas': $("#actcoordenadas").val(),
+    };
+    
+    // 6. Llamada AJAX para el registro del caso
     $.ajax({
         url: "/registrarCaso",
         method: "POST",
         dataType: "JSON",
-        data: { "data": btoa(unescape(encodeURIComponent(JSON.stringify(datosBase)))) },
-        success: function(respuesta) {
-            procesarRespuesta(respuesta);
+        data: {
+            "data": btoa(JSON.stringify(datos)) // Mantener el formato de codificación
         },
-        error: function(xhr, status, error) {
+        beforeSend: function() {
+            // Deshabilitar el botón de envío y mostrar un mensaje de carga
+            $("button[type=button]").prop('disabled', true);
+        },
+        success: function(respuesta) {
+            $("button[type=button]").prop('disabled', false); // Habilitar al finalizar
+
+            if (respuesta.mensaje === 1) {
+                // Éxito en el registro
+                Swal.fire({
+                    icon: "success",
+                    title: '¡Registro Exitoso! ✅',
+                    html: `<strong>Caso registrado con el N° ${respuesta.idcaso}</strong>`,
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 2000,
+                }).then(() => {
+                    // Redirigir después del SweetAlert
+                    window.location = "/casos";
+                });
+            } else if (respuesta.mensaje === 2 || respuesta.mensaje === 7) {
+                // Error de registro conocido
+                Swal.fire({
+                    icon: "error",
+                    title: 'Error de Registro ❌',
+                    html: '<strong>Hubo un error en el registro del requerimiento.</strong>',
+                    toast: true,
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 3000,
+                }).then(() => {
+                    window.location = "/casos";
+                });
+            } else {
+                 // Respuesta exitosa pero con mensaje inesperado
+                 Swal.fire("Error Desconocido", "El servidor respondió, pero el mensaje fue inesperado.", "warning");
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            // Manejo de errores de conexión/servidor
             $("button[type=button]").prop('disabled', false);
-            Swal.fire({ 
-                icon: "error", 
-                title: "Error de Conexión", 
-                html: "<strong>No se pudo procesar la solicitud.</strong>" 
-            });
+            console.error("Error en el registro:", status, errorThrown);
+            Swal.fire("Error de Conexión 🛑", `No se pudo registrar el caso. Código: ${xhr.status}`, "error");
         }
     });
-});
-
-// FUNCIÓN PARA PROCESAR LA RESPUESTA
-function procesarRespuesta(respuesta) {
-    $("button[type=button]").prop('disabled', false);
-    
-    if (respuesta.mensaje === 1) {
-        let htmlMsg = "";
-
-        if (respuesta.total_items > 1) {
-            htmlMsg = "Los siguientes casos fueron creados exitosamente:<br><br>";
-            htmlMsg += '<div style="text-align: left; background: #ffffff; padding: 10px; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; overflow-y: auto;">';
-            
-            respuesta.detalles.forEach(function(item) {
-                htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.nombre}</p>`;
-            });
-            
-            htmlMsg += '</div>';
-        } else {
-            let itemUnico = respuesta.detalles[0];
-            htmlMsg = `El caso <strong>Nº ${itemUnico.id}</strong> (${itemUnico.nombre}) ha sido registrado con éxito.`;
-        }
-
-        Swal.fire({ 
-            icon: "success",
-            title: '¡Registro Completado!',
-            html: htmlMsg, 
-            confirmButtonText: 'Continuar',
-            confirmButtonColor: '#28a745'
-        }).then(() => {
-            window.location = "/casos";
-        });
-
-    } else {
-        Swal.fire({ 
-            icon: "error", 
-            title: "Error",
-            html: '<strong>No se pudieron generar los registros.</strong>' 
-        });
-    }
 }
+         // SI ES UN CASO DE MEDIACION ENTRA AQUI
+         else if (tipo_atencion === '23') 
+
+         {
+         
+           
+        
+            const datos_medicion = obtenerDatosMediacion();
+
+                
+                let bandera_cgr = false;
+                let bandera_denuncia = false;
+                let valor_competencia = ''; 
+                let ente_adscrito = 0
+                let valor_asume = ''; 
+
+             
+                
+               
+                let competencia_crg = valor_competencia; // Se iguala a las variables inicializadas
+                let asume_crg = valor_asume;             // Se iguala a las variables inicializadas
+
+
+                // --- Procesamiento de Propiedad Intelectual ---
+                let prop_intelectual = 1; // Inicializamos con el valor por defecto
+                const tipo_prop_intelec = $("#tipo-pi").val();
+
+                // Verifica que el valor no sea nulo, 'null' (como string) o cadena vacía para asignarlo.
+                if (tipo_prop_intelec !== null && tipo_prop_intelec !== 'null' && tipo_prop_intelec !== '') 
+                {
+                    prop_intelectual = tipo_prop_intelec;
+                }
+
+                // --- Procesamiento de Cédula ---
+                let cedula = $("#cedula-persona").val();
+
+                // Verifica si la cédula existe y si el primer carácter es una letra, luego la remueve.
+                if (cedula && cedula.charAt(0).match(/[a-zA-Z]/))
+                {
+                    cedula = cedula.slice(1);
+                }
+
+                // **CORRECCIÓN 4: Se usa 'const' para el objeto de datos final.**
+                const datos = { 
+                    datos_medicion:datos_medicion,
+                    "social_network": $("#red-social").val(),
+                    "date-entry": $("#fecha-recibido").val(),
+                    "person-name": $("#nombre-persona").val(),
+                    "person-lastname": $("#apellido-persona").val(),
+                    "person-id": cedula,
+                    "tipo_atend_id": tipo_atend_id, 
+                    "nacionalidad": $("#tipo-persona").val(),
+                    "telephone": $("#telefono").val(),
+                    "country": $("#pais-caso").val(),
+                    "state": $("#estado-caso").val(),
+                    "county": $("#municipio-caso").val(),
+                    "town": $("#parroquia-caso").val(),
+                    "record-work": $("#num-tramite").val(),
+                    "pi-type": prop_intelectual,
+                    "user-requirement": $("#requerimiento-usuario").val(),
+                    "office": $("#office").val(),
+                    "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
+                    "sexo": $("#sexo").val(),
+                    "bandera_cgr": bandera_cgr,
+                    "bandera_denuncia": bandera_denuncia,
+                    "competencia_crg": competencia_crg, // Usamos la variable declarada/igualada
+                    "ente_adscrito": ente_adscrito,
+                    "asume_crg": asume_crg,           // Usamos la variable declarada/igualada
+                    "tipo_beneficiario": $("#t-beneficiario").val(),
+                    "direccion": $("#office").val(), 
+                    "correo": $("#correo").val(),
+                    "edad": $("#edad").val(),
+                    "fecha_nacimiento": $("#fecha-nacimiento").val(),
+                    "profesion": $("#profesion").val(),
+                    "act_coordenadas": $("#actcoordenadas").val(),
+                    "latitud": $("#latitude").val(),
+                    "longitud": $("#longitude").val(),
+                    "nombre": $("#locationName").val(),
+                    "organismo-caso": org_id, // Usamos la variable declarada
+                };
+
+                // --- Llamada AJAX ---
+                $.ajax({
+                    url: "/registrarCaso",
+                    method: "POST",
+                    dataType: "JSON",
+                    // **CORRECCIÓN 5: Se asegura de que el botón se habilite correctamente.**
+                    data: {
+                        "data": btoa(JSON.stringify(datos))
+                    },
+                    beforeSend: function() {
+                        // Opcional: Deshabilitar el botón aquí para evitar envíos múltiples.
+                    },
+                    success: function(respuesta) {
+                        $("button[type=button]").prop('disabled', false);
+                        
+                        const res = safeParseJSON(respuesta);
+                        if (res.mensaje === 1) {
+                            Swal.fire({
+                                icon: "success",
+                                html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                                toast: true, position: "center", timer: 2000
+                            }).then(() => window.location = "/casos");
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                html: '<strong>Error al procesar mediación.</strong>',
+                                toast: true, position: "center", timer: 3000
+                            }).then(() => window.location = "/casos");
+                        }
+                    }
+                });
+
+        
+         
+
+         }
+         else 
+         {
+             bandera_cgr = false;
+             bandera_denuncia = false;
+             valor_competencia = '';
+             ente_adscrito = 0
+             valor_asume = '';
+
+             let tipo_prop_intelec = $("#tipo-pi").val();
+
+             
+             if (tipo_prop_intelec !=null && tipo_prop_intelec !='null') 
+            {
+                prop_intelectual= $("#tipo-pi").val();
+            }
+            else
+            {
+                prop_intelectual = 1
+
+            }
+
+
+       
+       
+             let cedula= $("#cedula-persona").val()
+             if (cedula.charAt(0).match(/[a-zA-Z]/))
+             {
+                 cedula = cedula.slice(1);
+             }
+             let datos = {
+                 "social_network": $("#red-social").val(),
+                 "date-entry": $("#fecha-recibido").val(),
+                 "person-name": $("#nombre-persona").val(),
+                 "person-lastname": $("#apellido-persona").val(),
+                 "person-id": cedula,
+                 "tipo_atend_id": tipo_atend_id,
+                 "nacionalidad": $("#tipo-persona").val(),
+                 "telephone": $("#telefono").val(),
+                 "country": $("#pais-caso").val(),
+                 "state": $("#estado-caso").val(),
+                 "county": $("#municipio-caso").val(),
+                 "town": $("#parroquia-caso").val(),
+                 "record-work": $("#num-tramite").val(),
+                 "pi-type":prop_intelectual,
+                 "user-requirement": $("#requerimiento-usuario").val(),
+                 "office": $("#office").val(),
+                 "tipo-atencion-usu": $("#tipo-atencion-usu").val(),
+                 "sexo": $("#sexo").val(),
+                 "bandera_cgr": bandera_cgr,
+                 "bandera_denuncia": bandera_denuncia,
+                 "competencia_crg": competencia_crg,
+                 "ente_adscrito": ente_adscrito,
+                 "asume_crg": asume_crg,
+                 "tipo_beneficiario": $("#t-beneficiario").val(),
+                 "direccion": $("#office").val(),
+                 "correo": $("#correo").val(),
+                 "edad": $("#edad").val(),
+                 "fecha_nacimiento": $("#fecha-nacimiento").val(),
+                 "profesion": $("#profesion").val(),
+                "act_coordenadas": $("#actcoordenadas").val(),
+                "latitud": $("#latitude").val(),
+                "longitud": $("#longitude").val(),
+                "nombre": $("#locationName").val(),
+                "organismo-caso": org_id,
+
+
+
+             }
+             $.ajax({
+                 url: "/registrarCaso",
+                 method: "POST",
+                 dataType: "JSON",
+                 data: {
+                     "data": btoa(JSON.stringify(datos))
+                 },
+                 beforeSend: function() {
+                     
+                 },
+                 success: function(respuesta) {
+                     $("button[type=button]").prop('disabled', false);
+                     
+                     const res = safeParseJSON(respuesta);
+                     if (res.mensaje === 1) {
+                         Swal.fire({
+                             icon: "success",
+                             html: `<strong>✅ Caso registrado Nº ${res.idcaso}</strong>`,
+                             toast: true, position: "center", timer: 2000
+                         }).then(() => window.location = "/casos");
+                     } else {
+                         Swal.fire({
+                             icon: "error",
+                             html: '<strong>Error en el registro.</strong>',
+                             toast: true, position: "center", timer: 3000
+                         }).then(() => window.location = "/casos");
+                     }
+                 }
+             });
+         }
+ 
+     }
+ 
+ 
+ });
+
  // Función auxiliar para calcular la edad (movida fuera del evento para mejor organización)
 function calcularEdad(fechaNacimientoStr) {
     const hoy = new Date();

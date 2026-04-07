@@ -465,8 +465,28 @@ to {
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
               <option value="0">Seleccione</option>
               </select>
-              <div id="pi-table-container" style="display: none; margin-top: 10px;"></div>
           </div>
+
+          <!-- TABLA CONSIGNACIÓN ID 24 -->
+          <div id="contenedor-tabla-consignacion" style="display:none;" class="col-md-12 mt-3">
+              <label class="form-label fw-bold">📋 Selección de Trámites para Consignación</label>
+              <table class="table table-sm table-hover table-bordered">
+                  <thead class="table-dark">
+                      <tr>
+                          <th width="50" class="text-center">Sel.</th>
+                          <th>Propiedad Intelectual</th>
+                          <th style="width:200px">N° Trámite</th>
+                          <th width="80" class="text-center">Cant.</th>
+                      </tr>
+                  </thead>
+                  <tbody id="cuerpo-tabla-consignacion">
+                  </tbody>
+              </table>
+              <div id="resumen-consignacion" class="alert alert-info mt-2" style="display:none;">
+                  <strong>Resumen:</strong> <span id="lista-resumen"></span>
+              </div>
+          </div>
+          <!-- /TABLA CONSIGNACIÓN ID 24 -->
           <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
           <label for="organismo-caso">Organismo del Poder Poular</label>
           <select id="organismo-caso" name="organismo-caso" class="form-control">
@@ -1450,7 +1470,11 @@ function getFormattedDate() {
             let correo = $("#correo").val();
             let estado = $("#estado-caso").val();
             let tipo_atencion = $("#tipo-atencion-usu").val();
+            let tipo_atencion_usu = $("#tipo-atencion-usu").val();
             let tipo_prop_intelec = $("#tipo-pi").val();
+            if (tipo_atencion_usu === '24') {
+                tipo_prop_intelec = $('.check-pi:checked').first().val();
+            }
             let fecha_recivido = $("#fecha-recibido").val();
             let actcoordenadas = $("#actcoordenadas").val();
             let detalles_atencion = $("#detalles_atencion").val();
@@ -1543,42 +1567,20 @@ function getFormattedDate() {
                     Swal.fire({ icon: "error", html: '<strong>EL USUARIO DEBE TENER ALGÚN TIPO DE ATENCIÓN.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
                     hasError = true;
                 } 
-// --- VALIDACIÓN DINÁMICA PASO 2: Propiedad Intelectual ---
-                else if ($('.tipoproint').is(':visible')) {
-                    let tieneSeleccion = false;
-                    let tipo_atencion = $("#tipo-atencion-usu").val();
-
-                    if (tipo_atencion == 24) {
-                        // Para Consignación, validamos que haya al menos un check en la tabla
-                        tieneSeleccion = $('.check-pi:checked').length > 0;
-                    } else {
-                        // Para los demás, validamos el select normal
-                        let valPi = $("#tipo-pi").val();
-                        tieneSeleccion = (valPi !== null && valPi !== '0' && valPi !== '');
-                    }
-
-                    if (!tieneSeleccion) {
-                        $("#tipo-atencion-usu").removeClass('is-invalid');
-                        
-                        // Si es 24, resaltamos la tabla, si no, el select
-                        if (tipo_atencion == 24) {
-                            $("#pi-table-container").addClass('is-invalid');
-                            focusAndScroll("#pi-table-container");
-                        } else {
-                            $("#tipo-pi").addClass('is-invalid');
-                            focusAndScroll("#tipo-pi");
-                        }
-
-                        Swal.fire({ 
-                            icon: "error", 
-                            html: '<strong>DEBE SELECCIONAR AL MENOS UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', 
-                            toast: true, 
-                            position: "center", 
-                            showConfirmButton: false, 
-                            timer: 3500 
-                        });
-                        hasError = true;
-                    }
+// Validación dinámica Paso 2: Si .tipoproint VISIBLE y NO es ID 24, #tipo-pi obligatorio
+                else if ($('.tipoproint').is(':visible') && $("#tipo-atencion-usu").val() !== '24' && ($("#tipo-pi").val() === null || $("#tipo-pi").val() === '0' || $("#tipo-pi").val() === '')) 
+                {
+                    $("#tipo-atencion-usu").removeClass('is-invalid');
+                    $("#tipo-pi").addClass('is-invalid');
+                    focusAndScroll("#tipo-pi");
+                    Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                    hasError = true;
+                } 
+                // ID 24: Validate table checkboxes instead
+                else if ($("#tipo-atencion-usu").val() === '24' && $('.check-pi:checked').length === 0) {
+                    $("#tipo-pi").removeClass('is-invalid');
+                    Swal.fire('Error', 'Debe seleccionar al menos una Propiedad Intelectual de la tabla para continuar', 'error');
+                    hasError = true;
                 } 
                 // Validación 4: Tipo de atención 23 (Lógica de contraparte)
                 else if (tipo_atencion == 23) {
@@ -1589,6 +1591,10 @@ function getFormattedDate() {
                     const REGEX_IDENTIFICACION_ESTRICTA = /^\d{5,}(?:-\d{1})?$/; 
 
                     // --- 2.1. Validar Propiedad Intelectual ---
+                    let tipo_prop_intelec = $("#tipo-pi").val();
+                    if ($("#tipo-atencion-usu").val() === '24') {
+                        tipo_prop_intelec = $('.check-pi:checked').first().val() || null;
+                    }
                     if (tipo_prop_intelec == null) {
                         $("#tipo-pi").addClass('is-invalid').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
                         Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
