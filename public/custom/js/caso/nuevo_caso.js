@@ -972,9 +972,9 @@ function generarTablaPropiedadIntelectual() {
         return;
     }
 
-    // Usamos el color azul de tus botones (#0d56b3 o similar) para el borde superior
+    // Agregamos w-100 a la card y a la tabla
     let tableHTML = `
-        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 8px;">
+        <div class="card border-0 shadow-sm overflow-hidden w-100" style="border-radius: 8px;">
             <div class="card-header border-0 py-2" style="background-color: #0d56b3; color: white;">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-list-check me-2"></i>
@@ -982,12 +982,12 @@ function generarTablaPropiedadIntelectual() {
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle mb-0">
+                <table class="table table-sm table-hover align-middle mb-0 w-100">
                     <thead style="background-color: #f8f9fa;">
                         <tr>
-                            <th class="text-center" style="width: 50px; color: #666; font-size: 0.8rem;">ACTIVO</th>
+                            <th class="text-center" style="width: 5%; color: #666; font-size: 0.8rem;">ACTIVO</th>
                             <th class="ps-3" style="color: #666; font-size: 0.8rem;">DESCRIPCIÓN</th>
-                            <th class="text-center" style="width: 100px; color: #666; font-size: 0.8rem;">CANTIDAD</th>
+                            <th class="text-center" style="width: 15%; color: #666; font-size: 0.8rem;">CANTIDAD</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -1005,10 +1005,10 @@ function generarTablaPropiedadIntelectual() {
                         ${item.tipo_prop_nombre}
                     </td>
                     <td class="pe-2">
-                        <input type="number" class="form-control form-control-sm qty-pi text-center" 
+                        <input type="number" class="form-control form-control-sm qty-pi text-center w-100" 
                                data-pi-id="${item.tipo_prop_id}" 
                                value="0" disabled min="1" max="999"
-                               style="border-radius: 4px; border: 1px solid #ddd;">
+                               style="border-radius: 4px; border: 1px solid #ddd; max-width: 100px; margin: 0 auto;">
                     </td>
                 </tr>`;
     });
@@ -1021,12 +1021,6 @@ function generarTablaPropiedadIntelectual() {
 
     $('#pi-table-container').html(tableHTML).fadeIn();
 }
-
-function limpiarTablaPI() {
-    $('#pi-table-container').empty();
-    $('.check-pi-container').removeClass('is-invalid');
-}
-
 function validarTablaPI() {
     let hasValid = false;
     $('.check-pi').each(function() {
@@ -1077,93 +1071,87 @@ function llenar_Tipo_Atencion(idRedSocial) {
 }
 
 
-
-
- // Evento change para el select de tipo de atención
+// Evento change para el select de tipo de atención
 $("#tipo-atencion-usu").on('change', function(e) {
+    const $this = $(this);
+    const idTipoAtencion = $this.val();
+    const selectedOption = $this.find('option:selected');
+    
+    // Mostramos modal y habilitamos el select de detalles
     $("#ayudas").modal("show");
-    document.getElementById("detalles_atencion").disabled = false;
+    $(".detelle_atencion").show(); // Mostramos el contenedor div
+    $("#detalles_atencion").prop("disabled", false);
+    
+    // Reset por defecto del validador de hijos
     $("#hijos_tipoatencion").val('NO');
-    let idTipoAtencion = $(this).val(); 
-    let selectedOption = $(this).find('option:selected');
 
-    let actProInt = selectedOption.data('act-pro-int');
-    let organismoPp = selectedOption.data('organismo_pp');
+    // Obtener data attributes
+    const actProInt = selectedOption.data('act-pro-int');
+    const organismoPp = selectedOption.data('organismo_pp');
     
-    // 1. Ocultar todas las secciones condicionales al inicio (excepto las que usan toggle)
-    $("#mediacion").hide(); // Ocultamos mediación por defecto
-    $("#cgr").hide(); // Ocultamos CGR por defecto
+    // 1. Limpieza inicial de secciones condicionales
+    $("#mediacion, #cgr, #denuncias, .mapa_ayuda, #pi-table-container").hide();
 
-    // 2. Lógica de visibilidad exclusiva basada en el ID
-    if (idTipoAtencion == 5 || idTipoAtencion == 1) {
-        // Lógica ORIGINAL para ID 5 y 1:
-        // - Usa .toggle() para #denuncias (solo visible si es 5)
-        $("#denuncias").toggle(idTipoAtencion == 5); 
-        
+    // 2. Lógica de visibilidad basada en ID
+    if (idTipoAtencion == 5) {
+        $("#denuncias").show();
+    } else if (idTipoAtencion == 1) {
+        // Lógica específica para ID 1 si la requiere, de lo contrario se queda oculto
     } else if (idTipoAtencion == 23) {
-        // Caso específico ID 23: Mostrar Mediación
         $("#mediacion").show();
-        
-        // Asegurarse de que las otras secciones estén ocultas si no se manejan en el toggle
-        $("#denuncias").hide(); 
-
-    } else {
-        // Caso 'sino': Ocultar secciones específicas
-        $("#denuncias").hide();
     }
-    
-    // 3. Lógica Común basada en Data Attributes (AFECTA A TODOS LOS CASOS)
-    // ESTA PARTE SE MANTIENE COMO LO REQUERISTE para que funcione en 5, 1, 23 o cualquier otro ID
-    // si sus data attributes lo indican.
-    $(".tipoproint").toggle(actProInt === 't');
-    document.getElementById("tipo-pi").disabled = (actProInt !== 't');
 
-    // Special handling for tipo_atencion = 24: Show table instead of select
-    if (idTipoAtencion == '24') {
+    // 3. Lógica de Propiedad Intelectual (ID 24)
+    if (idTipoAtencion == 24) {
         generarTablaPropiedadIntelectual();
         $('#tipo-pi, .label_propiedad').hide();
         $('#pi-table-container').show();
     } else {
-        $('#pi-table-container').hide();
         $('#tipo-pi, .label_propiedad').show();
-        limpiarTablaPI();
+        // Si existe la función, la llamamos, si no, asegúrate de tenerla definida
+        if (typeof limpiarTablaPI === "function") limpiarTablaPI();
     }
-    $(".org_pp").toggle(organismoPp === 't');
-    document.getElementById("organismo-caso").disabled = (organismoPp !== 't');
 
-    // 4. Petición AJAX (Se mantiene)
-   $.ajax({
-    url: `/Listar_Tipo_Atencion_act_coordenadas/${idTipoAtencion}`,
-    method: 'GET',
-    dataType: 'json',
-   
+    // 4. Lógica basada en Data Attributes (Toggle)
+    // .tipoproint y .org_pp se muestran si el valor es 't'
+    $(".tipoproint").toggle(actProInt === 't');
+    $("#tipo-pi").prop("disabled", actProInt !== 't');
+
+    $(".org_pp").toggle(organismoPp === 't');
+    $("#organismo-caso").prop("disabled", organismoPp !== 't');
+
+    // 5. Petición AJAX para Coordenadas
+    $.ajax({
+        url: `/Listar_Tipo_Atencion_act_coordenadas/${idTipoAtencion}`,
+        method: 'GET',
+        dataType: 'json'
     })
     .done((response) => {
-       const tipoAtencion = response[0]; 
-
-    if (tipoAtencion && tipoAtencion.act_coordenadas === 't') {
-    $(".mapa_ayuda").show();
-    $("#actcoordenadas").val('t');
-    
-      map.invalidateSize();
-    } else {
-    $(".mapa_ayuda").hide();
-     $("#actcoordenadas").val('f');
-    }
-    })
-    .fail((xhr, status, error) => {
-        let errorMessage = 'Error al cargar datos.';
-        if (xhr.responseJSON && xhr.responseJSON.message) {
-            errorMessage = xhr.responseJSON.message;
+        // Validamos que exista respuesta y el campo act_coordenadas
+        const data = response[0]; 
+        if (data && data.act_coordenadas === 't') {
+            $(".mapa_ayuda").show();
+            $("#actcoordenadas").val('t');
+            
+            // Si usas Leaflet o Google Maps, esto refresca el mapa
+            if (typeof map !== 'undefined' && map.invalidateSize) {
+                setTimeout(() => map.invalidateSize(), 200);
+            }
+        } else {
+            $(".mapa_ayuda").hide();
+            $("#actcoordenadas").val('f');
+            // Limpiar inputs de coordenadas si es necesario
+            $("#latitude, #longitude, #locationName").val('');
         }
+    })
+    .fail((xhr) => {
+        const errorMessage = xhr.responseJSON?.message || 'Error al cargar datos.';
         Swal.fire('Error', errorMessage, 'error');
     });
 
-    // 5. Función Final (Se mantiene)
+    // 6. Ejecución de función externa
     llenar_detalle_atencion(e, idTipoAtencion);
-
 });
-
 
 
 
@@ -1336,6 +1324,8 @@ if (tipo_atencion === '24') {
         "profesion": $("#profesion").val(),
         "organismo-caso": org_id,
         "act_coordenadas": $("#actcoordenadas").val(),
+        "latitud": $("#latitude").val() || '',
+        "longitud": $("#longitude").val() || '',
         "lista_consignacion": lista_consignacion,
         "bandera_cgr": false,
         "bandera_denuncia": false
@@ -1384,7 +1374,6 @@ if (tipo_atencion === '24') {
     });
 });
 
-// FUNCIÓN PARA PROCESAR LA RESPUESTA
 function procesarRespuesta(respuesta) {
     $("button[type=button]").prop('disabled', false);
     
@@ -1393,9 +1382,11 @@ function procesarRespuesta(respuesta) {
 
         if (respuesta.total_items > 1) {
             htmlMsg = "Los siguientes casos fueron creados exitosamente:<br><br>";
-            htmlMsg += '<div style="text-align: left; background: #ffffff; padding: 10px; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; overflow-y: auto;">';
+            // Añadimos line-height para que los acentos no se corten visualmente
+            htmlMsg += '<div style="text-align: left; background: #ffffff; padding: 10px; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; overflow-y: auto; line-height: 1.5;">';
             
             respuesta.detalles.forEach(function(item) {
+                // Usamos literales de plantilla que soportan UTF-8 de forma nativa
                 htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.nombre}</p>`;
             });
             
@@ -1408,7 +1399,7 @@ function procesarRespuesta(respuesta) {
         Swal.fire({ 
             icon: "success",
             title: '¡Registro Completado!',
-            html: htmlMsg, 
+            html: htmlMsg, // SweetAlert2 renderiza HTML, por lo que respetará los caracteres UTF-8
             confirmButtonText: 'Continuar',
             confirmButtonColor: '#28a745'
         }).then(() => {

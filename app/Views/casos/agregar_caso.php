@@ -572,9 +572,9 @@ to {
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
               <option value="0">Seleccione</option>
               </select>
-               <div id="pi-table-container" style="display: none; margin-top: 10px;"></div>
+               
           </div>
-
+<div id="pi-table-container" style="display: none; margin-top: 10px; width: 100%;"></div>
          
 
 

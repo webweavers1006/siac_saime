@@ -175,204 +175,202 @@ curl_close($ch);
      * MÉTODO INTEGRAL: Registro de casos con soporte multi-registro,
      * cantidades dinámicas y lógicas específicas por departamento.
      */
-    public function nuevoCaso()
-    {
-        // 1. CARGA DE TODOS LOS MODELOS
-        $casoModel = new Casos();
-        $tipoPIModel = new PropiedadIntelectual();
-        $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
-        $segModel = new Seguimientos();
-        $Casos_coordenadas = new Coordenadas_Model();
-        $Registro_cgr_Model = new Registro_cgr_Model();
-        $Casos_denuncias = new Casos_denuncias_Model();
-        $terceroModel = new SapiTerceroModel();
-        $apoderadoModel = new Mediacion();
+   public function nuevoCaso()
+{
+    // 1. CARGA DE TODOS LOS MODELOS
+    $casoModel = new Casos();
+    $tipoPIModel = new PropiedadIntelectual();
+    $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
+    $segModel = new Seguimientos();
+    $Casos_coordenadas = new Coordenadas_Model();
+    $Registro_cgr_Model = new Registro_cgr_Model();
+    $Casos_denuncias = new Casos_denuncias_Model();
+    $terceroModel = new SapiTerceroModel();
+    $apoderadoModel = new Mediacion();
 
-        $db = \Config\Database::connect();
+    $db = \Config\Database::connect();
+    
+    $token = $this->request->getServer('HTTP_AUTHORIZATION');
+    $buscar_token = $casoModel->buscar_token($token);
+    
+    if (($this->session->get('logged') && $this->request->isAJAX()) || !empty($buscar_token)) {
         
-        $token = $this->request->getServer('HTTP_AUTHORIZATION');
-        $buscar_token = $casoModel->buscar_token($token);
+        $idusuopr = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
         
-        if (($this->session->get('logged') && $this->request->isAJAX()) || !empty($buscar_token)) {
-            
-            $idusuopr = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
-            $datos = empty($buscar_token) 
-                ? json_decode(base64_decode($this->request->getPost('data')), TRUE) 
-                : $this->request->getPost('data');
-            
-            // 2. DETERMINAR LA LISTA DE TRABAJO (Toma en cuenta las cantidades)
-            $lista_items = [];
-            if ($datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
-                $lista_items = json_decode($datos['lista_consignacion'], true);
-            } else {
-                // Caso único para Asesoría, Denuncia, etc.
-                $lista_items[] = [
-                    'id_pi' => $datos["pi-type"] ?? 1, 
-                    'cantidad' => 1
-                ];
-            }
-
-            $detalles_generados = []; 
-            $ids_generados = [];
-
-            // 3. PRIMER CICLO: Recorre los tipos de P.I. seleccionados
-            foreach ($lista_items as $item) {
-                // Forzamos que la cantidad sea un entero válido
-                $repeticiones = (isset($item['cantidad']) && (int)$item['cantidad'] > 0) ? (int)$item['cantidad'] : 1;
-
-                // 4. SEGUNDO CICLO: Repite la inserción según la "Cantidad" indicada
-                for ($i = 0; $i < $repeticiones; $i++) {
-                    
-                    $newCase = array();
-                    $newCase["idusuopr"]    = $idusuopr;
-                    $newCase["casofec"]     = $datos["date-entry"];
-                    $newCase["casoced"]     = $datos["person-id"];
-                    $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
-                    $newCase["casonom"]     = strtoupper($datos["person-name"]);
-                    $newCase["casoape"]     = strtoupper($datos["person-lastname"]);
-                    $newCase["casotel"]     = $datos["telephone"];
-                    $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
-                    
-                    // Lógica de Estatus: Asesoría (ID 1) => Cerrado (2). Otros => Abierto (1)
-                    $newCase["idest"] = ($newCase["id_tipo_atencion"] == '1') ? 2 : 1;
-
-                    $newCase["idrrss"]      = $datos["social_network"];
-                    $newCase["estadoid"]    = $datos["state"];
-                    $newCase["municipioid"] = $datos["county"];
-                    $newCase["pais"]        = $datos["country"];
-                    $newCase["sexo"]        = $datos["sexo"];
-                    $newCase["parroquiaid"] = $datos["town"];
-                    $newCase["ofiid"]       = $datos["office"];
-                    $newCase["casodesc"]    = $datos["user-requirement"];
-                    $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
-                    $newCase["direccion"]   = $datos["direccion"];
-                    $newCase["correo"]      = $datos["correo"];
-                    $newCase["caso_org_id"] = $datos["organismo-caso"];
-                    $newCase["ente_adscrito_id"] = $datos["ente_adscrito"] ?? 0;
-                    $newCase["edad"]        = $datos["edad"];
-                    $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
-                    $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
-                    $newCase["profesion"]   = $datos["profesion"];
-                    $newCase["casonumsol"]  = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
-
-                    // 5. INSERCIÓN PRINCIPAL
-                    $query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
-                    
-                    if (isset($query_insertar_caso)) {
-                        $_obtener_id = $casoModel->obtener_utimo_id();
-                        $idcaso = $_obtener_id->getRow()->ultimo_id; 
-
-                        // Búsqueda de nombre para el mensaje de éxito
-                        if ($newCase["id_tipo_atencion"] == '24') {
-                            $info = $db->table('sgc_tipo_prop_intelec')->select('tipo_prop_nombre')->where('tipo_prop_id', $item['id_pi'])->get()->getRow();
-                            $nombre_final = $info ? $info->tipo_prop_nombre : 'P.I.';
-                        } else {
-                            $info = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
-                            $nombre_final = $info ? $info->tipo_aten_nombre : 'ATENCIÓN';
-                        }
-
-                        $detalles_generados[] = ['id' => $idcaso, 'nombre' => strtoupper($nombre_final)];
-                        $ids_generados[] = $idcaso;
-
-                        // 6. LÓGICA DE DENUNCIA (Tipo 5)
-                        if ($newCase["id_tipo_atencion"] == '5') {
-                            $Casos_denuncias->insertarCasos_Denuncias([
-                                'denu_afecta_persona'   => $datos["denu_afecta_persona"] ?? false,
-                                'denu_afecta_comunidad' => $datos["denu_afecta_comunidad"] ?? false,
-                                'denu_afecta_terceros'  => $datos["denu_afecta_terceros"] ?? false,
-                                'denu_fecha_hechos'     => $datos["denu_fecha_hechos"] ?? null,
-                                'denu_involucrados'     => $datos["denu_involucrados"] ?? '',
-                                'denu_instancia_popular'=> $datos["denu_instancia_popular"] ?? '',
-                                'denu_rif_instancia'    => $datos["denu_rif_instancia"] ?? '',
-                                'denu_ente_financiador' => $datos["denu_ente_financiador"] ?? '',
-                                'denu_nombre_proyecto'  => $datos["denu_nombre_proyecto"] ?? '',
-                                'denu_monto_aprovado'   => $datos["denu_monto_aprovado"] ?? 0,
-                                'denu_id_caso'          => $idcaso,
-                                'denu_borrado'          => false
-                            ]);
-                        }
-
-                        // 7. LÓGICA DE CGR
-                        if ($datos["bandera_cgr"] == 'true' || $datos["bandera_cgr"] === true) {
-                            $Registro_cgr_Model->insertarRegistro_cgr([
-                                'competencia_cgr' => $datos["competencia_crg"] ?? 2,
-                                'asume_cgr'       => $datos["asume_crg"] ?? 2,
-                                'id_caso'         => $idcaso
-                            ]);
-                        }
-
-                        // 8. LÓGICA DE MEDIACIÓN (Tipo 23)
-                        if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
-                            $med = $datos['datos_medicion'];
-                            
-                            $getTerceroId = function($p) use ($terceroModel) {
-                                if (empty($p['ident_valor'])) return 0;
-                                $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
-                                if ($ex) return $ex['ter_id'];
-                                $terceroModel->insert([
-                                    'ter_nombre' => strtoupper($p['nombre_razon']),
-                                    'ter_tipo_per' => $p['ident_tipo'],
-                                    'ter_identificacion' => $p['ident_valor'],
-                                    'ter_correo' => $p['correo'] ?? '',
-                                    'ter_telefono' => $p['telefono'] ?? '',
-                                    'ter_pais' => $p['pais'] ?? 1,
-                                    'ter_direccion' => $p['direccion'] ?? ''
-                                ]);
-                                return $terceroModel->insertID();
-                            };
-
-                            $id_contra = $getTerceroId($med['contraparte']);
-                            $id_apo_sol = isset($med['apoderado_solicitante']) ? $getTerceroId($med['apoderado_solicitante']) : 0;
-                            $id_apo_contra = isset($med['apoderado_contraparte']) ? $getTerceroId($med['apoderado_contraparte']) : 0;
-
-                            $apoderadoModel->insert([
-                                'med_caso_id' => $idcaso,
-                                'med_contra_id' => $id_contra,
-                                'med_apo_sol_id' => $id_apo_sol,
-                                'med_apo_contra_id' => $id_apo_contra
-                            ]);
-                        }
-
-                        // 9. RELACIONES TÉCNICAS (P.I. Y COORDENADAS)
-                        $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
-                        
-                        if ($datos["act_coordenadas"] == 't') {
-                            $Casos_coordenadas->insertarCoordenadas([
-                                "idcaso" => $idcaso, "latitud" => $datos["latitud"], 
-                                "longitud" => $datos["longitud"], 'idusuopr' => $idusuopr
-                            ]);
-                        }
-
-                        // 10. SEGUIMIENTO Y AUDITORÍA
-                        $segModel->insertarSeguimiento([
-                            'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
-                            'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
-                        ]);
-
-                        if ($newCase["id_tipo_atencion"] == '1') {
-                            $segModel->insertarSeguimiento([
-                                'idcaso' => $idcaso, 'idestllam' => 2, 'idusuopr' => $idusuopr,
-                                'segcoment' => 'CIERRE AUTOMÁTICO POR ASESORÍA', 'segfec' => date('Y-m-d')
-                            ]);
-                        }
-
-                        $audi_desc = "REGISTRO CASO Nª{$idcaso} - ITEM " . ($i+1) . " DE {$repeticiones}";
-                        $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => $audi_desc]);
-                    }
-                } // FIN FOR
-            } // FIN FOREACH
-
-            // 11. RETORNO DE RESULTADOS
-            return json_encode([
-                'mensaje' => (!empty($ids_generados)) ? 1 : 2,
-                'total_items' => count($ids_generados),
-                'detalles' => $detalles_generados
-            ]);
-            
+        // Decodificación de datos asegurando integridad
+        $datos = empty($buscar_token) 
+            ? json_decode(base64_decode($this->request->getPost('data')), TRUE) 
+            : $this->request->getPost('data');
+        
+        // 2. DETERMINAR LA LISTA DE TRABAJO
+        $lista_items = [];
+        if ($datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
+            $lista_items = json_decode($datos['lista_consignacion'], true);
         } else {
-            return redirect()->to('/');
+            $lista_items[] = [
+                'id_pi' => $datos["pi-type"] ?? 1, 
+                'cantidad' => 1
+            ];
         }
+
+        $detalles_generados = []; 
+        $ids_generados = [];
+
+        // 3. CICLO DE PROCESAMIENTO
+        foreach ($lista_items as $item) {
+            $repeticiones = (isset($item['cantidad']) && (int)$item['cantidad'] > 0) ? (int)$item['cantidad'] : 1;
+
+            for ($i = 0; $i < $repeticiones; $i++) {
+                
+                $newCase = array();
+                $newCase["idusuopr"]    = $idusuopr;
+                $newCase["casofec"]     = $datos["date-entry"];
+                $newCase["casoced"]     = $datos["person-id"];
+                $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
+                
+                // USAMOS mb_strtoupper PARA ACENTOS EN MAYÚSCULAS
+                $newCase["casonom"]     = mb_strtoupper($datos["person-name"], 'UTF-8');
+                $newCase["casoape"]     = mb_strtoupper($datos["person-lastname"], 'UTF-8');
+                
+                $newCase["casotel"]     = $datos["telephone"];
+                $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+                $newCase["idest"]       = ($newCase["id_tipo_atencion"] == '1') ? 2 : 1;
+                $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+                $newCase["idrrss"]      = $datos["social_network"];
+                $newCase["estadoid"]    = $datos["state"];
+                $newCase["municipioid"] = $datos["county"];
+                $newCase["pais"]        = $datos["country"];
+                $newCase["sexo"]        = $datos["sexo"];
+                $newCase["parroquiaid"] = $datos["town"];
+                $newCase["ofiid"]       = $datos["office"];
+                $newCase["casodesc"]    = $datos["user-requirement"];
+                $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+                $newCase["direccion"]   = $datos["direccion"];
+                $newCase["correo"]      = $datos["correo"];
+                $newCase["caso_org_id"] = $datos["organismo-caso"];
+                $newCase["ente_adscrito_id"] = $datos["ente_adscrito"] ?? 0;
+                $newCase["edad"]        = $datos["edad"];
+                $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
+                $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
+                $newCase["profesion"]   = $datos["profesion"];
+                $newCase["casonumsol"]  = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
+
+                // 5. INSERCIÓN
+                $query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
+                
+                if (isset($query_insertar_caso)) {
+                    $_obtener_id = $casoModel->obtener_utimo_id();
+                    $idcaso = $_obtener_id->getRow()->ultimo_id; 
+
+                    // Obtener nombre del tipo para el mensaje (CONVERTIR A MAYÚSCULAS CORRECTAMENTE)
+                    if ($newCase["id_tipo_atencion"] == '24') {
+                        $info = $db->table('sgc_tipo_prop_intelec')->select('tipo_prop_nombre')->where('tipo_prop_id', $item['id_pi'])->get()->getRow();
+                        $nombre_final = $info ? mb_strtoupper($info->tipo_prop_nombre, 'UTF-8') : 'P.I.';
+                    } else {
+                        $info = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                        $nombre_final = $info ? mb_strtoupper($info->tipo_aten_nombre, 'UTF-8') : 'ATENCIÓN';
+                    }
+
+                    $detalles_generados[] = ['id' => $idcaso, 'nombre' => $nombre_final];
+                    $ids_generados[] = $idcaso;
+
+                    // 6. LÓGICA DE DENUNCIA
+                    if ($newCase["id_tipo_atencion"] == '5') {
+                        $Casos_denuncias->insertarCasos_Denuncias([
+                            'denu_afecta_persona'   => $datos["denu_afecta_persona"] ?? false,
+                            'denu_afecta_comunidad' => $datos["denu_afecta_comunidad"] ?? false,
+                            'denu_afecta_terceros'  => $datos["denu_afecta_terceros"] ?? false,
+                            'denu_fecha_hechos'     => $datos["denu_fecha_hechos"] ?? null,
+                            'denu_involucrados'     => $datos["denu_involucrados"] ?? '',
+                            'denu_instancia_popular'=> $datos["denu_instancia_popular"] ?? '',
+                            'denu_rif_instancia'    => $datos["denu_rif_instancia"] ?? '',
+                            'denu_ente_financiador' => $datos["denu_ente_financiador"] ?? '',
+                            'denu_nombre_proyecto'  => $datos["denu_nombre_proyecto"] ?? '',
+                            'denu_monto_aprovado'   => $datos["denu_monto_aprovado"] ?? 0,
+                            'denu_id_caso'          => $idcaso,
+                            'denu_borrado'          => false
+                        ]);
+                    }
+
+                    // 7. LÓGICA DE CGR
+                    if ($datos["bandera_cgr"] == 'true' || $datos["bandera_cgr"] === true) {
+                        $Registro_cgr_Model->insertarRegistro_cgr([
+                            'competencia_cgr' => $datos["competencia_crg"] ?? 2,
+                            'asume_cgr'       => $datos["asume_crg"] ?? 2,
+                            'id_caso'         => $idcaso
+                        ]);
+                    }
+
+                    // 8. LÓGICA DE MEDIACIÓN
+                    if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
+                        $med = $datos['datos_medicion'];
+                        $getTerceroId = function($p) use ($terceroModel) {
+                            if (empty($p['ident_valor'])) return 0;
+                            $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
+                            if ($ex) return $ex['ter_id'];
+                            $terceroModel->insert([
+                                'ter_nombre' => mb_strtoupper($p['nombre_razon'], 'UTF-8'),
+                                'ter_tipo_per' => $p['ident_tipo'],
+                                'ter_identificacion' => $p['ident_valor'],
+                                'ter_correo' => $p['correo'] ?? '',
+                                'ter_telefono' => $p['telefono'] ?? '',
+                                'ter_pais' => $p['pais'] ?? 1,
+                                'ter_direccion' => $p['direccion'] ?? ''
+                            ]);
+                            return $terceroModel->insertID();
+                        };
+
+                        $id_contra = $getTerceroId($med['contraparte']);
+                        $id_apo_sol = isset($med['apoderado_solicitante']) ? $getTerceroId($med['apoderado_solicitante']) : 0;
+                        $id_apo_contra = isset($med['apoderado_contraparte']) ? $getTerceroId($med['apoderado_contraparte']) : 0;
+
+                        $apoderadoModel->insert([
+                            'med_caso_id' => $idcaso,
+                            'med_contra_id' => $id_contra,
+                            'med_apo_sol_id' => $id_apo_sol,
+                            'med_apo_contra_id' => $id_apo_contra
+                        ]);
+                    }
+
+                    // 9. RELACIONES TÉCNICAS
+                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
+                    if ($datos["act_coordenadas"] == 't') {
+                        $Casos_coordenadas->insertarCoordenadas([
+                            "idcaso" => $idcaso, "latitud" => $datos["latitud"], 
+                            "longitud" => $datos["longitud"], 'idusuopr' => $idusuopr
+                        ]);
+                    }
+
+                    // 10. SEGUIMIENTO Y AUDITORÍA
+                    $segModel->insertarSeguimiento([
+                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
+                    ]);
+
+                    if ($newCase["id_tipo_atencion"] == '1') {
+                        $segModel->insertarSeguimiento([
+                            'idcaso' => $idcaso, 'idestllam' => 2, 'idusuopr' => $idusuopr,
+                            'segcoment' => 'CIERRE AUTOMÁTICO POR ASESORÍA', 'segfec' => date('Y-m-d')
+                        ]);
+                    }
+
+                    $audi_desc = "REGISTRO CASO Nª{$idcaso} - ITEM " . ($i+1) . " DE {$repeticiones}";
+                    $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => $audi_desc]);
+                }
+            }
+        }
+
+        // 11. RETORNO CON RESPUESTA JSON DE CODEIGNITER (FUERZA UTF-8)
+        return $this->response->setJSON([
+            'mensaje' => (!empty($ids_generados)) ? 1 : 2,
+            'total_items' => count($ids_generados),
+            'detalles' => $detalles_generados
+        ]);
+        
+    } else {
+        return redirect()->to('/');
     }
+}
 	//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
