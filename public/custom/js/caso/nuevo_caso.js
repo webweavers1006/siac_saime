@@ -1373,33 +1373,33 @@ if (tipo_atencion === '24') {
         }
     });
 });
-
 function procesarRespuesta(respuesta) {
     $("button[type=button]").prop('disabled', false);
     
-    if (respuesta.mensaje === 1) {
+    // 1. Verificación de seguridad: ¿Viene el objeto esperado?
+    if (respuesta.mensaje === 1 && respuesta.detalles && respuesta.detalles.length > 0) {
         let htmlMsg = "";
 
         if (respuesta.total_items > 1) {
             htmlMsg = "Los siguientes casos fueron creados exitosamente:<br><br>";
-            // Añadimos line-height para que los acentos no se corten visualmente
             htmlMsg += '<div style="text-align: left; background: #ffffff; padding: 10px; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; overflow-y: auto; line-height: 1.5;">';
             
             respuesta.detalles.forEach(function(item) {
-                // Usamos literales de plantilla que soportan UTF-8 de forma nativa
-                htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.nombre}</p>`;
+                htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.nombre || 'Procesado'}</p>`;
             });
             
             htmlMsg += '</div>';
         } else {
+            // Acceso seguro al primer elemento
             let itemUnico = respuesta.detalles[0];
-            htmlMsg = `El caso <strong>Nº ${itemUnico.id}</strong> (${itemUnico.nombre}) ha sido registrado con éxito.`;
+            let nombre = itemUnico.nombre || "Atención";
+            htmlMsg = `El caso <strong>Nº ${itemUnico.id}</strong> (${nombre}) ha sido registrado con éxito.`;
         }
 
         Swal.fire({ 
             icon: "success",
             title: '¡Registro Completado!',
-            html: htmlMsg, // SweetAlert2 renderiza HTML, por lo que respetará los caracteres UTF-8
+            html: htmlMsg,
             confirmButtonText: 'Continuar',
             confirmButtonColor: '#28a745'
         }).then(() => {
@@ -1407,10 +1407,12 @@ function procesarRespuesta(respuesta) {
         });
 
     } else {
+        // 2. Manejo de errores o respuestas incompletas
+        let errorDetalle = respuesta.error || "No se pudieron generar los registros o la respuesta del servidor fue incompleta.";
         Swal.fire({ 
             icon: "error", 
-            title: "Error",
-            html: '<strong>No se pudieron generar los registros.</strong>' 
+            title: "Atención",
+            html: `<strong>${errorDetalle}</strong>` 
         });
     }
 }

@@ -175,7 +175,7 @@ curl_close($ch);
      * MÉTODO INTEGRAL: Registro de casos con soporte multi-registro,
      * cantidades dinámicas y lógicas específicas por departamento.
      */
-   public function nuevoCaso()
+public function nuevoCaso()
 {
     // 1. CARGA DE TODOS LOS MODELOS
     $casoModel = new Casos();
@@ -197,14 +197,23 @@ curl_close($ch);
         
         $idusuopr = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
         
-        // Decodificación de datos asegurando integridad
-        $datos = empty($buscar_token) 
-            ? json_decode(base64_decode($this->request->getPost('data')), TRUE) 
-            : $this->request->getPost('data');
+        // --- DECODIFICACIÓN Y VALIDACIÓN ---
+        if (empty($buscar_token)) {
+            $rawData = $this->request->getPost('data');
+            $decoded = base64_decode($rawData);
+            $datos = json_decode($decoded, true);
+        } else {
+            $datos = $this->request->getPost('data');
+        }
+
+        if (!is_array($datos)) {
+            log_message('error', 'nuevoCaso: Fallo en decodificación de datos');
+            return $this->response->setJSON(['mensaje' => 2, 'error' => 'Datos inválidos']);
+        }
         
         // 2. DETERMINAR LA LISTA DE TRABAJO
         $lista_items = [];
-        if ($datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
+        if (isset($datos["tipo-atencion-usu"]) && $datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
             $lista_items = json_decode($datos['lista_consignacion'], true);
         } else {
             $lista_items[] = [
@@ -224,45 +233,41 @@ curl_close($ch);
                 
                 $newCase = array();
                 $newCase["idusuopr"]    = $idusuopr;
-                $newCase["casofec"]     = $datos["date-entry"];
-                $newCase["casoced"]     = $datos["person-id"];
-                $newCase["caso_nacionalidad"] = $datos["nacionalidad"];
-                
-                // USAMOS mb_strtoupper PARA ACENTOS EN MAYÚSCULAS
-                $newCase["casonom"]     = mb_strtoupper($datos["person-name"], 'UTF-8');
-                $newCase["casoape"]     = mb_strtoupper($datos["person-lastname"], 'UTF-8');
-                
-                $newCase["casotel"]     = $datos["telephone"];
-                $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
+                $newCase["casofec"]     = $datos["date-entry"] ?? date('Y-m-d');
+                $newCase["casoced"]     = $datos["person-id"] ?? '';
+                $newCase["caso_nacionalidad"] = $datos["nacionalidad"] ?? '';
+                $newCase["casonom"]     = mb_strtoupper($datos["person-name"] ?? '', 'UTF-8');
+                $newCase["casoape"]     = mb_strtoupper($datos["person-lastname"] ?? '', 'UTF-8');
+                $newCase["casotel"]     = $datos["telephone"] ?? '';
+                $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"] ?? 1;
                 $newCase["idest"]       = ($newCase["id_tipo_atencion"] == '1') ? 2 : 1;
-                $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
-                $newCase["idrrss"]      = $datos["social_network"];
-                $newCase["estadoid"]    = $datos["state"];
-                $newCase["municipioid"] = $datos["county"];
-                $newCase["pais"]        = $datos["country"];
-                $newCase["sexo"]        = $datos["sexo"];
-                $newCase["parroquiaid"] = $datos["town"];
-                $newCase["ofiid"]       = $datos["office"];
-                $newCase["casodesc"]    = $datos["user-requirement"];
-                $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
-                $newCase["direccion"]   = $datos["direccion"];
-                $newCase["correo"]      = $datos["correo"];
-                $newCase["caso_org_id"] = $datos["organismo-caso"];
+                $newCase["idrrss"]      = $datos["social_network"] ?? 1;
+                $newCase["estadoid"]    = $datos["state"] ?? null;
+                $newCase["municipioid"] = $datos["county"] ?? null;
+                $newCase["pais"]        = $datos["country"] ?? 1;
+                $newCase["sexo"]        = $datos["sexo"] ?? '';
+                $newCase["parroquiaid"] = $datos["town"] ?? null;
+                $newCase["ofiid"]       = $datos["office"] ?? null;
+                $newCase["casodesc"]    = $datos["user-requirement"] ?? '';
+                $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"] ?? null;
+                $newCase["direccion"]   = mb_strtoupper($datos["direccion"] ?? '', 'UTF-8');
+                $newCase["correo"]      = mb_strtoupper($datos["correo"] ?? '', 'UTF-8');
+                $newCase["caso_org_id"] = $datos["organismo-caso"] ?? 1;
                 $newCase["ente_adscrito_id"] = $datos["ente_adscrito"] ?? 0;
-                $newCase["edad"]        = $datos["edad"];
-                $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
-                $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
-                $newCase["profesion"]   = $datos["profesion"];
+                $newCase["edad"]        = $datos["edad"] ?? null;
+                $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"] ?? null;
+                $newCase["tipo_atend_id"] = $datos["tipo_atend_id"] ?? null;
+                $newCase["profesion"]   = mb_strtoupper($datos["profesion"] ?? '', 'UTF-8');
                 $newCase["casonumsol"]  = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
 
-                // 5. INSERCIÓN
+                // 5. INSERCIÓN PRINCIPAL
                 $query_insertar_caso = $casoModel->insertarNuevoCaso($newCase);
                 
-                if (isset($query_insertar_caso)) {
+                if ($query_insertar_caso) {
                     $_obtener_id = $casoModel->obtener_utimo_id();
                     $idcaso = $_obtener_id->getRow()->ultimo_id; 
 
-                    // Obtener nombre del tipo para el mensaje (CONVERTIR A MAYÚSCULAS CORRECTAMENTE)
+                    // --- OBTENER NOMBRE DEL TIPO PARA EL FRONTEND ---
                     if ($newCase["id_tipo_atencion"] == '24') {
                         $info = $db->table('sgc_tipo_prop_intelec')->select('tipo_prop_nombre')->where('tipo_prop_id', $item['id_pi'])->get()->getRow();
                         $nombre_final = $info ? mb_strtoupper($info->tipo_prop_nombre, 'UTF-8') : 'P.I.';
@@ -271,29 +276,30 @@ curl_close($ch);
                         $nombre_final = $info ? mb_strtoupper($info->tipo_aten_nombre, 'UTF-8') : 'ATENCIÓN';
                     }
 
+                    // Llenamos el array con el ID y el nombre real
                     $detalles_generados[] = ['id' => $idcaso, 'nombre' => $nombre_final];
                     $ids_generados[] = $idcaso;
 
-                    // 6. LÓGICA DE DENUNCIA
+                    // --- LÓGICA DE DENUNCIA (CASTING BOOLEANO PARA POSTGRES) ---
                     if ($newCase["id_tipo_atencion"] == '5') {
                         $Casos_denuncias->insertarCasos_Denuncias([
-                            'denu_afecta_persona'   => $datos["denu_afecta_persona"] ?? false,
-                            'denu_afecta_comunidad' => $datos["denu_afecta_comunidad"] ?? false,
-                            'denu_afecta_terceros'  => $datos["denu_afecta_terceros"] ?? false,
+                            'denu_afecta_persona'   => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_afecta_comunidad' => filter_var($datos["denu_afecta_comunidad"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_afecta_terceros'  => filter_var($datos["denu_afecta_terceros"] ?? false, FILTER_VALIDATE_BOOLEAN),
                             'denu_fecha_hechos'     => $datos["denu_fecha_hechos"] ?? null,
-                            'denu_involucrados'     => $datos["denu_involucrados"] ?? '',
-                            'denu_instancia_popular'=> $datos["denu_instancia_popular"] ?? '',
+                            'denu_involucrados'     => mb_strtoupper($datos["denu_involucrados"] ?? '', 'UTF-8'),
+                            'denu_instancia_popular'=> mb_strtoupper($datos["denu_instancia_popular"] ?? '', 'UTF-8'),
                             'denu_rif_instancia'    => $datos["denu_rif_instancia"] ?? '',
-                            'denu_ente_financiador' => $datos["denu_ente_financiador"] ?? '',
-                            'denu_nombre_proyecto'  => $datos["denu_nombre_proyecto"] ?? '',
-                            'denu_monto_aprovado'   => $datos["denu_monto_aprovado"] ?? 0,
+                            'denu_ente_financiador' => mb_strtoupper($datos["denu_ente_financiador"] ?? '', 'UTF-8'),
+                            'denu_nombre_proyecto'  => mb_strtoupper($datos["denu_nombre_proyecto"] ?? '', 'UTF-8'),
+                            'denu_monto_aprovado'   => (float)($datos["denu_monto_aprovado"] ?? 0),
                             'denu_id_caso'          => $idcaso,
                             'denu_borrado'          => false
                         ]);
                     }
 
-                    // 7. LÓGICA DE CGR
-                    if ($datos["bandera_cgr"] == 'true' || $datos["bandera_cgr"] === true) {
+                    // --- LÓGICA DE CGR ---
+                    if (filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                         $Registro_cgr_Model->insertarRegistro_cgr([
                             'competencia_cgr' => $datos["competencia_crg"] ?? 2,
                             'asume_cgr'       => $datos["asume_crg"] ?? 2,
@@ -301,7 +307,7 @@ curl_close($ch);
                         ]);
                     }
 
-                    // 8. LÓGICA DE MEDIACIÓN
+                    // --- LÓGICA DE MEDIACIÓN ---
                     if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
                         $med = $datos['datos_medicion'];
                         $getTerceroId = function($p) use ($terceroModel) {
@@ -309,73 +315,59 @@ curl_close($ch);
                             $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
                             if ($ex) return $ex['ter_id'];
                             $terceroModel->insert([
-                                'ter_nombre' => mb_strtoupper($p['nombre_razon'], 'UTF-8'),
-                                'ter_tipo_per' => $p['ident_tipo'],
+                                'ter_nombre' => mb_strtoupper($p['nombre_razon'] ?? '', 'UTF-8'),
+                                'ter_tipo_per' => $p['ident_tipo'] ?? 1,
                                 'ter_identificacion' => $p['ident_valor'],
-                                'ter_correo' => $p['correo'] ?? '',
+                                'ter_correo' => mb_strtoupper($p['correo'] ?? '', 'UTF-8'),
                                 'ter_telefono' => $p['telefono'] ?? '',
                                 'ter_pais' => $p['pais'] ?? 1,
-'ter_direccion' => $p['direccion'] ?? '',
-                                'ter_impre_abogado' => $p['impre'] ?? null
+                                'ter_direccion' => mb_strtoupper($p['direccion'] ?? '', 'UTF-8')
                             ]);
                             return $terceroModel->insertID();
                         };
 
-                        $id_contra = $getTerceroId($med['contraparte']);
-                        $id_apo_sol = isset($med['apoderado_solicitante']) ? $getTerceroId($med['apoderado_solicitante']) : 0;
-                        $id_apo_contra = isset($med['apoderado_contraparte']) ? $getTerceroId($med['apoderado_contraparte']) : 0;
-
                         $apoderadoModel->insert([
                             'med_caso_id' => $idcaso,
-                            'med_contra_id' => $id_contra,
-                            'med_apo_sol_id' => $id_apo_sol,
-                            'med_apo_contra_id' => $id_apo_contra
+                            'med_contra_id' => $getTerceroId($med['contraparte']),
+                            'med_apo_sol_id' => (isset($med['apoderado_solicitante'])) ? $getTerceroId($med['apoderado_solicitante']) : 0,
+                            'med_apo_contra_id' => (isset($med['apoderado_contraparte'])) ? $getTerceroId($med['apoderado_contraparte']) : 0
                         ]);
                     }
 
-                   // 9. RELACIONES TÉCNICAS
-$tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
+                    // --- RELACIONES TÉCNICAS Y COORDENADAS ---
+                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
 
-if (isset($datos["act_coordenadas"]) && $datos["act_coordenadas"] == 't') {
-    // Definimos las variables de forma segura antes de armar el array
-    $latitud  = isset($datos["latitud"])  ? $datos["latitud"]  : '';
-    $longitud = isset($datos["longitud"]) ? $datos["longitud"] : '';
+                    if (isset($datos["act_coordenadas"]) && filter_var($datos["act_coordenadas"], FILTER_VALIDATE_BOOLEAN)) {
+                        if (!empty($datos["latitud"]) || !empty($datos["longitud"])) {
+                            $Casos_coordenadas->insertarCoordenadas([
+                                "idcaso"   => $idcaso,
+                                "latitud"  => $datos["latitud"] ?? '',
+                                "longitud" => $datos["longitud"] ?? '',
+                                "idusuopr" => $idusuopr
+                            ]);
+                        }
+                    }
 
-    // Solo insertamos si al menos tenemos algún dato
-    if ($latitud !== '' || $longitud !== '') {
-        $Casos_coordenadas->insertarCoordenadas([
-            "idcaso"   => $idcaso,
-            "latitud"  => $latitud,
-            "longitud" => $longitud,
-            "idusuopr" => $idusuopr
-        ]);
-    }
-}
-
-                    // 10. SEGUIMIENTO Y AUDITORÍA
+                    // --- SEGUIMIENTO Y AUDITORÍA ---
                     $segModel->insertarSeguimiento([
                         'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
                         'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                     ]);
 
-                    if ($newCase["id_tipo_atencion"] == '1') {
-                        $segModel->insertarSeguimiento([
-                            'idcaso' => $idcaso, 'idestllam' => 2, 'idusuopr' => $idusuopr,
-                            'segcoment' => 'CIERRE AUTOMÁTICO POR ASESORÍA', 'segfec' => date('Y-m-d')
-                        ]);
-                    }
-
-                    $audi_desc = "REGISTRO CASO Nª{$idcaso} - ITEM " . ($i+1) . " DE {$repeticiones}";
-                    $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => $audi_desc]);
+                    $model_Auditoria_sistema_Model->agregar([
+                        'audi_user_id' => $idusuopr, 
+                        'audi_accion' => "REGISTRO CASO Nª{$idcaso}"
+                    ]);
                 }
             }
         }
 
-        // 11. RETORNO CON RESPUESTA JSON DE CODEIGNITER (FUERZA UTF-8)
+        // --- RESPUESTA JSON FINAL (PROTEGIDA) ---
         return $this->response->setJSON([
             'mensaje' => (!empty($ids_generados)) ? 1 : 2,
             'total_items' => count($ids_generados),
-            'detalles' => $detalles_generados
+            'detalles' => $detalles_generados, // Ya no vendrá vacío
+            'idcaso' => $ids_generados[0] ?? null
         ]);
         
     } else {
