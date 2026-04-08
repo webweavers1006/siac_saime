@@ -315,7 +315,8 @@ curl_close($ch);
                                 'ter_correo' => $p['correo'] ?? '',
                                 'ter_telefono' => $p['telefono'] ?? '',
                                 'ter_pais' => $p['pais'] ?? 1,
-                                'ter_direccion' => $p['direccion'] ?? ''
+'ter_direccion' => $p['direccion'] ?? '',
+                                'ter_impre_abogado' => $p['impre'] ?? null
                             ]);
                             return $terceroModel->insertID();
                         };
@@ -332,14 +333,24 @@ curl_close($ch);
                         ]);
                     }
 
-                    // 9. RELACIONES TÉCNICAS
-                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
-                    if ($datos["act_coordenadas"] == 't') {
-                        $Casos_coordenadas->insertarCoordenadas([
-                            "idcaso" => $idcaso, "latitud" => $datos["latitud"], 
-                            "longitud" => $datos["longitud"], 'idusuopr' => $idusuopr
-                        ]);
-                    }
+                   // 9. RELACIONES TÉCNICAS
+$tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $item['id_pi']]);
+
+if (isset($datos["act_coordenadas"]) && $datos["act_coordenadas"] == 't') {
+    // Definimos las variables de forma segura antes de armar el array
+    $latitud  = isset($datos["latitud"])  ? $datos["latitud"]  : '';
+    $longitud = isset($datos["longitud"]) ? $datos["longitud"] : '';
+
+    // Solo insertamos si al menos tenemos algún dato
+    if ($latitud !== '' || $longitud !== '') {
+        $Casos_coordenadas->insertarCoordenadas([
+            "idcaso"   => $idcaso,
+            "latitud"  => $latitud,
+            "longitud" => $longitud,
+            "idusuopr" => $idusuopr
+        ]);
+    }
+}
 
                     // 10. SEGUIMIENTO Y AUDITORÍA
                     $segModel->insertarSeguimiento([
@@ -497,8 +508,8 @@ public function actualizarCaso()
             {
                 $coordenadas["idcaso"] = $idcaso;
                 $coordenadas["nombre"] = $datos["nombre"];
-                $coordenadas["latitud"] = $datos["latitud"];
-                $coordenadas["longitud"] = $datos["longitud"];
+$coordenadas["latitud"] = isset($datos["latitud"]) ? $datos["latitud"] : '';
+$coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
                 $coordenadas["borrado"] = false;
                 $coordenadas['idusuopr'] = $idusuopr;
                 
@@ -589,6 +600,7 @@ public function actualizarCaso()
                             'ter_municipio' => $apoSolData['municipio'],
                             'ter_parroquia' => $apoSolData['parroquia'],
                             'ter_direccion' => $apoSolData['direccion'],
+                            'ter_impre_abogado' => $apoSolData['impre'] ?? null,
                         ];
                         $apoderadoSolId = $checkAndInsertTercero($dataToInsert);
                     }
@@ -607,6 +619,7 @@ public function actualizarCaso()
                             'ter_municipio' => $apoCptData['municipio'],
                             'ter_parroquia' => $apoCptData['parroquia'],
                             'ter_direccion' => $apoCptData['direccion'],
+                            'ter_impre_abogado' => $apoCptData['impre'] ?? null,
                         ];
                         $apoderadoCptId = $checkAndInsertTercero($dataToInsert);
                     }

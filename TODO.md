@@ -1,31 +1,42 @@
-# TODO: Fix Denuncia Type 5 Not Saving to sgc_casos_denuncias
+# PLAN DE CORRECCIÓN - APODERADOS MEDIACIÓN
 
-## Plan Approved ✅
-**Files**: Casos_Controler.php, agregar_caso.php (JS), nuevo_caso.js
+## ✅ PASOS COMPLETADOS
+- [x] Diagnóstico completo
+- [x] Plan validado
 
-### 📋 Checklist (5 Steps)
+## 🔧 PASOS PENDIENTES (EJECUTAR EN ORDEN)
 
-- [x] **1. Edit Casos_Controler.php** - Add denuncia insert to `nuevoCaso()` ✅
-- [x] **2. Fix JS Form** - ✅ JS already sets `bandera_denuncia=true` + all `denu_*` fields for tipo=5
-- [x] **3. Debug & Fix** - ✅ Moved `$Casos_denuncias` instantiation **INSIDE** foreach if(type==5) block (matches actualizarCaso())
-- [x] **4. JS Keys Fix** - ✅ `nuevo_caso.js`: `option_*` → `denu_*` keys (matches controller expectations)
-- [ ] **5. Test Creation** - Create type 5 → Verify `public.sgc_casos_denuncias` insert
-- [ ] **6. Verify Rollback** - Check CGR deleted (if exists)
-- [ ] **7. Audit Logs** - Confirm entries
-- [ ] **8. Complete** - Remove TODO.md + 🎉
+### 1. Crear TODO.md ✅ **HECHO**
 
-**Final Test**:
+### 2. EDITAR app/Controllers/Casos_Controler.php ✅ **COMPLETADO**
 ```
-1. /vista_agregar_caso → Tipo=5 + fill denu_* → Save
-2. SELECT * FROM public.sgc_casos_denuncias WHERE denu_id_caso = [NEW_ID];
+Método: nuevoCaso() - Línea ~280
+AGREGAR campo 'ter_impre_abogado' en insert sgc_terceros
 ```
 
-**¿Inserta ahora?** (Sí → ✅ Complete)
+### 3. EDITAR app/Models/Mediacion.php ✅ **COMPLETADO**
+```
+SELECT: AGREGAR ter_sol.ter_impre_abogado, ter_apo_contra.ter_impre_abogado
+```
 
-**Test Now**:
-1. `/vista_agregar_caso` → Tipo **Denuncia (5)** + fill `denu_*`
-2. Save → `SELECT * FROM public.sgc_casos_denuncias ORDER BY denu_id DESC LIMIT 1;`
+### 4. VERIFICAR app/Models/Casos.php
+```
+detalleCaso(): AGREGAR JOIN sgc_mediacion + terceros
+```
 
-**Status?** (Works → Next Steps | Still fails → Debug)
+### 5. PROBAR
+```
+1. Crear nuevo caso mediación 24
+2. Verificar BD: sgc_mediacion → IDs > 0 + IMPRE
+3. Editar caso 24 → Datos aparecen
+```
 
-**Next**: Edit Casos_Controler.php → Mark [x] when done
+### 6. LIMPIAR
+```
+rm TODO.md
+```
+
+---
+
+**ESTADO: Pendiente aprobación para editar archivos**
+

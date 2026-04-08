@@ -586,7 +586,9 @@ private function buildBaseQuery($builder)
          $builder->select("CASE WHEN sexo = '1' THEN 'M' ELSE 'F' END as sexo");
          $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
          $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre,t_antusu.env_correo');
-         $builder->select('deta.tipo_atend_nombre');
+$builder->select('deta.tipo_atend_nombre');
+         $builder->select('ts.ter_nombre AS nombre_apo_sol');
+         $builder->select('tc.ter_nombre AS nombre_apo_contra');
          $builder->join('sgc_estatus b', 'b.idest = a.idest');
          $builder->join('sgc_estados est', 'est.estadoid = a.estadoid');
          $builder->join('sgc_municipio mun', 'mun.municipioid = a.municipioid');
@@ -597,7 +599,10 @@ private function buildBaseQuery($builder)
          $builder->join('sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
          $builder->join('sgc_casos_remitidos as casos_remi', 'a.idcaso = casos_remi.casos_id', 'left');
          $builder->join('sgc_direcciones_administrativas as direc', 'casos_remi.direccion_id = direc.id', 'left');
-         $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_atend_id', 'left');
+$builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_atend_id', 'left');
+         $builder->join('public.sgc_mediacion m', 'a.idcaso = m.med_caso_id', 'left');
+         $builder->join('public.sgc_terceros ts', 'm.med_apo_sol_id = ts.ter_id', 'left');
+         $builder->join('public.sgc_terceros tc', 'm.med_apo_contra_id = tc.ter_id', 'left');
          $builder->where('a.idcaso', $idcaso); 
          $query = $builder->get();
          $resultado = $query->getRow();

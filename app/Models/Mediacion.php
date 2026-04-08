@@ -12,8 +12,10 @@ class Mediacion extends BaseModel
     protected $allowedFields = [
         'med_caso_id',
         'med_apo_sol_id',
-        'med_contra_id',
-        'med_apo_contra_id' 
+        'med_contra_id', 
+        'med_apo_contra_id',
+        'impre_abogado_apo_sol',
+        'impre_abogado_apo_contra'
     ];
 
 /*

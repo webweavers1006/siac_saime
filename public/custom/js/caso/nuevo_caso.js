@@ -1607,103 +1607,57 @@ $("#fecha-nacimiento").on('change', function() {
     // Asignar la edad al elemento con id='edad'
     $("#edad").val(edad);
 });
-
 function obtenerDatosMediacion() {
-    
-    // Función auxiliar para obtener el valor del campo de texto o select
     const getElementValue = (id) => $(`#${id}`).val();
 
-    // -----------------------------------------------------------
-    // A. Datos del Apoderado del Solicitante (Tipo = 1)
-    // -----------------------------------------------------------
-    const apoderadoSolicitante = {
-        // Campo identificador para la BD
-        tipo_apoderado: '1', 
-        
-
-        // Datos Personales
-        ident_tipo: getElementValue('apo_solicitente-ident-tipo'),
-        ci: getElementValue('apoderado-solicitante-ci'),
-        impre: getElementValue('apoderado-solicitante-impre'),
-        nombres: getElementValue('apoderado-solicitante-nombres'),
-        telefono: getElementValue('apoderado-solicitante-telefono'),
-        correo: getElementValue('apoderado-solicitante-correo'),
-        
-        // Ubicación
-        pais: getElementValue('apoderado-solicitante-pais-select'),
-        estado: getElementValue('apoderado-solicitante-estado-select'),
-        municipio: getElementValue('apoderado-solicitante-municipio-select'),
-        parroquia: getElementValue('apoderado-solicitante-parroquia-select'),
-        direccion: getElementValue('apoderado-solicitante-direccion')
+    return {
+        apoderado_solicitante: {
+            aplica: $('#apoderado-solicitante-aplica').is(':checked'), // Agregamos el check
+            tipo_apoderado: '1',
+            ident_tipo: getElementValue('apo_solicitente-ident-tipo'),
+            
+            // CAMBIO CLAVE: de 'ci' a 'ident_valor'
+            ident_valor: getElementValue('apoderado-solicitante-ci'), 
+            
+            // CAMBIO CLAVE: de 'nombres' a 'nombre_razon'
+            nombre_razon: getElementValue('apoderado-solicitante-nombres'),
+            
+            impre: getElementValue('apoderado-solicitante-impre'),
+            telefono: getElementValue('apoderado-solicitante-telefono'),
+            correo: getElementValue('apoderado-solicitante-correo'),
+            pais: getElementValue('apoderado-solicitante-pais-select'),
+            direccion: getElementValue('apoderado-solicitante-direccion')
+        },
+        contraparte: {
+            nombre_razon: getElementValue('contraparte-nombre-razon'),
+            ident_tipo: getElementValue('contraparte-ident-tipo'),
+            ident_valor: getElementValue('contraparte-ident-valor'),
+            correo: getElementValue('contraparte-correo'),
+            telefono: getElementValue('contraparte-telefono'),
+            pais: getElementValue('contraparte-pais-select'),
+            direccion: getElementValue('contraparte-direccion')
+        },
+        apoderado_contraparte: {
+            aplica: $('#apoderado-contraparte-aplica').is(':checked'), // Agregamos el check
+            tipo_apoderado: '2',
+            ident_tipo: getElementValue('apo_contraparte-ident-tipo'),
+            
+            // CAMBIO CLAVE: de 'ci' a 'ident_valor'
+            ident_valor: getElementValue('contraparte-apoderado-ci'),
+            
+            // CAMBIO CLAVE: de 'nombres' a 'nombre_razon'
+            nombre_razon: getElementValue('apoderado-contraparte-nombres'),
+            
+            impre: getElementValue('contraparte-apoderado-impre'),
+            telefono: getElementValue('apoderado-contraparte-telefono'),
+            correo: getElementValue('apoderado-contraparte-correo'),
+            pais: getElementValue('apoderado-contraparte-pais-select'),
+            direccion: getElementValue('apoderado-contraparte-direccion')
+        },
+        controversia: {
+            tipo_controversia: $('#tipo-pi').val()
+        }
     };
-
-    // -----------------------------------------------------------
-    // B. Datos de la Contraparte
-    // -----------------------------------------------------------
-    const contraparte = {
-        // Datos Personales y de Identificación
-        
-      
-        nombre_razon: getElementValue('contraparte-nombre-razon'),
-        ident_tipo: getElementValue('contraparte-ident-tipo'),
-        ident_valor: getElementValue('contraparte-ident-valor'),
-        correo: getElementValue('contraparte-correo'),
-        telefono: getElementValue('contraparte-telefono'),
-        // Ubicación
-        pais: getElementValue('contraparte-pais-select'),
-        estado: getElementValue('contraparte-estado-select'),
-        municipio: getElementValue('contraparte-municipio-select'),
-        parroquia: getElementValue('contraparte-parroquia-select'),
-        direccion: getElementValue('contraparte-direccion')
-    };
-
-    // -----------------------------------------------------------
-    // C. Datos del Apoderado de la Contraparte (Tipo = 2)
-    // -----------------------------------------------------------
-    const apoderadoContraparte = {
-        // Campo identificador para la BD
-        tipo_apoderado: '2', 
-        // Datos Personales y de Identificación
-        ident_tipo: getElementValue('apo_contraparte-ident-tipo'),
-        ci: getElementValue('contraparte-apoderado-ci'),
-        impre: getElementValue('contraparte-apoderado-impre'),
-        // Datos Personales
-        nombres: getElementValue('apoderado-contraparte-nombres'),
-        telefono: getElementValue('apoderado-contraparte-telefono'),
-        correo: getElementValue('apoderado-contraparte-correo'),
-        
-        // Ubicación
-        pais: getElementValue('apoderado-contraparte-pais-select'),
-        estado: getElementValue('apoderado-contraparte-estado-select'),
-        municipio: getElementValue('apoderado-contraparte-municipio-select'),
-        parroquia: getElementValue('apoderado-contraparte-parroquia-select'),
-        direccion: getElementValue('apoderado-contraparte-direccion')
-    };
-
-    // -----------------------------------------------------------
-    // D. Descripción de la Controversia (CORREGIDA para Radio Buttons)
-    // -----------------------------------------------------------
-    const controversia = {
-        // 🚨 Radio Buttons: Obtiene el valor del radio button seleccionado
-        // Asume que el atributo 'name' de todos los radios es 'tipo_controversia'
-        tipo_controversia: $('#tipo-pi').val(),
-        
-        
-    };
-
-
-    // Objeto final que contiene toda la información organizada
-    const datosMediacion = {
-        apoderado_solicitante: apoderadoSolicitante,
-        contraparte: contraparte,
-        apoderado_contraparte: apoderadoContraparte,
-        controversia: controversia
-    };
-    
-    // Puedes usar esto para depurar y ver el objeto en la consola
-    // console.log(datosMediacion);
-
-    return datosMediacion;
 }
 
 //Metodo para buscar la informacion del solicitante en funcion de la cedula 
