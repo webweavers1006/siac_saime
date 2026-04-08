@@ -363,7 +363,6 @@ class FPDF
 		// Get current page number
 		return $this->page;
 	}
-
 function Header_Planilla($datos)
 {
     $azul_sapi  = [25, 55, 90];
@@ -377,7 +376,7 @@ function Header_Planilla($datos)
     $this->Ln(25);
     $this->SetFont('Arial', 'B', 14);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 8, iconv('UTF-8', 'CP1252', 'PLANILLA DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
+    $this->Cell(190, 8, iconv('UTF-8', 'CP1252//IGNORE', 'PLANILLA DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
     
     $this->Ln(2);
 
@@ -391,7 +390,7 @@ function Header_Planilla($datos)
     $this->SetX(10); 
 
     foreach($tipos as $id => $nombre) {
-        $texto = iconv('UTF-8', 'CP1252', $nombre . ':');
+        $texto = iconv('UTF-8', 'CP1252//IGNORE', $nombre . ':');
         
         // Calculamos el ancho del texto y sumamos 3mm para separar el recuadro de la palabra
         $anchoCeldaTexto = $this->GetStringWidth($texto) + 3; 
@@ -412,39 +411,39 @@ function Header_Planilla($datos)
 
     // --- FILA CONTROL ---
     $this->SetFont('Arial', 'B', 9);
-    $this->Cell(63, 7, iconv('UTF-8', 'CP1252', 'Nº: ') . ($datos['caso'] ?? ''), 0, 0, 'L');
-    $this->Cell(64, 7, iconv('UTF-8', 'CP1252', 'FECHA: ') . ($datos['fecha_caso'] ?? ''), 0, 0, 'C');
-    $this->Cell(63, 7, iconv('UTF-8', 'CP1252', 'HORA: ') . ($datos['caso_hora'] ?? ''), 0, 1, 'R');
+    $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'Nº: ') . ($datos['caso'] ?? ''), 0, 0, 'L');
+    $this->Cell(64, 7, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA: ') . ($datos['fecha_caso'] ?? ''), 0, 0, 'C');
+    $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'HORA: ') . ($datos['caso_hora'] ?? ''), 0, 1, 'R');
     $this->Ln(2);
 
     // --- SECCIÓN SOLICITANTE ---
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor(255, 255, 255);
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 6, iconv('UTF-8', 'CP1252', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
+    $this->Cell(190, 6, iconv('UTF-8', 'CP1252//IGNORE', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
 
     $this->SetTextColor(40, 40, 40);
     $this->SetDrawColor(230, 230, 230);
     
     // Nombres y Cédula
     $this->SetFont('Arial', 'B', 8);
-    $this->Cell(120, 8, iconv('UTF-8', 'CP1252', '  NOMBRES: '), 'B', 0, 'L');
+    $this->Cell(120, 8, iconv('UTF-8', 'CP1252//IGNORE', '  NOMBRES: '), 'B', 0, 'L');
     $this->SetFont('Arial', '', 9);
     $this->SetX(35); 
-    $this->Cell(85, 8, iconv('UTF-8', 'CP1252', $datos['nombre'] ?? ''), 0, 0, 'L');
+    $this->Cell(85, 8, iconv('UTF-8', 'CP1252//IGNORE', $datos['nombre'] ?? ''), 0, 0, 'L');
     
     $this->SetX(130);
     $this->SetFont('Arial', 'B', 8);
-    $this->Cell(70, 8, iconv('UTF-8', 'CP1252', '  CÉDULA: ' . ($datos['cedula'] ?? '')), 'B', 1, 'L');
+    $this->Cell(70, 8, iconv('UTF-8', 'CP1252//IGNORE', '  CÉDULA: ' . ($datos['cedula'] ?? '')), 'B', 1, 'L');
 
     // Ubicación
-    $this->Cell(63, 8, iconv('UTF-8', 'CP1252', '  MUNICIPIO: ' . ($datos['municipionom'] ?? '')), 'B', 0, 'L');
-    $this->Cell(63, 8, iconv('UTF-8', 'CP1252', '  PARROQUIA: ' . ($datos['parroquianom'] ?? '')), 'B', 0, 'L');
-    $this->Cell(64, 8, iconv('UTF-8', 'CP1252', '  TELÉFONO: ' . ($datos['casotel'] ?? '')), 'B', 1, 'L');
+    $this->Cell(63, 8, iconv('UTF-8', 'CP1252//IGNORE', '  MUNICIPIO: ' . ($datos['municipionom'] ?? '')), 'B', 0, 'L');
+    $this->Cell(63, 8, iconv('UTF-8', 'CP1252//IGNORE', '  PARROQUIA: ' . ($datos['parroquianom'] ?? '')), 'B', 0, 'L');
+    $this->Cell(64, 8, iconv('UTF-8', 'CP1252//IGNORE', '  TELÉFONO: ' . ($datos['casotel'] ?? '')), 'B', 1, 'L');
 
     // Correo y Firma
-    $this->Cell(120, 8, iconv('UTF-8', 'CP1252', '  CORREO: ' . ($datos['correo'] ?? '')), 'B', 0, 'L');
-    $this->Cell(70, 8, iconv('UTF-8', 'CP1252', '  FIRMA: __________________'), 'B', 1, 'L');
+    $this->Cell(120, 8, iconv('UTF-8', 'CP1252//IGNORE', '  CORREO: ' . ($datos['correo'] ?? '')), 'B', 0, 'L');
+    $this->Cell(70, 8, iconv('UTF-8', 'CP1252//IGNORE', '  FIRMA: __________________'), 'B', 1, 'L');
     $this->Ln(8);
 }
 
@@ -456,41 +455,41 @@ function Content_planilla($datos_Content_Planilla)
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor(255, 255, 255);
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 6, iconv('UTF-8', 'CP1252', '  DESCRIPCIÓN DE LA SOLICITUD '), 0, 1, 'L', true);
+    $this->Cell(190, 6, iconv('UTF-8', 'CP1252//IGNORE', '  DESCRIPCIÓN DE LA SOLICITUD '), 0, 1, 'L', true);
     
     $this->SetTextColor(40, 40, 40);
     $this->SetFont('Arial', '', 9);
     $this->Ln(2);
     
     $texto_desc = trim($datos_Content_Planilla['casodesc'] ?? '');
-    $this->MultiCell(190, 5, iconv('utf-8', 'cp1252', $texto_desc), 1, 'J');
+    $this->MultiCell(190, 5, iconv('utf-8', 'cp1252//IGNORE', $texto_desc), 1, 'J');
     $this->Ln(4);
 
   // --- ANEXOS ---
     $this->SetFont('Arial', 'B', 8);
     // Se añadieron espacios adicionales entre SI, NO y las demás opciones
-    $this->Cell(190, 6, iconv('utf-8', 'cp1252', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
+    $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
     $this->Ln(6);
     // --- RECEPTOR ---
     $this->SetFillColor(245, 245, 245);
     $this->SetFont('Arial', 'B', 8);
-    $this->Cell(95, 8, iconv('utf-8', 'cp1252', '  RECEPTOR: ' . ($datos_Content_Planilla['user_name'] ?? '')), 1, 0, 'L', true);
-    $this->Cell(95, 8, iconv('utf-8', 'cp1252', '  CARGO: ' . ($datos_Content_Planilla['usercargo'] ?? '')), 1, 1, 'L', true);
+    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  RECEPTOR: ' . ($datos_Content_Planilla['user_name'] ?? '')), 1, 0, 'L', true);
+    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  CARGO: ' . ($datos_Content_Planilla['usercargo'] ?? '')), 1, 1, 'L', true);
     
     $this->Ln(12);
-    $this->Cell(95, 8, iconv('utf-8', 'cp1252', 'FECHA: __________________________'), 0, 0, 'C');
-    $this->Cell(95, 8, iconv('utf-8', 'cp1252', 'FIRMA Y SELLO: __________________________'), 0, 1, 'C');
+    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', 'FECHA: __________________________'), 0, 0, 'C');
+    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', 'FIRMA Y SELLO: __________________________'), 0, 1, 'C');
     
     // --- ADVERTENCIA ---
     $this->Ln(10);
     $this->SetFont('Arial', 'I', 7);
     $this->SetTextColor(100, 100, 100);
     $advertencia = "IMPORTANTE: SI LA DENUNCIA RESULTARE FALSA E INFUNDADA O VERSARE SOBRE HECHOS QUE NO MERITEN AVERIGUACIÓN O CUYA SUSTANCIACIÓN NO CORRESPONDA A ESTA CONTRALORÍA SE PROCEDERÁ A DEJAR CONSTANCIA MEDIANTE AUTO EXPRESO. NO SE ADMITIRÁN DENUNCIAS ANÓNIMAS.";
-    $this->MultiCell(190, 4, iconv('utf-8', 'cp1252', $advertencia), 1, 'C');
+    $this->MultiCell(190, 4, iconv('utf-8', 'cp1252//IGNORE', $advertencia), 1, 'C');
 }
+
 function Footer_Planilla()
 {
-    
      $this->Ln(40);
     // Línea superior divisoria (Gris claro)
     $this->SetDrawColor(200, 200, 200);
@@ -501,8 +500,8 @@ function Footer_Planilla()
     // Dirección y Teléfonos
     $this->SetFont('Arial', '', 7);
     $this->SetTextColor(100, 100, 100);
-    $this->Cell(190, 4, iconv('UTF-8', 'CP1252', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
-    $this->Cell(190, 4, iconv('UTF-8', 'CP1252', 'Caracas - Venezuela. Teléfonos (0212) 484.26.61 | Código Postal 1010'), 0, 1, 'C');
+    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
+    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Caracas - Venezuela. Teléfonos (0212) 484.26.61 | Código Postal 1010'), 0, 1, 'C');
     
     $this->Ln(1); // Pequeño respiro antes de la web
 
@@ -524,41 +523,41 @@ function Header_Asesoria($datos = [])
     $this->Ln(25);
     $this->SetFont('Arial', 'B', 12);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 6, iconv('UTF-8', 'CP1252', 'DIRECCIÓN DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
+    $this->Cell(190, 6, iconv('UTF-8', 'CP1252//IGNORE', 'DIRECCIÓN DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
     $this->SetFont('Arial', 'B', 14);
-    $this->Cell(190, 8, iconv('UTF-8', 'CP1252', 'PLANILLA DE ASESORÍA'), 0, 1, 'C');
+    $this->Cell(190, 8, iconv('UTF-8', 'CP1252//IGNORE', 'PLANILLA DE ASESORÍA'), 0, 1, 'C');
     $this->Ln(5);
 
     // --- FILA CONTROL ---
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor($gris_texto[0], $gris_texto[1], $gris_texto[2]);
-    $this->Cell(63, 7, iconv('UTF-8', 'CP1252', 'Nº: ') . ($datos['caso'] ?? ''), 0, 0, 'L');
-    $this->Cell(64, 7, iconv('UTF-8', 'CP1252', 'FECHA: ') . ($datos['fecha_caso'] ?? ''), 0, 0, 'C');
-    $this->Cell(63, 7, iconv('UTF-8', 'CP1252', 'HORA: ') . ($datos['caso_hora'] ?? ''), 0, 1, 'R');
+    $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'Nº: ') . ($datos['caso'] ?? ''), 0, 0, 'L');
+    $this->Cell(64, 7, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA: ') . ($datos['fecha_caso'] ?? ''), 0, 0, 'C');
+    $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'HORA: ') . ($datos['caso_hora'] ?? ''), 0, 1, 'R');
     $this->Ln(3);
 
     // --- SECCIÓN SOLICITANTE ---
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
     $this->SetTextColor(255, 255, 255);
     $this->SetFont('Arial', 'B', 10);
-    $this->Cell(190, 7, iconv('UTF-8', 'CP1252', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
+    $this->Cell(190, 7, iconv('UTF-8', 'CP1252//IGNORE', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
 
     $this->SetTextColor($gris_texto[0], $gris_texto[1], $gris_texto[2]);
     $this->SetDrawColor(230, 230, 230);
 
     // Nombres y Cédula (Fila 1)
     $this->SetFont('Arial', 'B', 8);
-    $this->Cell(120, 9, iconv('UTF-8', 'CP1252', '  NOMBRES Y APELLIDOS: ') . iconv('UTF-8', 'CP1252', ($datos['nombre'] ?? '')), 'B', 0, 'L');
-    $this->Cell(70, 9, iconv('UTF-8', 'CP1252', '  CÉDULA: ') . ($datos['cedula'] ?? ''), 'B', 1, 'L');
+    $this->Cell(120, 9, iconv('UTF-8', 'CP1252//IGNORE', '  NOMBRES Y APELLIDOS: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['nombre'] ?? '')), 'B', 0, 'L');
+    $this->Cell(70, 9, iconv('UTF-8', 'CP1252//IGNORE', '  CÉDULA: ') . ($datos['cedula'] ?? ''), 'B', 1, 'L');
 
     // Ubicación y Teléfono (Fila 2)
-    $this->Cell(63, 9, iconv('UTF-8', 'CP1252', '  MUNICIPIO: ') . iconv('UTF-8', 'CP1252', ($datos['municipionom'] ?? '')), 'B', 0, 'L');
-    $this->Cell(63, 9, iconv('UTF-8', 'CP1252', '  PARROQUIA: ') . iconv('UTF-8', 'CP1252', ($datos['parroquianom'] ?? '')), 'B', 0, 'L');
-    $this->Cell(64, 9, iconv('UTF-8', 'CP1252', '  TELÉFONO: ') . ($datos['casotel'] ?? ''), 'B', 1, 'L');
+    $this->Cell(63, 9, iconv('UTF-8', 'CP1252//IGNORE', '  MUNICIPIO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['municipionom'] ?? '')), 'B', 0, 'L');
+    $this->Cell(63, 9, iconv('UTF-8', 'CP1252//IGNORE', '  PARROQUIA: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['parroquianom'] ?? '')), 'B', 0, 'L');
+    $this->Cell(64, 9, iconv('UTF-8', 'CP1252//IGNORE', '  TELÉFONO: ') . ($datos['casotel'] ?? ''), 'B', 1, 'L');
 
     // Correo y Ente (Fila 3)
-    $this->Cell(95, 9, iconv('UTF-8', 'CP1252', '  CORREO: ') . ($datos['correo'] ?? ''), 'B', 0, 'L');
-    $this->Cell(95, 9, iconv('UTF-8', 'CP1252', '  ENTE ADSCRITO: ') . iconv('UTF-8', 'CP1252', ($datos['ente'] ?? '')), 'B', 1, 'L');
+    $this->Cell(95, 9, iconv('UTF-8', 'CP1252//IGNORE', '  CORREO: ') . ($datos['correo'] ?? ''), 'B', 0, 'L');
+    $this->Cell(95, 9, iconv('UTF-8', 'CP1252//IGNORE', '  ENTE ADSCRITO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['ente'] ?? '')), 'B', 1, 'L');
     $this->Ln(5);
 }
 
@@ -569,11 +568,11 @@ function Content_Asesoria($datos)
     
     $this->SetFont('Arial', 'B', 10);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 7, iconv('UTF-8', 'CP1252', 'DESCRIPCIÓN DE LA SOLICITUD:'), 0, 1, 'L');
+    $this->Cell(190, 7, iconv('UTF-8', 'CP1252//IGNORE', 'DESCRIPCIÓN DE LA SOLICITUD:'), 0, 1, 'L');
     
     $this->SetTextColor(50, 50, 50);
     $this->SetFont('Arial', '', 10);
-    $descripcion = iconv('UTF-8', 'CP1252', $datos['casodesc'] ?? '');
+    $descripcion = iconv('UTF-8', 'CP1252//IGNORE', $datos['casodesc'] ?? '');
     
     $this->SetDrawColor(180, 180, 180);
     $this->MultiCell(190, 6, trim($descripcion), 1, 'J');
@@ -581,8 +580,8 @@ function Content_Asesoria($datos)
 
     // Firmas
     $this->SetFont('Arial', 'B', 9);
-    $this->Cell(95, 7, iconv('UTF-8', 'CP1252', 'RECEPTOR: ') . iconv('UTF-8', 'CP1252', ($datos['user_name'] ?? '')), 0, 0, 'L');
-    $this->Cell(95, 7, iconv('UTF-8', 'CP1252', 'CARGO: ') . iconv('UTF-8', 'CP1252', ($datos['usercargo'] ?? '')), 0, 1, 'L');
+    $this->Cell(95, 7, iconv('UTF-8', 'CP1252//IGNORE', 'RECEPTOR: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['user_name'] ?? '')), 0, 0, 'L');
+    $this->Cell(95, 7, iconv('UTF-8', 'CP1252//IGNORE', 'CARGO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['usercargo'] ?? '')), 0, 1, 'L');
     
     $this->Ln(20);
     $this->SetDrawColor(40, 40, 40);
@@ -590,11 +589,10 @@ function Content_Asesoria($datos)
     $this->Cell(20, 0, '', 0, 0, 'C');
     $this->Cell(85, 0, '', 'T', 1, 'C');
     
-    $this->Cell(85, 5, iconv('UTF-8', 'CP1252', 'FECHA'), 0, 0, 'C');
+    $this->Cell(85, 5, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA'), 0, 0, 'C');
     $this->Cell(20, 5, '', 0, 0, 'C');
-    $this->Cell(85, 5, iconv('UTF-8', 'CP1252', 'FIRMA DEL SOLICITANTE'), 0, 1, 'C');
+    $this->Cell(85, 5, iconv('UTF-8', 'CP1252//IGNORE', 'FIRMA DEL SOLICITANTE'), 0, 1, 'C');
 }
-
 function Header_Denuncia($datos = [])
 {
     $azul_sapi = [25, 55, 90];
@@ -606,9 +604,9 @@ function Header_Denuncia($datos = [])
     // Títulos de encabezado
     $this->SetFont('Arial', 'B', 10);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 5, iconv('UTF-8', 'CP1252', 'DIRECCIÓN DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
+    $this->Cell(190, 5, iconv('UTF-8', 'CP1252//IGNORE', 'DIRECCIÓN DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
     $this->SetFont('Arial', 'B', 12);
-    $this->Cell(190, 6, iconv('UTF-8', 'CP1252', 'RECEPCIÓN DE LA DENUNCIA'), 0, 1, 'C');
+    $this->Cell(190, 6, iconv('UTF-8', 'CP1252//IGNORE', 'RECEPCIÓN DE LA DENUNCIA'), 0, 1, 'C');
     
     $this->SetTextColor(40, 40, 40);
     $this->SetFont('Arial', 'B', 8);
@@ -633,30 +631,30 @@ function Header_Denuncia($datos = [])
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
     $this->SetTextColor(255, 255, 255);
     $this->SetFont('Arial', 'B', 8);
-    $this->Cell(190, 6, iconv('UTF-8', 'CP1252', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
+    $this->Cell(190, 6, iconv('UTF-8', 'CP1252//IGNORE', '  DATOS DEL SOLICITANTE'), 0, 1, 'L', true);
 
     $this->SetTextColor(0, 0, 0);
     $h = 7; // Altura de celda
 
     // NOMBRES Y CEDULA
     $this->SetFont('Arial', 'B', 8); $this->Cell(20, $h, '  NOMBRES: ', 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8);  $this->Cell(110, $h, ($datos['nombre'] ?? ''), 'B', 0, 'L');
+    $this->SetFont('Arial', '', 8);  $this->Cell(110, $h, iconv('UTF-8', 'CP1252//IGNORE', ($datos['nombre'] ?? '')), 'B', 0, 'L');
     $this->SetFont('Arial', 'B', 8); $this->Cell(15, $h, ' CEDULA: ', 'B', 0, 'L');
     $this->SetFont('Arial', '', 8);  $this->Cell(45, $h, ($datos['cedula'] ?? ''), 'B', 1, 'L');
 
     // MUNICIPIO, PARROQUIA Y TELÉFONO
     $this->SetFont('Arial', 'B', 8); $this->Cell(20, $h, '  MUNICIPIO: ', 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8);  $this->Cell(43, $h, iconv('UTF-8', 'CP1252', $datos['municipionom'] ?? ''), 'B', 0, 'L');
+    $this->SetFont('Arial', '', 8);  $this->Cell(43, $h, iconv('UTF-8', 'CP1252//IGNORE', $datos['municipionom'] ?? ''), 'B', 0, 'L');
     
     $this->SetFont('Arial', 'B', 8); $this->Cell(20, $h, ' PARROQUIA: ', 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8);  $this->Cell(43, $h, iconv('UTF-8', 'CP1252', $datos['parroquianom'] ?? ''), 'B', 0, 'L');
+    $this->SetFont('Arial', '', 8);  $this->Cell(43, $h, iconv('UTF-8', 'CP1252//IGNORE', $datos['parroquianom'] ?? ''), 'B', 0, 'L');
     
     $this->SetFont('Arial', 'B', 8); $this->Cell(20, $h, ' TELEFONO: ', 'B', 0, 'L');
     $this->SetFont('Arial', '', 8);  $this->Cell(44, $h, ($datos['casotel'] ?? ''), 'B', 1, 'L');
 
     // CORREO
     $this->SetFont('Arial', 'B', 8); $this->Cell(20, $h, '  CORREO: ', 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8);  $this->Cell(170, $h, ($datos['correo'] ?? ''), 'B', 1, 'L');
+    $this->SetFont('Arial', '', 8);  $this->Cell(170, $h, iconv('UTF-8', 'CP1252//IGNORE', ($datos['correo'] ?? '')), 'B', 1, 'L');
     
     $this->Ln(2);
 }
@@ -667,21 +665,21 @@ function Content_Denuncia($datos)
     
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 7, iconv('utf-8', 'cp1252', '1- ¿A QUIÉN AFECTA EL HECHO?'), 0, 1, 'L');
+    $this->Cell(190, 7, iconv('utf-8', 'cp1252//IGNORE', '1- ¿A QUIÉN AFECTA EL HECHO?'), 0, 1, 'L');
     
     $this->SetTextColor(40, 40, 40);
     $this->SetFont('Arial', '', 9);
 
-    // Checkboxes (Asegúrate de que draw_check no haga saltos de línea extras)
-    $this->draw_check('a) Personal', ($datos['denu_afecta_persona'] == 't'));
-    $this->draw_check('b) Comunidad', ($datos['denu_afecta_comunidad'] == 't'));
-    $this->draw_check('c) Terceros', ($datos['denu_afecta_terceros'] == 't'));
+    // Checkboxes (Usamos IGNORE en las etiquetas por si acaso)
+    $this->draw_check(iconv('utf-8', 'cp1252//IGNORE', 'a) Personal'), ($datos['denu_afecta_persona'] == 't'));
+    $this->draw_check(iconv('utf-8', 'cp1252//IGNORE', 'b) Comunidad'), ($datos['denu_afecta_comunidad'] == 't'));
+    $this->draw_check(iconv('utf-8', 'cp1252//IGNORE', 'c) Terceros'), ($datos['denu_afecta_terceros'] == 't'));
     
-    $this->Ln(5); // Reducido de 8 a 5
+    $this->Ln(5); 
     
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-    $this->Cell(190, 7, iconv('utf-8', 'cp1252', '2- PERSONAS, ORGANISMOS O INSTITUCIONES INVOLUCRADAS:'), 0, 1, 'L');
+    $this->Cell(190, 7, iconv('utf-8', 'cp1252//IGNORE', '2- PERSONAS, ORGANISMOS O INSTITUCIONES INVOLUCRADAS:'), 0, 1, 'L');
     $this->Ln(1);
 }
 

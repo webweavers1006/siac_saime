@@ -966,40 +966,60 @@ function llenar_Propiedad_Intelectual(e) {
         },
     });
 }
-
 function generarTablaPropiedadIntelectual() {
     if (!window.propiedadIntelectualData || window.propiedadIntelectualData.length === 0) {
         console.error('No PI data available');
         return;
     }
 
+    // Usamos el color azul de tus botones (#0d56b3 o similar) para el borde superior
     let tableHTML = `
-        <table class="table table-sm table-bordered check-pi-container" style="margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th style="width: 20px;">Seleccionar</th>
-                    <th>Tipo de Propiedad Intelectual</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>`;
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 8px;">
+            <div class="card-header border-0 py-2" style="background-color: #0d56b3; color: white;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-list-check me-2"></i>
+                    <small class="fw-bold text-uppercase">Tipo de Propiedad Intelectual </small>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th class="text-center" style="width: 50px; color: #666; font-size: 0.8rem;">ACTIVO</th>
+                            <th class="ps-3" style="color: #666; font-size: 0.8rem;">DESCRIPCIÓN</th>
+                            <th class="text-center" style="width: 100px; color: #666; font-size: 0.8rem;">CANTIDAD</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
     $.each(window.propiedadIntelectualData, function(i, item) {
         tableHTML += `
-                <tr data-pi-id="${item.tipo_prop_id}">
-                    <td><input type="checkbox" class="check-pi" data-pi-id="${item.tipo_prop_id}"></td>
-                    <td>${item.tipo_prop_nombre}</td>
-                    <td><input type="number" class="form-control qty-pi" data-pi-id="${item.tipo_prop_id}" value="0" disabled min="1" max="999" style="width: 80px;"></td>
-                </tr>`
+                <tr data-pi-id="${item.tipo_prop_id}" class="pi-row-modern">
+                    <td class="text-center">
+                        <div class="form-check d-flex justify-content-center">
+                            <input type="checkbox" class="form-check-input check-pi custom-checkbox" 
+                                   data-pi-id="${item.tipo_prop_id}">
+                        </div>
+                    </td>
+                    <td class="ps-3 fw-semibold text-dark" style="font-size: 0.85rem;">
+                        ${item.tipo_prop_nombre}
+                    </td>
+                    <td class="pe-2">
+                        <input type="number" class="form-control form-control-sm qty-pi text-center" 
+                               data-pi-id="${item.tipo_prop_id}" 
+                               value="0" disabled min="1" max="999"
+                               style="border-radius: 4px; border: 1px solid #ddd;">
+                    </td>
+                </tr>`;
     });
 
     tableHTML += `
-            </tbody>
-        </table>`;
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
 
-    $('#pi-table-container').html(tableHTML);
-
-
+    $('#pi-table-container').html(tableHTML).fadeIn();
 }
 
 function limpiarTablaPI() {
@@ -1101,11 +1121,11 @@ $("#tipo-atencion-usu").on('change', function(e) {
     // Special handling for tipo_atencion = 24: Show table instead of select
     if (idTipoAtencion == '24') {
         generarTablaPropiedadIntelectual();
-        $('#tipo-pi').hide();
+        $('#tipo-pi, .label_propiedad').hide();
         $('#pi-table-container').show();
     } else {
         $('#pi-table-container').hide();
-        $('#tipo-pi').show();
+        $('#tipo-pi, .label_propiedad').show();
         limpiarTablaPI();
     }
     $(".org_pp").toggle(organismoPp === 't');

@@ -47,8 +47,115 @@ $session = session();
     </script>
 
 <style>
+/* --- Contenedor Principal --- */
+#pi-table-container {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    margin-top: 20px;
+}
 
+/* --- Cabecera (thead) --- */
+#pi-table-container thead th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    padding: 16px 10px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+    border-top: none !important;
+    text-align: center;
+}
 
+/* Alineación para la columna de descripción */
+#pi-table-container thead th.ps-3 {
+    text-align: left !important;
+    padding-left: 20px !important;
+}
+
+/* --- Filas Modernas --- */
+.pi-row-modern {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.pi-row-modern:hover {
+    background-color: #fcfdfe;
+}
+
+/* Fila Activa (Checkbox marcado) */
+.pi-row-modern:has(.check-pi:checked) {
+    background-color: #f0f7ff !important;
+}
+
+.pi-row-modern:has(.check-pi:checked) td {
+    color: #0d56b3 !important;
+    font-weight: 500;
+}
+
+/* --- Checkbox Estilo Premium --- */
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    border-radius: 6px !important;
+    border: 2px solid #cbd5e0 !important;
+    background-color: #fff !important;
+    cursor: pointer;
+    display: inline-grid;
+    place-content: center;
+    transition: all 0.2s;
+    vertical-align: middle;
+}
+
+.custom-checkbox:checked {
+    background-color: #0d56b3 !important;
+    border-color: #0d56b3 !important;
+}
+
+/* La marca de verificación (check) blanca */
+.custom-checkbox::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em white;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.custom-checkbox:checked::before {
+    transform: scale(1);
+}
+
+/* --- Input de Cantidad Elegante --- */
+.qty-pi {
+    max-width: 80px;
+    height: 34px;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.qty-pi:enabled {
+    border-color: #0d56b3 !important;
+    background-color: #ffffff !important;
+    color: #0d56b3 !important;
+    box-shadow: 0 0 0 3px rgba(13, 86, 179, 0.1) !important;
+}
+
+.qty-pi:disabled {
+    background-color: #f1f5f9 !important;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
 :root {
     --primary-color: rgb(11, 78, 179);
   }
@@ -461,12 +568,16 @@ to {
 
           
           <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
-              <label for="tipo-pi">Tipo de Propiedad Intelectual </label>
+              <label for="tipo-pi" class="label_propiedad">Tipo de Propiedad Intelectual </label>
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
               <option value="0">Seleccione</option>
               </select>
-              <div id="pi-table-container" style="display: none; margin-top: 10px;"></div>
+               <div id="pi-table-container" style="display: none; margin-top: 10px;"></div>
           </div>
+
+         
+
+
           <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
           <label for="organismo-caso">Organismo del Poder Poular</label>
           <select id="organismo-caso" name="organismo-caso" class="form-control">
