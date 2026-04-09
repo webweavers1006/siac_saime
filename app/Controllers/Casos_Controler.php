@@ -193,33 +193,26 @@ public function nuevoCaso()
     $token = $this->request->getServer('HTTP_AUTHORIZATION');
     $buscar_token = $casoModel->buscar_token($token);
     
-    // Verificación de acceso (Sesión o Token API)
     if (($this->session->get('logged') && $this->request->isAJAX()) || !empty($buscar_token)) {
         
         $idusuopr = empty($buscar_token) ? $this->session->get('iduser') : $buscar_token[0]->id_usuario;
-        
-        // Recepción de datos (SAPI envía 'data' directamente como array en el POST)
         $datos = $this->request->getPost('data');
 
-        // Si viene de la web (Base64), decodificamos. Si viene del SAPI, ya es array.
+        // Decodificación inteligente
         if (!is_array($datos)) {
-            $decoded = base64_decode($datos);
-            $datos = json_decode($decoded, true);
+            $datos = json_decode(base64_decode($datos), true);
         }
 
         if (!is_array($datos)) {
             return $this->response->setJSON(['mensaje' => 2, 'error' => 'Estructura de datos inválida']);
         }
         
-        // 2. DETERMINAR LA LISTA DE TRABAJO
+        // 2. LISTA DE TRABAJO (Soporta Consignación masiva o Caso único)
         $lista_items = [];
         if (isset($datos["tipo-atencion-usu"]) && $datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
             $lista_items = json_decode($datos['lista_consignacion'], true);
         } else {
-            $lista_items[] = [
-                'id_pi' => $datos["pi-type"] ?? 1, 
-                'cantidad' => 1
-            ];
+            $lista_items[] = ['id_pi' => $datos["pi-type"] ?? 1, 'cantidad' => 1];
         }
 
         $detalles_generados = []; 
@@ -230,7 +223,7 @@ public function nuevoCaso()
 
             for ($i = 0; $i < $repeticiones; $i++) {
                 
-                // 3. MAPEO DE DATOS DEL CASO
+                // 3. MAPEO PRINCIPAL DEL CASO
                 $newCase = [
                     "idusuopr"          => $idusuopr,
                     "casofec"           => $datos["date-entry"] ?? date('Y-m-d'),
@@ -240,7 +233,7 @@ public function nuevoCaso()
                     "casoape"           => mb_strtoupper($datos["person-lastname"] ?? '', 'UTF-8'),
                     "casotel"           => $datos["telephone"] ?? '',
                     "id_tipo_atencion"  => $datos["tipo-atencion-usu"] ?? 1,
-                    "idest"             => ($datos["tipo-atencion-usu"] == '1') ? 2 : 1,
+                    "idest"             => ($datos["tipo-atencion-usu"] == '1') ? 2 : 1, // 2 es CERRADO (Asesoría)
                     "idrrss"            => $datos["social_network"] ?? 1,
                     "estadoid"          => $datos["state"] ?? null,
                     "municipioid"       => $datos["county"] ?? null,
@@ -265,26 +258,56 @@ public function nuevoCaso()
                     $_obtener_id = $casoModel->obtener_utimo_id();
                     $idcaso = $_obtener_id->getRow()->ultimo_id; 
 
-                    // 4. MAPEO ESPECÍFICO DE DENUNCIA (SAPI -> SIAC)
+                    // --- 4. GUARDAR PROPIEDAD INTELECTUAL (IMPORTANTE) ---
+                    $id_pi_final = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
+                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_final]);
+
+                    // --- 5. LÓGICA DE DENUNCIA (ID 5) ---
                     if ($newCase["id_tipo_atencion"] == '5') {
                         $Casos_denuncias->insertarCasos_Denuncias([
-                            // Mapeamos los campos que envía el SAPI (option_*) a los de tu BD (denu_afecta_*)
-                            'denu_afecta_persona'   => filter_var($datos["option_personal"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_afecta_comunidad' => filter_var($datos["option_comunidad"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_afecta_terceros'  => filter_var($datos["option_terceros"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_fecha_hechos'     => $datos["fecha_hechos"] ?? ($datos["date-entry"] ?? null),
+                            'denu_afecta_persona'   => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_afecta_comunidad' => filter_var($datos["denu_afecta_comunidad"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_afecta_terceros'  => filter_var($datos["denu_afecta_terceros"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_fecha_hechos'     => $datos["denu_fecha_hechos"] ?? null,
                             'denu_involucrados'     => mb_strtoupper($datos["denu_involucrados"] ?? '', 'UTF-8'),
-                            'denu_instancia_popular'=> mb_strtoupper($datos["nombre_instancia"] ?? '', 'UTF-8'),
-                            'denu_rif_instancia'    => $datos["rif_instancia"] ?? '',
-                            'denu_ente_financiador' => mb_strtoupper($datos["ente_financiador"] ?? '', 'UTF-8'),
-                            'denu_nombre_proyecto'  => mb_strtoupper($datos["nombre_proyecto"] ?? '', 'UTF-8'),
-                            'denu_monto_aprovado'   => (float)($datos["monto_aprovado"] ?? 0),
+                            'denu_instancia_popular'=> mb_strtoupper($datos["denu_instancia_popular"] ?? '', 'UTF-8'),
+                            'denu_rif_instancia'    => $datos["denu_rif_instancia"] ?? '',
+                            'denu_ente_financiador' => mb_strtoupper($datos["denu_ente_financiador"] ?? '', 'UTF-8'),
+                            'denu_nombre_proyecto'  => mb_strtoupper($datos["denu_nombre_proyecto"] ?? '', 'UTF-8'),
+                            'denu_monto_aprovado'   => (float)($datos["denu_monto_aprovado"] ?? 0),
                             'denu_id_caso'          => $idcaso,
                             'denu_borrado'          => false
                         ]);
                     }
 
-                    // 5. CGR (SAPI envía bandera_cgr)
+                    // --- 6. LÓGICA DE MEDIACIÓN (ID 23) ---
+                    if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
+                        $med = $datos['datos_medicion'];
+                        $getTerceroId = function($p) use ($terceroModel) {
+                            if (empty($p['ident_valor'])) return 0;
+                            $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
+                            if ($ex) return $ex['ter_id'];
+                            $terceroModel->insert([
+                                'ter_nombre' => mb_strtoupper($p['nombre_razon'] ?? '', 'UTF-8'),
+                                'ter_tipo_per' => $p['ident_tipo'] ?? 1,
+                                'ter_identificacion' => $p['ident_valor'],
+                                'ter_correo' => mb_strtoupper($p['correo'] ?? '', 'UTF-8'),
+                                'ter_telefono' => $p['telefono'] ?? '',
+                                'ter_pais' => $p['pais'] ?? 1,
+                                'ter_direccion' => mb_strtoupper($p['direccion'] ?? '', 'UTF-8')
+                            ]);
+                            return $terceroModel->insertID();
+                        };
+
+                        $apoderadoModel->insert([
+                            'med_caso_id'       => $idcaso,
+                            'med_contra_id'     => $getTerceroId($med['contraparte']),
+                            'med_apo_sol_id'    => (isset($med['apoderado_solicitante'])) ? $getTerceroId($med['apoderado_solicitante']) : 0,
+                            'med_apo_contra_id' => (isset($med['apoderado_contraparte'])) ? $getTerceroId($med['apoderado_contraparte']) : 0
+                        ]);
+                    }
+
+                    // --- 7. LÓGICA DE CGR ---
                     if (filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                         $Registro_cgr_Model->insertarRegistro_cgr([
                             'competencia_cgr' => $datos["competencia_crg"] ?? 2,
@@ -293,15 +316,27 @@ public function nuevoCaso()
                         ]);
                     }
 
-                    // 6. NOMBRE PARA EL FRONTEND
-                    $info = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
-                    $nombre_final = $info ? mb_strtoupper($info->tipo_aten_nombre, 'UTF-8') : 'REGISTRO';
+                    // --- 8. COORDENADAS ---
+                    if (filter_var($datos["act_coordenadas"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                        $Casos_coordenadas->insertarCoordenadas([
+                            "idcaso"   => $idcaso,
+                            "latitud"  => $datos["latitud"] ?? '',
+                            "longitud" => $datos["longitud"] ?? '',
+                            "idusuopr" => $idusuopr
+                        ]);
+                    }
 
-                    $detalles_generados[] = ['id' => $idcaso, 'nombre' => $nombre_final];
+                    // --- 9. SEGUIMIENTO Y AUDITORÍA ---
+                    $segModel->insertarSeguimiento([
+                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
+                    ]);
+
+                    $infoAten = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                    $detalles_generados[] = ['id' => $idcaso, 'nombre' => $infoAten ? mb_strtoupper($infoAten->tipo_aten_nombre, 'UTF-8') : 'REGISTRO'];
                     $ids_generados[] = $idcaso;
 
-                    // Auditoría
-                    $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => "REGISTRO SAPI CASO Nª{$idcaso}"]);
+                    $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => "REGISTRO CASO Nª{$idcaso}"]);
                 }
             }
         }
