@@ -1,42 +1,13 @@
-# PLAN DE CORRECCIÓN - APODERADOS MEDIACIÓN
+# ✅ TODO: Hacer organismo_caso NO OBLIGATORIO - ACTUALIZADO
 
-## ✅ PASOS COMPLETADOS
-- [x] Diagnóstico completo
-- [x] Plan validado
+## 📋 Estado Actual:
 
-## 🔧 PASOS PENDIENTES (EJECUTAR EN ORDEN)
+### ✅ **Paso 1 COMPLETADO**: Crear TODO.md
+### ✅ **Paso 2 COMPLETADO**: Primera edición `nuevoCaso()` ✅
+### ⏳ **Paso 3 PENDIENTE**: Segunda edición `actualizarCaso()`
+### ⏳ **Paso 4 PENDIENTE**: Tests y finalización
 
-### 1. Crear TODO.md ✅ **HECHO**
-
-### 2. EDITAR app/Controllers/Casos_Controler.php ✅ **COMPLETADO**
+**Progreso: 2/4 completado**
 ```
-Método: nuevoCaso() - Línea ~280
-AGREGAR campo 'ter_impre_abogado' en insert sgc_terceros
-```
-
-### 3. EDITAR app/Models/Mediacion.php ✅ **COMPLETADO**
-```
-SELECT: AGREGAR ter_sol.ter_impre_abogado, ter_apo_contra.ter_impre_abogado
-```
-
-### 4. VERIFICAR app/Models/Casos.php
-```
-detalleCaso(): AGREGAR JOIN sgc_mediacion + terceros
-```
-
-### 5. PROBAR
-```
-1. Crear nuevo caso mediación 24
-2. Verificar BD: sgc_mediacion → IDs > 0 + IMPRE
-3. Editar caso 24 → Datos aparecen
-```
-
-### 6. LIMPIAR
-```
-rm TODO.md
-```
-
----
-
-**ESTADO: Pendiente aprobación para editar archivos**
+Wait for tool result before continuing.
 

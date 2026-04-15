@@ -247,7 +247,7 @@ public function nuevoCaso()
                     "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
                     "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
                     "correo"            => mb_strtoupper($datos["correo"] ?? '', 'UTF-8'),
-                    "caso_org_id"       => $datos["organismo-caso"] ?? 1,
+"caso_org_id"       => (!empty($datos["organismo-caso"]) ? (int)$datos["organismo-caso"] : 1),
                     "ente_adscrito_id"  => $datos["ente_adscrito"] ?? 0,
                     "edad"              => $datos["edad"] ?? null,
                     "fecha_nacimiento"  => $datos["fecha_nacimiento"] ?? null,

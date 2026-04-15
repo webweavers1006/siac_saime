@@ -1018,7 +1018,7 @@ $userdata = $session->get();
             <p>Contador de Visitas</p>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-chart-bar"></i>
             <p>Estad. Audiencias</p>
@@ -1026,19 +1026,19 @@ $userdata = $session->get();
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
+              <a href="<php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
                 <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
                 <p>Citas otorgadas</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
+              <a href="<php echo base_url(); ?>/casos_categorias" class="nav-link">
                 <i class="nav-icon fas fa-file" style='font-size:20px'></i>
                 <p>Casos por categoría</p>
               </a>
             </li>
           </ul>
-        </li>
+        </li> -->
       <?php endif; ?>
     </ul>
   </li>
@@ -1133,158 +1133,137 @@ $userdata = $session->get();
 
 
 
+<?php 
+// 1. Definimos los permisos que habilitan las opciones del listado
+$permisos_audiencia = ['requerimientos.read', 'solicitudes.read', 'requerimientos.create', 'citas.read'];
 
-         
-           <!-- *********************MENU ADUDIENCIAS*************** -->
-          <?php if ($session->get('acceso_audi') == 't' ) { ?>
-       
-          <li class="nav-item">
-          <a href="#" class="nav-link" id=""><i class="nav-icon fas far fa-sun"></i>
-            <p> Audiencias</p>
-            <i class="right fas fa-angle-left"></i>
-          </a>
-          <ul class="nav nav-treeview">
-               <!-- Comprobamos el nivel de rol y mostramos el HTML correspondiente -->
-            
+// 2. Verificamos si existe al menos uno de los permisos en su lista
+$tiene_permisos_lista = false;
+if (isset($userdata['permisos']['permisos'])) {
+    if (count(array_intersect($permisos_audiencia, $userdata['permisos']['permisos'])) > 0) {
+        $tiene_permisos_lista = true;
+    }
+}
 
+// Solo entramos si tiene el acceso general habilitado
+if ($session->get('acceso_audi') == 't'): 
 
- 
-               <?php
-               
-                  if (isset($userdata['permisos']['permisos'])) {
-                      // Verificar permisos para "requerimientos.read"
-                      if (in_array('requerimientos.read', $userdata['permisos']['permisos'])) {
-                          echo '<li class="nav-item">
-                                  <a href="' . base_url() . '/vista_audiencias" class="nav-link">
-                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                      <p>Listado</p>
-                                  </a>
-                                </li>';
-                      }
+    // SUB-MENU: LISTADOS Y REGISTROS (Solo si tiene permisos específicos)
+    if ($tiene_permisos_lista): ?>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas far fa-sun"></i>
+                <p> Audiencias <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+                <?php if (in_array('requerimientos.read', $userdata['permisos']['permisos'])): ?>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/vista_audiencias') ?>" class="nav-link">
+                            <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                            <p>Listado</p>
+                        </a>
+                    </li>
+                <?php endif; ?>
 
-                      // Verificar permisos para "solicitudes.read"
-                      if (in_array('solicitudes.read', $userdata['permisos']['permisos'])) {
-                          echo '<li class="nav-item">
-                                  <a href="' . base_url() . '/vista_solicitudes" class="nav-link">
-                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                      <p>Listado de solicitudes</p>
-                                  </a>
-                                </li>';
-                      }
+                <?php if (in_array('solicitudes.read', $userdata['permisos']['permisos'])): ?>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/vista_solicitudes') ?>" class="nav-link">
+                            <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                            <p>Listado de solicitudes</p>
+                        </a>
+                    </li>
+                <?php endif; ?>
 
-                      // Verificar permisos para "requerimientos.create"
-                      if (in_array('requerimientos.create', $userdata['permisos']['permisos'])) {
-                          echo '<li class="nav-item">
-                                  <a href="' . base_url() . '/vista_agregar_requerimientos" class="nav-link">
-                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                      <p>Registrar Audiencias</p>
-                                  </a>
-                                </li>';
-                      }
+                <?php if (in_array('requerimientos.create', $userdata['permisos']['permisos'])): ?>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/vista_agregar_requerimientos') ?>" class="nav-link">
+                            <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                            <p>Registrar Audiencias</p>
+                        </a>
+                    </li>
+                <?php endif; ?>
 
-                      // Verificar permisos para "citas.read"
-                      if (in_array('citas.read', $userdata['permisos']['permisos'])) {
-                          echo '<li class="nav-item">
-                                  <a href="' . base_url() . '/citas" class="nav-link">
-                                      <i class="nav-icon fas fa-users" style="font-size:20px"></i>
-                                      <p>Citas</p>
-                                  </a>
-                                </li>';
-                      }
-                  }
-                  ?>
- 
-          </ul>
-          </li>
-          <?php 
+                <?php if (in_array('citas.read', $userdata['permisos']['permisos'])): ?>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/citas') ?>" class="nav-link">
+                            <i class="nav-icon fas fa-users" style="font-size:20px"></i>
+                            <p>Citas</p>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </li>
+    <?php endif; ?>
 
-              if ($userdata["nivel_rol"] == "1" || $userdata["nivel_rol"] == "2") {
-              ?>
-                  <li class="nav-item">
-                      <a href="#" class="nav-link" id="">
-                          <i class="nav-icon fas fa-chart-bar"></i>
-                          <p>Estadísticas</p> 
-                          <i class="right fas fa-angle-left"></i> 
-                      </a>
-                      <ul class="nav nav-treeview">
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-chart-bar"></i>
+            <p>Estadísticas Audi <i class="right fas fa-angle-left"></i></p>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="<?= base_url('/estadisticas_audiencias') ?>" class="nav-link">
+                    <i class="nav-icon fa fa-user-friends" style="font-size:20px"></i>
+                    <p>Audiencias</p>
+                </a>
+            </li>   
+            <li class="nav-item">
+                <a href="<?= base_url('/citas_otorgadas/null') ?>" class="nav-link">
+                    <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
+                    <p>Citas otorgadas</p>
+                </a>
+            </li>   
+            <li class="nav-item">
+                <a href="<?= base_url('/casos_categorias') ?>" class="nav-link">
+                    <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
+                    <p>Casos por categoría</p>
+                </a>
+            </li>   
+        </ul>
+    </li>
 
-                      <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/estadisticas_audiencias" class="nav-link">
-                              <i class="nav-icon fa fa-user-friends" style="font-size:20px"></i>
-                                  <p>Audiencias</p>
-                              </a>
-                          </li>   
+    <?php if ($session->get('userrol') == 9 && $userdata["nivel_rol"] == "1"): ?>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas far fa-sun"></i>
+                <p>Mantenimiento Audi <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="<?= base_url('/vista_Roles_audiencias') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-list-alt" style="font-size:20px"></i>
+                        <p>Roles</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= base_url('/vista_Permisos_audiencias') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-user-lock" style="font-size:20px"></i>
+                        <p>Permisos</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= base_url('/vista_Categorias_audiencias') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
+                        <p>Categorias</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= base_url('/vista_Usuario_Areas_audiencias') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-user" style="font-size:20px"></i>
+                        <p>Asignar Trabajador</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= base_url('/vista_Bufetes_audiencias') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-briefcase" style="font-size:20px;"></i>
+                        <p>Bufetes</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    <?php endif; ?>
 
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/citas_otorgadas/null" class="nav-link">
-                              <i class="nav-icon fa fa-calendar-check" style="font-size:20px"></i>
-                                  <p>Citas otorgadas</p>
-                              </a>
-                          </li>   
-                          <li class="nav-item">
-                              <a href="<?php echo base_url(); ?>/casos_categorias" class="nav-link">
-                              <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
-                                  <p>Casos por categoría</p>
-                              </a>
-                          </li>   
-                      </ul>
-                  </li>
-              <?php 
-              }
-              ?>
-          <?php } ?>
-
-          <!-- *********************MANTENIMIENTO ROLES ADUDIENCIAS*************** -->
-          <?php if (($session->get('userrol') == 9) && ($session->get('acceso_audi') == 't')) { ?>
-            <?php 
-                  if ($userdata["nivel_rol"] == "1") { ?>
-          <li class="nav-item">
-              <a href="#" class="nav-link" id="">
-                  <i class="nav-icon fas far fa-sun"></i>
-                  <p>Mantenimiento Audi</p>
-                  <i class="right fas fa-angle-left"></i>
-              </a>
-              <ul class="nav nav-treeview">
-                 
-                      <li class="nav-item">
-                          <a href="<?php echo base_url(); ?>/vista_Roles_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-list-alt" style="font-size:20px"></i>
-                              <p>Roles</p>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a href="<?php echo base_url(); ?>/vista_Permisos_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-user-lock" style="font-size:20px"></i>
-                              <p>Permisos</p>
-                          </a>
-                      </li>
-
-                      <li class="nav-item">
-                          <a href="<?php echo base_url(); ?>/vista_Categorias_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-tags" style="font-size:20px"></i>
-                              <p>Categorias</p>
-                          </a>
-                      </li>
-
-                      <li class="nav-item">
-                          <a href="<?php echo base_url(); ?>/vista_Usuario_Areas_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-user" style="font-size:20px"></i>
-                              <p>Asignar Trabajador</p>
-                          </a>
-                      </li>
-
-                      <li class="nav-item">
-                          <a href="<?php echo base_url(); ?>/vista_Bufetes_audiencias" class="nav-link">
-                              <i class="nav-icon fas fa-briefcase" style="font-size:24px;"></i>
-                              <p>Bufetes</p>
-                          </a>
-                      </li>
-                                        
-              </ul>
-          </li>
-          <?php } ?>
-          <?php } ?>
-          
+<?php endif; ?>
 
 
           <li class="nav-item">
