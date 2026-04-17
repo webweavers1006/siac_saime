@@ -47,6 +47,44 @@
     margin-left: 5px; /* Más a la izquierda */
 }
 
+@media (max-width: 767px) {
+    .notification-dropdown {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
+    
+    .notification-menu {
+        position: fixed !important;
+        top: 70px !important;
+        left: 5% !important;
+        right: 5% !important;
+        width: 90% !important;
+        max-width: 450px !important;
+        max-height: 75vh !important;
+        border-radius: 15px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important;
+        z-index: 9999 !important;
+        overflow-y: auto !important;
+        background-color: white !important;
+    }
+    
+    .notification-item {
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .navbar-nav .nav-item .nav-primary {
+        font-size: 1rem !important;
+        padding: 8px 12px !important;
+        margin: 0 !important;
+    }
+    
+    h5 {
+        margin: 0 !important;
+        font-size: 1rem !important;
+    }
+}
+
 @media (max-width: 768px) {
     .notification-dropdown {
         margin-left: 5px;
@@ -63,9 +101,63 @@
     transition: all 0.3s ease;
 }
 
+/* CSS Vars Sistema (fallback) */
+:root {
+  --rojo-cierre: #ef4444;
+  --verde-seguimiento: #10b981;
+  --azul-remision: #007bff;
+  --azul-sistema: #1e3a5f;
+  --azul-primario: #1d4ed8;
+}
+
+/* Type Circle 48px - Aligned with inline */
+.type-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  flex-shrink: 0;
+  margin-right: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.type-circle.remision { background: var(--azul-remision); }
+.type-circle.seguimiento { background: var(--verde-seguimiento); }
+.type-circle.cierre { background: var(--rojo-cierre); }
+
+/* Status Badge NUEVA/LEÍDA */
+.status-badge {
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.status-leida {
+  background: rgba(255, 193, 7, 0.2) !important;
+  color: #f59e0b !important;
+}
+
+/* Items - Enhanced for types */
+.notification-item.unread {
+  border-left: 4px solid var(--type-color, var(--azul-remision));
+}
+.notification-item.read {
+  border-left: 4px solid var(--verde-leida, #28a745);
+}
+
+/* Header dropdown sistema color */
+.notification-menu .dropdown-header {
+  background: linear-gradient(135deg, var(--azul-sistema), #1363DF) !important;
+}
+
 /* Efecto cuando hay notificaciones pendientes */
 .notification-icon.has-notifications {
-    color: #007bff;
+    color: var(--azul-remision);
     background-color: rgba(0, 123, 255, 0.1);
     animation: pulse 2s infinite;
 }
@@ -91,12 +183,18 @@
     position: absolute;
     top: -8px;
     right: -8px;
-    background-color: #dc3545;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
     color: white;
     border-radius: 50%;
     padding: 2px 6px;
     font-size: 11px;
     font-weight: bold;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .notification-menu {

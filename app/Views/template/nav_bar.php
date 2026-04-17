@@ -12,12 +12,88 @@ $userdata = $session->get();
 
 
 <style>
+  /* CSS Variables - Sistema Colores */
+  :root {
+    --rojo-cierre: #ef4444;
+    --rojo-badge: linear-gradient(135deg, #ef4444, #dc2626);
+    --verde-seguimiento: #10b981;
+    --verde-leida: #28a745;
+    --azul-remision: #007bff;
+    --azul-sistema: #1e3a5f;
+    --azul-primario: #1d4ed8;
+    --gris-leida: #6c757d;
+  }
+
   .text-highlight {
     font-weight: bold;
     color: #003366;
     background-color: #e7f3ff;
     padding: 2px 5px;
     border-radius: 3px;
+  }
+
+  /* Badge Principal Navbar - ROJO Gradient */
+  .notification-badge {
+    background: var(--rojo-badge);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+  }
+
+  /* Círculo Tipo 48x48px */
+  .type-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+    margin-right: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .type-circle.remision { background: var(--azul-remision); }
+  .type-circle.seguimiento { background: var(--verde-seguimiento); }
+  .type-circle.cierre { background: var(--rojo-cierre); }
+
+  /* Badge NUEVA/LEÍDA */
+  .status-badge {
+    padding: 2px 8px;
+    font-size: 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    margin-left: 8px;
+  }
+  .status-nueva {
+    background: rgba(0, 123, 255, 0.12);
+    color: var(--azul-remision);
+  }
+  .status-leida {
+    background: rgba(255, 193, 7, 0.2);
+    color: #f59e0b;
+  }
+
+  /* Items mejorados */
+  .notification-item.unread {
+    background: linear-gradient(135deg, #fafbfc 0%, white 100%);
+    border-left: 4px solid var(--type-color, var(--azul-remision));
+  }
+  .notification-item.read {
+    background: #f8f9fa;
+    border-left: 4px solid var(--verde-leida);
+    opacity: 0.85;
   }
   .notification-item p {
     line-height: 1.5;
@@ -157,11 +233,12 @@ $userdata = $session->get();
     border-radius: 50%;
     margin-right: 8px;
   }
+  /* Legacy leida-indicator (fallback) */
   .notification-item.unread .leida-indicator {
-    background-color: #007bff;
+    background-color: var(--azul-remision);
   }
   .notification-item.read .leida-indicator {
-    background-color: #28a745;
+    background-color: var(--verde-leida);
   }
   /* Estilos de paginación */
   .notification-pagination {
@@ -281,7 +358,7 @@ $userdata = $session->get();
         <i class="fas fa-bell"></i>
         <span class="notification-badge" id="notification-count" style="display: none;">0</span>
       </div>
-      <div class="notification-menu" id="notification-menu" style="display: none;">
+<div class="notification-menu dropdown-menu-end" id="notification-menu" style="display: none;">
         <div style="padding: 16px 18px; border-bottom: 1px solid #dee2e6; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border-radius: 12px 12px 0 0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <strong style="font-size: 16px;"><i class="fas fa-bell mr-2"></i>Notificaciones</strong>
@@ -314,17 +391,12 @@ $userdata = $session->get();
     </div>
     <?php endif; ?>
     
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="margin-right: 10px;">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav align-items-center">
-        <li class="nav-item">
-          <h5><a href="#Foo" onclick="cerrarSesion();" style="color: black;" class="nav-primary">Salir</a></h5>
-        </li>
-      </ul>
-    </div>
+    <!-- Salir siempre visible, sin collapse -->
+    <ul class="navbar-nav align-items-center">
+      <li class="nav-item d-none d-sm-block">
+        <h5><a href="#Foo" onclick="cerrarSesion();" style="color: black;" class="nav-primary">Salir</a></h5>
+      </li>
+    </ul>
   </div>
 </nav>
   <script>
@@ -356,8 +428,12 @@ $userdata = $session->get();
     // Función para mostrar/ocultar notificaciones
     function toggleNotifications() {
       const menu = document.getElementById('notification-menu');
-      if (menu.style.display === 'none') {
-        menu.style.display = 'flex';
+      if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'block';
+        // Forzar scroll al inicio del menú en móviles para asegurar visibilidad
+        if (window.innerWidth < 768) {
+          window.scrollTo(0, 0); 
+        }
         notificationsOpen = true;
         currentPage = 1; // Resetear a primera página
         cargarNotificaciones();
@@ -552,10 +628,16 @@ $userdata = $session->get();
           return;
         }
         
+        // Tipo-specific: circle color/icon (overrides leida-indicator)
+        const tipoConfig = {
+          'REMISION': { icon: 'fa-file-import', color: 'var(--azul-remision)' },
+          'SEGUIMIENTO': { icon: 'fa-tasks', color: 'var(--verde-seguimiento)' },
+          'CIERRE': { icon: 'fa-check-circle', color: 'var(--rojo-cierre)' }
+        };
+        const config = tipoConfig[notif.tipo_notificacion] || { icon: 'fa-bell', color: '#6c757d' };
+        
         const tipoClass = notif.tipo_notificacion === 'REMISION' ? 'text-primary' : 
                          (notif.tipo_notificacion === 'CIERRE' ? 'text-danger' : 'text-warning');
-        const tipoIcon = notif.tipo_notificacion === 'REMISION' ? 'fa-file-import' : 
-                        (notif.tipo_notificacion === 'CIERRE' ? 'fa-check-circle' : 'fa-tasks');
         
         // Construir mensaje completo con dirección origen si existe
         let mensajeCompleto = notif.mensaje;
@@ -576,14 +658,22 @@ $userdata = $session->get();
         
         // Determinar clase según estado de lectura
         const leidaClass = estaLeida ? 'read' : 'unread';
-        const leidaIcon = estaLeida ? '<i class="fas fa-check" style="color: #28a745; margin-left: 5px;"></i>' : '';
+        const statusBadge = estaLeida ? 
+          '<span class="status-badge status-leida">LEÍDA</span>' : 
+          `<span class="status-badge status-nueva" style="--type-color: ${config.color}">NUEVA</span>`;
+        
+        // Legacy leidaIcon fallback
+        const leidaIcon = estaLeida ? '<i class="fas fa-check" style="color: var(--verde-leida); margin-left: 5px;"></i>' : '';
         
         html += `
           <div class="notification-item ${leidaClass}" 
                onclick="verNotificacion(${notif.id}, '${notif.tipo_notificacion}', ${notif.id_caso})">
-            <h6>
-              <span class="leida-indicator"></span>
-              <span class="notif-negrilla-azul"><i class="fas ${tipoIcon} ${tipoClass}"></i> ${notif.tipo_notificacion}</span>${leidaIcon}
+            <h6 style="display: flex; align-items: center;">
+              <div class="type-circle ${notif.tipo_notificacion.toLowerCase()}" style="--type-color: ${config.color}">
+                <i class="fas ${config.icon}"></i>
+              </div>
+              <span class="notif-negrilla-azul">${notif.tipo_notificacion}</span>
+              ${statusBadge}${leidaIcon}
             </h6>
             <p class="notif-message">${mensajeCompleto}</p>
             <div class="time">${formatDate(notif.fecha_creacion)}</div>
