@@ -186,10 +186,15 @@ $pdf->Cell(95, 4, 'FIRMA DEL SOLICITANTE', 0, 1, 'C');
             $pdf->Footer_Mediacion();
         }
 
-        // --- OTROS ---
+// --- OTROS TIPOS DE ATENCIÓN ---
         else {
             $pdf->AddPage();
-            $pdf->Header_Planilla((array)$row); 
+            
+            // Preparar array con claves específicas requeridas
+            $row->caso = $row->idcaso;
+            $row->fecha_caso = $row->casofec;
+            
+            $pdf->Header_Planilla((array)$row);
             $pdf->Content_planilla((array)$row);
             $pdf->Footer_Planilla();
         }

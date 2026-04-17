@@ -373,7 +373,8 @@ function Header_Planilla($datos)
         $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 10, 190);
     }
     
-    $this->Ln(25);
+    $this->SetY(40);  // ✅ FIJAR POSICIÓN Y=40 (CORRECCIÓN SUPERPOSICIÓN)
+    
     $this->SetFont('Arial', 'B', 14);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
     $this->Cell(190, 8, iconv('UTF-8', 'CP1252//IGNORE', 'PLANILLA DE ATENCIÓN AL CIUDADANO'), 0, 1, 'C');
@@ -409,8 +410,9 @@ function Header_Planilla($datos)
     
     $this->Ln(10);
 
-    // --- FILA CONTROL ---
+    // --- FILA CONTROL (GRIS OSCURO como referencia) ---
     $this->SetFont('Arial', 'B', 9);
+    $this->SetTextColor(40, 40, 40); // ✅ Gris oscuro (casi negro) EXACTO
     $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'Nº: ') . ($datos['caso'] ?? ''), 0, 0, 'L');
     $this->Cell(64, 7, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA: ') . ($datos['fecha_caso'] ?? ''), 0, 0, 'C');
     $this->Cell(63, 7, iconv('UTF-8', 'CP1252//IGNORE', 'HORA: ') . ($datos['caso_hora'] ?? ''), 0, 1, 'R');
