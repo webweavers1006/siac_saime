@@ -287,13 +287,19 @@ public function nuevoCaso()
                     if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
                         $med = $datos['datos_medicion'];
                         $getTerceroId = function($p) use ($terceroModel) {
-                            if (empty($p['ident_valor'])) return 0;
-                            $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
+                            // Aquí debe validar tanto 'ident_valor' como 'ci'
+                            if (empty($p['ident_valor']) && empty($p['ci'])) return 0;
+                            
+                            $identificacion = $p['ident_valor'] ?? $p['ci'] ?? '';
+                            $nombre = $p['nombre_razon'] ?? $p['nombres'] ?? '';
+
+                            $ex = $terceroModel->where('ter_identificacion', $identificacion)->first();
                             if ($ex) return $ex['ter_id'];
+
                             $terceroModel->insert([
-                                'ter_nombre' => mb_strtoupper($p['nombre_razon'] ?? '', 'UTF-8'),
+                                'ter_nombre' => mb_strtoupper($nombre, 'UTF-8'),
                                 'ter_tipo_per' => $p['ident_tipo'] ?? 1,
-                                'ter_identificacion' => $p['ident_valor'],
+                                'ter_identificacion' => $identificacion,
                                 'ter_correo' => mb_strtoupper($p['correo'] ?? '', 'UTF-8'),
                                 'ter_telefono' => $p['telefono'] ?? '',
                                 'ter_pais' => $p['pais'] ?? 1,
