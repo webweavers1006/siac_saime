@@ -261,9 +261,23 @@ public function nuevoCaso()
                     $_obtener_id = $casoModel->obtener_utimo_id();
                     $idcaso = $_obtener_id->getRow()->ultimo_id; 
 
-                    // --- A. PROPIEDAD INTELECTUAL (Siempre se guarda) ---
+                    // --- A. PROPIEDAD INTELECTUAL (Idempotente) ---
                     $id_pi_final = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
-                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_final]);
+                    
+                    // Validación de duplicado (Tarea: Corrección Race Condition)
+                    $existsPI = $db->table('sgc_tipo_prop_caso')
+                        ->where('idcaso', $idcaso)
+                        ->where('idtippropint', $id_pi_final)
+                        ->countAllResults();
+                    
+                    if ($existsPI == 0) {
+                        $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_final]);
+                    } else {
+                        $model_Auditoria_sistema_Model->agregar([
+                            'audi_user_id' => $idusuopr, 
+                            'audi_accion' => "BLOQUEO DE REGISTRO DUPLICADO - CASO: {$idcaso} (Propiedad Intelectual)"
+                        ]);
+                    }
 
                     // --- B. DENUNCIA (ID 5) ---
                     if ($newCase["id_tipo_atencion"] == '5') {
@@ -337,11 +351,24 @@ public function nuevoCaso()
                         ]);
                     }
 
-                    // --- F. SEGUIMIENTO Y AUDITORÍA ---
-                    $segModel->insertarSeguimiento([
-                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
-                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
-                    ]);
+                    // --- F. SEGUIMIENTO Y AUDITORÍA (Idempotente) ---
+                    // Validación de duplicado (Tarea: Corrección Race Condition)
+                    $existsSeguimiento = $db->table('sgc_seguimiento_caso')
+                        ->where('idcaso', $idcaso)
+                        ->where('segcoment', 'CREACIÓN DEL CASO')
+                        ->countAllResults();
+                    
+                    if ($existsSeguimiento == 0) {
+                        $segModel->insertarSeguimiento([
+                            'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                            'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
+                        ]);
+                    } else {
+                        $model_Auditoria_sistema_Model->agregar([
+                            'audi_user_id' => $idusuopr, 
+                            'audi_accion' => "BLOQUEO DE REGISTRO DUPLICADO - CASO: {$idcaso} (Seguimiento CREACIÓN)"
+                        ]);
+                    }
 
                     // Nombre para el reporte de éxito
                     $infoAten = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
