@@ -565,23 +565,22 @@ private function buildBaseQuery($builder)
 
 
 
-    // Metodo para insertar un nuevo caso en la BD
-public function insertarNuevoCaso(array $datos)
+  public function insertarNuevoCaso(array $datos)
 {
-    $builder = $this->dbconn('sgc_casos');
+    // 1. Usamos el builder directamente desde la conexión del modelo
+    $builder = $this->db->table('sgc_casos'); 
+    
     date_default_timezone_set('America/Caracas');
-    $hora = date("H:i:s A");
-    $datos['caso_hora'] = $hora;
+    $datos['caso_hora'] = date("H:i:s A");
 
-    // Ejecutamos la inserción
+    // 2. Ejecutamos la inserción en la conexión compartida
     if ($builder->insert($datos)) {
-        // Retornamos el ID generado específicamente en esta conexión/hilo
+        // 3. Retornamos el ID generado en este hilo/túnel específico
         return $this->db->insertID(); 
     }
     
     return false;
-} 
-
+}
 
     public function actualizarCaso(array $datos)
     {

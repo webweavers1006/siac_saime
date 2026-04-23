@@ -220,7 +220,7 @@ public function nuevoCaso()
         $detalles_generados = []; 
         $ids_generados = [];
 
-        // 3. INICIO DE TRANSACCIÓN (Seguridad total de datos)
+        // 3. INICIO DE TRANSACCIÓN
         $db->transStart();
 
         foreach ($lista_items as $item) {
@@ -258,116 +258,83 @@ public function nuevoCaso()
                     "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"]
                 ];
 
+                // --- OBTENER NOMBRES PARA AUDITORÍA (Antes de insertar o bloquear) ---
+                $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
+                $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
+                $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
+
+                $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
+                $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
+                $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
+
+                // --- BLOQUE ANTI-DUPLICADOS (PostgreSQL Interval) ---
+                if ($newCase["id_tipo_atencion"] != '24') {
+                    $existeDuplicado = $db->table('sgc_casos')
+                        ->where([
+                            'casoced'  => $newCase['casoced'],
+                            'casodesc' => $newCase['casodesc'],
+                            'casofec'  => $newCase['casofec'],
+                            'idusuopr' => $idusuopr
+                        ])
+                        ->where("idcaso IN (SELECT idcaso FROM sgc_casos WHERE casofec = CURRENT_DATE AND (CURRENT_TIMESTAMP - INTERVAL '60 seconds') <= CURRENT_TIMESTAMP)")
+                        ->countAllResults();
+
+                    if ($existeDuplicado > 0) {
+                        $model_Auditoria_sistema_Model->agregar([
+                            'audi_user_id' => $idusuopr, 
+                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Descripción idéntica < 60s",
+                            'audi_fecha'   => date('Y-m-d'),
+                            'audi_hora'    => date('h:i:s A')
+                        ]);
+                        continue; 
+                    }
+                }
+
                 // --- INSERCIÓN PRINCIPAL ---
-                // El modelo ahora devuelve el ID exacto o FALSE
                 $idcaso = $casoModel->insertarNuevoCaso($newCase);
 
                 if ($idcaso) 
-				{
-                    
-                    // --- A. PROPIEDAD INTELECTUAL ---
-                    $id_pi_final = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
-                    $tipoPIModel->insertarTipoPICaso([
-                        'idcaso' => $idcaso, 
-                        'idtippropint' => $id_pi_final
-                    ]);
+                {
+                    // A. PROPIEDAD INTELECTUAL
+                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
 
-                    // --- B. DENUNCIA (ID 5) ---
+                    // B. DENUNCIA
                     if ($newCase["id_tipo_atencion"] == '5') {
                         $Casos_denuncias->insertarCasos_Denuncias([
-                            'denu_afecta_persona'   => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_afecta_comunidad' => filter_var($datos["denu_afecta_comunidad"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_afecta_terceros'  => filter_var($datos["denu_afecta_terceros"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_fecha_hechos'     => $datos["denu_fecha_hechos"] ?? null,
-                            'denu_involucrados'     => mb_strtoupper($datos["denu_involucrados"] ?? '', 'UTF-8'),
-                            'denu_instancia_popular'=> mb_strtoupper($datos["denu_instancia_popular"] ?? '', 'UTF-8'),
-                            'denu_rif_instancia'    => $datos["denu_rif_instancia"] ?? '',
-                            'denu_ente_financiador' => mb_strtoupper($datos["denu_ente_financiador"] ?? '', 'UTF-8'),
-                            'denu_nombre_proyecto'  => mb_strtoupper($datos["denu_nombre_proyecto"] ?? '', 'UTF-8'),
-                            'denu_monto_aprovado'   => (float)($datos["denu_monto_aprovado"] ?? 0),
-                            'denu_id_caso'          => $idcaso,
-                            'denu_borrado'          => false
+                            'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                            'denu_id_caso' => $idcaso,
+                            'denu_borrado' => false
                         ]);
                     }
 
-                    // --- C. MEDIACIÓN (ID 23) ---
-                    if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
-                        $med = $datos['datos_medicion'];
-                        
-                        $getTerceroId = function($p) use ($terceroModel) {
-                            if (empty($p['ident_valor']) && empty($p['ci'])) return 0;
-                            $identificacion = $p['ident_valor'] ?? $p['ci'] ?? '';
-                            $nombre = $p['nombre_razon'] ?? $p['nombres'] ?? '';
-
-                            $ex = $terceroModel->where('ter_identificacion', $identificacion)->first();
-                            if ($ex) return $ex['ter_id'];
-
-                            $terceroModel->insert([
-                                'ter_nombre' => mb_strtoupper($nombre, 'UTF-8'),
-                                'ter_tipo_per' => $p['ident_tipo'] ?? 1,
-                                'ter_identificacion' => $identificacion,
-                                'ter_correo' => mb_strtoupper($p['correo'] ?? '', 'UTF-8'),
-                                'ter_telefono' => $p['telefono'] ?? '',
-                                'ter_pais' => $p['pais'] ?? 1,
-                                'ter_direccion' => mb_strtoupper($p['direccion'] ?? '', 'UTF-8')
-                            ]);
-                            return $terceroModel->getInsertID(); // Seguro y específico
-                        };
-
-                        $apoderadoModel->insert([
-                            'med_caso_id'       => $idcaso,
-                            'med_contra_id'     => $getTerceroId($med['contraparte']),
-                            'med_apo_sol_id'    => (isset($med['apoderado_solicitante'])) ? $getTerceroId($med['apoderado_solicitante']) : 0,
-                            'med_apo_contra_id' => (isset($med['apoderado_contraparte'])) ? $getTerceroId($med['apoderado_contraparte']) : 0
-                        ]);
-                    }
-
-                    // --- D. CGR (Contraloría) ---
-                    if (filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-                        $Registro_cgr_Model->insertarRegistro_cgr([
-                            'competencia_cgr' => $datos["competencia_crg"] ?? 2,
-                            'asume_cgr'       => $datos["asume_crg"] ?? 2,
-                            'id_caso'         => $idcaso
-                        ]);
-                    }
-
-                    // --- E. COORDENADAS ---
-                    $lat = $datos["latitud"] ?? '';
-                    $lon = $datos["longitud"] ?? '';
-                    if (!empty($lat) || !empty($lon)) {
-                        $Casos_coordenadas->insertarCoordenadas([
-                            "idcaso"   => $idcaso,
-                            "latitud"  => $lat,
-                            "longitud" => $lon,
-                            "idusuopr" => $idusuopr
-                        ]);
-                    }
-
-                    // --- F. SEGUIMIENTO Y AUDITORÍA ---
+                    // C. SEGUIMIENTO
                     $segModel->insertarSeguimiento([
-                        'idcaso' => $idcaso, 
-                        'idestllam' => 4, 
-                        'segcoment' => 'CREACIÓN DEL CASO', 
-                        'idusuopr' => $idusuopr, 
-                        'segfec' => date('Y-m-d')
+                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                     ]);
 
-                    // Recopilar info para respuesta
-                    $infoAten = $db->table('sgc_tipoatencion_usu')->select('tipo_aten_nombre')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                    // D. AUDITORÍA DE ÉXITO DETALLADA
+                    $model_Auditoria_sistema_Model->agregar([
+                        'audi_user_id' => $idusuopr, 
+                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
+                        'audi_fecha'   => date('Y-m-d'),
+                        'audi_hora'    => date('h:i:s A')
+                    ]);
+
                     $detalles_generados[] = [
                         'id' => $idcaso, 
-                        'nombre' => $infoAten ? mb_strtoupper($infoAten->tipo_aten_nombre, 'UTF-8') : 'REGISTRO'
+                        'atencion' => $nombreAten,
+                        'via' => $nombreVia,
+                        'pi' => $nombrePI
                     ];
                     $ids_generados[] = $idcaso;
-
-                    $model_Auditoria_sistema_Model->agregar(['audi_user_id' => $idusuopr, 'audi_accion' => "REGISTRO CASO Nª{$idcaso}"]);
                 }
             }
         }
 
-        $db->transComplete(); // Cierra la transacción
+        $db->transComplete();
 
-        // 4. RESPUESTA FINAL
         if ($db->transStatus() === false) {
             return $this->response->setJSON(['mensaje' => 2, 'error' => 'Fallo en la integridad de la base de datos']);
         }
@@ -382,8 +349,7 @@ public function nuevoCaso()
     } else {
         return redirect()->to('/');
     }
-}
-	//Metodo para ElIMINAR  UN CASO 
+}	//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
 		$casoModel = new Casos();
