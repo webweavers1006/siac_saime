@@ -308,7 +308,7 @@ $(function() {
     });
 });
 
-    // Delegated handler for Consignación table (ID 24) checkboxes
+    // Enhanced delegated handler for Consignación table (ID 24) checkboxes + TOTAL
     $(document).on('change', '.check-pi', function() {
         const $row = $(this).closest('tr');
         const $qty = $row.find('.qty-pi');
@@ -317,6 +317,12 @@ $(function() {
         } else {
             $qty.prop('disabled', true).val('0');
         }
+        actualizarTotalCasosPI();
+    });
+
+    // Update total when quantity changes
+    $(document).on('input', '.qty-pi', function() {
+        actualizarTotalCasosPI();
     });
 
  // =================================================================
@@ -1015,18 +1021,49 @@ function generarTablaPropiedadIntelectual() {
 
     tableHTML += `
                     </tbody>
+                    <tfoot style="background-color: #e9ecef; font-weight: bold;">
+                        <tr>
+                            <td class="text-center">&nbsp;</td>
+                            <td class="ps-3 text-end fw-bold text-uppercase" style="color: #0d56b3; font-size: 0.9rem;">
+                                TOTAL DE CASOS A CREAR
+                            </td>
+                            <td class="text-center fw-bold fs-6" style="color: #0d56b3;" id="total-casos-pi">
+                                0
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>`;
 
     $('#pi-table-container').html(tableHTML).fadeIn();
 }
+/**
+ * Actualiza el total de casos PI en tiempo real
+ */
+function actualizarTotalCasosPI() {
+    let total = 0;
+    $('.check-pi:checked').each(function() {
+        const $row = $(this).closest('tr');
+        const qtyVal = parseInt($row.find('.qty-pi').val()) || 0;
+        total += qtyVal;
+    });
+    $('#total-casos-pi').text(total);
+    
+    // Optional: Visual feedback
+    if (total > 0) {
+        $('#total-casos-pi').removeClass('text-muted').addClass('text-success fw-bolder');
+    } else {
+        $('#total-casos-pi').removeClass('text-success').addClass('text-muted');
+    }
+}
+
 function validarTablaPI() {
     let hasValid = false;
     $('.check-pi').each(function() {
         let row = $(this).closest('tr');
         if ($(this).is(':checked')) {
-            let cantidad = parseInt(row.find('.cantidad-pi').val()) || 0;
+            let cantidad = parseInt(row.find('.qty-pi').val()) || 0;  // Fixed selector
             if (cantidad > 0) {
                 hasValid = true;
                 return false; // break
