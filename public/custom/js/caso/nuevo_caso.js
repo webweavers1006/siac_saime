@@ -1354,24 +1354,40 @@ if (tipo_atencion === '24') {
         datosBase.datos_medicion = obtenerDatosMediacion();
     }
 
-    // ENVÍO AL SERVIDOR
+    // ENVÍO AL SERVIDOR (FIX: timeout + loading)
+    // Bloquear botón y mostrar loading
+    $("button[type=button]").prop('disabled', true);
+    $('#guardar').text('Guardando...');
+    
     $.ajax({
         url: "/registrarCaso",
         method: "POST",
         dataType: "JSON",
+        timeout: 45000,  // 45 segundos
         data: { "data": btoa(unescape(encodeURIComponent(JSON.stringify(datosBase)))) },
         success: function(respuesta) {
             procesarRespuesta(respuesta);
         },
         error: function(xhr, status, error) {
             $("button[type=button]").prop('disabled', false);
-            Swal.fire({ 
-                icon: "error", 
-                title: "Error de Conexión", 
-                html: "<strong>No se pudo procesar la solicitud.</strong>" 
-            });
+            $('#guardar').text('Guardar');
+            
+            if (status === 'timeout') {
+                Swal.fire({ 
+                    icon: "warning", 
+                    title: "⏱️ Timeout", 
+                    html: "<strong>Operación tardó demasiado.<br>El caso <u>pudo haberse guardado</u>.<br>Verifique en la lista antes de reintentar.</strong>" 
+                });
+            } else {
+                Swal.fire({ 
+                    icon: "error", 
+                    title: "Error de Conexión", 
+                    html: "<strong>No se pudo procesar la solicitud.</strong>" 
+                });
+            }
         }
     });
+
 });
 function procesarRespuesta(respuesta) {
     $("button[type=button]").prop('disabled', false);

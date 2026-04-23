@@ -508,14 +508,14 @@ private function buildBaseQuery($builder)
         return $query->getRow(); 
     }
 
-    //Metodo para obtener EL ULTIMO ID INSERTADO
-    public function obtener_utimo_id()
-    {
-        $builder = $this->dbconn('public.sgc_casos');
-        $builder->select(" MAX(idcaso) as ultimo_id");
-        $query = $builder->get();
-        return $query;
-    }
+    // //Metodo para obtener EL ULTIMO ID INSERTADO
+    // public function obtener_utimo_id()
+    // {
+    //     $builder = $this->dbconn('public.sgc_casos');
+    //     $builder->select(" MAX(idcaso) as ultimo_id");
+    //     $query = $builder->get();
+    //     return $query;
+    // }
 
     public function obtener_ultimos_casos(string $iduser)
     {
@@ -551,17 +551,38 @@ private function buildBaseQuery($builder)
         return $query->getResult();
     }
 
-    //Metodo para insertar un nuevo caso en la BD
-    public function insertarNuevoCaso(array $datos)
-    {
-        $builder = $this->dbconn('sgc_casos');
-        date_default_timezone_set('America/Caracas');
-        $hora = date("H:i:s A");
-        $datos['caso_hora'] = $hora;
-        $query = $builder->insert($datos);
-        return $query;
-    }
+    // //Metodo para insertar un nuevo caso en la BD
+    // public function insertarNuevoCaso(array $datos)
+    // {
+    //     $builder = $this->dbconn('sgc_casos');
+    //     date_default_timezone_set('America/Caracas');
+    //     $hora = date("H:i:s A");
+    //     $datos['caso_hora'] = $hora;
+    //     $query = $builder->insert($datos);
+    //     return $query;
+    // }
     //Metodo para   actualizar  us Caso en la BD
+
+
+
+    // Metodo para insertar un nuevo caso en la BD
+public function insertarNuevoCaso(array $datos)
+{
+    $builder = $this->dbconn('sgc_casos');
+    date_default_timezone_set('America/Caracas');
+    $hora = date("H:i:s A");
+    $datos['caso_hora'] = $hora;
+
+    // Ejecutamos la inserción
+    if ($builder->insert($datos)) {
+        // Retornamos el ID generado específicamente en esta conexión/hilo
+        return $this->db->insertID(); 
+    }
+    
+    return false;
+} 
+
+
     public function actualizarCaso(array $datos)
     {
         
