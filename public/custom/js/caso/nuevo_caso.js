@@ -1494,7 +1494,7 @@ function procesarRespuesta(respuesta) {
         });
     }
 }
- // Función auxiliar para calcular la edad (movida fuera del evento para mejor organización)
+ //  Función auxiliar para calcular la edad (movida fuera del evento para mejor organización)
 function calcularEdad(fechaNacimientoStr) {
     const hoy = new Date();
     // Asegurarse de que el formato de fecha sea YYYY-MM-DD para compatibilidad
