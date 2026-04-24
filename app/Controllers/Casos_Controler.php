@@ -170,14 +170,9 @@ curl_close($ch);
 }
 
 
-
-/**
-     * MÉTODO INTEGRAL: Registro de casos con soporte multi-registro,
-     * cantidades dinámicas y lógicas específicas por departamento.
-     */
 public function nuevoCaso()
 {
-    // 1. CARGA DE TODOS LOS MODELOS
+    // 1. CARGA INTEGRAL DE MODELOS
     $casoModel = new Casos();
     $tipoPIModel = new PropiedadIntelectual();
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
@@ -202,15 +197,21 @@ public function nuevoCaso()
         // Decodificación: Soporta Array directo o Base64
         $datos = is_array($rawData) ? $rawData : json_decode(base64_decode($rawData), true);
 
+        // Si la data viene corrupta, redirigir con el mensaje solicitado
         if (!is_array($datos)) {
-            return $this->response->setJSON(['mensaje' => 2, 'error' => 'Error en formato de datos']);
+            return $this->response->setJSON([
+                'mensaje' => 2, 
+                'error' => 'no se pudo agregar el caso', 
+                'redirect' => '/casos'
+            ]);
         }
         
-        // 2. DETERMINAR LA LISTA DE TRABAJO
+        // 2. DETERMINAR LA LISTA DE TRABAJO (CASO SIMPLE O CONSIGNACIÓN MASIVA)
         $lista_items = [];
         if (isset($datos["tipo-atencion-usu"]) && $datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
             $lista_items = json_decode($datos['lista_consignacion'], true);
         } else {
+            // Caso individual
             $lista_items[] = [
                 'id_pi' => $datos["pi-type"] ?? 1, 
                 'cantidad' => 1
@@ -220,7 +221,7 @@ public function nuevoCaso()
         $detalles_generados = []; 
         $ids_generados = [];
 
-        // 3. INICIO DE TRANSACCIÓN
+        // 3. INICIO DE TRANSACCIÓN GLOBAL
         $db->transStart();
 
         foreach ($lista_items as $item) {
@@ -228,6 +229,9 @@ public function nuevoCaso()
 
             for ($i = 0; $i < $repeticiones; $i++) {
                 
+                $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
+
+                // Mapeo completo de todos los campos de $newCase
                 $newCase = [
                     "idusuopr"          => $idusuopr,
                     "casofec"           => $datos["date-entry"] ?? date('Y-m-d'),
@@ -255,51 +259,77 @@ public function nuevoCaso()
                     "fecha_nacimiento"  => $datos["fecha_nacimiento"] ?? null,
                     "tipo_atend_id"     => $datos["tipo_atend_id"] ?? null,
                     "profesion"         => mb_strtoupper($datos["profesion"] ?? '', 'UTF-8'),
-                    "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"]
+                    "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"],
+                    "caso_hora"         => date('h:i:s A')
                 ];
 
-                // --- OBTENER NOMBRES PARA AUDITORÍA (Antes de insertar o bloquear) ---
+                // --- OBTENER NOMBRES PARA AUDITORÍA ---
                 $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
                 $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
-                $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
                 $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
 
                 $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS (PostgreSQL Interval) ---
+                // --- BLOQUE ANTI-DUPLICADOS ESTRICTO (EXCEPTO CONSIGNACIÓN 24) ---
                 if ($newCase["id_tipo_atencion"] != '24') {
-                    $existeDuplicado = $db->table('sgc_casos')
-                        ->where([
-                            'casoced'  => $newCase['casoced'],
-                            'casodesc' => $newCase['casodesc'],
-                            'casofec'  => $newCase['casofec'],
-                            'idusuopr' => $idusuopr
-                        ])
-                        ->where("idcaso IN (SELECT idcaso FROM sgc_casos WHERE casofec = CURRENT_DATE AND (CURRENT_TIMESTAMP - INTERVAL '60 seconds') <= CURRENT_TIMESTAMP)")
-                        ->countAllResults();
+                    
+                    // SQL Parametrizado usando la nueva columna created_at
+                    $sql = "SELECT c.idcaso 
+                            FROM sgc_casos c
+                            JOIN sgc_tipo_prop_caso tpc ON c.idcaso = tpc.idcaso
+                            WHERE c.casoced = ? 
+                              AND c.id_tipo_atencion = ? 
+                              AND c.idrrss = ? 
+                              AND c.casodesc = ? 
+                              AND c.ofiid = ? 
+                              AND c.caso_org_id = ? 
+                              AND c.casonumsol = ? 
+                              AND c.estadoid = ? 
+                              AND c.idusuopr = ? 
+                              AND tpc.idtippropint = ?
+                              AND c.casofec = CURRENT_DATE 
+                              AND (CURRENT_TIMESTAMP - INTERVAL '60 seconds') <= c.created_at
+                            LIMIT 1";
 
-                    if ($existeDuplicado > 0) {
+                    $existe = $db->query($sql, [
+                        $newCase['casoced'], 
+                        $newCase['id_tipo_atencion'], 
+                        $newCase['idrrss'], 
+                        $newCase['casodesc'], 
+                        $newCase['ofiid'], 
+                        $newCase['caso_org_id'], 
+                        $newCase['casonumsol'], 
+                        $newCase['estadoid'], 
+                        $idusuopr, 
+                        $id_pi_actual
+                    ])->getRow();
+
+                    if ($existe) {
+                        // Auditoría de bloqueo
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
-                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Descripción idéntica < 60s",
+                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
-                        continue; 
+                        continue; // Salta a la siguiente iteración del bucle
                     }
                 }
 
-                // --- INSERCIÓN PRINCIPAL ---
+                // --- INSERCIÓN PRINCIPAL DEL CASO ---
                 $idcaso = $casoModel->insertarNuevoCaso($newCase);
 
                 if ($idcaso) 
                 {
-                    // A. PROPIEDAD INTELECTUAL
-                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
+                    // A. VINCULACIÓN CON PROPIEDAD INTELECTUAL
+                    $tipoPIModel->insertarTipoPICaso([
+                        'idcaso' => $idcaso, 
+                        'idtippropint' => $id_pi_actual
+                    ]);
 
-                    // B. DENUNCIA
+                    // B. LÓGICA DE DENUNCIA (SI APLICA)
                     if ($newCase["id_tipo_atencion"] == '5') {
                         $Casos_denuncias->insertarCasos_Denuncias([
                             'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -308,13 +338,16 @@ public function nuevoCaso()
                         ]);
                     }
 
-                    // C. SEGUIMIENTO
+                    // C. CREACIÓN DEL PRIMER SEGUIMIENTO
                     $segModel->insertarSeguimiento([
-                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
-                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
+                        'idcaso' => $idcaso, 
+                        'idestllam' => 4, 
+                        'segcoment' => 'CREACIÓN DEL CASO', 
+                        'idusuopr' => $idusuopr, 
+                        'segfec' => date('Y-m-d')
                     ]);
 
-                    // D. AUDITORÍA DE ÉXITO DETALLADA
+                    // D. AUDITORÍA DE ÉXITO
                     $model_Auditoria_sistema_Model->agregar([
                         'audi_user_id' => $idusuopr, 
                         'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
@@ -333,20 +366,28 @@ public function nuevoCaso()
             }
         }
 
+        // 4. CIERRE Y COMPROBACIÓN DE TRANSACCIÓN
         $db->transComplete();
 
-        if ($db->transStatus() === false) {
-            return $this->response->setJSON(['mensaje' => 2, 'error' => 'Fallo en la integridad de la base de datos']);
+        // Si la transacción falló o no se generó ni un solo ID exitoso
+        if ($db->transStatus() === false || empty($ids_generados)) {
+            return $this->response->setJSON([
+                'mensaje' => 2, 
+                'error' => 'no se pudo agregar el caso', 
+                'redirect' => '/casos'
+            ]);
         }
 
+        // Respuesta Exitosa
         return $this->response->setJSON([
-            'mensaje' => (!empty($ids_generados)) ? 1 : 2,
+            'mensaje' => 1,
             'total_items' => count($ids_generados),
             'detalles' => $detalles_generados,
-            'idcaso' => $ids_generados[0] ?? null
+            'idcaso' => $ids_generados[0]
         ]);
         
     } else {
+        // Redirección si no hay sesión o no es AJAX
         return redirect()->to('/');
     }
 }	//Metodo para ElIMINAR  UN CASO 
