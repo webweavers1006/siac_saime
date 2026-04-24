@@ -1275,64 +1275,74 @@ function safeParseJSON(data) {
 $(document).on("click", "#guardar", function(e) {
     e.preventDefault();
     
-    // Captura de variables básicas
+    // 1. INHABILITAR INMEDIATAMENTE
+    let $btn = $(this);
+    $btn.prop('disabled', true);
+
+    // 2. CAPTURA DE VARIABLES BÁSICAS
     let tipo_atencion = $("#tipo-atencion-usu").val();
     let tipo_atend_id = $("#detalles_atencion").val();
     let requerimiento_user = $("#requerimiento-usuario").val() ? $("#requerimiento-usuario").val().trim() : '';
     let red_social = $("#red-social").val();
     let estado = $("#estado-caso").val();
     let org_id = $("#organismo-caso").val() || 1;
+    let cedula = $("#cedula-persona").val();
 
-    // --- LÓGICA PARA CONSIGNACIÓN (TIPO 24) CON CANTIDADES ---
-   // --- DENTRO DEL EVENTO CLICK #guardar ---
-let lista_consignacion = null; 
-if (tipo_atencion === '24') {
-    let items = [];
-    $(".check-pi:checked").each(function() {
-        let fila = $(this).closest('tr');
-        // Buscamos el input number por clase o por tipo dentro de la fila
-        let cantidad_input = fila.find('input[type="number"]');
-        let cantidad_valor = parseInt(cantidad_input.val());
+    // --- LÓGICA PARA CONSIGNACIÓN (TIPO 24) ---
+    let lista_consignacion = null; 
+    if (tipo_atencion === '24') {
+        let items = [];
+        $(".check-pi:checked").each(function() {
+            let fila = $(this).closest('tr');
+            let cantidad_input = fila.find('input[type="number"]');
+            let cantidad_valor = parseInt(cantidad_input.val());
 
-        items.push({
-            id_pi: $(this).data('pi-id'),
-            cantidad: isNaN(cantidad_valor) ? 1 : cantidad_valor 
+            items.push({
+                id_pi: $(this).data('pi-id'),
+                cantidad: isNaN(cantidad_valor) ? 1 : cantidad_valor 
+            });
         });
-    });
 
-    if (items.length === 0) {
-        // ... validación de error ...
-        return false;
-    }
-    lista_consignacion = JSON.stringify(items);
-}
-    // VALIDACIONES DE CAMPOS OBLIGATORIOS
-    if (!red_social) {
-        $("#red-social").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Seleccione la vía de atención.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (!estado) {
-        $("#estado-caso").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>El estado es obligatorio.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (!tipo_atencion) {
-        $("#tipo-atencion-usu").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Seleccione el tipo de atención.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
-    }
-    if (requerimiento_user === '') {
-        $("#requerimiento-usuario").addClass('is-invalid');
-        return Swal.fire({ icon: "error", html: '<strong>Indique la descripción del caso.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
+        if (items.length === 0) {
+            $btn.prop('disabled', false); // Rehabilitar si falla validación
+            return Swal.fire({ 
+                icon: "warning", 
+                html: '<strong>Debe seleccionar al menos un ítem para la consignación.</strong>', 
+                toast: true, 
+                position: "center", 
+                showConfirmButton: false, 
+                timer: 3000 
+            });
+        }
+        lista_consignacion = JSON.stringify(items);
     }
 
-    // Bloqueamos botón y limpiamos errores
-    $("button[type=button]").attr('disabled', 'true');
+    // 3. VALIDACIONES DE CAMPOS OBLIGATORIOS
     $(".is-invalid").removeClass('is-invalid');
 
-    // Limpieza de cédula
-    let cedula = $("#cedula-persona").val();
-    if (cedula && cedula.charAt(0).match(/[a-zA-Z]/)) { cedula = cedula.slice(1); }
+    if (!red_social || !estado || !tipo_atencion || requerimiento_user === '') {
+        if (!red_social) $("#red-social").addClass('is-invalid');
+        if (!estado) $("#estado-caso").addClass('is-invalid');
+        if (!tipo_atencion) $("#tipo-atencion-usu").addClass('is-invalid');
+        if (requerimiento_user === '') $("#requerimiento-usuario").addClass('is-invalid');
 
-    // OBJETO DE DATOS BASE
+        $btn.prop('disabled', false); // Rehabilitar si faltan campos
+        return Swal.fire({ 
+            icon: "error", 
+            html: '<strong>Complete los campos obligatorios resaltados.</strong>', 
+            toast: true, 
+            position: "center", 
+            showConfirmButton: false, 
+            timer: 3000 
+        });
+    }
+
+    // 4. LIMPIEZA DE CÉDULA
+    if (cedula && cedula.charAt(0).match(/[a-zA-Z]/)) { 
+        cedula = cedula.slice(1); 
+    }
+
+    // 5. CONSTRUCCIÓN DEL OBJETO DE DATOS
     let datosBase = {
         "social_network": red_social,
         "date-entry": $("#fecha-recibido").val(),
@@ -1368,7 +1378,7 @@ if (tipo_atencion === '24') {
         "bandera_denuncia": false
     };
 
-    // LÓGICA ADICIONAL
+    // 6. LÓGICA SEGÚN TIPO DE ATENCIÓN
     if (tipo_atencion === '1') {
         datosBase.bandera_cgr = true;
         datosBase.competencia_crg = $("#competencia_crg").val() || 2;
@@ -1388,43 +1398,37 @@ if (tipo_atencion === '24') {
         datosBase.denu_monto_aprovado = $('#monto-aprovado').val();
     }
     else if (tipo_atencion === '23') {
-        datosBase.datos_medicion = obtenerDatosMediacion();
+        datosBase.datos_medicion = (typeof obtenerDatosMediacion === 'function') ? obtenerDatosMediacion() : null;
     }
 
-    // ENVÍO AL SERVIDOR (FIX: timeout + loading)
-    // Bloquear botón y mostrar loading
-    $("button[type=button]").prop('disabled', true);
-    $('#guardar').text('Guardando...');
-    
+    // 7. ENVÍO AJAX
     $.ajax({
         url: "/registrarCaso",
         method: "POST",
         dataType: "JSON",
-        timeout: 45000,  // 45 segundos
+        timeout: 45000,
         data: { "data": btoa(unescape(encodeURIComponent(JSON.stringify(datosBase)))) },
         success: function(respuesta) {
             procesarRespuesta(respuesta);
+            // Rehabilitar solo si el servidor devuelve error controlado
+            if (respuesta.error || respuesta.status === 'error') {
+                $btn.prop('disabled', false);
+            }
         },
         error: function(xhr, status, error) {
-            $("button[type=button]").prop('disabled', false);
-            $('#guardar').text('Guardar');
+            $btn.prop('disabled', false); // Rehabilitar por fallo de red
             
             if (status === 'timeout') {
                 Swal.fire({ 
                     icon: "warning", 
                     title: "⏱️ Timeout", 
-                    html: "<strong>Operación tardó demasiado.<br>El caso <u>pudo haberse guardado</u>.<br>Verifique en la lista antes de reintentar.</strong>" 
+                    html: "<strong>La operación tardó demasiado.</strong>" 
                 });
             } else {
-                Swal.fire({ 
-                    icon: "error", 
-                    title: "Error de Conexión", 
-                    html: "<strong>No se pudo procesar la solicitud.</strong>" 
-                });
+                Swal.fire({ icon: "error", title: "Error", text: "No se pudo procesar la solicitud." });
             }
         }
     });
-
 });
 function procesarRespuesta(respuesta) {
     $("button[type=button]").prop('disabled', false);
