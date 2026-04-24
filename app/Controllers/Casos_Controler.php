@@ -169,7 +169,6 @@ curl_close($ch);
 
 }
 
-
 public function nuevoCaso()
 {
     // 1. CARGA INTEGRAL DE MODELOS
@@ -197,11 +196,11 @@ public function nuevoCaso()
         // Decodificación: Soporta Array directo o Base64
         $datos = is_array($rawData) ? $rawData : json_decode(base64_decode($rawData), true);
 
-        // Si la data viene corrupta, redirigir con el mensaje solicitado
+        // Si la data viene corrupta
         if (!is_array($datos)) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'no se pudo agregar el caso', 
+                'error' => 'La información recibida es inválida o está corrupta.', 
                 'redirect' => '/casos'
             ]);
         }
@@ -231,7 +230,6 @@ public function nuevoCaso()
                 
                 $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
 
-                // Mapeo completo de todos los campos de $newCase
                 $newCase = [
                     "idusuopr"          => $idusuopr,
                     "casofec"           => $datos["date-entry"] ?? date('Y-m-d'),
@@ -263,7 +261,7 @@ public function nuevoCaso()
                     "caso_hora"         => date('h:i:s A')
                 ];
 
-                // --- OBTENER NOMBRES PARA AUDITORÍA ---
+                // --- NOMBRES PARA AUDITORÍA ---
                 $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
                 $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
                 $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
@@ -272,10 +270,8 @@ public function nuevoCaso()
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS ESTRICTO (EXCEPTO CONSIGNACIÓN 24) ---
+                // --- BLOQUE ANTI-DUPLICADOS ---
                 if ($newCase["id_tipo_atencion"] != '24') {
-                    
-                    // SQL Parametrizado usando la nueva columna created_at
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
                             JOIN sgc_tipo_prop_caso tpc ON c.idcaso = tpc.idcaso
@@ -294,42 +290,28 @@ public function nuevoCaso()
                             LIMIT 1";
 
                     $existe = $db->query($sql, [
-                        $newCase['casoced'], 
-                        $newCase['id_tipo_atencion'], 
-                        $newCase['idrrss'], 
-                        $newCase['casodesc'], 
-                        $newCase['ofiid'], 
-                        $newCase['caso_org_id'], 
-                        $newCase['casonumsol'], 
-                        $newCase['estadoid'], 
-                        $idusuopr, 
-                        $id_pi_actual
+                        $newCase['casoced'], $newCase['id_tipo_atencion'], $newCase['idrrss'], 
+                        $newCase['casodesc'], $newCase['ofiid'], $newCase['caso_org_id'], 
+                        $newCase['casonumsol'], $newCase['estadoid'], $idusuopr, $id_pi_actual
                     ])->getRow();
 
                     if ($existe) {
-                        // Auditoría de bloqueo
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
-                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
+                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Cédula: {$newCase['casoced']}",
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
-                        continue; // Salta a la siguiente iteración del bucle
+                        continue; 
                     }
                 }
 
-                // --- INSERCIÓN PRINCIPAL DEL CASO ---
+                // --- INSERCIÓN ---
                 $idcaso = $casoModel->insertarNuevoCaso($newCase);
 
-                if ($idcaso) 
-                {
-                    // A. VINCULACIÓN CON PROPIEDAD INTELECTUAL
-                    $tipoPIModel->insertarTipoPICaso([
-                        'idcaso' => $idcaso, 
-                        'idtippropint' => $id_pi_actual
-                    ]);
-
-                    // B. LÓGICA DE DENUNCIA (SI APLICA)
+                if ($idcaso) {
+                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
+                    
                     if ($newCase["id_tipo_atencion"] == '5') {
                         $Casos_denuncias->insertarCasos_Denuncias([
                             'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -338,56 +320,53 @@ public function nuevoCaso()
                         ]);
                     }
 
-                    // C. CREACIÓN DEL PRIMER SEGUIMIENTO
                     $segModel->insertarSeguimiento([
-                        'idcaso' => $idcaso, 
-                        'idestllam' => 4, 
-                        'segcoment' => 'CREACIÓN DEL CASO', 
-                        'idusuopr' => $idusuopr, 
-                        'segfec' => date('Y-m-d')
+                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                     ]);
 
-                    // D. AUDITORÍA DE ÉXITO
                     $model_Auditoria_sistema_Model->agregar([
                         'audi_user_id' => $idusuopr, 
-                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
+                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso}",
                         'audi_fecha'   => date('Y-m-d'),
                         'audi_hora'    => date('h:i:s A')
                     ]);
 
-                    $detalles_generados[] = [
-                        'id' => $idcaso, 
-                        'atencion' => $nombreAten,
-                        'via' => $nombreVia,
-                        'pi' => $nombrePI
-                    ];
+                    $detalles_generados[] = ['id' => $idcaso, 'atencion' => $nombreAten];
                     $ids_generados[] = $idcaso;
                 }
             }
         }
 
-        // 4. CIERRE Y COMPROBACIÓN DE TRANSACCIÓN
         $db->transComplete();
 
-        // Si la transacción falló o no se generó ni un solo ID exitoso
-        if ($db->transStatus() === false || empty($ids_generados)) {
+        // --- MANEJO DE RESPUESTAS FINALES ---
+        if ($db->transStatus() === false) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'no se pudo agregar el caso', 
+                'error' => 'Error crítico en la transacción de base de datos.', 
                 'redirect' => '/casos'
             ]);
         }
 
-        // Respuesta Exitosa
+        if (empty($ids_generados)) {
+            // Este es el caso que te ocurrió: el bucle terminó sin insertar nada por el duplicado
+            return $this->response->setJSON([
+                'mensaje' => 2, 
+                'error' => 'El caso ya se encuentra registrado. Verifique en su listado.', 
+                'redirect' => '/casos'
+            ]);
+        }
+
         return $this->response->setJSON([
             'mensaje' => 1,
             'total_items' => count($ids_generados),
             'detalles' => $detalles_generados,
-            'idcaso' => $ids_generados[0]
+            'idcaso' => $ids_generados[0],
+            'redirect' => '/casos'
         ]);
         
     } else {
-        // Redirección si no hay sesión o no es AJAX
         return redirect()->to('/');
     }
 }	//Metodo para ElIMINAR  UN CASO 

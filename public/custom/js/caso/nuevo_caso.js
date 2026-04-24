@@ -1401,37 +1401,44 @@ $(document).on("click", "#guardar", function(e) {
         datosBase.datos_medicion = (typeof obtenerDatosMediacion === 'function') ? obtenerDatosMediacion() : null;
     }
 
-    // 7. ENVÍO AJAX
-    $.ajax({
-        url: "/registrarCaso",
-        method: "POST",
-        dataType: "JSON",
-        timeout: 45000,
-        data: { "data": btoa(unescape(encodeURIComponent(JSON.stringify(datosBase)))) },
-        success: function(respuesta) {
-            procesarRespuesta(respuesta);
-            // Rehabilitar solo si el servidor devuelve error controlado
-            if (respuesta.error || respuesta.status === 'error') {
-                $btn.prop('disabled', false);
-            }
-        },
-        error: function(xhr, status, error) {
-            $btn.prop('disabled', false); // Rehabilitar por fallo de red
-            
-            if (status === 'timeout') {
-                Swal.fire({ 
-                    icon: "warning", 
-                    title: "⏱️ Timeout", 
-                    html: "<strong>La operación tardó demasiado.</strong>" 
-                });
-            } else {
-                Swal.fire({ icon: "error", title: "Error", text: "No se pudo procesar la solicitud." });
-            }
+   // 7. ENVÍO AJAX
+$.ajax({
+    url: "/registrarCaso",
+    method: "POST",
+    dataType: "JSON",
+    timeout: 45000, // 45 segundos para dar margen al servidor
+    data: { 
+        "data": btoa(unescape(encodeURIComponent(JSON.stringify(datosBase)))) 
+    },
+    success: function(respuesta) {
+        // Delegamos la gestión del botón y la redirección a esta función
+        procesarRespuesta(respuesta);
+    },
+    error: function(xhr, status, error) {
+        // En caso de error de RED o SERVIDOR (500, 404, etc.), rehabilitamos el botón
+        $btn.prop('disabled', false); 
+        
+        if (status === 'timeout') {
+            Swal.fire({ 
+                icon: "warning", 
+                title: "⏱️ Tiempo Excedido", 
+                html: "<strong>La operación tardó demasiado.</strong><br>Verifique si el caso aparece en el listado antes de reintentar." 
+            });
+        } else {
+            Swal.fire({ 
+                icon: "error", 
+                title: "Error de Conexión", 
+                text: "No se pudo procesar la solicitud en este momento." 
+            });
         }
-    });
+    }
+});
 });
 function procesarRespuesta(respuesta) {
-    $("button[type=button]").prop('disabled', false);
+    // Solo habilitamos si NO hay una redirección pendiente para evitar clics fantasma
+    if (!respuesta.redirect) {
+        $("button[type=button]").prop('disabled', false);
+    }
     
     // 1. Verificación de seguridad: ¿Viene el objeto esperado?
     if (respuesta.mensaje === 1 && respuesta.detalles && respuesta.detalles.length > 0) {
@@ -1442,14 +1449,15 @@ function procesarRespuesta(respuesta) {
             htmlMsg += '<div style="text-align: left; background: #ffffff; padding: 10px; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; overflow-y: auto; line-height: 1.5;">';
             
             respuesta.detalles.forEach(function(item) {
-                htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.nombre || 'Procesado'}</p>`;
+                // Se cambia item.nombre por item.atencion (como viene del controlador)
+                htmlMsg += `<p style="margin: 5px 0; font-size: 0.9em;">🚀 <strong>Nº ${item.id}</strong> — ${item.atencion || 'Procesado'}</p>`;
             });
             
             htmlMsg += '</div>';
         } else {
             // Acceso seguro al primer elemento
             let itemUnico = respuesta.detalles[0];
-            let nombre = itemUnico.nombre || "Atención";
+            let nombre = itemUnico.atencion || "Atención";
             htmlMsg = `El caso <strong>Nº ${itemUnico.id}</strong> (${nombre}) ha sido registrado con éxito.`;
         }
 
@@ -1460,16 +1468,29 @@ function procesarRespuesta(respuesta) {
             confirmButtonText: 'Continuar',
             confirmButtonColor: '#28a745'
         }).then(() => {
-            window.location = "/casos";
+            // Usa el redirect que viene del servidor o la ruta por defecto
+            window.location.href = respuesta.redirect || "/casos";
         });
 
     } else {
         // 2. Manejo de errores o respuestas incompletas
         let errorDetalle = respuesta.error || "No se pudieron generar los registros o la respuesta del servidor fue incompleta.";
+        
         Swal.fire({ 
             icon: "error", 
             title: "Atención",
-            html: `<strong>${errorDetalle}</strong>` 
+            html: `<strong>${errorDetalle}</strong>`,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        }).then(() => {
+            // ESTA ES LA CORRECCIÓN CLAVE:
+            // Si el servidor mandó redirect (como en el duplicado), redirigimos al cerrar
+            if (respuesta.redirect) {
+                window.location.href = respuesta.redirect;
+            } else {
+                // Si no hay redirect, nos aseguramos de habilitar el botón aquí
+                $("button[type=button]").prop('disabled', false);
+            }
         });
     }
 }
