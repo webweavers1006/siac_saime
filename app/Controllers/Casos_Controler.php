@@ -205,12 +205,11 @@ public function nuevoCaso()
             ]);
         }
         
-        // 2. DETERMINAR LA LISTA DE TRABAJO (CASO SIMPLE O CONSIGNACIÓN MASIVA)
+        // 2. DETERMINAR LA LISTA DE TRABAJO
         $lista_items = [];
         if (isset($datos["tipo-atencion-usu"]) && $datos["tipo-atencion-usu"] == '24' && !empty($datos['lista_consignacion'])) {
             $lista_items = json_decode($datos['lista_consignacion'], true);
         } else {
-            // Caso individual
             $lista_items[] = [
                 'id_pi' => $datos["pi-type"] ?? 1, 
                 'cantidad' => 1
@@ -261,7 +260,7 @@ public function nuevoCaso()
                     "caso_hora"         => date('h:i:s A')
                 ];
 
-                // --- NOMBRES PARA AUDITORÍA ---
+                // --- OBTENER NOMBRES PARA AUDITORÍA ---
                 $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
                 $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
                 $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
@@ -270,7 +269,7 @@ public function nuevoCaso()
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS ---
+                // --- BLOQUE ANTI-DUPLICADOS ESTRICTO ---
                 if ($newCase["id_tipo_atencion"] != '24') {
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
@@ -296,9 +295,10 @@ public function nuevoCaso()
                     ])->getRow();
 
                     if ($existe) {
+                        // REINTEGRADO: Mensaje de auditoría detallado tal cual lo solicitaste
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
-                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Cédula: {$newCase['casoced']}",
+                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
@@ -327,7 +327,7 @@ public function nuevoCaso()
 
                     $model_Auditoria_sistema_Model->agregar([
                         'audi_user_id' => $idusuopr, 
-                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso}",
+                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
                         'audi_fecha'   => date('Y-m-d'),
                         'audi_hora'    => date('h:i:s A')
                     ]);
@@ -340,7 +340,6 @@ public function nuevoCaso()
 
         $db->transComplete();
 
-        // --- MANEJO DE RESPUESTAS FINALES ---
         if ($db->transStatus() === false) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
@@ -350,10 +349,9 @@ public function nuevoCaso()
         }
 
         if (empty($ids_generados)) {
-            // Este es el caso que te ocurrió: el bucle terminó sin insertar nada por el duplicado
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'Su caso no pudo ser registrado por favor intente de nuevo .', 
+                'error' => 'El caso ya se encuentra registrado. Verifique en su listado.', 
                 'redirect' => '/casos'
             ]);
         }
