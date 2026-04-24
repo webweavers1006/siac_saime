@@ -353,7 +353,7 @@ public function nuevoCaso()
             // Este es el caso que te ocurrió: el bucle terminó sin insertar nada por el duplicado
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'El caso ya se encuentra registrado. Verifique en su listado.', 
+                'error' => 'Su caso no pudo ser registrado por favor intente de nuevo .', 
                 'redirect' => '/casos'
             ]);
         }
