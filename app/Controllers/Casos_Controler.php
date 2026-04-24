@@ -351,7 +351,7 @@ public function nuevoCaso()
         if (empty($ids_generados)) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'El caso ya se encuentra registrado. Verifique en su listado.', 
+                'error' => 'No se pudo registrar el caso, por FAVOR Intente de nuevo  .', 
                 'redirect' => '/casos'
             ]);
         }
