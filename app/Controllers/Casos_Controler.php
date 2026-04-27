@@ -269,34 +269,30 @@ public function nuevoCaso()
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS GLOBAL (Multi-operador) ---
+                // --- BLOQUE ANTI-DUPLICADOS GLOBAL (Multi-máquina / Multi-operador) ---
                 if ($newCase["id_tipo_atencion"] != '24') {
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
                             JOIN sgc_tipo_prop_caso tpc ON c.idcaso = tpc.idcaso
                             WHERE c.casoced = ? 
                               AND c.id_tipo_atencion = ? 
-                              AND c.idrrss = ? 
                               AND c.casodesc = ? 
                               AND c.ofiid = ? 
                               AND c.caso_org_id = ? 
                               AND c.casonumsol = ? 
-                              AND c.estadoid = ? 
                               AND tpc.idtippropint = ?
                               AND c.casofec = CURRENT_DATE 
                               AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
                             LIMIT 1";
 
-                    // Quitamos $idusuopr de los parámetros para que el bloqueo sea entre todos los usuarios
+                    // Se eliminó c.idusuopr para que el bloqueo funcione entre diferentes máquinas/usuarios
                     $existe = $db->query($sql, [
                         $newCase['casoced'], 
                         $newCase['id_tipo_atencion'], 
-                        $newCase['idrrss'], 
                         $newCase['casodesc'], 
                         $newCase['ofiid'], 
                         $newCase['caso_org_id'], 
                         $newCase['casonumsol'], 
-                        $newCase['estadoid'], 
                         $id_pi_actual
                     ])->getRow();
 
@@ -354,12 +350,6 @@ public function nuevoCaso()
         }
 
         if (empty($ids_generados)) {
-            return $this->response->setJSON([
-                'mensaje' => 2, 
-                'error' => 'El caso ya se encuentra registrado o no pudo procesarse. Verifique en su listado.', 
-                'redirect' => '/casos'
-            ]);
-        }
 
         return $this->response->setJSON([
             'mensaje' => 1,
@@ -372,9 +362,7 @@ public function nuevoCaso()
     } else {
         return redirect()->to('/');
     }
-}
-
-//Metodo para ElIMINAR  UN CASO 
+}	//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
 		$casoModel = new Casos();
