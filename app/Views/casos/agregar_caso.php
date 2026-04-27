@@ -374,11 +374,18 @@ to {
   }
 
   #requerimiento-usuario{
-    width: 80%;
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 100px;
   }
 
   .textarea{
-    width: 80%;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
   }
 </style>
 <div class="content-header">
@@ -1336,10 +1343,9 @@ to {
       <div class="form-step">
          <div class="row">
        
-        <div>
+        <div class="col-12 mb-3">
             <label for="planteamiento-caso">Descripción del Caso</label>
-            <textarea type="text" class="form-control"     style="width: 1145px;"      name="requerimiento-usuario" id="requerimiento-usuario" required>
-            </textarea>
+            <textarea type="text" class="form-control" name="requerimiento-usuario" id="requerimiento-usuario" required rows="4"></textarea>
         </div>
             
         </div>
