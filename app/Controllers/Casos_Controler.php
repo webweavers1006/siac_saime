@@ -269,7 +269,8 @@ public function nuevoCaso()
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS GLOBAL (Multi-máquina / Multi-operador) ---
+                // --- BLOQUE ANTI-DUPLICADOS GLOBAL ---
+                // Bloquea si detecta los mismos datos clave en menos de 60 segundos, sin importar el operador.
                 if ($newCase["id_tipo_atencion"] != '24') {
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
@@ -285,7 +286,6 @@ public function nuevoCaso()
                               AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
                             LIMIT 1";
 
-                    // Se eliminó c.idusuopr para que el bloqueo funcione entre diferentes máquinas/usuarios
                     $existe = $db->query($sql, [
                         $newCase['casoced'], 
                         $newCase['id_tipo_atencion'], 
@@ -303,11 +303,11 @@ public function nuevoCaso()
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
-                        continue; 
+                        continue; // Salta al siguiente ítem o termina el bucle
                     }
                 }
 
-                // --- INSERCIÓN ---
+                // --- INSERCIÓN DEL CASO ---
                 $idcaso = $casoModel->insertarNuevoCaso($newCase);
 
                 if ($idcaso) {
@@ -326,6 +326,7 @@ public function nuevoCaso()
                         'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                     ]);
 
+                    // Auditoría de registro exitoso con formato solicitado
                     $model_Auditoria_sistema_Model->agregar([
                         'audi_user_id' => $idusuopr, 
                         'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
@@ -341,6 +342,7 @@ public function nuevoCaso()
 
         $db->transComplete();
 
+        // Verificación de éxito de la transacción
         if ($db->transStatus() === false) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
@@ -349,8 +351,16 @@ public function nuevoCaso()
             ]);
         }
 
+        // Si no se generaron IDs (posiblemente por bloqueo de duplicado)
         if (empty($ids_generados)) {
+            return $this->response->setJSON([
+                'mensaje' => 2, 
+                'error' => 'No se pudo registrar el caso, por favor Intente de nuevo.', 
+                'redirect' => '/casos'
+            ]);
+        }
 
+        // Respuesta exitosa
         return $this->response->setJSON([
             'mensaje' => 1,
             'total_items' => count($ids_generados),
@@ -362,7 +372,14 @@ public function nuevoCaso()
     } else {
         return redirect()->to('/');
     }
-}	//Metodo para ElIMINAR  UN CASO 
+}
+
+
+
+
+
+
+//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
 		$casoModel = new Casos();
