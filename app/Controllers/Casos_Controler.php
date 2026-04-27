@@ -216,14 +216,22 @@ public function nuevoCaso()
         }
 
         // --- BLOQUEO DE CONCURRENCIA (ADVISORY LOCK) ---
-        // Generamos una llave única para esta Cédula + Oficina
         $lock_id = crc32(($datos["person-id"] ?? '0') . ($datos["office"] ?? '0'));
         $lock_check = $db->query("SELECT pg_try_advisory_lock(?) AS lock_status", [$lock_id])->getRow();
 
         if (!$lock_check || $lock_check->lock_status == 'f') {
+            
+            // AUDITORÍA DEL BLOQUEO (PC SIMULTÁNEA)
+            $model_Auditoria_sistema_Model->agregar([
+                'audi_user_id' => $idusuopr, 
+                'audi_accion'  => "BLOQUEO CONCURRENCIA: Intento de registro simultáneo (PC Alterna) | Cédula: " . ($datos["person-id"] ?? 'N/A'),
+                'audi_fecha'   => date('Y-m-d'),
+                'audi_hora'    => date('h:i:s A')
+            ]);
+
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'Este ciudadano ya está siendo procesado por otro operador.', 
+                'error' => 'No se pude registrar el caso , debido aque fue registrado con anterioridad', 
                 'redirect' => '/casos'
             ]);
         }
@@ -364,7 +372,7 @@ public function nuevoCaso()
         }
 
         if (empty($ids_generados)) {
-            return $this->response->setJSON(['mensaje' => 2, 'error' => 'No se pudo registrar el caso.', 'redirect' => '/casos']);
+            return $this->response->setJSON(['mensaje' => 2, 'error' => 'No se pude registrar el caso ', 'redirect' => '/casos']);
         }
 
         return $this->response->setJSON([
