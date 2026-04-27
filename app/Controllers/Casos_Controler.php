@@ -215,133 +215,150 @@ public function nuevoCaso()
             ];
         }
 
+        // --- BLOQUEO DE CONCURRENCIA (ADVISORY LOCK) ---
+        // Generamos una llave única para esta Cédula + Oficina
+        $lock_id = crc32(($datos["person-id"] ?? '0') . ($datos["office"] ?? '0'));
+        $lock_check = $db->query("SELECT pg_try_advisory_lock(?) AS lock_status", [$lock_id])->getRow();
+
+        if (!$lock_check || $lock_check->lock_status == 'f') {
+            return $this->response->setJSON([
+                'mensaje' => 2, 
+                'error' => 'Este ciudadano ya está siendo procesado por otro operador.', 
+                'redirect' => '/casos'
+            ]);
+        }
+
         $detalles_generados = []; 
         $ids_generados = [];
 
-        // 3. INICIO DE TRANSACCIÓN GLOBAL
-        $db->transStart();
+        try {
+            // 3. INICIO DE TRANSACCIÓN GLOBAL
+            $db->transStart();
 
-        foreach ($lista_items as $item) {
-            $repeticiones = (isset($item['cantidad']) && (int)$item['cantidad'] > 0) ? (int)$item['cantidad'] : 1;
+            foreach ($lista_items as $item) {
+                $repeticiones = (isset($item['cantidad']) && (int)$item['cantidad'] > 0) ? (int)$item['cantidad'] : 1;
 
-            for ($i = 0; $i < $repeticiones; $i++) {
-                
-                $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
+                for ($i = 0; $i < $repeticiones; $i++) {
+                    
+                    $id_pi_actual = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
 
-                $newCase = [
-                    "idusuopr"          => $idusuopr,
-                    "casofec"           => $datos["date-entry"] ?? date('Y-m-d'),
-                    "casoced"           => $datos["person-id"] ?? '',
-                    "caso_nacionalidad" => $datos["nacionalidad"] ?? 'V',
-                    "casonom"           => mb_strtoupper($datos["person-name"] ?? '', 'UTF-8'),
-                    "casoape"           => mb_strtoupper($datos["person-lastname"] ?? '', 'UTF-8'),
-                    "casotel"           => $datos["telephone"] ?? '',
-                    "id_tipo_atencion"  => $datos["tipo-atencion-usu"] ?? 1,
-                    "idest"             => ($datos["tipo-atencion-usu"] == '1') ? 2 : 1,
-                    "idrrss"            => $datos["social_network"] ?? 1,
-                    "estadoid"          => $datos["state"] ?? null,
-                    "municipioid"       => $datos["county"] ?? null,
-                    "parroquiaid"       => $datos["town"] ?? null,
-                    "pais"              => $datos["country"] ?? 1,
-                    "sexo"              => $datos["sexo"] ?? 1,
-                    "ofiid"             => $datos["office"] ?? null,
-                    "casodesc"          => mb_strtoupper($datos["user-requirement"] ?? '', 'UTF-8'),
-                    "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
-                    "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
-                    "correo"            => mb_strtoupper($datos["correo"] ?? '', 'UTF-8'),
-                    "caso_org_id"       => (!empty($datos["organismo-caso"]) ? (int)$datos["organismo-caso"] : 1),
-                    "ente_adscrito_id"  => $datos["ente_adscrito"] ?? 0,
-                    "edad"              => $datos["edad"] ?? null,
-                    "fecha_nacimiento"  => $datos["fecha_nacimiento"] ?? null,
+                    $newCase = [
+                        "idusuopr"          => $idusuopr,
+                        "casofec"           => $datos["date-entry"] ?? date('Y-m-d'),
+                        "casoced"           => $datos["person-id"] ?? '',
+                        "caso_nacionalidad" => $datos["nacionalidad"] ?? 'V',
+                        "casonom"           => mb_strtoupper($datos["person-name"] ?? '', 'UTF-8'),
+                        "casoape"           => mb_strtoupper($datos["person-lastname"] ?? '', 'UTF-8'),
+                        "casotel"           => $datos["telephone"] ?? '',
+                        "id_tipo_atencion"  => $datos["tipo-atencion-usu"] ?? 1,
+                        "idest"             => ($datos["tipo-atencion-usu"] == '1') ? 2 : 1,
+                        "idrrss"            => $datos["social_network"] ?? 1,
+                        "estadoid"          => $datos["state"] ?? null,
+                        "municipioid"       => $datos["county"] ?? null,
+                        "parroquiaid"       => $datos["town"] ?? null,
+                        "pais"              => $datos["country"] ?? 1,
+                        "sexo"              => $datos["sexo"] ?? 1,
+                        "ofiid"             => $datos["office"] ?? null,
+                        "casodesc"          => mb_strtoupper($datos["user-requirement"] ?? '', 'UTF-8'),
+                        "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
+                        "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
+                        "correo"            => mb_strtoupper($datos["correo"] ?? '', 'UTF-8'),
+                        "caso_org_id"       => (!empty($datos["organismo-caso"]) ? (int)$datos["organismo-caso"] : 1),
+                        "ente_adscrito_id"  => $datos["ente_adscrito"] ?? 0,
+                        "edad"              => $datos["edad"] ?? null,
+                        "fecha_nacimiento"  => $datos["fecha_nacimiento"] ?? null,
+                        "tipo_atend_id"     => (!empty($datos["tipo_atend_id"]) && $datos["tipo_atend_id"] != '0') ? $datos["tipo_atend_id"] : null,
+                        "profesion"         => mb_strtoupper($datos["profesion"] ?? '', 'UTF-8'),
+                        "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"],
+                        "caso_hora"         => date('h:i:s A')
+                    ];
 
-                    // CORRECCIÓN DIRECTA: Si viene vacío, '0' 
-                    "tipo_atend_id"     => (!empty($datos["tipo_atend_id"]) && $datos["tipo_atend_id"] != '0') ? $datos["tipo_atend_id"] : null,
+                    // --- OBTENER NOMBRES PARA AUDITORÍA ---
+                    $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                    $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
+                    $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
 
-                    "profesion"         => mb_strtoupper($datos["profesion"] ?? '', 'UTF-8'),
-                    "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"],
-                    "caso_hora"         => date('h:i:s A')
-                ];
+                    $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
+                    $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
+                    $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- OBTENER NOMBRES PARA AUDITORÍA ---
-                $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
-                $via      = $db->table('sgc_red_social')->where('red_s_id', $newCase["idrrss"])->get()->getRow();
-                $pi_info  = $db->table('sgc_tipo_prop_intelec')->where('tipo_prop_id', $id_pi_actual)->get()->getRow();
+                    // --- BLOQUE ANTI-DUPLICADOS GLOBAL ---
+                    if ($newCase["id_tipo_atencion"] != '24') {
+                        $sql = "SELECT c.idcaso 
+                                FROM sgc_casos c
+                                JOIN sgc_tipo_prop_caso tpc ON c.idcaso = tpc.idcaso
+                                WHERE c.casoced = ? 
+                                  AND c.id_tipo_atencion = ? 
+                                  AND c.casodesc = ? 
+                                  AND c.ofiid = ? 
+                                  AND c.caso_org_id = ? 
+                                  AND c.casonumsol = ? 
+                                  AND tpc.idtippropint = ?
+                                  AND c.casofec = CURRENT_DATE 
+                                  AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
+                                LIMIT 1";
 
-                $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
-                $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
-                $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
+                        $existe = $db->query($sql, [
+                            $newCase['casoced'], 
+                            $newCase['id_tipo_atencion'], 
+                            $newCase['casodesc'], 
+                            $newCase['ofiid'], 
+                            $newCase['caso_org_id'], 
+                            $newCase['casonumsol'], 
+                            $id_pi_actual
+                        ])->getRow();
 
-                // --- BLOQUE ANTI-DUPLICADOS GLOBAL ---
-                if ($newCase["id_tipo_atencion"] != '24') {
-                    $sql = "SELECT c.idcaso 
-                            FROM sgc_casos c
-                            JOIN sgc_tipo_prop_caso tpc ON c.idcaso = tpc.idcaso
-                            WHERE c.casoced = ? 
-                              AND c.id_tipo_atencion = ? 
-                              AND c.casodesc = ? 
-                              AND c.ofiid = ? 
-                              AND c.caso_org_id = ? 
-                              AND c.casonumsol = ? 
-                              AND tpc.idtippropint = ?
-                              AND c.casofec = CURRENT_DATE 
-                              AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
-                            LIMIT 1";
+                        if ($existe) {
+                            $model_Auditoria_sistema_Model->agregar([
+                                'audi_user_id' => $idusuopr, 
+                                'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
+                                'audi_fecha'   => date('Y-m-d'),
+                                'audi_hora'    => date('h:i:s A')
+                            ]);
+                            continue; 
+                        }
+                    }
 
-                    $existe = $db->query($sql, [
-                        $newCase['casoced'], 
-                        $newCase['id_tipo_atencion'], 
-                        $newCase['casodesc'], 
-                        $newCase['ofiid'], 
-                        $newCase['caso_org_id'], 
-                        $newCase['casonumsol'], 
-                        $id_pi_actual
-                    ])->getRow();
+                    // --- INSERCIÓN DEL CASO ---
+                    $idcaso = $casoModel->insertarNuevoCaso($newCase);
 
-                    if ($existe) {
+                    if ($idcaso) {
+                        $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
+                        
+                        if ($newCase["id_tipo_atencion"] == '5') {
+                            $Casos_denuncias->insertarCasos_Denuncias([
+                                'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                                'denu_id_caso' => $idcaso,
+                                'denu_borrado' => false
+                            ]);
+                        }
+
+                        $segModel->insertarSeguimiento([
+                            'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
+                            'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
+                        ]);
+
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
-                            'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
+                            'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
-                        continue; 
+
+                        $detalles_generados[] = ['id' => $idcaso, 'atencion' => $nombreAten];
+                        $ids_generados[] = $idcaso;
                     }
-                }
-
-                // --- INSERCIÓN DEL CASO ---
-                $idcaso = $casoModel->insertarNuevoCaso($newCase);
-
-                if ($idcaso) {
-                    $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
-                    
-                    if ($newCase["id_tipo_atencion"] == '5') {
-                        $Casos_denuncias->insertarCasos_Denuncias([
-                            'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                            'denu_id_caso' => $idcaso,
-                            'denu_borrado' => false
-                        ]);
-                    }
-
-                    $segModel->insertarSeguimiento([
-                        'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
-                        'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
-                    ]);
-
-                    $model_Auditoria_sistema_Model->agregar([
-                        'audi_user_id' => $idusuopr, 
-                        'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
-                        'audi_fecha'   => date('Y-m-d'),
-                        'audi_hora'    => date('h:i:s A')
-                    ]);
-
-                    $detalles_generados[] = ['id' => $idcaso, 'atencion' => $nombreAten];
-                    $ids_generados[] = $idcaso;
                 }
             }
+
+            $db->transComplete();
+
+        } finally {
+            // LIBERAR EL CANDADO SIEMPRE AL FINALIZAR EL TRY
+            $db->query("SELECT pg_advisory_unlock(?)", [$lock_id]);
         }
 
-        $db->transComplete();
-
+        // --- RESPUESTA ORIGINAL ---
         if ($db->transStatus() === false) {
             return $this->response->setJSON(['mensaje' => 2, 'error' => 'Error crítico en la transacción.', 'redirect' => '/casos']);
         }
@@ -362,7 +379,6 @@ public function nuevoCaso()
         return redirect()->to('/');
     }
 }
-
 
 
 
