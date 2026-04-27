@@ -168,7 +168,6 @@ curl_close($ch);
 
 
 }
-
 public function nuevoCaso()
 {
     // 1. CARGA INTEGRAL DE MODELOS
@@ -254,7 +253,10 @@ public function nuevoCaso()
                     "ente_adscrito_id"  => $datos["ente_adscrito"] ?? 0,
                     "edad"              => $datos["edad"] ?? null,
                     "fecha_nacimiento"  => $datos["fecha_nacimiento"] ?? null,
-                    "tipo_atend_id"     => $datos["tipo_atend_id"] ?? null,
+
+                    // CORRECCIÓN DIRECTA: Si viene vacío, '0' 
+                    "tipo_atend_id"     => (!empty($datos["tipo_atend_id"]) && $datos["tipo_atend_id"] != '0') ? $datos["tipo_atend_id"] : null,
+
                     "profesion"         => mb_strtoupper($datos["profesion"] ?? '', 'UTF-8'),
                     "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"],
                     "caso_hora"         => date('h:i:s A')
@@ -270,7 +272,6 @@ public function nuevoCaso()
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
                 // --- BLOQUE ANTI-DUPLICADOS GLOBAL ---
-                // Bloquea si detecta los mismos datos clave en menos de 60 segundos, sin importar el operador.
                 if ($newCase["id_tipo_atencion"] != '24') {
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
@@ -303,7 +304,7 @@ public function nuevoCaso()
                             'audi_fecha'   => date('Y-m-d'),
                             'audi_hora'    => date('h:i:s A')
                         ]);
-                        continue; // Salta al siguiente ítem o termina el bucle
+                        continue; 
                     }
                 }
 
@@ -326,7 +327,6 @@ public function nuevoCaso()
                         'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                     ]);
 
-                    // Auditoría de registro exitoso con formato solicitado
                     $model_Auditoria_sistema_Model->agregar([
                         'audi_user_id' => $idusuopr, 
                         'audi_accion'  => "REGISTRO EXITOSO: Caso Nº {$idcaso} | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']}",
@@ -342,25 +342,14 @@ public function nuevoCaso()
 
         $db->transComplete();
 
-        // Verificación de éxito de la transacción
         if ($db->transStatus() === false) {
-            return $this->response->setJSON([
-                'mensaje' => 2, 
-                'error' => 'Error crítico en la transacción de base de datos.', 
-                'redirect' => '/casos'
-            ]);
+            return $this->response->setJSON(['mensaje' => 2, 'error' => 'Error crítico en la transacción.', 'redirect' => '/casos']);
         }
 
-        // Si no se generaron IDs (posiblemente por bloqueo de duplicado)
         if (empty($ids_generados)) {
-            return $this->response->setJSON([
-                'mensaje' => 2, 
-                'error' => 'No se pudo registrar el caso, por favor Intente de nuevo.', 
-                'redirect' => '/casos'
-            ]);
+            return $this->response->setJSON(['mensaje' => 2, 'error' => 'No se pudo registrar el caso.', 'redirect' => '/casos']);
         }
 
-        // Respuesta exitosa
         return $this->response->setJSON([
             'mensaje' => 1,
             'total_items' => count($ids_generados),
