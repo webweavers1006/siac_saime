@@ -269,7 +269,7 @@ public function nuevoCaso()
                 $nombreVia  = $via ? mb_strtoupper($via->red_s_nom, 'UTF-8') : 'N/A';
                 $nombrePI   = $pi_info ? mb_strtoupper($pi_info->tipo_prop_nombre, 'UTF-8') : 'N/A';
 
-                // --- BLOQUE ANTI-DUPLICADOS ESTRICTO ---
+                // --- BLOQUE ANTI-DUPLICADOS GLOBAL (Multi-operador) ---
                 if ($newCase["id_tipo_atencion"] != '24') {
                     $sql = "SELECT c.idcaso 
                             FROM sgc_casos c
@@ -282,20 +282,25 @@ public function nuevoCaso()
                               AND c.caso_org_id = ? 
                               AND c.casonumsol = ? 
                               AND c.estadoid = ? 
-                              AND c.idusuopr = ? 
                               AND tpc.idtippropint = ?
                               AND c.casofec = CURRENT_DATE 
-                              AND (CURRENT_TIMESTAMP - INTERVAL '60 seconds') <= c.created_at
+                              AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
                             LIMIT 1";
 
+                    // Quitamos $idusuopr de los parámetros para que el bloqueo sea entre todos los usuarios
                     $existe = $db->query($sql, [
-                        $newCase['casoced'], $newCase['id_tipo_atencion'], $newCase['idrrss'], 
-                        $newCase['casodesc'], $newCase['ofiid'], $newCase['caso_org_id'], 
-                        $newCase['casonumsol'], $newCase['estadoid'], $idusuopr, $id_pi_actual
+                        $newCase['casoced'], 
+                        $newCase['id_tipo_atencion'], 
+                        $newCase['idrrss'], 
+                        $newCase['casodesc'], 
+                        $newCase['ofiid'], 
+                        $newCase['caso_org_id'], 
+                        $newCase['casonumsol'], 
+                        $newCase['estadoid'], 
+                        $id_pi_actual
                     ])->getRow();
 
                     if ($existe) {
-                        // REINTEGRADO: Mensaje de auditoría detallado tal cual lo solicitaste
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
                             'audi_accion'  => "BLOQUEO: Intento Duplicado | Vía: {$nombreVia} | Tipo: {$nombreAten} | PI: {$nombrePI} | Cédula: {$newCase['casoced']} | Motivo: Identidad exacta detectada en < 60s",
@@ -351,7 +356,7 @@ public function nuevoCaso()
         if (empty($ids_generados)) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'No se pudo registrar el caso, por FAVOR Intente de nuevo  .', 
+                'error' => 'El caso ya se encuentra registrado o no pudo procesarse. Verifique en su listado.', 
                 'redirect' => '/casos'
             ]);
         }
@@ -367,7 +372,9 @@ public function nuevoCaso()
     } else {
         return redirect()->to('/');
     }
-}	//Metodo para ElIMINAR  UN CASO 
+}
+
+//Metodo para ElIMINAR  UN CASO 
 	public function eliminar_Caso()
 	{
 		$casoModel = new Casos();
