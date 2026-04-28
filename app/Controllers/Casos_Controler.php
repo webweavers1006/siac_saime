@@ -358,7 +358,7 @@ public function nuevoCaso()
                     }
                 }
             }
-
+//
             $db->transComplete();
 
         } finally {
