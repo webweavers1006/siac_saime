@@ -180,6 +180,7 @@ public function nuevoCaso()
     $Casos_denuncias = new Casos_denuncias_Model();
     $terceroModel = new SapiTerceroModel();
     $apoderadoModel = new Mediacion();
+    $caso_remitido_model = new \App\Models\Casos_remitidos_Model();
 
     $db = \Config\Database::connect();
     
@@ -259,7 +260,7 @@ public function nuevoCaso()
                         "casoape"           => mb_strtoupper($datos["person-lastname"] ?? '', 'UTF-8'),
                         "casotel"           => $datos["telephone"] ?? '',
                         "id_tipo_atencion"  => $datos["tipo-atencion-usu"] ?? 1,
-                        "idest"             => ($datos["tipo-atencion-usu"] == '1') ? 2 : 1,
+                        "idest"             => ($datos["tipo-atencion-usu"] == '1' && filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) ? 2 : 1,
                         "idrrss"            => $datos["social_network"] ?? 1,
                         "estadoid"          => $datos["state"] ?? null,
                         "municipioid"       => $datos["county"] ?? null,
@@ -333,6 +334,57 @@ public function nuevoCaso()
                     if ($idcaso) {
                         $tipoPIModel->insertarTipoPICaso(['idcaso' => $idcaso, 'idtippropint' => $id_pi_actual]);
                         
+                        // --- C. MEDIACIÓN (ID 23) ---
+                        if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
+                            $med = $datos['datos_medicion'];
+                            $getTerceroId = function($p) use ($terceroModel) {
+                                if (empty($p['ident_valor'])) return 0;
+                                $ex = $terceroModel->where('ter_identificacion', $p['ident_valor'])->first();
+                                if ($ex) return $ex['ter_id'];
+                                $terceroModel->insert([
+                                    'ter_nombre' => mb_strtoupper($p['nombre_razon'] ?? '', 'UTF-8'),
+                                    'ter_tipo_per' => $p['ident_tipo'] ?? 1,
+                                    'ter_identificacion' => $p['ident_valor'],
+                                    'ter_correo' => mb_strtoupper($p['correo'] ?? '', 'UTF-8'),
+                                    'ter_telefono' => $p['telefono'] ?? '',
+                                    'ter_pais' => $p['pais'] ?? 1,
+                                    'ter_direccion' => mb_strtoupper($p['direccion'] ?? '', 'UTF-8')
+                                ]);
+                                return $terceroModel->insertID();
+                            };
+
+                            $apoderadoModel->insert([
+                                'med_caso_id'       => $idcaso,
+                                'med_contra_id'     => $getTerceroId($med['contraparte']),
+                                'med_apo_sol_id'    => (isset($med['apoderado_solicitante'])) ? $getTerceroId($med['apoderado_solicitante']) : 0,
+                                'med_apo_contra_id' => (isset($med['apoderado_contraparte'])) ? $getTerceroId($med['apoderado_contraparte']) : 0
+                            ]);
+
+                            $caso_remitido_model->remitirCaso(['casos_id' => (int)$idcaso, 'direccion_id' => 4, 'idusuop' => (int)$idusuopr, 'vigencia' => true]);
+                        }
+
+                        // --- D. CGR (Contraloría) ---
+                        if (filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                            $Registro_cgr_Model->insertarRegistro_cgr([
+                                'competencia_cgr' => $datos["competencia_cgr"] ?? 2,
+                                'asume_cgr'       => $datos["asume_cgr"] ?? 2,
+                                'id_caso'         => $idcaso
+                            ]);
+                        }
+
+                        // --- E. COORDENADAS (Blindado) ---
+                        $lat = $datos["latitud"] ?? '';
+                        $lon = $datos["longitud"] ?? '';
+                        if (!empty($lat) || !empty($lon)) {
+                            $Casos_coordenadas->insertarCoordenadas([
+                                "idcaso"   => $idcaso,
+                                "latitud"  => $lat,
+                                "longitud" => $lon,
+                                "idusuopr" => $idusuopr
+                            ]);
+                        }
+
+                        // --- F. DENUNCIAS ---
                         if ($newCase["id_tipo_atencion"] == '5') {
                             $Casos_denuncias->insertarCasos_Denuncias([
                                 'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -341,6 +393,7 @@ public function nuevoCaso()
                             ]);
                         }
 
+                        // --- G. SEGUIMIENTO Y AUDITORÍA ---
                         $segModel->insertarSeguimiento([
                             'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
                             'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
@@ -358,15 +411,13 @@ public function nuevoCaso()
                     }
                 }
             }
-//
+
             $db->transComplete();
 
         } finally {
-            // LIBERAR EL CANDADO SIEMPRE AL FINALIZAR EL TRY
             $db->query("SELECT pg_advisory_unlock(?)", [$lock_id]);
         }
 
-        // --- RESPUESTA ORIGINAL ---
         if ($db->transStatus() === false) {
             return $this->response->setJSON(['mensaje' => 2, 'error' => 'Error crítico en la transacción.', 'redirect' => '/casos']);
         }
