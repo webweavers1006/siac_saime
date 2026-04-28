@@ -204,6 +204,9 @@ public function nuevoCaso()
                 'redirect' => '/casos'
             ]);
         }
+
+        // --- PREPARACIÓN DE DESCRIPCIÓN PARA VALIDACIÓN ---
+        $descripcion_actual = mb_strtoupper(trim($datos["user-requirement"] ?? ''), 'UTF-8');
         
         // 2. DETERMINAR LA LISTA DE TRABAJO
         $lista_items = [];
@@ -216,8 +219,11 @@ public function nuevoCaso()
             ];
         }
 
-        // --- BLOQUEO DE CONCURRENCIA (ADVISORY LOCK) ---
-        $lock_id = crc32(($datos["person-id"] ?? '0') . ($datos["office"] ?? '0'));
+        // --- BLOQUEO DE CONCURRENCIA (ADVISORY LOCK) ACTUALIZADO ---
+        // Incluimos el hash de la descripción para que solo bloquee si es la MISMA persona con la MISMA descripción
+        $lock_hash = crc32($descripcion_actual);
+        $lock_id = crc32(($datos["person-id"] ?? '0') . ($datos["office"] ?? '0') . $lock_hash);
+        
         $lock_check = $db->query("SELECT pg_try_advisory_lock(?) AS lock_status", [$lock_id])->getRow();
 
         if (!$lock_check || $lock_check->lock_status == 'f') {
@@ -225,14 +231,14 @@ public function nuevoCaso()
             // AUDITORÍA DEL BLOQUEO (PC SIMULTÁNEA)
             $model_Auditoria_sistema_Model->agregar([
                 'audi_user_id' => $idusuopr, 
-                'audi_accion'  => "BLOQUEO CONCURRENCIA: Intento de registro simultáneo (PC Alterna) | Cédula: " . ($datos["person-id"] ?? 'N/A'),
+                'audi_accion'  => "BLOQUEO CONCURRENCIA: Intento de registro idéntico simultáneo | Cédula: " . ($datos["person-id"] ?? 'N/A'),
                 'audi_fecha'   => date('Y-m-d'),
                 'audi_hora'    => date('h:i:s A')
             ]);
 
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'No se pude registrar el caso , debido aque fue registrado con anterioridad', 
+                'error' => 'No se pudo registrar el caso, debido a que ya existe un proceso idéntico en curso.', 
                 'redirect' => '/casos'
             ]);
         }
@@ -268,7 +274,7 @@ public function nuevoCaso()
                         "pais"              => $datos["country"] ?? 1,
                         "sexo"              => $datos["sexo"] ?? 1,
                         "ofiid"             => $datos["office"] ?? null,
-                        "casodesc"          => mb_strtoupper($datos["user-requirement"] ?? '', 'UTF-8'),
+                        "casodesc"          => $descripcion_actual,
                         "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
                         "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
                         "correo"            => mb_strtoupper($datos["correo"] ?? '', 'UTF-8'),
@@ -282,11 +288,8 @@ public function nuevoCaso()
                         "caso_hora"         => date('h:i:s A')
                     ];
 
-                    // --- OBTENER NOMBRES PARA AUDITORÍA ---
-                    $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
-                    $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
-
-                    // --- BLOQUE ANTI-DUPLICADOS GLOBAL ---
+                    // --- BLOQUE ANTI-DUPLICADOS GLOBAL ACTUALIZADO ---
+                    // Ahora validamos que la descripción sea idéntica para considerar duplicado
                     if ($newCase["id_tipo_atencion"] != '24') {
                         $sql = "SELECT c.idcaso 
                                 FROM sgc_casos c
@@ -295,15 +298,17 @@ public function nuevoCaso()
                                   AND c.id_tipo_atencion = ? 
                                   AND c.ofiid = ? 
                                   AND tpc.idtippropint = ?
+                                  AND c.casodesc = ?
                                   AND c.casofec = CURRENT_DATE 
-                                  AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '60 seconds')
+                                  AND c.created_at >= (CURRENT_TIMESTAMP - INTERVAL '30 seconds')
                                 LIMIT 1";
 
                         $existe = $db->query($sql, [
                             $newCase['casoced'], 
                             $newCase['id_tipo_atencion'], 
                             $newCase['ofiid'], 
-                            $id_pi_actual
+                            $id_pi_actual,
+                            $newCase['casodesc']
                         ])->getRow();
 
                         if ($existe) { continue; }
@@ -318,8 +323,6 @@ public function nuevoCaso()
                         // --- MEDIACIÓN (ID 23) ---
                         if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
                             $med = $datos['datos_medicion'];
-                            
-                            // ID de César Gómez para la firma de la OAC
                             $id_firma_oac = 21; 
 
                             $getTerceroId = function($p) use ($terceroModel) {
@@ -345,7 +348,6 @@ public function nuevoCaso()
                                 'med_apo_contra_id' => (isset($med['apoderado_contraparte'])) ? $getTerceroId($med['apoderado_contraparte']) : 0
                             ]);
 
-                            // 1. SEGUIMIENTO: CREACIÓN (Operador real)
                             $segModel->insertarSeguimiento([
                                 'idcaso'    => $idcaso, 
                                 'idestllam' => 4, 
@@ -354,7 +356,6 @@ public function nuevoCaso()
                                 'segfec'    => date('Y-m-d')
                             ]);
 
-                            // 2. REMISIÓN AUTOMÁTICA A DNDA (ID 4) - Firmado por César Gómez (21)
                             $caso_remitido_model->remitirCaso([
                                 'casos_id'     => (int)$idcaso, 
                                 'direccion_id' => 4, 
@@ -363,7 +364,6 @@ public function nuevoCaso()
                                 'fecha'        => date('Y-m-d')
                             ]);
 
-                            // 3. SEGUIMIENTO: REMISIÓN (Firmado por OAC / César Gómez)
                             $segModel->insertarSeguimiento([
                                 'idcaso'    => $idcaso, 
                                 'idestllam' => 4, 
@@ -372,7 +372,6 @@ public function nuevoCaso()
                                 'segfec'    => date('Y-m-d')
                             ]);
 
-                            // 4. REGISTRO DE NOTIFICACIÓN (Sin bucle, mensaje con formato azul)
                             $beneficiario = mb_strtoupper(($datos["person-name"] ?? '') . ' ' . ($datos["person-lastname"] ?? ''), 'UTF-8');
                             $mensajeFinal = "El caso #{$idcaso} - Beneficiario: {$beneficiario} fue remitido de OFICINA DE ATENCIÓN CIUDADANA a DIRECCIÓN NACIONAL DE DERECHO DE AUTOR. Remitido por: <span style='color: #002D5A; font-weight: bold;'>OFICINA DE ATENCIÓN CIUDADANA</span>";
 
@@ -381,7 +380,7 @@ public function nuevoCaso()
                                 'tipo_notificacion'  => 'REMISION',
                                 'mensaje'            => $mensajeFinal,
                                 'leida'              => false,
-                                'id_usuario_destino' => 59, // EL IDE DEL USUARIO OPERADOR DE LA DIRECCION 
+                                'id_usuario_destino' => 59, 
                                 'id_usuario_accion'  => $id_firma_oac,
                                 'id_rol_accion'      => 1, 
                                 'id_caso_autor'      => $idusuopr,
@@ -390,7 +389,6 @@ public function nuevoCaso()
                             ]);
                         }
 
-                        // --- CGR (Contraloría) ---
                         if (filter_var($datos["bandera_cgr"] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                             $Registro_cgr_Model->insertarRegistro_cgr([
                                 'competencia_cgr' => $datos["competencia_cgr"] ?? 2,
@@ -399,7 +397,6 @@ public function nuevoCaso()
                             ]);
                         }
 
-                        // --- COORDENADAS ---
                         if (!empty($datos["latitud"]) || !empty($datos["longitud"])) {
                             $Casos_coordenadas->insertarCoordenadas([
                                 "idcaso"   => $idcaso,
@@ -409,7 +406,6 @@ public function nuevoCaso()
                             ]);
                         }
 
-                        // --- DENUNCIAS ---
                         if ($newCase["id_tipo_atencion"] == '5') {
                             $Casos_denuncias->insertarCasos_Denuncias([
                                 'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -418,14 +414,15 @@ public function nuevoCaso()
                             ]);
                         }
 
-                        // --- SEGUIMIENTO Y AUDITORÍA ---
-                        // AJUSTE QUIRÚRGICO: Solo insertamos este seguimiento si NO es Mediación (23)
                         if ($newCase["id_tipo_atencion"] != '23') {
                             $segModel->insertarSeguimiento([
                                 'idcaso' => $idcaso, 'idestllam' => 4, 'segcoment' => 'CREACIÓN DEL CASO', 
                                 'idusuopr' => $idusuopr, 'segfec' => date('Y-m-d')
                             ]);
                         }
+
+                        $atencion = $db->table('sgc_tipoatencion_usu')->where('tipo_aten_id', $newCase["id_tipo_atencion"])->get()->getRow();
+                        $nombreAten = $atencion ? mb_strtoupper($atencion->tipo_aten_nombre, 'UTF-8') : 'N/A';
 
                         $model_Auditoria_sistema_Model->agregar([
                             'audi_user_id' => $idusuopr, 
@@ -443,11 +440,9 @@ public function nuevoCaso()
             $db->transComplete();
 
         } finally {
-            // LIBERAR EL CANDADO SIEMPRE AL FINALIZAR EL TRY
             $db->query("SELECT pg_advisory_unlock(?)", [$lock_id]);
         }
 
-        // --- RETORNOS CON MENSAJES ORIGINALES ---
         if ($db->transStatus() === false) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
@@ -459,7 +454,7 @@ public function nuevoCaso()
         if (empty($ids_generados)) {
             return $this->response->setJSON([
                 'mensaje' => 2, 
-                'error' => 'No se pude registrar el caso ', 
+                'error' => 'No se pudo registrar el caso por duplicidad detectada.', 
                 'redirect' => '/casos'
             ]);
         }
