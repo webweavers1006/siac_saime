@@ -323,7 +323,7 @@ public function nuevoCaso()
                         // --- MEDIACIÓN (ID 23) ---
                         if ($newCase["id_tipo_atencion"] == '23' && isset($datos['datos_medicion'])) {
                             $med = $datos['datos_medicion'];
-                            $id_firma_oac = 21; 
+                            $id_firma_oac = 73; 
 
                             $getTerceroId = function($p) use ($terceroModel) {
                                 if (empty($p['ident_valor'])) return 0;
