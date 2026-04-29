@@ -288,7 +288,7 @@ public function nuevoCaso()
                         "caso_hora"         => date('h:i:s A')
                     ];
 
-                    // --- BLOQUE ANTI-DUPLICADOS GLOBAL ACTUALIZADO ---
+                    // --- BLOQUE ANTI-DUPLICADOS GLOBAL ACTUALIZADO ----
                     // Ahora validamos que la descripción sea idéntica para considerar duplicado
                     if ($newCase["id_tipo_atencion"] != '24') {
                         $sql = "SELECT c.idcaso 
