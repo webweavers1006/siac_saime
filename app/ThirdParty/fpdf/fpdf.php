@@ -703,7 +703,6 @@ function draw_check($label, $check = false) {
     $this->Cell(10, 5, '', 0, 0); // Espacio entre opciones
 }
 
-
 function Content_Planilla_SAPI($datos)
 {
     // Cargar fuente necesaria para los Checkbox (ZapfDingbats es estándar en FPDF)
@@ -749,7 +748,7 @@ function Content_Planilla_SAPI($datos)
     $ANCHO_ETIQUETA = 45;
     $ANCHO_VALOR    = 190 - $ANCHO_ETIQUETA;
 
-    // --- FUNCIÓN INTERNA PARA RENDERIZAR SECCIONES ---
+    // --- FUNCIÓN INTERNA PARA RENDERIZAR SECCIONES (A, C, D) ---
     $print_section = function ($titulo, $campos) use ($azul_sapi, $ANCHO_ETIQUETA, $ANCHO_VALOR, $obtener_contenido_o_na, $datos) {
         $this->SetFont('Arial', 'B', 9);
         $this->SetTextColor(255, 255, 255);
@@ -764,9 +763,22 @@ function Content_Planilla_SAPI($datos)
             $label_upper = mb_strtoupper((string)$label, 'UTF-8');
             $label_pdf   = iconv('UTF-8', 'CP1252//TRANSLIT', '  ' . $label_upper);
 
+            // Guardamos la posición Y inicial para dibujar el borde si es multilínea
+            $startY = $this->GetY();
             $this->Cell($ANCHO_ETIQUETA, 5.5, $label_pdf, 'B', 0, 'L');
+            
             $this->SetFont('Arial', '', 8.5);
-            $this->Cell($ANCHO_VALOR, 5.5, $obtener_contenido_o_na($key, $datos), 'B', 1, 'L');
+            $valor = $obtener_contenido_o_na($key, $datos);
+            
+            // Lógica de ajuste automático para campos largos (Direcciones y Ubicaciones)
+            $is_long_field = (strpos($key, 'direccion') !== false || strpos($key, 'ubicacion') !== false);
+            
+            if ($is_long_field) {
+                // MultiCell permite que el texto baje a la siguiente línea
+                $this->MultiCell($ANCHO_VALOR, 4.5, $valor, 'B', 'L');
+            } else {
+                $this->Cell($ANCHO_VALOR, 5.5, $valor, 'B', 1, 'L');
+            }
         }
         $this->Ln(2);
     };
@@ -780,7 +792,7 @@ function Content_Planilla_SAPI($datos)
         'País/Edo/Mun/Parr:'      => 'A_ubicacion_completa'
     ]);
 
-    // --- B. APODERADO SOLICITANTE ---
+    // --- B. APODERADO SOLICITANTE (SECCIÓN PERSONALIZADA) ---
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor(255, 255, 255);
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
@@ -789,7 +801,7 @@ function Content_Planilla_SAPI($datos)
     $this->SetTextColor(40, 40, 40);
     $this->SetDrawColor(230, 230, 230);
 
-    // Fila combinada 1
+    // Fila combinada 1 (Nombres y CI)
     $this->SetFont('Arial', 'B', 7.5);
     $this->Cell($ANCHO_ETIQUETA, 5.5, iconv('UTF-8', 'CP1252', '  NOMBRES Y APELLIDOS:'), 'B', 0, 'L');
     $this->SetFont('Arial', '', 8.5);
@@ -799,17 +811,17 @@ function Content_Planilla_SAPI($datos)
     $this->SetFont('Arial', '', 8.5);
     $this->Cell(60, 5.5, $obtener_contenido_o_na('B_CI', $datos), 'B', 1, 'L');
 
-    // Fila combinada 2
+    // Fila combinada 2 (IMPRE y TELÉFONO) - CORREGIDO PARA MULTICELL
     $this->SetFont('Arial', 'B', 7.5);
     $this->Cell($ANCHO_ETIQUETA, 5.5, iconv('UTF-8', 'CP1252', '  IMPRE ABOGADO:'), 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8.5);
+    $this->SetFont('Arial', '', 8);
     $this->Cell(65, 5.5, $obtener_contenido_o_na('B_IMPRE', $datos), 'B', 0, 'L');
     $this->SetFont('Arial', 'B', 7.5);
     $this->Cell(20, 5.5, iconv('UTF-8', 'CP1252', ' TELF:'), 'B', 0, 'L');
-    $this->SetFont('Arial', '', 8.5);
+    $this->SetFont('Arial', '', 8);
     $this->Cell(60, 5.5, $obtener_contenido_o_na('B_telefono', $datos), 'B', 1, 'L');
 
-    // Filas simples de la sección B
+    // Filas de Dirección y Ubicación en Sección B (AJUSTE AUTOMÁTICO)
     $campos_b = [
         'Dirección:'          => 'B_direccion',
         'Correo electrónico:' => 'B_correo',
@@ -820,7 +832,10 @@ function Content_Planilla_SAPI($datos)
         $this->SetFont('Arial', 'B', 7.5);
         $this->Cell($ANCHO_ETIQUETA, 5.5, iconv('UTF-8', 'CP1252', '  ' . $label_upper), 'B', 0, 'L');
         $this->SetFont('Arial', '', 8.5);
-        $this->Cell($ANCHO_VALOR, 5.5, $obtener_contenido_o_na($k, $datos), 'B', 1, 'L');
+        
+        $valor_b = $obtener_contenido_o_na($k, $datos);
+        // Aplicamos MultiCell a todos los campos descriptivos de la sección B por seguridad
+        $this->MultiCell($ANCHO_VALOR, 4.5, $valor_b, 'B', 'L');
     }
     $this->Ln(2);
 
@@ -875,6 +890,7 @@ function Content_Planilla_SAPI($datos)
     $this->Cell(190, 4, iconv('UTF-8', 'CP1252', '  RESUMEN DEL CASO:'), 0, 1, 'L');
     $this->SetFont('Arial', '', 8.5);
     $this->Ln(2);
+    // MultiCell para el resumen del caso (ya estaba bien, se mantiene)
     $this->MultiCell(190, 4.2, $obtener_contenido_o_na('casodesc', $datos), 0, 'J');
     $this->Ln(2);
 
@@ -889,7 +905,6 @@ function Content_Planilla_SAPI($datos)
     $texto_F = "La parte solicitante o su representante debidamente facultado, acepta someter la controversia descrita anteriormente al Procedimiento de Mediación del SAPI, sujetándose a lo dispuesto en su Instrumento Normativo de Mediación.";
     $this->MultiCell(190, 5, iconv('UTF-8', 'CP1252', $texto_F), 0, 'L');
 }
-
 
 function Footer_Mediacion()
 {

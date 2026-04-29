@@ -1,19 +1,23 @@
-# TODO: Agregar fila total casos a crear en tabla Propiedad Intelectual
+# TODO: Corregir direcciones largas en PDF Mediación
 
-## Plan aprobado - Pasos a completar:
+## ✅ Plan Aprobado y Desglosado en Pasos
+**Archivo objetivo**: app/ThirdParty/fpdf/fpdf.php → Content_Planilla_SAPI()
 
-- [x] **Paso 1**: Editar `public/custom/js/caso/nuevo_caso.js` ✅
-  - Modificar `generarTablaPropiedadIntelectual()` → Agregar `<tfoot>` con total
-  - Crear función `actualizarTotalCasosPI()`
-  - Agregar event handlers delegated para `.check-pi` y `.qty-pi`
+### Pasos a Completar:
+- [ ] **Paso 0**: Crear este TODO.md detallado ✓
+- [✅] **Paso 1**: Editar Content_Planilla_SAPI() ✓
+- [ ] **Paso 2**: Probar PDF Mediación (generar PDF y verificar direcciones largas)
+- [ ] **Paso 3**: Validar otros formatos (Asesoría, Denuncia) no se rompen
+- [ ] **Paso 4**: Marcar como Completado
 
-- [ ] **Paso 2**: Probar funcionalidad
-  - Navegar a http://siac_v2.com/vista_agregar_caso
-  - Seleccionar Tipo Atención 24 (consignación)
-  - Verificar tabla genera con total inicial=0
-  - Check items → Total actualiza dinámicamente
-  - Cambiar cantidades → Total se recalcula
-  - Save → Verificar lista_consignacion correcta
+**Estado**: Paso 1 completado. Esperando prueba de PDF Mediación...
 
-- [x] **Plan confirmado y aprobado por usuario**
-- [ ] **Task completed** → attempt_completion
+## Cambios en fpdf.php (Paso 1)
+```
+✅ Sección B: Cell() → MultiCell(145,4) para B_direccion, B_ubicacion_completa
+✅ Eliminados SetFont/SetXY duplicados
+✅ Ajustes Ln() para alineación
+✅ Detección direcciones en $print_section preservada/mejorada
+```
+
+**Siguiente**: Paso 2 - Genera un PDF Mediación con direcciones largas para verificar.
