@@ -31,11 +31,11 @@ public function generar_plantilla_formacion($idcaso = null)
     $organismos = $organismoModel->Listar_Organismo_PP_filtro();
 
     // Configuración A4 Horizontal (297mm x 210mm)
-    $pdf = new \FPDF('L', 'mm', 'A4');
+    $pdf = new \FPDF('L', 'mm', 'letter');
     $pdf->AliasNbPages(); 
     $pdf->SetMargins(10, 10, 10);
     
-    // Margen de 30mm para que el footer respire
+    // Margen para que el footer respire
     $pdf->SetAutoPageBreak(true, 23); 
 
     $info_pdf = [
@@ -50,8 +50,10 @@ public function generar_plantilla_formacion($idcaso = null)
         'casodesc'     => $row->casodesc,
     ];
 
+    // Asignación de datos a las propiedades de la clase para que Header y Footer tengan acceso
     $pdf->info_pdf_header = $info_pdf; 
     $pdf->tipos_footer = $tipos; 
+    $pdf->tipos_organismos_footer = $organismos; // <--- AGREGAR ESTA LÍNEA
 
     $pdf->AddPage(); 
     $pdf->Content_Formacion($info_pdf, $tipos, $organismos);
@@ -60,8 +62,6 @@ public function generar_plantilla_formacion($idcaso = null)
     $pdf->Output("I", "Lista_Asistencia_{$row->idcaso}.pdf");
     exit();
 }
-    
-
     public function generar_pdf($idcaso = null)
     {
         $model = new Pdf_Model();

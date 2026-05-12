@@ -364,6 +364,7 @@ class FPDF
 /** @var array|null */
 public $info_pdf_header; 
 public $tipos_footer;
+public $tipos_organismos_footer;
 
 // Sobrescribir el método Header estándar de FPDF
 function Header() {
@@ -380,54 +381,38 @@ function Footer() {
         $this->Footer_Formacion();
     }
 }
+
+
 function Header_Formacion($datos = [])
 {
-    // 1. Configuración de colores y medidas
     $azul_sapi = [25, 55, 90];
     $gris_suave = [245, 245, 245];
-    $ancho_u = 277; // Ancho efectivo (297mm - 20 de márgenes)
+    $ancho_u = 262.4; 
 
-    // 2. Cintillo institucional
     if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
         $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 5, $ancho_u, 12);
     }
     
     $this->Ln(10);
-
-    // 3. Fila de Control (Nº Caso y Fecha)
     $this->SetDrawColor(0, 0, 0); 
     $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
     $this->SetFont('Arial', 'B', 8);
-    $this->SetTextColor(0, 0, 0);
     
     $this->Cell($ancho_u / 2, 6, iconv('UTF-8', 'CP1252//IGNORE', '  Nº CASO: ') . ($datos['caso'] ?? ''), 'TRL', 0, 'L', true);
     $this->Cell($ancho_u / 2, 6, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA: ') . ($datos['fecha_caso'] ?? date('d/m/Y')) . '  ', 'TRL', 1, 'R', true);
 
-    // 4. Bloque de Nombre del Taller
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
     $this->SetTextColor(255, 255, 255);
     $this->SetFont('Arial', 'B', 8.5);
     $nombre_taller = mb_strtoupper($datos['casodesc'] ?? 'N/A');
     $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   NOMBRE DEL TALLER / ACTIVIDAD: ' . $nombre_taller), 1, 1, 'L', true);
 
-    // 5. Bloque del Facilitador
     $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
     $this->SetTextColor(0, 0, 0);
     $nombre_facilitador = mb_strtoupper($datos['nombre'] ?? 'N/P');
     $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   FACILITADOR: ' . $nombre_facilitador), 1, 1, 'L', true);
 
-    $this->Ln(1);
-
-    // 6. Bloque de Ubicación
-    $this->SetFont('Arial', 'B', 7);
-    $col = $ancho_u / 3;
-    $this->Cell($col, 6, iconv('UTF-8', 'CP1252//IGNORE', '  ESTADO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['estadonom'] ?? 'N/P')), 'B', 0, 'L');
-    $this->Cell($col, 6, iconv('UTF-8', 'CP1252//IGNORE', '  MUNICIPIO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['municipionom'] ?? 'N/P')), 'B', 0, 'L');
-    $this->Cell($col, 6, iconv('UTF-8', 'CP1252//IGNORE', '  PARROQUIA: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['parroquianom'] ?? 'N/P')), 'B', 1, 'L');
-
     $this->Ln(2);
-
-    // 7. Títulos de Tabla
     $this->SetFont('Arial', 'B', 10);
     $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
     $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', 'LISTA DE ASISTENCIA Y REGISTRO DE PARTICIPANTES'), 0, 1, 'C');
@@ -437,18 +422,20 @@ function Header_Formacion($datos = [])
     $this->SetTextColor(255, 255, 255);
     $this->SetFont('Arial', 'B', 5.5);
 
-    // ANCHOS AJUSTADOS (Exactamente 277mm)
-    $w = [6, 32, 32, 20, 28, 28, 9, 9, 15, 28, 25, 45];
-    $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'CÉDULA', 'T. PERSONA', 'T. BENEF.', 'EDAD', 'SEXO', 'TELÉF.', 'ORG.', 'ESTADO', 'MUN./PARR.'];
+    // ANCHOS REDISTRIBUIDOS (Suma: 259.4mm)
+    // Se le dio más espacio a ORG (w[9]) para los cuadritos de 3 caracteres
+    $w = [6, 35, 35, 20, 15, 35, 8, 10, 18, 25, 20, 35.4];
+    $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'CÉDULA', 'T.PERSONA', 'T. BENEFICIARIO', 'EDAD', 'SEXO', 'TELÉFONO', 'ORGANISMO', 'ESTADO', 'MUNICIPIO/PARROQUIA'];
 
     foreach($titulos as $i => $titulo) {
         $this->Cell($w[$i], 6, iconv('UTF-8', 'CP1252//IGNORE', $titulo), 1, ($i == 11 ? 1 : 0), 'C', true);
     }
 }
 
+
 function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
 {
-    $w = [6, 32, 32, 20, 28, 28, 9, 9, 15, 28, 25, 45];
+    $w = [6, 35, 35, 20, 15, 35, 8, 10, 18, 25, 20, 35.4];
     $h = 7.5;               
     $filas_por_pagina = 16; 
     $total_filas = 32;      
@@ -459,88 +446,99 @@ function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
         $this->SetFont('Arial', '', 7); 
         $this->SetTextColor(0, 0, 0);
         
-        $this->Cell($w[0], $h, $i, 1, 0, 'C', $fill);
-        $this->Cell($w[1], $h, '', 1, 0, 'L', $fill);
-        $this->Cell($w[2], $h, '', 1, 0, 'L', $fill);
-        $this->Cell($w[3], $h, '', 1, 0, 'C', $fill);
+        $this->Cell($w[0], $h, $i, 1, 0, 'C', $fill); // Nro
+        $this->Cell($w[1], $h, '', 1, 0, 'L', $fill); // Nombres
+        $this->Cell($w[2], $h, '', 1, 0, 'L', $fill); // Apellidos
+        $this->Cell($w[3], $h, '', 1, 0, 'C', $fill); // Cédula
+        $this->Cell($w[4], $h, '', 1, 0, 'C', $fill); // T. Persona
 
-        // --- T. PERSONA (Cuadritos) ---
-        $x = $this->GetX(); $y = $this->GetY();
-        $this->Cell($w[4], $h, '', 1, 0, 'C', $fill);
-        $this->SetFont('Arial', '', 5);
-        foreach(['V', 'G', 'J', 'E'] as $idx => $letra) {
-            $pXC = $x + 1.2 + ($idx * 6.5);
-            $this->Rect($pXC, $y + 2.2, 3, 3); 
-            $this->Text($pXC + 3.5, $y + 4.6, $letra);
-        }
+        // --- T. BENEFICIARIO (Cuadritos - 1 Carácter) ---
+		$xBenef = $this->GetX(); 
+		$y = $this->GetY();
+		$this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
 
-        // --- TIPO BENEFICIARIO (Cuadritos) ---
-        $this->SetXY($x + $w[4], $y);
-        $x2 = $this->GetX();
-        $this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
-        foreach($tipos_beneficiarios as $idx => $tipo) {
-            if($idx > 4) break; // Evitar desborde si hay demasiados tipos
-            $letra = strtoupper(substr($tipo->tipo_beneficiario_nombre ?? 'U', 0, 1));
-            $pXB = $x2 + 1.2 + ($idx * 5.2);
-            $this->Rect($pXB, $y + 2.2, 2.8, 2.8);
-            $this->SetFont('Arial', '', 4.5);
-            $this->Text($pXB + 3.2, $y + 4.5, $letra);
-        }
+		if(!empty($tipos_beneficiarios)) {
+			$this->SetFont('Arial', '', 4.5); // Subí a 4.5 para mejor lectura
+			foreach($tipos_beneficiarios as $idx => $t) {
+				if($idx > 4) break; 
+				$siglaB = strtoupper(substr($t->tipo_beneficiario_nombre, 0, 1));
+				
+				$pXB = $xBenef + 1.2 + ($idx * 6.5); // Aumenté un poco la separación entre cuadritos
+				$this->Rect($pXB, $y + 2.2, 2.6, 2.6);
+				
+				// El secreto es el + 3.5 (antes 2.9) para separar la letra del cuadro
+				// El + 4.2 (antes 4.4) es para centrarla verticalmente un poco mejor
+				$this->Text($pXB + 3.5, $y + 4.2, $siglaB);
+			}
+		}
 
-        // --- COLUMNAS SIMPLES ---
-        $this->SetXY($x2 + $w[5], $y);
         $this->SetFont('Arial', '', 7);
-        $this->Cell($w[6], $h, '', 1, 0, 'C', $fill); 
-        $this->Cell($w[7], $h, '', 1, 0, 'C', $fill); 
-        $this->Cell($w[8], $h, '', 1, 0, 'C', $fill); 
+        $this->Cell($w[6], $h, '', 1, 0, 'C', $fill); // Edad
+        $this->Cell($w[7], $h, '', 1, 0, 'C', $fill); // Sexo
+        $this->Cell($w[8], $h, '', 1, 0, 'C', $fill); // Teléfono
 
-        // --- ORGANIZACIÓN (Cuadritos) ---
-        $xOrg = $this->GetX();
-        $this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
-        foreach($organismos as $idx => $org) {
-            if($idx > 2) break; // Máximo 3 por espacio
-            $nombre = $org->org_nombre ?? 'N/A';
-            $sigla = ($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 2));
-            $pXO = $xOrg + 1.5 + ($idx * 8.5);
-            $this->Rect($pXO, $y + 2.2, 2.8, 2.8);
-            $this->SetFont('Arial', '', 4.5); 
-            $this->Text($pXO + 3.2, $y + 4.5, $sigla);
-        }
+       // --- ORGANISMO (Cuadritos - 3 Caracteres) ---
+$xOrg = $this->GetX();
+$this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
 
-        $this->SetXY($xOrg + $w[9], $y);
+if(!empty($organismos)) {
+    // Subimos a 4.2 para que los 3 caracteres sean legibles
+    $this->SetFont('Arial', '', 4.2); 
+    
+    foreach($organismos as $idx => $org) {
+        if($idx > 3) break; // Máximo 4 en 30mm
+        
+        $nombre = $org->org_nombre ?? 'N/A';
+        $siglaO = ($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 3));
+        
+        // pXO es la posición de inicio de cada "grupo" (cuadro + texto)
+        $pXO = $xOrg + 1.2 + ($idx * 7.5); 
+        
+        // Dibujamos el cuadro
+        $this->Rect($pXO, $y + 2.2, 2.6, 2.6);
+        
+        // AJUSTE DE SEPARACIÓN: 
+        // Cambiamos + 2.9 por + 3.8 para que haya aire entre el cuadro y las 3 letras.
+        // Cambiamos + 4.4 por + 4.2 para centrar la sigla con la altura del cuadro.
+        $this->Text($pXO + 3.8, $y + 4.2, $siglaO);
+    }
+    // Reset a la fuente estándar de la fila
+    $this->SetFont('Arial', '', 7); 
+}
+
         $this->SetFont('Arial', '', 7);
-        $this->Cell($w[10], $h, '', 1, 0, 'C', $fill); 
-        $this->Cell($w[11], $h, '', 1, 1, 'L', $fill); 
+        $this->Cell($w[10], $h, '', 1, 0, 'C', $fill); // Estado
+        $this->Cell($w[11], $h, '', 1, 1, 'L', $fill); // Mun/Parroquia
 
-        // Salto de página
         if ($i % $filas_por_pagina == 0 && $i < $total_filas) {
-            $this->AddPage('L', 'A4');
+            $this->AddPage('L', 'letter');
         }
     }
 }
 
+
+
 function Footer_Formacion()
 {
     $tipos = $this->tipos_footer ?? [];
-    $ancho_u = 277; // Ajustado a A4 Horizontal real
+    $organismos = $this->tipos_organismos_footer ?? []; 
+    $ancho_u = 259.4; // Ajuste Carta
 
     $this->SetY(-40); 
     
-    // Línea divisoria suave
     $this->SetDrawColor(200, 200, 200);
     $this->Cell($ancho_u, 0, '', 'T', 1, 'C'); 
-    $this->Ln(14);
+    $this->Ln(6); 
 
-    // --- SECCIÓN DE LEYENDAS ---
     $this->SetFont('Arial', 'B', 6.5);
 
-    // 1. Leyenda Persona
+    // 1. T. Persona
     $this->SetTextColor(25, 55, 90);
     $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', '  T. PERSONA: '));
     $this->SetTextColor(80, 80, 80);
     $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', '(V) VENEZOLANO | (G) GUBERNAMENTAL | (J) JURÍDICO | (E) EXTRANJERO' . "\n"));
 
-    // 2. Leyenda Beneficiario
+    // 2. T. Beneficiario
     $this->SetTextColor(25, 55, 90);
     $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', '  T. BENEFICIARIO: '));
     $this->SetTextColor(80, 80, 80);
@@ -551,14 +549,30 @@ function Footer_Formacion()
             $sigla = strtoupper(substr($t->tipo_beneficiario_nombre, 0, 1));
             $items[] = "($sigla) " . strtoupper($t->tipo_beneficiario_nombre);
         }
-        $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', implode(' | ', $items)));
+        $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', implode(' | ', $items) . "\n"));
+    } else {
+        $this->Write(4, "N/P\n");
+    }
+
+    // 3. T. Organismos
+    $this->SetTextColor(25, 55, 90);
+    $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', '  T. ORGANISMOS: '));
+    $this->SetTextColor(80, 80, 80);
+
+    if (!empty($organismos)) {
+        $items_org = [];
+        foreach ($organismos as $org) {
+            $nombre = $org->org_nombre ?? 'N/A';
+            $sigla_org = ($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 3));
+            $items_org[] = "($sigla_org) " . strtoupper($nombre);
+        }
+        $this->Write(4, iconv('UTF-8', 'CP1252//IGNORE', implode(' | ', $items_org)));
     } else {
         $this->Write(4, 'N/P');
     }
 
     $this->Ln(6);
 
-    // --- DIRECCIÓN Y CONTACTO ---
     $this->SetFont('Arial', '', 6.5);
     $this->SetTextColor(120, 120, 120);
     $this->Cell($ancho_u, 3, iconv('UTF-8', 'CP1252//IGNORE', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
@@ -568,12 +582,16 @@ function Footer_Formacion()
     $this->SetTextColor(25, 55, 90);
     $this->Cell($ancho_u, 4, 'www.sapi.gob.ve', 0, 1, 'C');
 
-    // --- NUMERACIÓN ---
     $this->SetY(-15);
     $this->SetFont('Arial', 'I', 7);
     $this->SetTextColor(160, 160, 160);
     $this->Cell($ancho_u, 10, iconv('UTF-8', 'CP1252//IGNORE', 'Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
 }
+
+
+
+
+
 function Header_Planilla($datos)
 {
     $azul_sapi  = [25, 55, 90];
