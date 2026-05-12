@@ -258,193 +258,133 @@ public function reporte_consolidado()
 	}
 
 	public function vista_estadisticas()
-	{
+    {
+        // 1. Verificación de Seguridad
+        if (!$this->session->get('logged')) {
+            return redirect()->to('/');
+        }
 
-		$id_estado=null;
-		if ($this->session->get('logged')) {
-			$model = new Casos();
-			$desde = 'null';
-			$hasta = 'null';
-			//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO BENEFICIARIO USUARIO
-			$estadisticas["usuario"] = 0;
-			$beneficiarios = $model->contarCasos_Tipo_Beneficiario($desde, $hasta,$id_estado);
-				
-			$data = [
-				'beneficiarios' => $beneficiarios
-			];
-			
-			if (empty($beneficiarios)) 
-			{
-				echo view('template/header');
-				echo view('template/nav_bar');
-				echo view('reportes/estadisticas/error_estadisticas.php');
-				echo view('template/footer');
-			} else 
-			{
-				//	BUSCAMOS LOS CASOS ATENDIDOS POR RED SOCIAL
-				$query_casos_atendidos = $model->contarCasosAtendidos();
-				
-				
-				$data = [
-					'beneficiarios' => $beneficiarios,
-					'via_atencion' => $query_casos_atendidos
-				];
-				
-				
-				
-			  //BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO ATENCION PARA LA GRAFICA
-				$count_atencion = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_atendidos)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_atendidos as $atencion) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$nombres_atencion[]= $atencion->red_s_nom;
-						$count_atencion[] = $atencion->count;
-					}
-				}
+        $model = new Casos();
+        $id_estado = null;
+        $desde = 'null';
+        $hasta = 'null';
 
+        // 2. Consulta de Beneficiarios (Base para la validación inicial)
+        $beneficiarios = $model->contarCasos_Tipo_Beneficiario($desde, $hasta, $id_estado);
+        
+        if (empty($beneficiarios)) {
+            echo view('template/header');
+            echo view('template/nav_bar');
+            echo view('reportes/estadisticas/error_estadisticas.php');
+            echo view('template/footer');
+            return; // Detenemos la ejecución si no hay datos
+        }
 
+        // 3. Consultas para Tablas y Totales
+        $query_casos_atendidos = $model->contarCasosAtendidos();
+        $query_casos_solicitud = $model->contarCasosAtencionCiudadano();
+        $query_casos_EstatusCasos = $model->contarCasosEstatus();
 
+        // --- PROCESAMIENTO PARA GRÁFICA 1: VÍA DE ATENCIÓN ---
+        $nombres_atencion = [];
+        $count_atencion = [];
+        $count_atencion_Masculino_Map = [];
+        $count_atencion_Femenino_Map = [];
 
-				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO MASCULINO
-				$query_casos_atendidos_Masculino = $model->contarCasosAtendidos_MASCULINO($desde, $hasta,$id_estado);
-				$count_atencion_Masculino = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_atendidos_Masculino)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_atendidos_Masculino as $atencion) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$count_atencion_Masculino[] = $atencion->count;
-					}
-				}
+        // Inicializamos los nombres y los contadores en cero para evitar desfases
+        if (!empty($query_casos_atendidos)) {
+            foreach ($query_casos_atendidos as $atencion) {
+                $nom = $atencion->red_s_nom;
+                $nombres_atencion[] = $nom;
+                $count_atencion[$nom] = (int)$atencion->count;
+                $count_atencion_Masculino_Map[$nom] = 0;
+                $count_atencion_Femenino_Map[$nom] = 0;
+            }
+        }
 
+        // Buscamos masculinos para Vía de Atención y mapeamos a su nombre
+        $q_atencion_M = $model->contarCasosAtendidos_MASCULINO($desde, $hasta, $id_estado);
+        if (!empty($q_atencion_M)) {
+            foreach ($q_atencion_M as $m) {
+                if (isset($count_atencion_Masculino_Map[$m->red_s_nom])) {
+                    $count_atencion_Masculino_Map[$m->red_s_nom] = (int)$m->count;
+                }
+            }
+        }
 
+        // Buscamos femeninos para Vía de Atención y mapeamos a su nombre
+        $q_atencion_F = $model->contarCasosAtendidos_FEMENINO($desde, $hasta, $id_estado);
+        if (!empty($q_atencion_F)) {
+            foreach ($q_atencion_F as $f) {
+                if (isset($count_atencion_Femenino_Map[$f->red_s_nom])) {
+                    $count_atencion_Femenino_Map[$f->red_s_nom] = (int)$f->count;
+                }
+            }
+        }
 
-				//BUSCAMOS LOS CASOS ATENDIDOS  POR RED SOCIAL POR GENERO FEMENINO
-				$query_casos_atendidos_Femenino = $model->contarCasosAtendidos_FEMENINO($desde, $hasta,$id_estado);
-				$count_atencion_Femenino = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_atendidos_Femenino)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_atendidos_Femenino as $atencion) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$count_atencion_Femenino[] = $atencion->count;
-					}
-				}
+        // --- PROCESAMIENTO PARA GRÁFICA 2: TIPO DE SOLICITUD ---
+        $nombres_solicitud = [];
+        $count_solicitud = [];
+        $count_solicitud_Masculino_Map = [];
+        $count_solicitud_Femenino_Map = [];
 
-				
-				$data = [
-					'beneficiarios' => $beneficiarios,
-					'via_atencion' => $query_casos_atendidos,
-					'nombre_atencion' => $nombres_atencion,
-					'count_atencion' => $count_atencion,
-					'count_atencion_masculino' => $count_atencion_Masculino,
-					'count_atencion_Femenino' => $count_atencion_Femenino,
-				];
+        if (!empty($query_casos_solicitud)) {
+            foreach ($query_casos_solicitud as $solic) {
+                $nom_s = $solic->tipo_aten_nombre;
+                $nombres_solicitud[] = $nom_s;
+                $count_solicitud[$nom_s] = (int)$solic->count;
+                $count_solicitud_Masculino_Map[$nom_s] = 0;
+                $count_solicitud_Femenino_Map[$nom_s] = 0;
+            }
+        }
 
-				
-				//	BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION
-				$query_casos_solicitud = $model->contarCasosAtencionCiudadano();
+        // Buscamos masculinos para Tipo de Solicitud
+        $q_solic_M = $model->contarCasosTipoSolicitudMasculino($desde, $hasta);
+        if (!empty($q_solic_M)) {
+            foreach ($q_solic_M as $sm) {
+                if (isset($count_solicitud_Masculino_Map[$sm->tipo_aten_nombre])) {
+                    $count_solicitud_Masculino_Map[$sm->tipo_aten_nombre] = (int)$sm->count;
+                }
+            }
+        }
 
-			
-				//BUSCAMOS EL COUNT Y EL NOMBRE DEL TIPO DE SOLICITUD PARA LA GRAFICA
-				$count_solicitud = [];
-				$nombres_solicitud = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_solicitud)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_solicitud as $count_solic) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$nombres_solicitud[]= $count_solic->tipo_aten_nombre;
-						$count_solicitud[] = $count_solic->count;
-					}
-				}
-	
-				
-				//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION MASCULINO
-				$query_casos_solicitud_Masculino = $model->contarCasosTipoSolicitudMasculino($desde, $hasta);
-				
-	
-				$count_solicitud_Masculino = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_solicitud_Masculino)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_solicitud_Masculino as $solicitud) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$count_solicitud_Masculino[] = $solicitud->count;
-					}
-				}
+        // Buscamos femeninos para Tipo de Solicitud
+        $q_solic_F = $model->contarCasosTipoSolicitudFemenino($desde, $hasta);
+        if (!empty($q_solic_F)) {
+            foreach ($q_solic_F as $sf) {
+                if (isset($count_solicitud_Femenino_Map[$sf->tipo_aten_nombre])) {
+                    $count_solicitud_Femenino_Map[$sf->tipo_aten_nombre] = (int)$sf->count;
+                }
+            }
+        }
 
+        // 4. Construcción del array $data final con todos los elementos
+        $data = [
+            'beneficiarios'             => $beneficiarios,
+            'via_atencion'              => $query_casos_atendidos,
+            'tipo_solicitud'            => $query_casos_solicitud,
+            'estatus_casos'             => $query_casos_EstatusCasos,
+            
+            // Datos para Gráfica Vía de Atención (usando array_values para indexar numéricamente)
+            'nombre_atencion'           => $nombres_atencion,
+            'count_atencion'            => array_values($count_atencion),
+            'count_atencion_masculino'  => array_values($count_atencion_Masculino_Map),
+            'count_atencion_Femenino'   => array_values($count_atencion_Femenino_Map),
+            
+            // Datos para Gráfica Tipo de Solicitud
+            'nombre_solicitud'          => $nombres_solicitud,
+            'count_solicitud'           => array_values($count_solicitud),
+            'count_solicitud_Masculino' => array_values($count_solicitud_Masculino_Map),
+            'count_solicitud_Femenino'  => array_values($count_solicitud_Femenino_Map)
+        ];
 
-
-				//BUSCAMOS LOS CASOS ATENDIDOS POR TIPO DE ATENCION Femenino
-				$query_casos_solicitud_Femenino = $model->contarCasosTipoSolicitudFemenino($desde, $hasta);
-				$count_solicitud_Femenino = [];
-				// Verificamos si el resultado de la consulta no está vacío
-				if (!empty($query_casos_solicitud_Femenino)) {
-					// Iteramos sobre cada atención y obtenemos el nombre
-					foreach ($query_casos_solicitud_Femenino as $solicitud) {
-						// Suponiendo que 'nombre' es la propiedad que contiene el nombre de la atención
-						$count_solicitud_Femenino[] = $solicitud->count;
-					}
-				}
-
-			
-				$data = [
-					'beneficiarios' => $beneficiarios,
-					'via_atencion' => $query_casos_atendidos,
-					'nombre_atencion' => $nombres_atencion,
-					'count_atencion' => $count_atencion,
-					'count_atencion_masculino' => $count_atencion_Masculino,
-					'count_atencion_Femenino' => $count_atencion_Femenino,
-					'tipo_solicitud' => $query_casos_solicitud,
-					'nombre_solicitud' => $nombres_solicitud,
-					'count_solicitud' =>$count_solicitud,
-					'count_solicitud_Masculino' => $count_solicitud_Masculino,
-					'count_solicitud_Femenino' => $count_solicitud_Femenino
-				];
-				
-	
-
-				//	BUSCAMOS LOS CASOS POR ESTATUS
-				$query_casos_EstatusCasos = $model->contarCasosEstatus();
-				
-				
-				$data = [
-					'beneficiarios' => $beneficiarios,
-					'via_atencion' => $query_casos_atendidos,
-					'nombre_atencion' => $nombres_atencion,
-					'count_atencion' => $count_atencion,
-					'count_atencion_masculino' => $count_atencion_Masculino,
-					'count_atencion_Femenino' => $count_atencion_Femenino,
-					'tipo_solicitud' => $query_casos_solicitud,
-					'nombre_solicitud' => $nombres_solicitud,
-					'count_solicitud' =>$count_solicitud,
-					'count_solicitud_Masculino' => $count_solicitud_Masculino,
-					'count_solicitud_Femenino' => $count_solicitud_Femenino,
-					'estatus_casos' => $query_casos_EstatusCasos
-				];
-
-
-				echo view('template/header');
-				echo view('template/nav_bar');				
-				echo  view('reportes/estadisticas/content.php',$data);
-				echo view('template/footer');
-				echo view('reportes/estadisticas/footer.php');
-
-				
-			
-
-			}
-
-
-		} else {
-			return redirect()->to('/');
-		}
-
-		
-	}
+        // 5. Carga de las vistas pasando el array completo
+        echo view('template/header');
+        echo view('template/nav_bar');              
+        echo view('reportes/estadisticas/content.php', $data);
+        echo view('template/footer');
+        echo view('reportes/estadisticas/footer.php');
+    }
 	public function vista_estadisticas_filtros($desde = null, $hasta = null, $id_estado = null)
 	{
 

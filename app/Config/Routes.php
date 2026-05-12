@@ -230,6 +230,7 @@ $routes->setAutoRoute(false);
      $routes->get('/estadisticas_mapa', "Reporte_Controler::estadisticas_mapa");
      $routes->post('/consultar_estados', "Reporte_Controler::consultar_estados");
      $routes->get('/generar_pdf/(:any)', "PdfController::generar_pdf/$1");
+     $routes->get('/generar_plantilla_formacion/(:any)', "PdfController::generar_plantilla_formacion/$1");
 
 
      //RUTAS PARA EL DETALLE DE  TIPOS DE ATENCION

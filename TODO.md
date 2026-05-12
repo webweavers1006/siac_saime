@@ -1,23 +1,24 @@
-# TODO: Corregir direcciones largas en PDF Mediación
+# TODO - Extensión PDF para Formación (id_tipo_atencion = 7)
 
-## ✅ Plan Aprobado y Desglosado en Pasos
-**Archivo objetivo**: app/ThirdParty/fpdf/fpdf.php → Content_Planilla_SAPI()
+## Paso 1: Modelo
+- [ ] Editar `app/Models/Talleres_Participantes_Model.php`
+  - [ ] Agregar método `getParticipantesPorCaso($id_caso)` con JOIN entre `public.sgc_talleres_participantes` y `public.sgc_participantes` (filtrando por `tp.id_caso`).
+  - [ ] Seleccionar: nombre, apellido, cédula, tipo_beneficiario, edad, teléfono y sexo (con alias listos para la vista/tabla).
 
-### Pasos a Completar:
-- [ ] **Paso 0**: Crear este TODO.md detallado ✓
-- [✅] **Paso 1**: Editar Content_Planilla_SAPI() ✓
-- [ ] **Paso 2**: Probar PDF Mediación (generar PDF y verificar direcciones largas)
-- [ ] **Paso 3**: Validar otros formatos (Asesoría, Denuncia) no se rompen
-- [ ] **Paso 4**: Marcar como Completado
+## Paso 2: Controlador
+- [ ] Editar `app/Controllers/PdfController.php`
+  - [ ] Agregar rama `else if ($id_tipo_atencion == 7)`.
+  - [ ] Usar el render base existente (`Header_Planilla` + `Content_planilla`).
+  - [ ] Insertar la lógica de consulta y render de la tabla **justo después** de la sección donde se dibuja la descripción (`casodesc`) dentro del flujo usado para el tipo 7.
 
-**Estado**: Paso 1 completado. Esperando prueba de PDF Mediación...
+## Paso 3: Render de tabla en FPDF
+- [ ] Implementar tabla FPDF con estilo limpio/profesional
+  - [ ] Cabecera con 7 columnas
+  - [ ] Ajuste de anchos para que quepan en el ancho útil (~190mm)
+  - [ ] Truncar texto largo si es necesario y manejar paginación/altura de filas.
 
-## Cambios en fpdf.php (Paso 1)
-```
-✅ Sección B: Cell() → MultiCell(145,4) para B_direccion, B_ubicacion_completa
-✅ Eliminados SetFont/SetXY duplicados
-✅ Ajustes Ln() para alineación
-✅ Detección direcciones en $print_section preservada/mejorada
-```
+## Paso 4: Validación
+- [ ] Probar en navegador con un `idcaso` con `id_tipo_atencion = 7`
+- [ ] Verificar que no se modifiquen cabecera/logos/datos del solicitante.
+- [ ] Verificar ubicación exacta (después de la descripción y su respuesta) y que no rompa el footer.
 
-**Siguiente**: Paso 2 - Genera un PDF Mediación con direcciones largas para verificar.

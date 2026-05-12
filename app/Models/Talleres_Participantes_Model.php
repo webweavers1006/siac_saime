@@ -7,12 +7,28 @@ use CodeIgniter\Model;
 
 class Talleres_Participantes_Model extends Model
 {
-    
 
-    public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0,$id_estado = 0,$id_municipio = 0,$id_parroquia=0,$edad_min=null,$edad_max=null,$detalle_atencion=0,$org_id=0)
+    public function getParticipantesPorCaso($id_caso)
     {
+        $builder = $this->db->table('public.sgc_talleres_participantes tp');
+        $builder->select([
+            'p.nombre',
+            'p.apellido',
+            'p.cedula',
+            'b.tipo_beneficiario_nombre as tipo_beneficiario',
+            'p.edad',
+            'p.telefono',
+            'p.sexo'
+        ]);
+        $builder->join('public.sgc_participantes p', 'p.id = tp.participante_id');
+        $builder->join('public.sgc_tipo_beneficiarios b', 'p.tipo_beneficiario = b.tipo_beneficiario_id', 'left');
+        $builder->where('tp.id_caso', $id_caso);
+        $builder->orderBy('p.apellido', 'ASC');
+        return $builder->get()->getResultArray();
+    }
 
-        
+    public function listar_talleres_participantes($desde = null, $hasta = null, $tipo_pi = null, $tipo_atencion_usu = null, $sexo = null, $via_atencion = null, $direcciones_caso = null, $tipo_beneficiario = 0, $atencion_cuidadano = 0, $estatus = 0, $id_estado = 0, $id_municipio = 0, $id_parroquia = 0, $edad_min = null, $edad_max = null, $detalle_atencion = 0, $org_id = 0)
+    {
         $builder = $this->db->table('public.sgc_talleres_participantes as t');
         $builder->select("p.id, p.nombre || ' ' || p.apellido as nombre_completo, p.cedula, p.nacionalidad, p.tipo_beneficiario,p.edad");
         $builder->select("p.edad, p.pais, p.estado, p.municipio, p.parroquia, p.telefono,p.sexo");

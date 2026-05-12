@@ -7,10 +7,73 @@ use CodeIgniter\API\ResponseTrait;
 use App\Models\Casos_denuncias_Model;
 use App\Models\Mediacion;
 use CodeIgniter\RESTful\ResourceController;
+use App\Models\Tipo_Beneficiario_Model;
+use App\Models\Organismo_pp_Model;
 
 class PdfController extends BaseController
 {
     use ResponseTrait;
+
+
+
+public function generar_plantilla_formacion($idcaso = null)
+{
+    $model = new Pdf_Model();
+    $tipoBeneficiarioModel = new Tipo_Beneficiario_Model();
+    $organismoModel = new Organismo_pp_Model();
+    $query_pdf = $model->obtenerCasos($idcaso);
+
+    if (empty($query_pdf)) {
+        return $this->failNotFound('No se encontró información para el caso.');
+    }
+
+    $row = (is_array($query_pdf)) ? $query_pdf[0] : $query_pdf;
+    
+    $tipos = $tipoBeneficiarioModel->Listar_Tipo_Beneficiarios_filtro();
+    $organismos = $organismoModel->Listar_Organismo_PP_filtro();
+
+    // 1. PRIMERO creamos la instancia
+    // Asegúrate de usar el nombre de tu clase personalizada (ej. PlanillaPDF) 
+    // para que reconozca los métodos Header_Formacion y Footer_Formacion
+    $pdf = new \FPDF('L', 'mm', 'legal'); 
+    
+    $pdf->AliasNbPages(); 
+    $pdf->SetMargins(10, 10, 10);
+
+    // 2. AJUSTE DE SALTO DE PÁGINA
+    // Lo subimos a 40 porque el footer ahora tiene dos líneas de leyenda + dirección
+    $pdf->SetAutoPageBreak(true, 40); 
+
+   $info_pdf = [
+        'caso'         => $row->idcaso,
+        'fecha_caso'   => $row->casofec,
+        'nombre'       => $row->nombre,
+        'cedula'       => $row->cedula,
+        // Aplicamos mb_strtoupper para manejar tildes y caracteres especiales
+        'estadonom'    => mb_strtoupper($row->estadonom ?? 'N/P'),
+        'municipionom' => mb_strtoupper($row->municipionom ?? 'N/P'),
+        'parroquianom' => mb_strtoupper($row->parroquianom ?? 'N/P'),
+        'casotel'      => $row->casotel,
+        'casodesc'     => $row->casodesc,
+    ];
+
+    // 3. ASIGNACIÓN DE DATOS (Después de crear el objeto)
+    $pdf->info_pdf_header = $info_pdf; 
+    $pdf->tipos_footer = $tipos; // Inyectamos los tipos para la leyenda dinámica
+
+    // 4. GENERACIÓN
+    $pdf->AddPage(); 
+    $pdf->Content_Formacion($info_pdf, $tipos, $organismos);
+
+    // No hace falta llamar a Footer_Formacion manualmente, 
+    // FPDF lo hace solo al terminar la página o en AddPage.
+    
+    $this->response->setHeader('Content-Type', 'application/pdf');
+    $pdf->Output("I", "Lista_Asistencia_{$row->idcaso}.pdf");
+    exit();
+}
+
+    
 
     public function generar_pdf($idcaso = null)
     {
@@ -189,11 +252,18 @@ $pdf->Cell(95, 4, 'FIRMA DEL SOLICITANTE', 0, 1, 'C');
 // --- OTROS TIPOS DE ATENCIÓN ---
         else {
             $pdf->AddPage();
-            
+
             // Preparar array con claves específicas requeridas
             $row->caso = $row->idcaso;
             $row->fecha_caso = $row->casofec;
-            
+
+            // Si es FORMACIÓN (id_tipo_atención = 7), cargamos participantes para la tabla
+            if ((int)($row->id_tipo_atencion ?? 0) === 7) {
+                $talleres_model = new \App\Models\Talleres_Participantes_Model();
+                $participantes = $talleres_model->getParticipantesPorCaso($row->idcaso);
+                $row->participantes = $participantes;
+            }
+
             $pdf->Header_Planilla((array)$row);
             $pdf->Content_planilla((array)$row);
             $pdf->Footer_Planilla();

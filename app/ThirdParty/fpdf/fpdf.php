@@ -348,21 +348,254 @@ class FPDF
 		$this->ColorFlag = $cf;
 	}
 
-	function Header()
-	{
-		// To be implemented in your own inherited class
-	}
 
-	function Footer()
-	{
-		// To be implemented in your own inherited class
-	}
+
+
 
 	function PageNo()
 	{
 		// Get current page number
 		return $this->page;
 	}
+
+
+
+
+/** @var array|null */
+public $info_pdf_header; 
+public $tipos_footer;
+
+// Sobrescribir el método Header estándar de FPDF
+function Header() {
+    if (!empty($this->info_pdf_header)) {
+        $this->Header_Formacion($this->info_pdf_header);
+    }
+}
+
+// Dentro de tu clase que extiende FPDF
+function Footer() {
+    // Solo ejecuta el Footer automático si estamos en el modo "Formación"
+    // que es cuando esta variable tiene datos.
+    if (!empty($this->info_pdf_header)) {
+        $this->Footer_Formacion();
+    }
+}
+function Header_Formacion($datos = [])
+{
+    // 1. Configuración de colores y medidas
+    $azul_sapi = [25, 55, 90];
+    $gris_suave = [245, 245, 245];
+    $ancho_u = 339; // Ancho total sincronizado
+
+    // 2. Cintillo institucional
+    if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
+        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 5, $ancho_u, 18);
+    }
+    
+    $this->Ln(15);
+
+    // 3. Fila de Control (Nº Caso y Fecha) - Bordes definidos
+    $this->SetDrawColor(0, 0, 0); 
+    $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
+    $this->SetFont('Arial', 'B', 8);
+    $this->SetTextColor(0, 0, 0);
+    
+    $this->Cell($ancho_u / 2, 6, iconv('UTF-8', 'CP1252//IGNORE', '  Nº CASO: ') . ($datos['caso'] ?? ''), 'TRL', 0, 'L', true);
+    $this->Cell($ancho_u / 2, 6, iconv('UTF-8', 'CP1252//IGNORE', 'FECHA: ') . ($datos['fecha_caso'] ?? date('d/m/Y')) . '  ', 'TRL', 1, 'R', true);
+
+    // 4. Bloque de Nombre del Taller (Azul)
+    $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
+    $this->SetTextColor(255, 255, 255);
+    $this->SetFont('Arial', 'B', 9);
+    
+    $nombre_taller = mb_strtoupper($datos['casodesc'] ?? 'N/A');
+    $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   NOMBRE DEL TALLER / ACTIVIDAD: ' . $nombre_taller), 1, 1, 'L', true);
+
+    // 5. Bloque del Facilitador (Gris suave para diferenciar)
+    $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
+    $this->SetTextColor(0, 0, 0);
+    $nombre_facilitador = mb_strtoupper($datos['nombre'] ?? 'N/P');
+    $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   FACILITADOR: ' . $nombre_facilitador), 1, 1, 'L', true);
+
+    $this->Ln(1);
+
+    // 6. Bloque de Ubicación (Estado, Municipio y Parroquia en una sola fila)
+    $this->SetFont('Arial', 'B', 8);
+    $col = $ancho_u / 3;
+
+    // ESTADO: Aplicado iconv para caracteres especiales
+    $this->Cell($col, 7, iconv('UTF-8', 'CP1252//IGNORE', '  ESTADO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['estadonom'] ?? 'N/P')), 'B', 0, 'L');
+    
+    // MUNICIPIO
+    $this->Cell($col, 7, iconv('UTF-8', 'CP1252//IGNORE', '  MUNICIPIO: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['municipionom'] ?? 'N/P')), 'B', 0, 'L');
+    
+    // PARROQUIA
+    $this->Cell($col, 7, iconv('UTF-8', 'CP1252//IGNORE', '  PARROQUIA: ') . iconv('UTF-8', 'CP1252//IGNORE', ($datos['parroquianom'] ?? 'N/P')), 'B', 1, 'L');
+
+    $this->Ln(3);
+
+    // --- SECCIÓN DE TÍTULOS DE TABLA ---
+    
+    $this->SetFont('Arial', 'B', 11);
+    $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
+    $this->Cell($ancho_u, 7, iconv('UTF-8', 'CP1252//IGNORE', 'LISTA DE ASISTENCIA Y REGISTRO DE PARTICIPANTES'), 0, 1, 'C');
+    $this->Ln(2);
+
+    $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
+    $this->SetTextColor(255, 255, 255);
+    $this->SetFont('Arial', 'B', 6.5);
+
+    $w = [6, 40, 40, 30, 32, 32, 15, 15, 24, 30, 30, 45];
+    $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'CÉDULA', 'T. PERSONA', 'TIPO BENEFICIARIO', 'EDAD', 'SEXO', 'TELÉFONO', 'ORGANIZACIÓN / ENTE', 'ESTADO', 'MUNICIPIO / PARROQUIA'];
+
+    foreach($titulos as $i => $titulo) {
+        $this->Cell($w[$i], 7, iconv('UTF-8', 'CP1252//IGNORE', $titulo), 1, ($i == 11 ? 1 : 0), 'C', true);
+    }
+
+    // Reset final para que el contenido empiece limpio
+    $this->SetTextColor(0, 0, 0);
+    $this->SetFont('Arial', '', 7);
+}
+
+function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
+{
+    $w = [6, 40, 40, 30, 32, 32, 15, 15, 24, 30, 30, 45];
+    
+    $this->SetTextColor(0, 0, 0);
+    $this->SetFont('Arial', '', 7);
+    
+    // Aumentamos a 25 filas (o las que gustes, el salto de página es automático)
+    for ($i = 1; $i <= 30; $i++) {
+        $fill = ($i % 2 == 0);
+        $this->SetFillColor(250, 250, 250);
+        
+        // --- REDUCCIÓN DE ALTO ---
+        $h = 6.5; // Antes era 8.5, ahora es más compacta
+        
+        $this->Cell($w[0], $h, $i, 1, 0, 'C', $fill);
+        $this->Cell($w[1], $h, '', 1, 0, 'L', $fill);
+        $this->Cell($w[2], $h, '', 1, 0, 'L', $fill);
+        $this->Cell($w[3], $h, '', 1, 0, 'C', $fill);
+
+        // --- T. PERSONA (Ajuste de posición de cuadros) ---
+        $x = $this->GetX(); 
+        $y = $this->GetY();
+        $this->Cell($w[4], $h, '', 1, 0, 'C', $fill);
+        $opcionesP = ['V', 'G', 'J', 'E'];
+        foreach($opcionesP as $idx => $letra) {
+            $posX = $x + 2 + ($idx * 7.5);
+            // Ajustamos el Y (2.8 -> 1.8) para que el cuadro quede centrado en la fila más delgada
+            $this->Rect($posX, $y + 1.8, 3, 3); 
+            $this->SetFont('Arial', '', 5.5);
+            $this->Text($posX + 3.8, $y + 4.2, $letra);
+        }
+
+        // --- TIPO BENEFICIARIO (Ajuste de posición) ---
+        $this->SetXY($x + $w[4], $y);
+        $x2 = $this->GetX();
+        $this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
+        $totalB = count($tipos_beneficiarios);
+        $distB = ($totalB > 0) ? (($w[5] - 4) / $totalB) : 6;
+        foreach($tipos_beneficiarios as $idx => $tipo) {
+            $letra = strtoupper(substr($tipo->tipo_beneficiario_nombre, 0, 1));
+            $pXB = $x2 + 1.5 + ($idx * $distB);
+            $this->Rect($pXB, $y + 1.8, 2.8, 2.8);
+            $this->Text($pXB + 3.5, $y + 4.1, $letra);
+        }
+
+        // --- EDAD, SEXO, TELÉFONO ---
+        $this->SetXY($x2 + $w[5], $y);
+        $this->SetFont('Arial', '', 7);
+        $this->Cell($w[6], $h, '', 1, 0, 'C', $fill); 
+        $this->Cell($w[7], $h, '', 1, 0, 'C', $fill); 
+        $this->Cell($w[8], $h, '', 1, 0, 'C', $fill); 
+
+        // --- ORGANIZACIÓN / ENTE ---
+        $xOrg = $this->GetX();
+        $this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
+        $totalOrg = count($organismos);
+        $distOrg = ($totalOrg > 0) ? (($w[9] - 2) / $totalOrg) : 10;
+        
+        foreach($organismos as $idx => $org) {
+            $nombre = $org->org_nombre;
+            $sigla = ($nombre == "N/A") ? "N/A" : (($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 2)));
+
+            $pXO = $xOrg + 1 + ($idx * $distOrg);
+            $this->Rect($pXO, $y + 1.8, 2.8, 2.8);
+            $this->SetFont('Arial', '', 5); 
+            $this->Text($pXO + 3.2, $y + 4.0, $sigla);
+        }
+
+        // --- PAÍS Y MUNICIPIO/PARROQUIA ---
+        $this->SetXY($xOrg + $w[9], $y);
+        $this->SetFont('Arial', '', 7);
+        $this->Cell($w[10], $h, '', 1, 0, 'C', $fill); 
+        $this->Cell($w[11], $h, '', 1, 1, 'L', $fill); 
+    }
+}
+
+function Footer_Formacion()
+{
+    $tipos = $this->tipos_footer ?? [];
+
+    $this->SetY(-40); 
+    $ancho_u = 339; 
+    
+    // Línea divisoria en un gris suave
+    $this->SetDrawColor(220, 220, 220);
+    $this->Cell($ancho_u, 0, '', 'T', 1, 'C'); 
+    
+    $this->Ln(2); 
+
+    // --- SECCIÓN DE LEYENDAS ---
+    $this->SetFont('Arial', 'B', 7);
+
+    // 1. Leyenda de Tipo de Persona
+    $this->SetTextColor(25, 55, 90); // Azul institucional para la etiqueta
+    $this->Cell(20, 4, '  T. PERSONA: ', 0, 0, 'L');
+    
+    $this->SetTextColor(80, 80, 80); // Gris oscuro para el contenido
+    $leyenda_persona = '(V) VENEZOLANO | (G) GUBERNAMENTAL | (J) JURÍDICO | (E) EXTRANJERO';
+    $this->Cell($ancho_u - 20, 4, iconv('UTF-8', 'CP1252//IGNORE', $leyenda_persona), 0, 1, 'L');
+
+    // 2. Leyenda de Tipo de Beneficiario (DINÁMICA)
+    $partes_beneficiario = [];
+    if (!empty($tipos)) {
+        foreach ($tipos as $t) {
+            $sigla = strtoupper(substr($t->tipo_beneficiario_nombre, 0, 1));
+            $nombre = strtoupper($t->tipo_beneficiario_nombre);
+            $partes_beneficiario[] = "($sigla) $nombre";
+        }
+        $texto_beneficiario = implode(' | ', $partes_beneficiario);
+    } else {
+        $texto_beneficiario = 'N/P';
+    }
+    
+    $this->SetTextColor(25, 55, 90); // Azul institucional
+    $this->Cell(28, 4, '  T. BENEFICIARIO: ', 0, 0, 'L');
+    
+    $this->SetTextColor(80, 80, 80); // Gris oscuro
+    $this->Cell($ancho_u - 28, 4, iconv('UTF-8', 'CP1252//IGNORE', $texto_beneficiario), 0, 1, 'L');
+
+    $this->Ln(5);
+
+    // --- DIRECCIÓN Y CONTACTO ---
+    $this->SetFont('Arial', '', 7);
+    $this->SetTextColor(120, 120, 120); // Gris más claro para la dirección
+    $this->Cell($ancho_u, 3.5, iconv('UTF-8', 'CP1252//IGNORE', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
+    $this->Cell($ancho_u, 3.5, iconv('UTF-8', 'CP1252//IGNORE', 'Caracas - Venezuela. Teléfonos (0212) 484.26.61 | Código Postal 1010'), 0, 1, 'C');
+    
+    $this->SetFont('Arial', 'B', 8);
+    $this->SetTextColor(25, 55, 90); // Azul resaltado para la web
+    $this->Cell($ancho_u, 4, 'www.sapi.gob.ve', 0, 1, 'C');
+
+    // --- NUMERACIÓN ---
+    $this->SetY(-15);
+    $this->SetFont('Arial', 'I', 7);
+    $this->SetTextColor(160, 160, 160);
+    $this->Cell($ancho_u - 5, 10, iconv('UTF-8', 'CP1252//IGNORE', 'Página ').$this->PageNo().'/{nb}', 0, 0, 'R');
+}
+
 function Header_Planilla($datos)
 {
     $azul_sapi  = [25, 55, 90];
@@ -453,7 +686,7 @@ function Content_planilla($datos_Content_Planilla)
 {
     $azul_sapi = [25, 55, 90];
     
-    // --- DESCRIPCIÓN DEL CASO ---
+    // --- DESCRIPCIÓN DE LA SOLICITUD ---
     $this->SetFont('Arial', 'B', 9);
     $this->SetTextColor(255, 255, 255);
     $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
@@ -465,14 +698,79 @@ function Content_planilla($datos_Content_Planilla)
     
     $texto_desc = trim($datos_Content_Planilla['casodesc'] ?? '');
     $this->MultiCell(190, 5, iconv('utf-8', 'cp1252//IGNORE', $texto_desc), 1, 'J');
-    $this->Ln(4);
 
-  // --- ANEXOS ---
-    $this->SetFont('Arial', 'B', 8);
-    // Se añadieron espacios adicionales entre SI, NO y las demás opciones
-    $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
-    $this->Ln(6);
-    // --- RECEPTOR ---
+    // --- CONFIGURACIÓN DE TIPO DE ATENCIÓN ---
+    $id_tipo_atencion = (int)($datos_Content_Planilla['id_tipo_atencion'] ?? 0);
+    
+    if ($id_tipo_atencion === 7) {
+        // --- SECCIÓN PARA FORMACIÓN: TABLA DE PARTICIPANTES ---
+        $participantes = $datos_Content_Planilla['participantes'] ?? [];
+
+        $this->Ln(10); // Espacio de separación
+
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
+        $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'LISTA DE PARTICIPANTES'), 0, 1, 'L');
+        $this->Ln(1);
+
+        // Encabezado Estilo SAPI (Azul Marino / Blanco)
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
+        $this->SetFont('Arial', 'B', 7);
+
+        $w = [35, 35, 22, 33, 12, 33, 20];
+        $h = 7;
+
+        $this->Cell($w[0], $h, 'NOMBRE', 1, 0, 'C', true);
+        $this->Cell($w[1], $h, 'APELLIDO', 1, 0, 'C', true);
+        $this->Cell($w[2], $h, iconv('UTF-8', 'CP1252', 'CÉDULA'), 1, 0, 'C', true);
+        $this->Cell($w[3], $h, 'TIPO BENEF.', 1, 0, 'C', true);
+        $this->Cell($w[4], $h, 'EDAD', 1, 0, 'C', true);
+        $this->Cell($w[5], $h, iconv('UTF-8', 'CP1252', 'TELÉFONO'), 1, 0, 'C', true);
+        $this->Cell($w[6], $h, 'SEXO', 1, 1, 'C', true);
+
+        // Datos
+        $this->SetTextColor(40, 40, 40);
+        $this->SetFont('Arial', '', 7);
+
+        if (!empty($participantes)) {
+            foreach ($participantes as $p) {
+                $sexo_val = trim((string)($p['sexo'] ?? ''));
+                if ($sexo_val === '1') { $sexo = 'M'; }
+                elseif ($sexo_val === '2') { $sexo = 'F'; }
+                else { $sexo = $sexo_val; }
+
+                $nombre = iconv('utf-8', 'cp1252//IGNORE', (string)($p['nombre'] ?? ''));
+                $apellido = iconv('utf-8', 'cp1252//IGNORE', (string)($p['apellido'] ?? ''));
+                $tipo = iconv('utf-8', 'cp1252//IGNORE', (string)($p['tipo_beneficiario'] ?? ''));
+
+                $this->Cell($w[0], $h, (strlen($nombre) > 22) ? substr($nombre,0,20).'..' : $nombre, 1, 0, 'L');
+                $this->Cell($w[1], $h, (strlen($apellido) > 22) ? substr($apellido,0,20).'..' : $apellido, 1, 0, 'L');
+                $this->Cell($w[2], $h, $p['cedula'] ?? '', 1, 0, 'C');
+                $this->Cell($w[3], $h, (strlen($tipo) > 22) ? substr($tipo,0,20).'..' : $tipo, 1, 0, 'L');
+                $this->Cell($w[4], $h, $p['edad'] ?? '0', 1, 0, 'C');
+                $this->Cell($w[5], $h, $p['telefono'] ?? '', 1, 0, 'C');
+                $this->Cell($w[6], $h, $sexo, 1, 1, 'C');
+
+                if ($this->GetY() > 245) {
+                    $this->AddPage();
+                    $this->Ln(10);
+                }
+            }
+        } else {
+            $this->Cell(190, $h, 'NO SE ENCONTRARON PARTICIPANTES REGISTRADOS', 1, 1, 'C');
+        }
+        $this->Ln(4);
+        
+    } else {
+        // --- SECCIÓN PARA OTROS TIPOS: ANEXOS (Solo si NO es formación) ---
+        $this->Ln(6);
+        $this->SetFont('Arial', 'B', 8);
+        $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
+        $this->Ln(4);
+    }
+
+    // --- RECEPTOR Y CARGO (Sección común para todos) ---
     $this->SetFillColor(245, 245, 245);
     $this->SetFont('Arial', 'B', 8);
     $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  RECEPTOR: ' . ($datos_Content_Planilla['user_name'] ?? '')), 1, 0, 'L', true);
