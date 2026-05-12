@@ -459,81 +459,80 @@ function Header_Formacion($datos = [])
 
 function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
 {
+    // 1. Configuración para 2 páginas de 20 filas
     $w = [6, 40, 40, 30, 32, 32, 15, 15, 24, 30, 30, 45];
-    
+    $h = 5.8; // Altura ideal para que 20 filas respiren bien en la página
+    $filas_por_pagina = 20; // <--- VARIABLE A 20
+    $total_filas = 40;      // <--- 2 PÁGINAS x 20 FILAS = 40 TOTAL
+
     $this->SetTextColor(0, 0, 0);
-    $this->SetFont('Arial', '', 7);
-    
-    // Aumentamos a 25 filas (o las que gustes, el salto de página es automático)
-    for ($i = 1; $i <= 30; $i++) {
+
+    for ($i = 1; $i <= $total_filas; $i++) {
         $fill = ($i % 2 == 0);
         $this->SetFillColor(250, 250, 250);
+        $this->SetFont('Arial', '', 7); 
         
-        // --- REDUCCIÓN DE ALTO ---
-        $h = 6.5; // Antes era 8.5, ahora es más compacta
-        
+        // --- Renderizado de Fila ---
         $this->Cell($w[0], $h, $i, 1, 0, 'C', $fill);
         $this->Cell($w[1], $h, '', 1, 0, 'L', $fill);
         $this->Cell($w[2], $h, '', 1, 0, 'L', $fill);
         $this->Cell($w[3], $h, '', 1, 0, 'C', $fill);
 
-        // --- T. PERSONA (Ajuste de posición de cuadros) ---
         $x = $this->GetX(); 
         $y = $this->GetY();
+
+        // T. PERSONA (Cuadros)
         $this->Cell($w[4], $h, '', 1, 0, 'C', $fill);
-        $opcionesP = ['V', 'G', 'J', 'E'];
-        foreach($opcionesP as $idx => $letra) {
+        foreach(['V', 'G', 'J', 'E'] as $idx => $letra) {
             $posX = $x + 2 + ($idx * 7.5);
-            // Ajustamos el Y (2.8 -> 1.8) para que el cuadro quede centrado en la fila más delgada
-            $this->Rect($posX, $y + 1.8, 3, 3); 
+            $this->Rect($posX, $y + 1.4, 3, 3); 
             $this->SetFont('Arial', '', 5.5);
-            $this->Text($posX + 3.8, $y + 4.2, $letra);
+            $this->Text($posX + 3.8, $y + 3.8, $letra);
         }
 
-        // --- TIPO BENEFICIARIO (Ajuste de posición) ---
+        // TIPO BENEFICIARIO
         $this->SetXY($x + $w[4], $y);
         $x2 = $this->GetX();
         $this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
-        $totalB = count($tipos_beneficiarios);
-        $distB = ($totalB > 0) ? (($w[5] - 4) / $totalB) : 6;
         foreach($tipos_beneficiarios as $idx => $tipo) {
-            $letra = strtoupper(substr($tipo->tipo_beneficiario_nombre, 0, 1));
-            $pXB = $x2 + 1.5 + ($idx * $distB);
-            $this->Rect($pXB, $y + 1.8, 2.8, 2.8);
-            $this->Text($pXB + 3.5, $y + 4.1, $letra);
+            $letra = strtoupper(substr($tipo->tipo_beneficiario_nombre ?? 'U', 0, 1));
+            $pXB = $x2 + 1.5 + ($idx * 5.5);
+            $this->Rect($pXB, $y + 1.4, 2.8, 2.8);
+            $this->SetFont('Arial', '', 5.5);
+            $this->Text($pXB + 3.5, $y + 3.6, $letra);
         }
 
-        // --- EDAD, SEXO, TELÉFONO ---
+        // EDAD, SEXO, TELÉFONO
         $this->SetXY($x2 + $w[5], $y);
         $this->SetFont('Arial', '', 7);
         $this->Cell($w[6], $h, '', 1, 0, 'C', $fill); 
         $this->Cell($w[7], $h, '', 1, 0, 'C', $fill); 
         $this->Cell($w[8], $h, '', 1, 0, 'C', $fill); 
 
-        // --- ORGANIZACIÓN / ENTE ---
+        // ORGANIZACIÓN
         $xOrg = $this->GetX();
         $this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
-        $totalOrg = count($organismos);
-        $distOrg = ($totalOrg > 0) ? (($w[9] - 2) / $totalOrg) : 10;
-        
         foreach($organismos as $idx => $org) {
-            $nombre = $org->org_nombre;
+            $nombre = $org->org_nombre ?? 'N/A';
             $sigla = ($nombre == "N/A") ? "N/A" : (($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 2)));
-
-            $pXO = $xOrg + 1 + ($idx * $distOrg);
-            $this->Rect($pXO, $y + 1.8, 2.8, 2.8);
+            $pXO = $xOrg + 1 + ($idx * 8);
+            $this->Rect($pXO, $y + 1.4, 2.8, 2.8);
             $this->SetFont('Arial', '', 5); 
-            $this->Text($pXO + 3.2, $y + 4.0, $sigla);
+            $this->Text($pXO + 3.2, $y + 3.6, $sigla);
         }
 
-        // --- PAÍS Y MUNICIPIO/PARROQUIA ---
         $this->SetXY($xOrg + $w[9], $y);
         $this->SetFont('Arial', '', 7);
         $this->Cell($w[10], $h, '', 1, 0, 'C', $fill); 
         $this->Cell($w[11], $h, '', 1, 1, 'L', $fill); 
+
+        // --- SALTO DE PÁGINA USANDO LA VARIABLE 20 ---
+        if ($i % $filas_por_pagina == 0 && $i < $total_filas) {
+            $this->AddPage('L', 'Legal');
+            $this->SetFont('Arial', '', 7);
+        }
     }
 }
-
 function Footer_Formacion()
 {
     $tipos = $this->tipos_footer ?? [];
@@ -541,24 +540,26 @@ function Footer_Formacion()
     $this->SetY(-40); 
     $ancho_u = 339; 
     
-    // Línea divisoria en un gris suave
+    // Línea divisoria
     $this->SetDrawColor(220, 220, 220);
     $this->Cell($ancho_u, 0, '', 'T', 1, 'C'); 
     
-    $this->Ln(2); 
+    $this->Ln(13); // Reduje el Ln(13) a 2 para que no choque con la numeración
 
     // --- SECCIÓN DE LEYENDAS ---
     $this->SetFont('Arial', 'B', 7);
 
     // 1. Leyenda de Tipo de Persona
-    $this->SetTextColor(25, 55, 90); // Azul institucional para la etiqueta
-    $this->Cell(20, 4, '  T. PERSONA: ', 0, 0, 'L');
+    $this->SetTextColor(25, 55, 90);
+    $etiqueta_p = '  T. PERSONA:  '; // Doble espacio al final
+    $ancho_etiqueta_p = $this->GetStringWidth($etiqueta_p);
+    $this->Cell($ancho_etiqueta_p, 4, iconv('UTF-8', 'CP1252//IGNORE', $etiqueta_p), 0, 0, 'L');
     
-    $this->SetTextColor(80, 80, 80); // Gris oscuro para el contenido
+    $this->SetTextColor(80, 80, 80);
     $leyenda_persona = '(V) VENEZOLANO | (G) GUBERNAMENTAL | (J) JURÍDICO | (E) EXTRANJERO';
-    $this->Cell($ancho_u - 20, 4, iconv('UTF-8', 'CP1252//IGNORE', $leyenda_persona), 0, 1, 'L');
+    $this->Cell(0, 4, iconv('UTF-8', 'CP1252//IGNORE', $leyenda_persona), 0, 1, 'L');
 
-    // 2. Leyenda de Tipo de Beneficiario (DINÁMICA)
+    // 2. Leyenda de Tipo de Beneficiario (CORREGIDA)
     $partes_beneficiario = [];
     if (!empty($tipos)) {
         foreach ($tipos as $t) {
@@ -571,22 +572,26 @@ function Footer_Formacion()
         $texto_beneficiario = 'N/P';
     }
     
-    $this->SetTextColor(25, 55, 90); // Azul institucional
-    $this->Cell(28, 4, '  T. BENEFICIARIO: ', 0, 0, 'L');
+    $this->SetTextColor(25, 55, 90);
+    $etiqueta_b = '  T. BENEFICIARIO:  '; // Doble espacio intencional
+    // Calculamos el ancho exacto del texto para que el siguiente empiece justo después del espacio
+    $ancho_etiqueta_b = $this->GetStringWidth($etiqueta_b); 
     
-    $this->SetTextColor(80, 80, 80); // Gris oscuro
-    $this->Cell($ancho_u - 28, 4, iconv('UTF-8', 'CP1252//IGNORE', $texto_beneficiario), 0, 1, 'L');
+    $this->Cell($ancho_etiqueta_b, 4, iconv('UTF-8', 'CP1252//IGNORE', $etiqueta_b), 0, 0, 'L');
+    
+    $this->SetTextColor(80, 80, 80);
+    $this->Cell(0, 4, iconv('UTF-8', 'CP1252//IGNORE', $texto_beneficiario), 0, 1, 'L');
 
     $this->Ln(5);
 
     // --- DIRECCIÓN Y CONTACTO ---
     $this->SetFont('Arial', '', 7);
-    $this->SetTextColor(120, 120, 120); // Gris más claro para la dirección
+    $this->SetTextColor(120, 120, 120);
     $this->Cell($ancho_u, 3.5, iconv('UTF-8', 'CP1252//IGNORE', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
     $this->Cell($ancho_u, 3.5, iconv('UTF-8', 'CP1252//IGNORE', 'Caracas - Venezuela. Teléfonos (0212) 484.26.61 | Código Postal 1010'), 0, 1, 'C');
     
     $this->SetFont('Arial', 'B', 8);
-    $this->SetTextColor(25, 55, 90); // Azul resaltado para la web
+    $this->SetTextColor(25, 55, 90);
     $this->Cell($ancho_u, 4, 'www.sapi.gob.ve', 0, 1, 'C');
 
     // --- NUMERACIÓN ---
