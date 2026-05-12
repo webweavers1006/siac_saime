@@ -390,10 +390,10 @@ function Header_Formacion($datos = [])
     $ancho_u = 262.4; 
 
     if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
-        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 5, $ancho_u, 12);
+        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 5, $ancho_u, 17);
     }
     
-    $this->Ln(10);
+    $this->Ln(16);
     $this->SetDrawColor(0, 0, 0); 
     $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
     $this->SetFont('Arial', 'B', 8);
@@ -405,7 +405,7 @@ function Header_Formacion($datos = [])
     $this->SetTextColor(255, 255, 255);
     $this->SetFont('Arial', 'B', 8.5);
     $nombre_taller = mb_strtoupper($datos['casodesc'] ?? 'N/A');
-    $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   NOMBRE DEL TALLER / ACTIVIDAD: ' . $nombre_taller), 1, 1, 'L', true);
+    $this->Cell($ancho_u, 6, iconv('UTF-8', 'CP1252//IGNORE', '   NOMBRE DE LA ACTIVIDAD: ' . $nombre_taller), 1, 1, 'L', true);
 
     $this->SetFillColor($gris_suave[0], $gris_suave[1], $gris_suave[2]);
     $this->SetTextColor(0, 0, 0);
@@ -424,8 +424,8 @@ function Header_Formacion($datos = [])
 
     // ANCHOS REDISTRIBUIDOS (Suma: 259.4mm)
     // Se le dio más espacio a ORG (w[9]) para los cuadritos de 3 caracteres
-    $w = [6, 35, 35, 20, 15, 35, 8, 10, 18, 25, 20, 35.4];
-    $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'CÉDULA', 'T.PERSONA', 'T. BENEFICIARIO', 'EDAD', 'SEXO', 'TELÉFONO', 'ORGANISMO', 'ESTADO', 'MUNICIPIO/PARROQUIA'];
+    $w = [6, 35, 35, 15, 20, 35, 8, 10, 18, 25, 20, 35.4];
+    $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'T.PERSONA', 'CEDULA', 'T. BENEFICIARIO', 'EDAD', 'SEXO', 'TELÉFONO', 'ORGANISMO', 'ESTADO', 'MUNICIPIO/PARROQUIA'];
 
     foreach($titulos as $i => $titulo) {
         $this->Cell($w[$i], 6, iconv('UTF-8', 'CP1252//IGNORE', $titulo), 1, ($i == 11 ? 1 : 0), 'C', true);
@@ -435,10 +435,10 @@ function Header_Formacion($datos = [])
 
 function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
 {
-    $w = [6, 35, 35, 20, 15, 35, 8, 10, 18, 25, 20, 35.4];
+    $w = [6, 35, 35, 15, 20, 35, 8, 10, 18, 25, 20, 35.4];
     $h = 7.5;               
-    $filas_por_pagina = 16; 
-    $total_filas = 32;      
+    $filas_por_pagina = 15; 
+    $total_filas = 15;      
 
     for ($i = 1; $i <= $total_filas; $i++) {
         $fill = ($i % 2 == 0);
@@ -571,7 +571,7 @@ function Footer_Formacion()
         $this->Write(4, 'N/P');
     }
 
-    $this->Ln(6);
+    $this->Ln(8);
 
     $this->SetFont('Arial', '', 6.5);
     $this->SetTextColor(120, 120, 120);
@@ -585,7 +585,7 @@ function Footer_Formacion()
     $this->SetY(-15);
     $this->SetFont('Arial', 'I', 7);
     $this->SetTextColor(160, 160, 160);
-    $this->Cell($ancho_u, 10, iconv('UTF-8', 'CP1252//IGNORE', 'Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
+ //   $this->Cell($ancho_u, 10, iconv('UTF-8', 'CP1252//IGNORE', 'Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
 }
 
 
