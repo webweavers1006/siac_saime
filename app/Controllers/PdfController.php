@@ -30,13 +30,13 @@ public function generar_plantilla_formacion($idcaso = null)
     $tipos = $tipoBeneficiarioModel->Listar_Tipo_Beneficiarios_filtro();
     $organismos = $organismoModel->Listar_Organismo_PP_filtro();
 
-    $pdf = new \FPDF('L', 'mm', 'legal'); 
+    // Configuración A4 Horizontal (297mm x 210mm)
+    $pdf = new \FPDF('L', 'mm', 'A4');
     $pdf->AliasNbPages(); 
     $pdf->SetMargins(10, 10, 10);
-
-    // --- CAMBIO CLAVE AQUÍ ---
-    // Ponemos false para que tú controles el salto con la variable $filas_por_pagina
-    $pdf->SetAutoPageBreak(false); 
+    
+    // Margen de 30mm para que el footer respire
+    $pdf->SetAutoPageBreak(true, 23); 
 
     $info_pdf = [
         'caso'         => $row->idcaso,
@@ -54,7 +54,6 @@ public function generar_plantilla_formacion($idcaso = null)
     $pdf->tipos_footer = $tipos; 
 
     $pdf->AddPage(); 
-    // Llamamos al contenido que ya tiene configurado el total_filas = 40
     $pdf->Content_Formacion($info_pdf, $tipos, $organismos);
 
     $this->response->setHeader('Content-Type', 'application/pdf');
