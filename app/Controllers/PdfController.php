@@ -93,6 +93,7 @@ public function generar_plantilla_formacion($idcaso = null)
                 'caso_hora'    => $row->caso_hora,
                 'nombre'       => $row->nombre,
                 'cedula'       => $row->cedula,
+                'estadonom' => $row->estadonom,
                 'municipionom' => $row->municipionom,
                 'parroquianom' => $row->parroquianom,
                 'casotel'      => $row->casotel,
