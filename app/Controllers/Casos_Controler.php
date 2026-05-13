@@ -408,9 +408,19 @@ public function nuevoCaso()
 
                         if ($newCase["id_tipo_atencion"] == '5') {
                             $Casos_denuncias->insertarCasos_Denuncias([
-                                'denu_afecta_persona' => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
-                                'denu_id_caso' => $idcaso,
-                                'denu_borrado' => false
+                               
+                                'denu_id_caso'           => $idcaso,
+                                'denu_afecta_persona'    => filter_var($datos["denu_afecta_persona"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                                'denu_afecta_comunidad'  => filter_var($datos["denu_afecta_comunidad"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                                'denu_afecta_terceros'   => filter_var($datos["denu_afecta_terceros"] ?? false, FILTER_VALIDATE_BOOLEAN),
+                                'denu_involucrados'      => $datos["denu_involucrados"] ?? null,
+                                'denu_fecha_hechos'      => (!empty($datos["denu_fecha_hechos"])) ? $datos["denu_fecha_hechos"] : date('Y-m-d'),
+                                'denu_instancia_popular' => $datos["denu_instancia_popular"] ?? null,
+                                'denu_rif_instancia'     => $datos["denu_rif_instancia"] ?? null,
+                                'denu_ente_financiador'  => $datos["denu_ente_financiador"] ?? null,
+                                'denu_nombre_proyecto'   => $datos["denu_nombre_proyecto"] ?? null,
+                                'denu_monto_aprovado'    => $datos["denu_monto_aprovado"] ?? null,
+                                'denu_borrado'           => false
                             ]);
                         }
 

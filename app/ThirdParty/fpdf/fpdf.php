@@ -431,86 +431,102 @@ function Header_Formacion($datos = [])
         $this->Cell($w[$i], 6, iconv('UTF-8', 'CP1252//IGNORE', $titulo), 1, ($i == 11 ? 1 : 0), 'C', true);
     }
 }
-
-
-function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [])
+function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [], $participantes = [])
 {
+    // Configuración de anchos de columna (Total: 262.4mm para A4 Horizontal)
     $w = [6, 35, 35, 15, 20, 35, 8, 10, 18, 25, 20, 35.4];
     $h = 7.5;               
-    $filas_por_pagina = 15; 
-    $total_filas = 15;      
+    $filas_minimas = 15; 
+    $total_filas = max(count($participantes), $filas_minimas); 
 
-    for ($i = 1; $i <= $total_filas; $i++) {
-        $fill = ($i % 2 == 0);
+    for ($i = 0; $i < $total_filas; $i++) {
+        // Obtenemos el participante actual (si existe)
+        $p = $participantes[$i] ?? null;
+        
+        $fill = ($i % 2 != 0);
         $this->SetFillColor(248, 248, 248);
         $this->SetFont('Arial', '', 7); 
         $this->SetTextColor(0, 0, 0);
+        $y = $this->GetY();
         
-        $this->Cell($w[0], $h, $i, 1, 0, 'C', $fill); // Nro
-        $this->Cell($w[1], $h, '', 1, 0, 'L', $fill); // Nombres
-        $this->Cell($w[2], $h, '', 1, 0, 'L', $fill); // Apellidos
-        $this->Cell($w[3], $h, '', 1, 0, 'C', $fill); // Cédula
-        $this->Cell($w[4], $h, '', 1, 0, 'C', $fill); // T. Persona
+        // 1. Nro correlativo
+        $this->Cell($w[0], $h, ($i + 1), 1, 0, 'C', $fill); 
+        
+        // 2. Nombres y Apellidos (con limpieza de acentos/Ñ)
+        $nombre = ($p) ? iconv('UTF-8', 'CP1252//IGNORE', mb_strtoupper($p['nombre'] ?? '')) : '';
+        $apellido = ($p) ? iconv('UTF-8', 'CP1252//IGNORE', mb_strtoupper($p['apellido'] ?? '')) : '';
+        $this->Cell($w[1], $h, ' ' . $nombre, 1, 0, 'L', $fill);
+        $this->Cell($w[2], $h, ' ' . $apellido, 1, 0, 'L', $fill);
+        
+        // 3. T.Persona (Nacionalidad) y Cédula
+        $this->Cell($w[3], $h, $p['t_persona'] ?? '', 1, 0, 'C', $fill);
+        $this->Cell($w[4], $h, $p['cedula'] ?? '', 1, 0, 'C', $fill);
 
-        // --- T. BENEFICIARIO (Cuadritos - 1 Carácter) ---
-		$xBenef = $this->GetX(); 
-		$y = $this->GetY();
-		$this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
+        // 4. --- T. BENEFICIARIO (Cuadritos de 1 carácter) ---
+        $xBenef = $this->GetX(); 
+        $this->Cell($w[5], $h, '', 1, 0, 'C', $fill);
+        if(!empty($tipos_beneficiarios)) {
+            $this->SetFont('Arial', '', 4.5);
+            foreach($tipos_beneficiarios as $idx => $t) {
+                if($idx > 4) break; 
+                $siglaB = strtoupper(substr($t->tipo_beneficiario_nombre, 0, 1));
+                $pXB = $xBenef + 1.2 + ($idx * 6.5);
+                $this->Rect($pXB, $y + 2.2, 2.6, 2.6);
+                
+                // Marcado con 'X' basado en el nombre del tipo
+                if($p && isset($p['tipo_beneficiario']) && $p['tipo_beneficiario'] == $t->tipo_beneficiario_nombre) {
+                    $this->SetFont('Arial', 'B', 5);
+                    $this->Text($pXB + 0.6, $y + 4.2, "X"); 
+                    $this->SetFont('Arial', '', 4.5);
+                }
+                $this->Text($pXB + 3.5, $y + 4.2, $siglaB);
+            }
+        }
 
-		if(!empty($tipos_beneficiarios)) {
-			$this->SetFont('Arial', '', 4.5); // Subí a 4.5 para mejor lectura
-			foreach($tipos_beneficiarios as $idx => $t) {
-				if($idx > 4) break; 
-				$siglaB = strtoupper(substr($t->tipo_beneficiario_nombre, 0, 1));
-				
-				$pXB = $xBenef + 1.2 + ($idx * 6.5); // Aumenté un poco la separación entre cuadritos
-				$this->Rect($pXB, $y + 2.2, 2.6, 2.6);
-				
-				// El secreto es el + 3.5 (antes 2.9) para separar la letra del cuadro
-				// El + 4.2 (antes 4.4) es para centrarla verticalmente un poco mejor
-				$this->Text($pXB + 3.5, $y + 4.2, $siglaB);
-			}
-		}
-
+        // 5. Datos Personales
         $this->SetFont('Arial', '', 7);
-        $this->Cell($w[6], $h, '', 1, 0, 'C', $fill); // Edad
-        $this->Cell($w[7], $h, '', 1, 0, 'C', $fill); // Sexo
-        $this->Cell($w[8], $h, '', 1, 0, 'C', $fill); // Teléfono
+        $this->Cell($w[6], $h, $p['edad'] ?? '', 1, 0, 'C', $fill); 
+        $this->Cell($w[7], $h, $p['sexo'] ?? '', 1, 0, 'C', $fill); 
+        $this->Cell($w[8], $h, $p['telefono'] ?? '', 1, 0, 'C', $fill); 
 
-       // --- ORGANISMO (Cuadritos - 3 Caracteres) ---
-$xOrg = $this->GetX();
-$this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
+        // 6. --- ORGANISMO (Cuadritos de 3 caracteres) ---
+        $xOrg = $this->GetX();
+        $this->Cell($w[9], $h, '', 1, 0, 'C', $fill);
+        if(!empty($organismos)) {
+            $this->SetFont('Arial', '', 4.2); 
+            foreach($organismos as $idx => $org) {
+                if($idx > 3) break;
+                $nombreOrg = $org->org_nombre ?? 'N/A';
+                $siglaO = ($nombreOrg == "Concejo Comunales") ? "CC" : strtoupper(substr($nombreOrg, 0, 3));
+                $pXO = $xOrg + 1.2 + ($idx * 7.5); 
+                $this->Rect($pXO, $y + 2.2, 2.6, 2.6);
+                
+                // Marcado con 'X' basado en el org_id de la tabla intermedia
+                if($p && isset($p['org_id']) && $p['org_id'] == $org->org_id) {
+                    $this->SetFont('Arial', 'B', 5);
+                    $this->Text($pXO + 0.6, $y + 4.2, "X");
+                    $this->SetFont('Arial', '', 4.2);
+                }
+                $this->Text($pXO + 3.8, $y + 4.2, $siglaO);
+            }
+        }
 
-if(!empty($organismos)) {
-    // Subimos a 4.2 para que los 3 caracteres sean legibles
-    $this->SetFont('Arial', '', 4.2); 
-    
-    foreach($organismos as $idx => $org) {
-        if($idx > 3) break; // Máximo 4 en 30mm
+        // 7. Ubicación (Estado y Mun/Par)
+        $this->SetFont('Arial', '', 6.5); 
+        $estado = ($p) ? iconv('UTF-8', 'CP1252//IGNORE', mb_strtoupper($p['estadonom'] ?? '')) : '';
+        $this->Cell($w[10], $h, $estado, 1, 0, 'C', $fill);
         
-        $nombre = $org->org_nombre ?? 'N/A';
-        $siglaO = ($nombre == "Concejo Comunales") ? "CC" : strtoupper(substr($nombre, 0, 3));
-        
-        // pXO es la posición de inicio de cada "grupo" (cuadro + texto)
-        $pXO = $xOrg + 1.2 + ($idx * 7.5); 
-        
-        // Dibujamos el cuadro
-        $this->Rect($pXO, $y + 2.2, 2.6, 2.6);
-        
-        // AJUSTE DE SEPARACIÓN: 
-        // Cambiamos + 2.9 por + 3.8 para que haya aire entre el cuadro y las 3 letras.
-        // Cambiamos + 4.4 por + 4.2 para centrar la sigla con la altura del cuadro.
-        $this->Text($pXO + 3.8, $y + 4.2, $siglaO);
-    }
-    // Reset a la fuente estándar de la fila
-    $this->SetFont('Arial', '', 7); 
-}
+        // Solo concatena el separador "/" si existen registros reales
+        $ubicacion = '';
+        if ($p) {
+            $muni = mb_strtoupper($p['municipionom'] ?? '');
+            $parro = mb_strtoupper($p['parroquianom'] ?? '');
+            $ubicacion = iconv('UTF-8', 'CP1252//IGNORE', ' ' . $muni . " / " . $parro);
+        }
+        $this->Cell($w[11], $h, $ubicacion, 1, 1, 'L', $fill);
 
-        $this->SetFont('Arial', '', 7);
-        $this->Cell($w[10], $h, '', 1, 0, 'C', $fill); // Estado
-        $this->Cell($w[11], $h, '', 1, 1, 'L', $fill); // Mun/Parroquia
-
-        if ($i % $filas_por_pagina == 0 && $i < $total_filas) {
+        // Gestión de salto de página cada 15 registros
+        if (($i + 1) % 15 == 0 && ($i + 1) < $total_filas) {
             $this->AddPage('L', 'letter');
         }
     }
@@ -709,76 +725,15 @@ function Content_planilla($datos_Content_Planilla)
     $texto_desc = trim($datos_Content_Planilla['casodesc'] ?? '');
     $this->MultiCell(190, 5, iconv('utf-8', 'cp1252//IGNORE', $texto_desc), 1, 'J');
 
-    // --- CONFIGURACIÓN DE TIPO DE ATENCIÓN ---
-    $id_tipo_atencion = (int)($datos_Content_Planilla['id_tipo_atencion'] ?? 0);
-    
-    if ($id_tipo_atencion === 7) {
-        // --- SECCIÓN PARA FORMACIÓN: TABLA DE PARTICIPANTES ---
-        $participantes = $datos_Content_Planilla['participantes'] ?? [];
-
-        $this->Ln(10); // Espacio de separación
-
-        $this->SetFont('Arial', 'B', 9);
-        $this->SetTextColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-        $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'LISTA DE PARTICIPANTES'), 0, 1, 'L');
-        $this->Ln(1);
-
-        // Encabezado Estilo SAPI (Azul Marino / Blanco)
-        $this->SetTextColor(255, 255, 255);
-        $this->SetFillColor($azul_sapi[0], $azul_sapi[1], $azul_sapi[2]);
-        $this->SetFont('Arial', 'B', 7);
-
-        $w = [35, 35, 22, 33, 12, 33, 20];
-        $h = 7;
-
-        $this->Cell($w[0], $h, 'NOMBRE', 1, 0, 'C', true);
-        $this->Cell($w[1], $h, 'APELLIDO', 1, 0, 'C', true);
-        $this->Cell($w[2], $h, iconv('UTF-8', 'CP1252', 'CÉDULA'), 1, 0, 'C', true);
-        $this->Cell($w[3], $h, 'TIPO BENEF.', 1, 0, 'C', true);
-        $this->Cell($w[4], $h, 'EDAD', 1, 0, 'C', true);
-        $this->Cell($w[5], $h, iconv('UTF-8', 'CP1252', 'TELÉFONO'), 1, 0, 'C', true);
-        $this->Cell($w[6], $h, 'SEXO', 1, 1, 'C', true);
-
-        // Datos
-        $this->SetTextColor(40, 40, 40);
-        $this->SetFont('Arial', '', 7);
-
-        if (!empty($participantes)) {
-            foreach ($participantes as $p) {
-                $sexo_val = trim((string)($p['sexo'] ?? ''));
-                if ($sexo_val === '1') { $sexo = 'M'; }
-                elseif ($sexo_val === '2') { $sexo = 'F'; }
-                else { $sexo = $sexo_val; }
-
-                $nombre = iconv('utf-8', 'cp1252//IGNORE', (string)($p['nombre'] ?? ''));
-                $apellido = iconv('utf-8', 'cp1252//IGNORE', (string)($p['apellido'] ?? ''));
-                $tipo = iconv('utf-8', 'cp1252//IGNORE', (string)($p['tipo_beneficiario'] ?? ''));
-
-                $this->Cell($w[0], $h, (strlen($nombre) > 22) ? substr($nombre,0,20).'..' : $nombre, 1, 0, 'L');
-                $this->Cell($w[1], $h, (strlen($apellido) > 22) ? substr($apellido,0,20).'..' : $apellido, 1, 0, 'L');
-                $this->Cell($w[2], $h, $p['cedula'] ?? '', 1, 0, 'C');
-                $this->Cell($w[3], $h, (strlen($tipo) > 22) ? substr($tipo,0,20).'..' : $tipo, 1, 0, 'L');
-                $this->Cell($w[4], $h, $p['edad'] ?? '0', 1, 0, 'C');
-                $this->Cell($w[5], $h, $p['telefono'] ?? '', 1, 0, 'C');
-                $this->Cell($w[6], $h, $sexo, 1, 1, 'C');
-
-                if ($this->GetY() > 245) {
-                    $this->AddPage();
-                    $this->Ln(10);
-                }
-            }
-        } else {
-            $this->Cell(190, $h, 'NO SE ENCONTRARON PARTICIPANTES REGISTRADOS', 1, 1, 'C');
-        }
-        $this->Ln(4);
+   
         
-    } else {
+   
         // --- SECCIÓN PARA OTROS TIPOS: ANEXOS (Solo si NO es formación) ---
         $this->Ln(6);
         $this->SetFont('Arial', 'B', 8);
         $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
         $this->Ln(4);
-    }
+    
 
     // --- RECEPTOR Y CARGO (Sección común para todos) ---
     $this->SetFillColor(245, 245, 245);
