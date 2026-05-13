@@ -424,7 +424,7 @@ function Header_Formacion($datos = [])
 
     // ANCHOS REDISTRIBUIDOS (Suma: 259.4mm)
     // Se le dio más espacio a ORG (w[9]) para los cuadritos de 3 caracteres
-    $w = [6, 35, 35, 15, 20, 35, 8, 10, 18, 25, 20, 35.4];
+    $w = [6, 30, 35, 15, 20, 35, 8, 10, 18, 25, 25, 35.4];
     $titulos = ['N°', 'NOMBRES', 'APELLIDOS', 'T.PERSONA', 'CEDULA', 'T. BENEFICIARIO', 'EDAD', 'SEXO', 'TELÉFONO', 'ORGANISMO', 'ESTADO', 'MUNICIPIO/PARROQUIA'];
 
     foreach($titulos as $i => $titulo) {
@@ -434,7 +434,7 @@ function Header_Formacion($datos = [])
 function Content_Formacion($datos, $tipos_beneficiarios = [], $organismos = [], $participantes = [])
 {
     // Configuración de anchos de columna (Total: 262.4mm para A4 Horizontal)
-    $w = [6, 35, 35, 15, 20, 35, 8, 10, 18, 25, 20, 35.4];
+    $w = [6, 30, 35, 15, 20, 35, 8, 10, 18, 25, 25, 35.4];
     $h = 7.5;               
     $filas_minimas = 15; 
     $total_filas = max(count($participantes), $filas_minimas); 
