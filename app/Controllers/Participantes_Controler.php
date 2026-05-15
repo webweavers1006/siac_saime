@@ -14,7 +14,7 @@ class Participantes_Controler extends BaseController
 	use ResponseTrait;
 
 	//Metodo para añadir tipo de atencion
-	public function agregar_participantes()
+public function agregar_participantes()
 {
     $model = new Participantes_Model();
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
@@ -38,8 +38,8 @@ class Participantes_Controler extends BaseController
             {
                 // Eliminar el campo 'organismo_pp' del array $solicitud
                 unset($solicitud["organismo_pp"]);
-                // Si no existe el participante, lo agregamos
-             
+                
+                // Si no existe el participante general, lo agregamos
                 $id_insertado = $model->agregar_participante($solicitud);
                 if ($id_insertado) {
                     $ids_insertados[] = [
@@ -64,12 +64,15 @@ class Participantes_Controler extends BaseController
 
             foreach ($ids_insertados as $data) {
                 $info_talleres[] = array(
-                    "id_caso" => $id_caso["id_caso"], // Cambié para acceder correctamente al id_caso
+                    "id_caso" => $id_caso["id_caso"], 
                     "participante_id" => $data['id'],
-                    "org_id" => $data['org_id'] // Usamos el org_id correspondiente
+                    "org_id" => $data['org_id'] 
                 );
             }
 
+            // Enviamos el lote completo al modelo.
+            // Gracias al ON CONFLICT DO NOTHING del modelo, PostgreSQL insertará los nuevos
+            // e ignorará silenciosamente los que ya existan para este caso.
             $query_agregar_participantes_talleres = $model->agregar_participantes_talleres($info_talleres);
 
             if ($query_agregar_participantes_talleres) {

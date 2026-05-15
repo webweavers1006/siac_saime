@@ -19,28 +19,43 @@ class Participantes_Model extends Model
             return false; // Retorna false si la inserción falla
         }
     }
-
-   public function agregar_participantes_talleres($info_talleres)
+public function agregar_participantes_talleres($info_talleres)
 {
+    if (empty($info_talleres)) {
+        return false;
+    }
 
-   
+    // Usamos la conexión directa a la base de datos
+    $db = \Config\Database::connect();
+    
+    $valores = [];
+    
+    // Recorremos el lote para escapar los datos manualmente y evitar inyecciones SQL
+    foreach ($info_talleres as $dato) {
+        $id_caso         = $db->escape($dato['id_caso']);
+        $participante_id = $db->escape($dato['participante_id']);
+        
+        // Si org_id está vacío, seteamos NULL en duro para Postgres, sino lo escapamos
+        $org_id          = !empty($dato['org_id']) ? $db->escape($dato['org_id']) : 'NULL';
+        
+        // Armamos la fila de valores
+        $valores[] = "($id_caso, $participante_id, $org_id)";
+    }
 
-
-    $builder = $this->db->table('sgc_talleres_participantes');
     try {
-        foreach ($info_talleres as $dato) {
-            $builder->insert([
-                'id_caso' => $dato['id_caso'], // Cambié para acceder directamente al id_caso
-                'participante_id' => $dato['participante_id'] ,
-                'org_id' => $dato['org_id'] 
+        // Construimos el query string limpio
+        $sql = "INSERT INTO public.sgc_talleres_participantes (id_caso, participante_id, org_id) VALUES " . implode(', ', $valores);
+        
+        // 🪄 Aplicamos el candado para ignorar los que ya existen en el caso
+        $sql .= " ON CONFLICT (id_caso, participante_id) DO NOTHING";
 
-                
-            ]);
-        }
+        // Ejecutamos la consulta directa
+        $db->query($sql);
+        
         return true; 
     } catch (\Exception $e) {
-        // Registra el error para depuración
-        error_log('Error al insertar participantes en talleres: ' . $e->getMessage());
+        // En caso de cualquier otro error imprevisto, se guarda en el log
+        error_log('Error real en agregar_participantes_talleres: ' . $e->getMessage());
         return false; 
     }
 }

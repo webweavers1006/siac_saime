@@ -236,6 +236,10 @@ $pdf->Cell(95, 4, 'FIRMA DEL SOLICITANTE', 0, 1, 'C');
             $pdf->Content_Planilla_SAPI($datos_para_planilla); 
             $pdf->Footer_Mediacion();
         }
+
+        //NO BORRAR NUEVA PLANTILLA DE MEDIACION
+
+        
     //    else if($id_tipo_atencion == 7)
     //     {
     //             $talleres_model = new \App\Models\Talleres_Participantes_Model();
