@@ -1,6 +1,15 @@
 $(function() {
-    let estatus = null;
-    Listar_Casos(estatus);
+    // Al cargar la página, leemos el valor inicial del select (por si tiene uno por defecto)
+    let estatus_inicial = $('#estatus').val();
+    Listar_Casos(estatus_inicial);
+
+    // Escuchar el cambio en el select de filtrado
+    $('#estatus').on('change', function() {
+        let estatus_seleccionado = $(this).val();
+        
+        // Volvemos a llamar a la función pasando el nuevo estatus
+        Listar_Casos(estatus_seleccionado);
+    });
 });
 
 $('#btn_agregar').on('click', function(e) {
@@ -10,11 +19,15 @@ $('#btn_agregar').on('click', function(e) {
 /*
  * Función para definir datatable de casos:
  */
+/*
+ * Función para definir datatable de casos:
+ */
 function Listar_Casos(estatus = null) {
     let ruta_imagen = rootpath;
     var encabezado = '';
     
     var table = $('#table_casos').DataTable({
+        destroy: true, // Permite reinicializar la tabla al cambiar el filtro sin errores
         responsive: true,
         // Orden descendente por la columna 0 (casos_id) para mostrar los últimos primero
         "order": [[0, "desc"]],
@@ -117,6 +130,9 @@ function Listar_Casos(estatus = null) {
         ajax: {
             url: "/listar_Casos_Remitidos",
             type: "GET",
+            data: function (d) {
+                d.estatus = estatus; // Enviamos el estatus como parámetro al controlador
+            },
             dataSrc: ''
         },
         columns: [
@@ -190,7 +206,6 @@ function Listar_Casos(estatus = null) {
         localStorage.setItem('datatable_page', info.page);
     });
 }
-
 // --- MANEJADORES DE EVENTOS ---
 
 $('#listar_casos').on('click', '.Imprimir', function(e) {

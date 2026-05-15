@@ -156,27 +156,23 @@ class Casos_Remitidos extends BaseController
 	}
 
 	
-
-	//Metodo queo obtiene  los todos los casos disponibles
-	public function listar_Casos_Remitidos()
-
-	{
-		$id_direccion = (session('id_direccion_administrativa'));
-		
-		
-		$model = new Casos();
-		$query = $model->listar_Casos_Remitidos($id_direccion);	
-		if (empty($query)) {
-				$casos_remitidos = [];
-		} else {
-				$casos_remitidos = $query;
-		}
-		echo json_encode($casos_remitidos);
-		
-		
-	}
-
-	
+// Método que obtiene todos los casos disponibles filtrados por dirección y estatus
+public function listar_Casos_Remitidos()
+{
+    $id_direccion = session('id_direccion_administrativa');
+    
+    // Capturamos el estatus enviado por DataTables via GET
+    $estatus = $this->request->getGet('estatus');
+    
+    $model = new Casos();
+    // Pasamos el estatus como segundo parámetro
+    $query = $model->listar_Casos_Remitidos($id_direccion, $estatus); 
+    
+    $casos_remitidos = !empty($query) ? $query : [];
+    
+    // Usar la respuesta nativa de CI4 es más limpio y establece los headers correctos
+    return $this->response->setJSON($casos_remitidos);
+}
 
 
 

@@ -393,40 +393,52 @@ private function buildBaseQuery($builder)
         $query = $builder->get();
         return $query->getResult();
     }
+public function listar_Casos_Remitidos($id_direccion, $estatus = null)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('sgc_casos_remitidos as cr');
+    
+    // Selects
+    $builder->select('cr.casos_id, CONCAT(a.caso_nacionalidad, a.casoced) AS cedula, a.casonom, a.casoape, CONCAT(a.casonom, \' \', a.casoape) AS beneficiario');
+    $builder->select('a.fecha_nacimiento, a.idcaso, a.casotel, a.edad, a.tipo_beneficiario, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre, to_char(a.casofec, \'dd/mm/yyyy\') as casofec');
+    $builder->select('a.municipioid, a.pais as paisid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, TRIM(a.casoced) AS casoced');
+    $builder->select('cr.direccion_id, dire.correo, a.casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid');
+    $builder->select('a.id_tipo_atencion, a.municipioid, a.parroquiaid, a.direccion, a.profesion, a.correo, a.ente_adscrito_id');
+    $builder->select('cgr.competencia_cgr, cgr.asume_cgr, denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
+    $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular, denu.denu_rif_instancia');
+    $builder->select('denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado, CONCAT(a.casonom, \' \', a.casoape) AS nombre');
+    $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name, CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
+    $builder->select('a.casofec as casofec_normal, b.estnom, tpinte.tipo_prop_id');
+    
+    // Joins
+    $builder->join('public.sgc_direcciones_administrativas as dire', 'cr.direccion_id = dire.id');
+    $builder->join('public.sgc_casos as a', 'cr.casos_id = a.idcaso');
+    $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
+    $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
+    $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
+    $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
+    $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
+    $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
+    $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+    
+    // Condiciones fijas restrictivas
+    $builder->where('cr.direccion_id', $id_direccion); 
+    $builder->where('a.borrado', false); 
 
-    public function listar_Casos_Remitidos($id_direccion)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table('sgc_casos_remitidos as cr');
-        $builder->select('cr.casos_id, CONCAT(a.caso_nacionalidad, a.casoced) AS cedula, a.casonom, a.casoape, CONCAT(a.casonom, \' \', a.casoape) AS beneficiario');
-        $builder->select('a.fecha_nacimiento, a.idcaso, a.casotel, a.edad, a.tipo_beneficiario, tpinte.tipo_prop_nombre, t_antusu.tipo_aten_nombre, to_char(a.casofec, \'dd/mm/yyyy\') as casofec');
-        $builder->select('a.municipioid, a.pais as paisid, a.parroquiaid, a.direccion, a.correo, a.ente_adscrito_id, TRIM(a.casoced) AS casoced');
-        $builder->select('cr.direccion_id, dire.correo, a.casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid');
-        $builder->select('a.id_tipo_atencion, a.municipioid, a.parroquiaid, a.direccion, a.profesion, a.correo, a.ente_adscrito_id');
-        $builder->select('cgr.competencia_cgr, cgr.asume_cgr, denu.denu_afecta_persona, denu.denu_afecta_comunidad, denu.denu_afecta_terceros');
-        $builder->select('denu.denu_involucrados, denu.denu_fecha_hechos, denu.denu_instancia_popular, denu.denu_rif_instancia');
-        $builder->select('denu.denu_ente_financiador, denu.denu_nombre_proyecto, denu.denu_monto_aprovado, CONCAT(a.casonom, \' \', a.casoape) AS nombre');
-        $builder->select('CONCAT(u_ope.usuopnom, \' \', u_ope.usuopape) AS user_name, CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
-        $builder->select('a.casofec as casofec_normal, b.estnom, tpinte.tipo_prop_id');
-        
-        // CORRECCIÓN: Usar esquema public.
-        $builder->join('public.sgc_direcciones_administrativas as dire', 'cr.direccion_id = dire.id');
-        $builder->join('public.sgc_casos as a', 'cr.casos_id = a.idcaso');
-        $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
-        $builder->join('public.sgc_usuario_operador u_ope', 'a.idusuopr = u_ope.idusuopr');
-        $builder->join('public.sgc_tipoatencion_usu as t_antusu', 'a.id_tipo_atencion = t_antusu.tipo_aten_id');
-        $builder->join('public.sgc_tipo_prop_caso as tpc', 'a.idcaso = tpc.idcaso', 'left');
-        $builder->join('public.sgc_tipo_prop_intelec as tpinte', 'tpc.idtippropint = tpinte.tipo_prop_id', 'left');
-        $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
-        $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
-        
-        $builder->where('cr.direccion_id', $id_direccion); 
-        $builder->where('cr.vigencia', true);
-        $builder->orWhere('cr.vigencia IS NULL');
-        $builder->where('a.borrado', false); 
-        $query = $builder->get();
-        return $query->getResult();
+    // Agrupación del OR para asegurar que la vigencia evalúe correctamente sin romper los WHERE anteriores
+    $builder->groupStart()
+                ->where('cr.vigencia', true)
+                ->orWhere('cr.vigencia IS NULL')
+            ->groupEnd();
+
+    // Lógica de filtrado dinámico desde el Select superior de DataTables
+    if ($estatus !== null && $estatus !== '0') {
+        $builder->where('a.idest', $estatus);
     }
+    
+    $query = $builder->get();
+    return $query->getResult();
+}
 
     //Metodo para obtener toda la informacion del caso para la web 
     public function Informacion_Usuarios($casoced)
