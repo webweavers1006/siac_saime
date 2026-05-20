@@ -473,9 +473,22 @@
             <div class="col-lg-12 col-sm-12 col-md-12 p-2">
                 <div class="card">
                     <div class="card-header border-0">
-                        <div class="d-flex justify-content-between">
-                            <h3 class="text-secondary"><i class="fas fa-angle-double-right"></i> Participantes  </h3>
-                           
+                    <div class="card-header border-0">
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <h3 class="text-secondary m-0">
+                                    <i class="fas fa-angle-double-right"></i> Reporte de Talleres Participantes
+                                </h3>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <label for="operador" class="m-0 me-2 text-nowrap">Operador &nbsp;&nbsp; </label>
+                                    <select class="form-control" id="operador" name="operador">
+                                        <option value="0" disabled selected>Seleccione</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -539,7 +552,7 @@
                                 </select>
                             </div>
                           
-                            <div class="col-md-2 " style="display: none;" >
+                            <div class="col-md-2 "  >
                                 <label for="estatus">Estatus:</label>
                                 <select class="form-control" id="estatus" name="estatus">
                                     <option value="0" selected disabled>seleccione</option>
@@ -549,13 +562,13 @@
                             </div>
 
 
-                            <div class="col-md-4" style="display: none;">
-                                <label for="office">Dirección Administrativa:</label>
-                                <select class="form-control" id="direcciones_caso" name="direcciones_caso">
-                                    <option value="0" selected disabled>Seleccione</option>
-                                    <?php echo $direcciones; ?>
-                                </select>
-                            </div>
+                           <div class="col-md-4">
+                <label for="direcciones_admin">Dirección Administrativa:</label>
+                <select class="form-control select2" id="direcciones_admin" name="direcciones_admin">
+                    <option value="0" selected disabled>Seleccione...</option>
+                    <?= $direcciones; ?>
+                </select>
+            </div>
                             <div class="col-lg-3 col-sm-3 col-md-3">
                             <label for="estado-caso">Estado</label>
                             <select id="estado-caso" name="estado-caso" class="form-control">
@@ -624,6 +637,7 @@
                       <td class="text-center" style="width: 1%;">Municipio</td>
                       <td class="text-center" style="width: 1%;">Parroquia</td>
                       <td class="text-center" style="width: 1%;">Telefono</td>
+                      <!-- <td class="text-center" style="width: 1%;">operador</td> -->
                   </tr>
                 </thead>
                 <tbody id="listar_casos">

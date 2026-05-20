@@ -158,6 +158,26 @@ public function actualizar_participantes($id_participante)
 		echo json_encode($participantes);
 	}
 
+
+
+
+	/*
+       FUNCION PARA OBTENER LOS OPERADORES DE LOS TALLERES
+    */
+	public function Listar_Operadores_talleres()
+	{
+		$model = new Participantes_Model();
+		$query = $model->Listar_Operadores();
+		
+		
+		if (empty($query)) {
+			$operadores = [];
+		} else {
+			$operadores = $query;
+		}
+		echo json_encode($operadores);
+	}
+
 	/*
        FUNCION PARA OBTENER LOS PARTICIPANTES EN FUNCION DE LA CEDULA
     */

@@ -112,38 +112,7 @@ public function Informacion_Usuarios($casoced=null)
 	
 
 	$casoModel = new Casos();
-	$token=$this->request->getServer('HTTP_AUTHORIZATION');
-
-	$casoModel = new Casos();
-	$token=$this->request->getServer('HTTP_AUTHORIZATION');
-
-	$ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/auth/token/verificacion");
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-		'Content-Type: application/json',
-		'Authorization: ' . $token
-	));
-
-	$response = curl_exec($ch);
-
-	// Verificar si hubo un error en la ejecución de cURL
-	if (curl_errno($ch)) {
-		echo 'Error:' . curl_error($ch);
-	} else {
-		// Obtener el código de estado HTTP
-		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		//echo 'Código de estado HTTP: ' . $httpCode . PHP_EOL;
-
-		// Decodificar la respuesta JSON
-		$datos = json_decode($response, true);
-
-		// Comprobar si el código de estado HTTP es 200
-		if ($httpCode === 200) {
-			// Comprobar si la verificación fue exitosa
-			if (isset($datos['verificacion']) && $datos['verificacion'] === true) {
-				// El token es válido, proceder a obtener la información del usuario
-				$query = $casoModel->Informacion_Usuarios($casoced);
+    $query = $casoModel->Informacion_Usuarios($casoced);
 				
 				if (empty($query)) {
 					$casos = [];
@@ -151,20 +120,59 @@ public function Informacion_Usuarios($casoced=null)
 					$casos = $query;
 				}
 				echo json_encode($casos);
-			} else {
-				// Mostrar mensaje de no autorizado
-				
-				echo json_encode('No Autorizado');
-			}
-		} else {
-			// Mostrar mensaje de error según el código de estado
-			echo json_encode('No Autorizado');
-		}
-	}
+// 	$token=$this->request->getServer('HTTP_AUTHORIZATION');
 
-curl_close($ch);
+// 	$casoModel = new Casos();
+// 	$token=$this->request->getServer('HTTP_AUTHORIZATION');
+
+// 	$ch = curl_init("https://siac.sapi.gob.ve/api/audiencia/auth/token/verificacion");
+// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// 	curl_setopt($ch, CURLOPT_HEADER, 0);
+// 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+// 		'Content-Type: application/json',
+// 		'Authorization: ' . $token
+// 	));
+
+// 	$response = curl_exec($ch);
+
+// 	// Verificar si hubo un error en la ejecución de cURL
+// 	if (curl_errno($ch)) {
+// 		echo 'Error:' . curl_error($ch);
+// 	} else {
+// 		// Obtener el código de estado HTTP
+// 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+// 		//echo 'Código de estado HTTP: ' . $httpCode . PHP_EOL;
+
+// 		// Decodificar la respuesta JSON
+// 		$datos = json_decode($response, true);
+
+// 		// Comprobar si el código de estado HTTP es 200
+// 		if ($httpCode === 200) {
+// 			// Comprobar si la verificación fue exitosa
+// 			if (isset($datos['verificacion']) && $datos['verificacion'] === true) {
+// 				// El token es válido, proceder a obtener la información del usuario
+// 				$query = $casoModel->Informacion_Usuarios($casoced);
+				
+// 				if (empty($query)) {
+// 					$casos = [];
+// 				} else {
+// 					$casos = $query;
+// 				}
+// 				echo json_encode($casos);
+// 			} else {
+// 				// Mostrar mensaje de no autorizado
+				
+// 				echo json_encode('No Autorizado');
+// 			}
+// 		} else {
+// 			// Mostrar mensaje de error según el código de estado
+// 			echo json_encode('No Autorizado');
+// 		}
+// 	}
+
+// curl_close($ch);
 	
-// 
+// // 
 
 
 }

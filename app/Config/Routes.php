@@ -264,7 +264,7 @@ $routes->setAutoRoute(false);
      $routes->POST('/actualizar_participantes/(:any)', 'Participantes_Controler::actualizar_participantes/$1'); 
      $routes->get('/listar_participantes/(:any)', "Participantes_Controler::listar_participantes/$1");
      $routes->get('/buscar_participante/(:any)', "Participantes_Controler::buscar_participante/$1");
-     $routes->get('/reporte_talleres', "Participantes_Controler::reporte_talleres");
+     $routes->get('/Listar_Operadores_talleres', "Participantes_Controler::Listar_Operadores_talleres");
      
        //RUTAS PARA PARTICIPANTES MEDIACION
      $routes->get('/Vista_Participantes_Mediacion', "Participantes_Mediacion_Controler::Vista_Participantes_Mediacion");
@@ -278,8 +278,11 @@ $routes->setAutoRoute(false);
 
      //RUTAS PARA TALLERES PARTICIPANTES
      $routes->get('/Talleres_Participantes', "Talleres_Participantes_Controler::Talleres_Participantes");
-     $routes->get('/listar_talleres_participantes/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Talleres_Participantes_Controler::listar_talleres_participantes/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17");
-    
+    $routes->get(
+    'listar_talleres_participantes/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)', 
+    'Talleres_Participantes_Controler::listar_talleres_participantes/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11/$12/$13/$14/$15/$16/$17/$18'
+);
+     $routes->get('/Talleres_Participantes', "Talleres_Participantes_Controler::Talleres_Participantes");
           
      //RUTAS PARA ENCUESTAS DE SASTIFACION
      $routes->get('/vista_Encuesta', "Encuesta_sastifaccion_Controler::vista_Encuesta");

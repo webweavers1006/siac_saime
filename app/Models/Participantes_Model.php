@@ -115,4 +115,23 @@ public function buscar_participante($cedula)
 
 
 
+   public function Listar_Operadores()
+{
+    $builder = $this->db->table('public.sgc_usuario_operador as p');
+    
+    // Seleccionamos los campos (se eliminó la coma huérfana al final)
+    $builder->select("p.usuopnom || ' ' || p.usuopape as nombre_completo, p.idusuopr");
+    
+    // Filtramos para que traiga tanto el rol 4 como el rol 2
+    $builder->whereIn('p.idrol', [4, 2]);
+    
+    // Opcional: Filtro para evitar traer operadores borrados si manejas borrado lógico
+    $builder->where(['p.usuopborrado' => false]);
+
+    $resultado = $builder->get()->getResult();
+    return $resultado;
+}
+
+
+
 }
