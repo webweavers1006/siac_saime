@@ -476,10 +476,11 @@ public function listar_Casos_Remitidos($id_direccion, $estatus = null)
         $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
         $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
         
-        $builder->where('a.borrado', false);
+        //$builder->where('a.borrado', false);
         $builder->where('a.casoced', $casoced);
         $builder->orderBy('a.idcaso', 'desc');
         $query = $builder->get();
+        //echo $db->getLastQuery();
         return $query->getResult();
     }
 
