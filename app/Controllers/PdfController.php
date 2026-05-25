@@ -240,58 +240,58 @@ $pdf->Cell(95, 4, 'FIRMA DEL SOLICITANTE', 0, 1, 'C');
         //NO BORRAR NUEVA PLANTILLA DE MEDIACION
 
         
-    //    else if($id_tipo_atencion == 7)
-    //     {
-    //             $talleres_model = new \App\Models\Talleres_Participantes_Model();
-    //             $participantes = $talleres_model->getParticipantesPorCaso($row->idcaso);
-    //             $row->participantes = $participantes;
+       else if($id_tipo_atencion == 7)
+        {
+                $talleres_model = new \App\Models\Talleres_Participantes_Model();
+                $participantes = $talleres_model->getParticipantesPorCaso($row->idcaso);
+                $row->participantes = $participantes;
 
              
-    //             $model = new Pdf_Model();
-    //             $tipoBeneficiarioModel = new Tipo_Beneficiario_Model();
-    //             $organismoModel = new Organismo_pp_Model();
-    //             $query_pdf = $model->obtenerCasos($idcaso);
+                $model = new Pdf_Model();
+                $tipoBeneficiarioModel = new Tipo_Beneficiario_Model();
+                $organismoModel = new Organismo_pp_Model();
+                $query_pdf = $model->obtenerCasos($idcaso);
 
-    //             if (empty($query_pdf)) {
-    //                 return $this->failNotFound('No se encontró información para el caso.');
-    //             }
+                if (empty($query_pdf)) {
+                    return $this->failNotFound('No se encontró información para el caso.');
+                }
 
-    //             $row = (is_array($query_pdf)) ? $query_pdf[0] : $query_pdf;
-    //             $tipos = $tipoBeneficiarioModel->Listar_Tipo_Beneficiarios_filtro();
-    //             $organismos = $organismoModel->Listar_Organismo_PP_filtro();
+                $row = (is_array($query_pdf)) ? $query_pdf[0] : $query_pdf;
+                $tipos = $tipoBeneficiarioModel->Listar_Tipo_Beneficiarios_filtro();
+                $organismos = $organismoModel->Listar_Organismo_PP_filtro();
 
-    //             // Configuración A4 Horizontal (297mm x 210mm)
-    //             $pdf = new \FPDF('L', 'mm', 'letter');
-    //             $pdf->AliasNbPages(); 
-    //             $pdf->SetMargins(10, 10, 10);
+                // Configuración A4 Horizontal (297mm x 210mm)
+                $pdf = new \FPDF('L', 'mm', 'letter');
+                $pdf->AliasNbPages(); 
+                $pdf->SetMargins(10, 10, 10);
                 
-    //             // Margen para que el footer respire
-    //             $pdf->SetAutoPageBreak(true, 23); 
+                // Margen para que el footer respire
+                $pdf->SetAutoPageBreak(true, 23); 
 
-    //             $info_pdf = [
-    //                 'caso'         => $row->idcaso,
-    //                 'fecha_caso'   => $row->casofec,
-    //                 'nombre'       => $row->nombre,
-    //                 'cedula'       => $row->cedula,
-    //                 'estadonom'    => mb_strtoupper($row->estadonom ?? 'N/P'),
-    //                 'municipionom' => mb_strtoupper($row->municipionom ?? 'N/P'),
-    //                 'parroquianom' => mb_strtoupper($row->parroquianom ?? 'N/P'),
-    //                 'casotel'      => $row->casotel,
-    //                 'casodesc'     => $row->casodesc,
-    //             ];
+                $info_pdf = [
+                    'caso'         => $row->idcaso,
+                    'fecha_caso'   => $row->casofec,
+                    'nombre'       => $row->nombre,
+                    'cedula'       => $row->cedula,
+                    'estadonom'    => mb_strtoupper($row->estadonom ?? 'N/P'),
+                    'municipionom' => mb_strtoupper($row->municipionom ?? 'N/P'),
+                    'parroquianom' => mb_strtoupper($row->parroquianom ?? 'N/P'),
+                    'casotel'      => $row->casotel,
+                    'casodesc'     => $row->casodesc,
+                ];
    
-    //             // Asignación de datos a las propiedades de la clase para que Header y Footer tengan acceso
-    //             $pdf->info_pdf_header = $info_pdf; 
-    //             $pdf->tipos_footer = $tipos; 
-    //             $pdf->tipos_organismos_footer = $organismos; // <--- AGREGAR ESTA LÍNEA
+                // Asignación de datos a las propiedades de la clase para que Header y Footer tengan acceso
+                $pdf->info_pdf_header = $info_pdf; 
+                $pdf->tipos_footer = $tipos; 
+                $pdf->tipos_organismos_footer = $organismos; // <--- AGREGAR ESTA LÍNEA
 
-    //             $pdf->AddPage(); 
-    //             $pdf->Content_Formacion($info_pdf, $tipos, $organismos,$participantes);
+                $pdf->AddPage(); 
+                $pdf->Content_Formacion($info_pdf, $tipos, $organismos,$participantes);
 
-    //             $this->response->setHeader('Content-Type', 'application/pdf');
-    //             $pdf->Output("I", "Lista_Asistencia_{$row->idcaso}.pdf");
-    //             exit();
-    //     }
+                $this->response->setHeader('Content-Type', 'application/pdf');
+                $pdf->Output("I", "Lista_Asistencia_{$row->idcaso}.pdf");
+                exit();
+        }
 
 // --- OTROS TIPOS DE ATENCIÓN ---
         else {
