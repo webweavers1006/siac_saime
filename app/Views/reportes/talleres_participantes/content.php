@@ -480,14 +480,15 @@
                                     <i class="fas fa-angle-double-right"></i> Reporte de Talleres Participantes
                                 </h3>
                             </div>
-                        <div class="col-md-3 d-none">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <label for="operador" class="m-0 me-2 text-nowrap">Operador &nbsp;&nbsp; </label>
-                            <select class="form-control" id="operador" name="operador">
-                                <option value="0" disabled selected>Seleccione</option>
-                            </select>
+                            
+                                                <div class="col-md-3">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <label for="operador" class="m-0 me-2 text-nowrap">Operador &nbsp;&nbsp; </label>
+                                <select class="form-control" id="operador" name="operador">
+                                    <option value="0" disabled selected>Seleccione</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
                         </div>
                     </div>
 
