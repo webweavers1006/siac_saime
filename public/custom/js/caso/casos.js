@@ -730,6 +730,7 @@ let table = $('#table_casos').DataTable({
                 }
             }
         ],
+        //8dfd
         language: {
            // sProcessing: "Procesando...",
             sLengthMenu: "Mostrar _MENU_ registros",
