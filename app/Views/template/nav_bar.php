@@ -983,7 +983,12 @@ $userdata = $session->get();
                     <p>Analista</p>
                   </a>
                 </li>
-                
+                 <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/Politicas_Publicas" class="nav-link">
+                    <i class="nav-icon 	fas  fa-users" style='font-size:20px'></i>
+                    <p>Políticas Públicas </p>
+                  </a>
+                </li>
                 
                 <li class="nav-item">
                   <a href="<?php echo base_url(); ?>/Talleres_Participantes" class="nav-link">
@@ -1165,6 +1170,13 @@ $userdata = $session->get();
                   <a href="<?php echo base_url(); ?>/vista_detalle_atencion" class="nav-link">
                     <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
                     <p>Detalle Atencion</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="<?php echo base_url(); ?>/linea_estrategica" class="nav-link">
+                    <i class="nav-icon 	fas  fas fa-chalkboard-teacher " style='font-size:20px'></i>
+                    <p>Linea Estrátegica</p>
                   </a>
                 </li>
 

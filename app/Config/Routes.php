@@ -239,8 +239,17 @@ $routes->setAutoRoute(false);
      //Rutas generales de la aplicacion
      $routes->get('/403', "Home::forbidden");
      $routes->get('/404', "Home::notFound");
+     
+     //RUTAS PARA LINEA ESTRATEGICA
+     $routes->get('/linea_estrategica', 'LineaEstrategica_Controller::vista_linea_estrategica');
+     $routes->get('/listar_linea_estrategica', 'LineaEstrategica_Controller::listar_linea_estrategica');
+     $routes->post('/add_linea_estrategica', 'LineaEstrategica_Controller::add_linea_estrategica');
+     $routes->post('/edit_linea_estrategica', 'LineaEstrategica_Controller::edit_linea_estrategica');
+     $routes->post('/delete_linea_estrategica', 'LineaEstrategica_Controller::delete_linea_estrategica');
+
      //RUTAS PARA lAS ATENCIONES 
      $routes->get('/atencion', 'Reporte_Atencion_Controler::vista_atencion');
+
      $routes->get('/Listar_Atencion/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)', "Reporte_Atencion_Controler::Listar_Atencion/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10");
      
      $routes->get('/Listar_Atencion_filtro', "Reporte_Atencion_Controler::Listar_Atencion_filtro");
