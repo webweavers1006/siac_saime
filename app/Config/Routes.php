@@ -250,6 +250,7 @@ $routes->setAutoRoute(false);
      //RUTAS PARA LINEA ESTRATEGICA
      $routes->get('/linea_estrategica', 'LineaEstrategica_Controller::vista_linea_estrategica');
      $routes->get('/listar_linea_estrategica', 'LineaEstrategica_Controller::listar_linea_estrategica');
+     $routes->get('/listar_linea_estrategica_activos', 'LineaEstrategica_Controller::listar_linea_estrategica_activos');
      $routes->post('/add_linea_estrategica', 'LineaEstrategica_Controller::add_linea_estrategica');
      $routes->post('/edit_linea_estrategica', 'LineaEstrategica_Controller::edit_linea_estrategica');
      $routes->post('/delete_linea_estrategica', 'LineaEstrategica_Controller::delete_linea_estrategica');

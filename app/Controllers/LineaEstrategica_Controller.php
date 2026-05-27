@@ -28,6 +28,15 @@ class LineaEstrategica_Controller extends BaseController
         echo json_encode($rows);
     }
 
+       public function listar_linea_estrategica_activos()
+    {
+        $model = new LineaEstrategica();
+        $rows = $model->listar_linea_estrategica_activos();
+
+       echo json_encode($rows, JSON_UNESCAPED_UNICODE);
+    }
+
+
     public function add_linea_estrategica()
     {
         $model = new LineaEstrategica();

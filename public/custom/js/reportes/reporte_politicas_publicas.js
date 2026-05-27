@@ -46,6 +46,7 @@ $(function() {
     let atencion_cuidadano = $('#office').val();
     let detalle_atencion = $('#edit_detelle_atencion').val();
     let org_id = $('#organismo-caso').val();
+    let linea_estrategica = $('#linea-estrategica').val();
     let edad_min = $('#edad_min').val();
     let edad_max = $('#edad_max').val();
     let sexo = $('#sexo').val();
@@ -62,7 +63,7 @@ if (edad_min === '' && edad_max === '') {
     edad_min = 'null';
     edad_max = 'null';
 }
-listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, null, null, null, $('#operador').val() || 0, 0, 0, 0, 0, 0, 0, 0, edad_min, edad_max, detalle_atencion, org_id);
+listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, null, null, null, $('#operador').val() || 0, 0, 0, 0, 0, 0, 0, 0, edad_min, edad_max, detalle_atencion, org_id, linea_estrategica);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
     llenar_via_atencion(Event);
@@ -70,9 +71,65 @@ listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, null, null, null
     llenar_Tipo_Beneficiarios(Event);
     llenar_pais(Event);
     llenar_Organismos_PP(Event);
+    llenar_Linea_Estrategica(Event);
 });
 
 
+
+//FUNCION PARA LLENAR EL COMBO LINEA ESTRATEGICA
+function llenar_Linea_Estrategica(e, id) {
+    e.preventDefault;
+    url = "/listar_linea_estrategica_activos";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#linea-estrategica").empty();
+                $("#linea-estrategica").append(
+                    "<option value=0  selected disabled>Seleccione</option>"
+                );
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //
+                        $("#linea-estrategica").append(
+                            "<option value=" +
+                            item.id+
+                            ">" +
+                            item.descripcion +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== id) {
+                            $("#linea-estrategica").append(
+                                "<option value=" +
+                                item.id+
+                                " selected>" +
+                                item.descripcion +
+                                "</option>"
+                            );
+                        } else {
+                            $("#linea-estrategica").append(
+                                "<option value=" +
+                                item.id+
+                                ">" +
+                                item.descripcion +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
 
 //FUNCION PARA LLENAR EL COMBO ORGANISMOS DEL PODER POPULAR 
 function llenar_Organismos_PP(e, id) {
@@ -242,7 +299,7 @@ function llenar_pais(e, id) {
 let filteredCount = 0;
 let pdfHeader = '';
 
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, direccion_administrativa=null, operador = 0, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, direccion_administrativa=null, operador = 0, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, linea_estrategica = 0) {
 
     // 2. CONSTRUCCIÓN DEL ENCABEZADO DINÁMICO
     pdfHeader = '';
@@ -353,7 +410,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     className: 'btn-xs btn-dark',
                     title: 'Consolidado de Casos',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20],
                     },
                 }
             ],
@@ -383,43 +440,51 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                 d.tipo_beneficiario = tipo_beneficiario; d.atencion_cuidadano = atencion_cuidadano;
                 d.estatus = estatus; d.id_pais = id_pais; d.id_estado = id_estado;
                 d.id_municipio = id_municipio; d.id_parroquia = id_parroquia;
-                d.edad_min = edad_min; d.edad_max = edad_max;
-        d.detalle_atencion = detalle_atencion; d.org_id = org_id;
+                d.edad_max = edad_max;
+                d.detalle_atencion = detalle_atencion; d.org_id = org_id; d.linea_estrategica = linea_estrategica;
 // En este reporte, operador: 0 = Todos (sin filtro por usuario)
                 d.usuarios = operador;
                 return d;
             }
         },
-        "columns": [
-            { data: 'idcaso' },
-            { data: 'cedula' },
-            { data: 'tipo_beneficiario' },
-            { data: 'nombre' },
-            { data: 'casotel' },
-            { data: 'tipo_prop_nombre' },
-            { data: 'sexo' },
-            { data: 'via_atencion_nombre' },
-            { data: 'tipo_aten_nombre' },
-            { data: 'descripcion' },
-            { data: 'pais_nombre' },
-            { data: 'estado_nombre' },
-            { data: 'municipio_nombre' },
-            { data: 'parroquia_nombre' },
-            { data: 'organismo_pp_nombre' },
-            { data: 'casofec' },
-            { data: 'estnom' },
-            { data: 'user_name' },
-            { 
-                data: null,
-                render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" ' +
-                           'style="font-size:1px" data-toggle="tooltip" title="Seguimientos" ' +
-                           'idcaso="' + row.idcaso + '">' + 
-                           '  <i class="material-icons">search</i> ' +
-                           '</a>';
-                }
-            },
-        ],
+      "columns": [
+    { data: 'idcaso' },                   // 1. Nº
+    { data: 'cedula' },                   // 2. Cédula
+    { data: 'tipo_beneficiario' },         // 3. Tipo Ben
+    { data: 'nombre' },                   // 4. Beneficiario
+    { data: 'casotel' },                  // 5. Teléfono
+    { data: 'sexo' },                     // 6. Género
+    
+    { data: 'pais_nombre' },              // 7. País
+    { data: 'estado_nombre' },            // 8. Estado
+    { data: 'municipio_nombre' },          // 9. Municipio
+    { data: 'parroquia_nombre' },         // 10. Parroquia
+    
+    { data: 'via_atencion_nombre' },      // 11. Vía de Atención
+    { data: 'tipo_aten_nombre' },         // 12. Tipo de Atención
+    { data: 'tipo_prop_nombre' },         // 13. Propiedad Intelectual
+    { data: 'organismo_pp_nombre' },      // 14. Organismo PP
+    { data: 'linea_estrategica_nombre' }, // 15. Línea Estratégica
+    { data: 'descripcion' },              // 16. Casos Remitidos a
+    
+    { data: 'casofec' },                  // 17. Fecha
+    { data: 'estnom' },                   // 18. Estatus
+    { data: 'direccion_admin_operador' }, // 19. Dirección Admin.
+    { data: 'user_name' },                // 20. Operador
+    
+    {                                     // 21. Detalle (Botón)
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: function(data, type, row) {
+            return '<a href="javascript:;" class="btn btn-xs btn-primary Seguimientos" ' +
+                   'style="font-size:1px" data-toggle="tooltip" title="Seguimientos" ' +
+                   'idcaso="' + row.idcaso + '">' + 
+                   '  <i class="material-icons">search</i> ' +
+                   '</a>';
+        }
+    }
+],
         columnDefs: [
             { "targets": [0], "visible": true, "searchable": true }
         ],
@@ -835,6 +900,7 @@ $(document).on('click', '.consultar', function(e) {
     let via_atencion = $('#via-atencion').val();
     let direcciones_caso = $('#direcciones_caso').val();
     let direccion_administrativa = $('#direccion_administrativa').val();
+    let linea_estrategica = $('#linea-estrategica').val();
     let tipo_beneficiario = $('#t-beneficiario').val();
     let atencion_cuidadano = $('#office').val();
     let estatus = $('#estatus').val();
@@ -853,7 +919,7 @@ $(document).on('click', '.consultar', function(e) {
     let nombre_via_atencion = $('#via-atencion option:selected').text();
     let nombre_tipo_beneficiario = $('#t-beneficiario option:selected').text();
     let nombre_direccion_remi = $('#direcciones_caso option:selected').text();
-     let nombre_direccion_administrativa = $('#direccion_administrativa option:selected').text();
+    let nombre_direccion_administrativa = $('#direccion_administrativa option:selected').text();
     let nombre_aten_cuidadano = $('#office option:selected').text();
     let nombre_estatus = $('#estatus option:selected').text();
     let nombre_estado = $('#estado-caso option:selected').text();
@@ -908,7 +974,7 @@ $(document).on('click', '.consultar', function(e) {
         if (org_id && org_id !== '0') pdfHeader += 'Organismo PP: ' + $('#organismo-caso option:selected').text() + ' ';
         
         $("#table_casos").dataTable().fnDestroy();
-listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, direccion_administrativa, $('#operador').val(), tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id);
+listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, direccion_administrativa, $('#operador').val(), tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id, linea_estrategica);
     }
 
 })

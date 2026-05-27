@@ -21,6 +21,20 @@ class LineaEstrategica extends BaseModel
         return $query->getResult();
     }
 
+      public function listar_linea_estrategica_activos()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('public.sgc_linea_estrategica as l');
+        $builder->select('l.id, l.descripcion');
+        $builder->where('l.borrado', false);
+        $builder->orderBy('l.id', 'ASC');
+        $query = $builder->get();
+        return $query->getResult();
+    }
+
+
+
+
     public function add_linea_estrategica(array $data)
     {
         $builder = $this->dbconn('public.sgc_linea_estrategica');

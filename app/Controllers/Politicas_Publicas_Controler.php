@@ -91,6 +91,7 @@ class Politicas_Publicas_Controler extends BaseController
             'edad_max' => $request->getVar('edad_max') ?? null,
             'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
             'org_id' => $request->getVar('org_id') ?? null,
+            'linea_estrategica' => $request->getVar('linea_estrategica') ?? null,
         ];
 
         // Mapa índice de columna -> alias SQL (igual que consolidado)

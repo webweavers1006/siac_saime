@@ -49,79 +49,80 @@ class Reporte_Controler extends BaseController
 	}
 // Método que obtiene todos los casos disponibles para el reporte consolidado
 public function reporte_consolidado()
-{
-    $request = $this->request;
+{ 
+   $request = $this->request;
 
-    
-    $params = [
-        'draw' => $request->getVar('draw') ?? null,
-        'start' => $request->getVar('start') ?? 0,
-        'length' => $request->getVar('length') ?? 10,
-        'search' => $request->getVar('search')['value'] ?? null,
-        'order' => $request->getVar('order') ?? [],
-        'desde' => $request->getVar('desde') ?? null,
-        'hasta' => $request->getVar('hasta') ?? null,
-        'tipo_pi' => $request->getVar('tipo_pi') ?? null,
-        'tipo_atencion_usu' => $request->getVar('tipo_atencion_usu') ?? null,
-        'sexo' => $request->getVar('sexo') ?? null,
-        'via_atencion' => $request->getVar('via_atencion') ?? null,
-        'direcciones_caso' => $request->getVar('direcciones_caso') ?? null,
-        'tipo_beneficiario' => $request->getVar('tipo_beneficiario') ?? null,
-        'atencion_cuidadano' => $request->getVar('atencion_cuidadano') ?? null,
-        'estatus' => $request->getVar('estatus') ?? null,
-        'id_pais' => $request->getVar('id_pais') ?? null,
-        'id_estado' => $request->getVar('id_estado') ?? null,
-        'id_municipio' => $request->getVar('id_municipio') ?? null,
-        'id_parroquia' => $request->getVar('id_parroquia') ?? null,
-        'edad_min' => $request->getVar('edad_min') ?? null,
-        'edad_max' => $request->getVar('edad_max') ?? null,
-        'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
-        'org_id' => $request->getVar('org_id') ?? null
-    ];
+        $params = [
+            'draw' => $request->getVar('draw') ?? null,
+            'start' => $request->getVar('start') ?? 0,
+            'length' => $request->getVar('length') ?? 10,
+            'search' => $request->getVar('search')['value'] ?? null,
+            'order' => $request->getVar('order') ?? [],
+            'desde' => $request->getVar('desde') ?? null,
+            'hasta' => $request->getVar('hasta') ?? null,
+            'tipo_pi' => $request->getVar('tipo_pi') ?? null,
+            'tipo_atencion_usu' => $request->getVar('tipo_atencion_usu') ?? null,
+            'sexo' => $request->getVar('sexo') ?? null,
+            'via_atencion' => $request->getVar('via_atencion') ?? null,
+            'direcciones_caso' => $request->getVar('direcciones_caso') ?? null,
+            'direccion_administrativa' => $request->getVar('direccion_administrativa') ?? null,
+            'usuarios' => $request->getVar('usuarios') ?? null,
+            'tipo_beneficiario' => $request->getVar('tipo_beneficiario') ?? null,
 
-    // Mapea el índice de la columna al alias de la columna en tu consulta.
-    $columns = [
-        'a.idcaso', 
-        'a.casofec', 
-        'nombre',
-        'b.estnom', 
-        't_antusu.tipo_aten_nombre', 
-        'tpinte.tipo_prop_nombre', 
-        't_bene.tipo_beneficiario_nombre', 
-        'a.sexo'
-    ];
+            'atencion_cuidadano' => $request->getVar('atencion_cuidadano') ?? null,
+            'estatus' => $request->getVar('estatus') ?? null,
+            'id_pais' => $request->getVar('id_pais') ?? null,
+            'id_estado' => $request->getVar('id_estado') ?? null,
+            'id_municipio' => $request->getVar('id_municipio') ?? null,
+            'id_parroquia' => $request->getVar('id_parroquia') ?? null,
+            'edad_min' => $request->getVar('edad_min') ?? null,
+            'edad_max' => $request->getVar('edad_max') ?? null,
+            'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
+            'org_id' => $request->getVar('org_id') ?? null,
+            'linea_estrategica' => $request->getVar('linea_estrategica') ?? null,
+        ];
 
-    // Asegúrate de que la columna de ordenación exista antes de usarla.
-    if (isset($params['order'][0]['column'])) {
-        $order_index = $params['order'][0]['column'];
-        if (isset($columns[$order_index])) {
-            $params['order_column'] = $columns[$order_index];
-            $params['order_direction'] = $params['order'][0]['dir'];
+        // Mapa índice de columna -> alias SQL (igual que consolidado)
+        $columns = [
+            'a.idcaso',
+            'a.casofec',
+            'nombre',
+            'b.estnom',
+            't_antusu.tipo_aten_nombre',
+            'tpinte.tipo_prop_nombre',
+            't_bene.tipo_beneficiario_nombre',
+            'a.sexo',
+        ];
+
+        if (isset($params['order'][0]['column'])) {
+            $order_index = $params['order'][0]['column'];
+            if (isset($columns[$order_index])) {
+                $params['order_column'] = $columns[$order_index];
+                $params['order_direction'] = $params['order'][0]['dir'];
+            } else {
+                $params['order_column'] = 'a.idcaso';
+                $params['order_direction'] = 'DESC';
+            }
         } else {
-            // Establece un ordenamiento por defecto si la columna no se encuentra.
             $params['order_column'] = 'a.idcaso';
             $params['order_direction'] = 'DESC';
         }
-    } else {
-        // Establece un ordenamiento por defecto si no se especifica.
-        $params['order_column'] = 'a.idcaso';
-        $params['order_direction'] = 'DESC';
+
+        $model = new Casos();
+        // Dataset específico para Políticas Públicas
+        $data = $model->getReporteData($params);
+
+
+        $output = [
+            "draw" => $params['draw'],
+            "recordsTotal" => $data['recordsTotal'],
+            "recordsFiltered" => $data['recordsFiltered'],
+            "data" => $data['data'],
+        ];
+
+        return $this->response->setJSON($output);
     }
 
-    // Llama al modelo con un único array de parámetros.
-    $model = new Casos();
-    $data = $model->getReporteData($params);
-
-    // Prepara y devuelve la respuesta JSON.
-    $output = [
-        "draw" => $params['draw'],
-        "recordsTotal" => $data['recordsTotal'],
-        "recordsFiltered" => $data['recordsFiltered'],
-        "data" => $data['data']
-    ];
-
-    return $this->response->setJSON($output);
-}
 
 	
 

@@ -289,31 +289,40 @@
                         </div>
 
                         <div class="mt-2 pt-2 border-t border-gray-300">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-1">
-                                <div class="mb-2 col-compact">
-                                    <label for="tipo-pi">Tipo de Propiedad Intelectual:</label>
-                                    <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="tipo-pi" name="tipo-pi">
-                                        <option value="0" selected disabled>seleccione</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-2 col-compact">
-                                    <label for="estatus">Estatus:</label>
-                                    <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="estatus" name="estatus">
-                                        <option value="0" selected disabled>seleccione</option>
-                                        <option value="1">Abierto</option>
-                                        <option value="2">Cerrado</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-2 col-compact">
-                                    <label for="direcciones_caso">Casos Remititos a :</label>
-                                    <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="direcciones_caso" name="direcciones_caso">
-                                        <option value="0" selected disabled>Seleccione</option>
-                                        <?php echo $direcciones; ?>
-                                    </select>
-                                </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2">
+    
+                            <div class="mb-0 col-compact">
+                                <label for="tipo-pi" class="block text-sm font-medium text-gray-700">Tipo de Propiedad Intelectual:</label>
+                                <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="tipo-pi" name="tipo-pi">
+                                    <option value="0" selected disabled>seleccione</option>
+                                </select>
                             </div>
+
+                            <div class="mb-0 col-compact">
+                                <label for="estatus" class="block text-sm font-medium text-gray-700">Estatus:</label>
+                                <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="estatus" name="estatus">
+                                    <option value="0" selected disabled>seleccione</option>
+                                    <option value="1">Abierto</option>
+                                    <option value="2">Cerrado</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-0 col-compact">
+                                <label for="linea-estrategica" class="block text-sm font-medium text-gray-700">Linea Estrategica:</label>
+                                <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="linea-estrategica" name="linea-estrategica">
+                                    <option value="0" selected disabled>seleccione</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-0 col-compact">
+                                <label for="direcciones_caso" class="block text-sm font-medium text-gray-700">Casos Remititos a :</label>
+                                <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="direcciones_caso" name="direcciones_caso">
+                                    <option value="0" selected disabled>Seleccione</option>
+                                    <?php echo $direcciones; ?>
+                                </select>
+                            </div>
+
+                        </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-1">
                                 <div class="mb-2 col-compact">
@@ -347,48 +356,48 @@
 
                      <div class="w-full flex flex-nowrap items-end gap-x-3 pt-2 border-t border-gray-300 mt-2">
 
-    <div class="flex-1 min-w-[200px] org_pp col-compact">
-        <label for="organismo-caso" class="block text-sm font-medium text-gray-700 mb-1">Organismo del Poder Popular</label>
-        <select id="organismo-caso" name="organismo-caso" class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue">
-            <option value="0">Seleccione Organismo</option>
-        </select>
-    </div>
+                    <div class="flex-1 min-w-[200px] org_pp col-compact">
+                        <label for="organismo-caso" class="block text-sm font-medium text-gray-700 mb-1">Organismo del Poder Popular</label>
+                        <select id="organismo-caso" name="organismo-caso" class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue">
+                            <option value="0">Seleccione Organismo</option>
+                        </select>
+                    </div>
 
-    <div class="flex-1 min-w-[200px] org_pp col-compact">
-        <label for="direccion_administrative" class="block text-sm font-medium text-gray-700 mb-1">Dirección Administrativa</label>
-        <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="direccion_administrativa" name="direccion_administrativa">
-            <option value="0" selected disabled>Seleccione</option>
-            <?php echo $direcciones; ?>
-        </select>
-    </div>
+                    <div class="flex-1 min-w-[200px] org_pp col-compact">
+                        <label for="direccion_administrative" class="block text-sm font-medium text-gray-700 mb-1">Dirección Administrativa</label>
+                        <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="direccion_administrativa" name="direccion_administrativa">
+                            <option value="0" selected disabled>Seleccione</option>
+                            <?php echo $direcciones; ?>
+                        </select>
+                    </div>
 
-    <div class="flex-1 min-w-[200px] org_pp col-compact" id="contenedor_operador" style="display:none;">
-        <label for="operador" class="block text-sm font-medium text-gray-700 mb-1">Operador</label>
-        <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="operador" name="operador">
-            <option value="0" selected>Todos</option>
-        </select>
-    </div>
+                    <div class="flex-1 min-w-[200px] org_pp col-compact" id="contenedor_operador" style="display:none;">
+                        <label for="operador" class="block text-sm font-medium text-gray-700 mb-1">Operador</label>
+                        <select class="w-full compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="operador" name="operador">
+                            <option value="0" selected>Todos</option>
+                        </select>
+                    </div>
 
-    <div class="flex-none flex items-center h-[38px] pb-1 bg-gray-50 px-2 rounded-lg border border-gray-200"> 
-        <span class="text-sm font-semibold text-gray-700 mr-2">Edad:</span>
-        
-        <label for="edad_min" class="text-sm font-normal mr-1">Desde:</label>
-        <input type="number" class="w-14 compact-input-edad mr-2 border border-gray-300 rounded-lg text-center focus:ring focus:ring-green-500" id="edad_min" min="0" name="edad_min">
-        
-        <label for="edad_max" class="text-sm font-normal mr-1">Hasta:</label>
-        <input type="number" class="w-14 compact-input-edad border border-gray-300 rounded-lg text-center focus:ring focus:ring-green-500" id="edad_max" min="0" name="edad_max">
-    </div>
+                    <div class="flex-none flex items-center h-[38px] pb-1 bg-gray-50 px-2 rounded-lg border border-gray-200"> 
+                        <span class="text-sm font-semibold text-gray-700 mr-2">Edad:</span>
+                        
+                        <label for="edad_min" class="text-sm font-normal mr-1">Desde:</label>
+                        <input type="number" class="w-14 compact-input-edad mr-2 border border-gray-300 rounded-lg text-center focus:ring focus:ring-green-500" id="edad_min" min="0" name="edad_min">
+                        
+                        <label for="edad_max" class="text-sm font-normal mr-1">Hasta:</label>
+                        <input type="number" class="w-14 compact-input-edad border border-gray-300 rounded-lg text-center focus:ring focus:ring-green-500" id="edad_max" min="0" name="edad_max">
+                    </div>
 
-    <div class="flex-none flex gap-x-2 h-[38px] pb-1">
-        <button type="button" class="consultar inline-flex items-center px-4 py-2 font-semibold text-sm rounded-lg shadow-sm bg-primary-blue text-white hover:bg-primary-dark transition duration-300 ease-in-out transform hover:scale-[1.02]">
-            <i class="fas fa-search mr-1"></i> Consultar
-        </button>
-        <button type="button" class="limpiar inline-flex items-center px-4 py-2 font-semibold text-sm rounded-lg shadow-sm bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300 transition duration-300 ease-in-out">
-            <i class="fas fa-eraser mr-1"></i> Limpiar
-        </button>
-    </div>
+                    <div class="flex-none flex gap-x-2 h-[38px] pb-1">
+                        <button type="button" class="consultar inline-flex items-center px-4 py-2 font-semibold text-sm rounded-lg shadow-sm bg-primary-blue text-white hover:bg-primary-dark transition duration-300 ease-in-out transform hover:scale-[1.02]">
+                            <i class="fas fa-search mr-1"></i> Consultar
+                        </button>
+                        <button type="button" class="limpiar inline-flex items-center px-4 py-2 font-semibold text-sm rounded-lg shadow-sm bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300 transition duration-300 ease-in-out">
+                            <i class="fas fa-eraser mr-1"></i> Limpiar
+                        </button>
+                    </div>
 
-</div>
+                </div>
                         </div>
                     </div>
                 </div>
@@ -402,28 +411,33 @@
                         <div class="overflow-x-auto">
                             <table class="display min-w-full divide-y divide-gray-200" id="table_casos" style="width:100%; margin-top: 20px">
                                 <thead class="bg-theme-gray text-white uppercase text-xs font-semibold tracking-wider">
-                                    <tr>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Nº</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Cédula</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Tipo Ben</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">Beneficiario</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">Teléfono</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Propiedad Intelectual</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Género</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Vía de Atención</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Tipo de Atención</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Dirección Adm.</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">País</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Estado</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Municipio</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Parroquia</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Organismo PP</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Fecha</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Estatus</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Operador</td>
-                                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Detalle</td>
-                                    </tr>
-                                </thead>
+                                <tr>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Nº</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">CÉDULA</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">P.ATENDIDO</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">BENEFICIARIO</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">TELÉFONO</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">GÉNERO</td>
+
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PAÍS</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ESTADO</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">MUNICIPIO</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">PARROQUIA</td>
+
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">VÍA DE ATENCIÓN</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OBJETIVO DE LA ACTIVIDAD</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">PROPIEDAD INTELECTUAL</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ORGANISMO PP</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">LINEA ESTRATEGICA</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">CASO REMITIDO A</td>
+
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">FECHA</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">ESTATUS</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">CASO CREADO POR</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OPERADOR</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">DETALLE</td>
+                                </tr>
+                            </thead>
                                 <tbody id="listar_casos" class="divide-y divide-gray-200"></tbody>
                             </table>
                         </div>
