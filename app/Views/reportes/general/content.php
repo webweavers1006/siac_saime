@@ -646,7 +646,7 @@
                                 </div>
 
                                 <div class="mb-2 col-compact">
-                                    <label for="direcciones_caso">Dirección Administrativa:</label>
+                                    <label for="direcciones_caso">Casos Remititos a :</label>
                                     <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="direcciones_caso" name="direcciones_caso">
                                         <option value="0" selected disabled>Seleccione</option>
                                         <?php echo $direcciones; ?>

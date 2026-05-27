@@ -215,6 +215,13 @@ $routes->setAutoRoute(false);
      //RUTAS PARA EL SUPERVISOR
      $routes->get('/consolidado', "Reporte_Controler::vista_consolidado");
      $routes->get('/reporte_consolidado', 'Reporte_Controler::reporte_consolidado');
+
+     //RUTAS PARA POLÍTICAS PÚBLICAS
+     $routes->get('/Politicas_Publicas', "Politicas_Publicas_Controler::vista_politicas_publicas");
+     $routes->get('/reporte_politicas_publicas', 'Politicas_Publicas_Controler::reporte_politicas_publicas');
+     $routes->get('/listar_operadores_politicas_publicas', 'Politicas_Publicas_Controler::listar_operadores_politicas_publicas');
+
+
      //RUTAS PARA EL OPERADOR
      $routes->get('/operador', "Reporte_Controler::vista_operador");
      $routes->get('/reporte_operador', "Reporte_Controler::reporte_operador");

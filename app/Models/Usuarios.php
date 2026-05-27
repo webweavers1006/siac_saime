@@ -37,6 +37,26 @@ public function getAllUsers_filtro()
 		return $query;
 	}
 
+
+
+
+public function getAllUsers_filtro_Pliticas_Publicas($direccion_administrativa = null)
+	{
+		$builder = $this->dbconn('sgc_usuario_operador a');
+		$builder->select('a.idusuopr,a.usercargo,a.id_direccion_administrativa,a.usuopnom,a.usuopape,a.usuopemail,a.usuopborrado,b.rolnom,b.idrol');
+		$builder->join("sgc_roles b", 'a.idrol = b.idrol');
+		$builder->where('a.usuopborrado', false);
+
+		if (!empty($direccion_administrativa) && $direccion_administrativa != '0') {
+			$builder->where('a.id_direccion_administrativa', $direccion_administrativa);
+		}
+
+		$query = $builder->get();
+		return $query;
+	}
+
+
+
 	public function getAllUsers_operadores()
 	{
 		$builder = $this->dbconn('sgc_usuario_operador a');
