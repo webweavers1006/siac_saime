@@ -453,8 +453,10 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     { data: 'tipo_beneficiario' },         // 3. Tipo Ben
     { data: 'nombre' },                   // 4. Beneficiario
     { data: 'casotel' },                  // 5. Teléfono
-    { data: 'sexo' },                     // 6. Género
-    
+   { data: 'cant_personas' },
+    { data: 'masculino' },
+    { data: 'femenino' },                   // 6. Género
+        
     { data: 'pais_nombre' },              // 7. País
     { data: 'estado_nombre' },            // 8. Estado
     { data: 'municipio_nombre' },          // 9. Municipio

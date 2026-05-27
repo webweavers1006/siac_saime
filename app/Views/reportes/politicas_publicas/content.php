@@ -417,8 +417,9 @@
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">P.ATENDIDO</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">BENEFICIARIO</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">TELÉFONO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">GÉNERO</td>
-
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">CANT.P</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">M</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">F</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PAÍS</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ESTADO</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">MUNICIPIO</td>
