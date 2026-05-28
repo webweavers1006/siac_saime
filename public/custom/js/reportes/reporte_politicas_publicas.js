@@ -299,7 +299,7 @@ function llenar_pais(e, id) {
 let filteredCount = 0;
 let pdfHeader = '';
 
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, direccion_administrativa=null, operador = 0, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, linea_estrategica = 0) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, direccion_administrativa = null, operador = 0, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, linea_estrategica = 0) {
 
     pdfHeader = '';
     let fechaInicio = $('input[name="desde"]').val() || desde;
@@ -307,11 +307,11 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
 
     if (fechaInicio && fechaInicio !== 'null') {
         let m_d = moment(fechaInicio);
-        if(m_d.isValid()) pdfHeader += 'Desde: ' + m_d.format("DD-MM-YYYY") + ' ';
+        if (m_d.isValid()) pdfHeader += 'Desde: ' + m_d.format("DD-MM-YYYY") + ' ';
     }
     if (fechaFin && fechaFin !== 'null') {
         let m_h = moment(fechaFin);
-        if(m_h.isValid()) pdfHeader += 'Hasta: ' + m_h.format("DD-MM-YYYY") + ' ';
+        if (m_h.isValid()) pdfHeader += 'Hasta: ' + m_h.format("DD-MM-YYYY") + ' ';
     }
 
     const obtenerTextoLimpio = (idSelector) => {
@@ -335,7 +335,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
     if ($.fn.DataTable.isDataTable('#table_casos')) {
         $('#table_casos').DataTable().destroy();
     }
-    
+
     filteredCount = 0;
 
     var table = $('#table_casos').DataTable({
@@ -343,7 +343,6 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             details: {
                 display: $.fn.dataTable.Responsive.display.childRow,
                 renderer: function (api, rowIdx, columns) {
-                    // Fuerza a que los datos ocultos se muestren en una sola fila con Flexbox
                     var data = $.map(columns, function (col, i) {
                         return col.hidden
                             ? '<div style="margin-right: 15px; font-size: 14px;">' +
@@ -351,12 +350,11 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                               '</div>'
                             : '';
                     }).join('');
-                    
                     return data ? $('<div style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;"/>').append(data) : false;
                 }
             }
         },
-        dom: 'lfrBtip', 
+        dom: 'lfrBtip',
         buttons: {
             dom: { button: { className: 'btn-xs-xs' } },
             buttons: [
@@ -369,18 +367,18 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     header: true,
                     footer: true,
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 15, 16] },
-                    customize: function(doc) {
+                    customize: function (doc) {
                         doc.content.splice(0, 1);
                         doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center', fontSize: 10 };
                         doc.defaultStyle.fontSize = 9;
-                        doc.pageMargins = [20, 130, 20, 50]; 
-                        doc['header'] = (function(page, pages) {
+                        doc.pageMargins = [20, 130, 20, 50];
+                        doc['header'] = (function (page, pages) {
                             return {
                                 columns: [
                                     { margin: [20, 10, 0, 0], image: ruta_imagen, width: 750 },
-                                    { 
-                                        margin: [-780, 75, 20, 0], 
-                                        color: '#4c8aa0', 
+                                    {
+                                        margin: [-780, 75, 20, 0],
+                                        color: '#4c8aa0',
                                         stack: [
                                             { text: 'CONSOLIDADO DE CASOS', fontSize: 16, bold: true, alignment: 'center' },
                                             { text: (pdfHeader.trim() + ' | Registros Filtrados: ' + filteredCount), fontSize: 9, alignment: 'center', margin: [0, 5, 0, 0], color: '#333' }
@@ -389,8 +387,8 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                 ],
                             }
                         });
-                        doc['footer'] = (function(page, pages) {
-                            return { columns: [ { alignment: 'center', text: ['Página ', page.toString(), ' de ', pages.toString()], margin: [0, 20] } ] };
+                        doc['footer'] = (function (page, pages) {
+                            return { columns: [{ alignment: 'center', text: ['Página ', page.toString(), ' de ', pages.toString()], margin: [0, 20] }] };
                         });
                     },
                 },
@@ -399,7 +397,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     text: 'Excel',
                     className: 'btn-xs btn-dark',
                     title: 'Consolidado de Casos',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] },
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] },
                 }
             ],
         },
@@ -413,7 +411,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "ajax": {
             "url": "/reporte_politicas_publicas",
             "type": "GET",
-            "dataSrc": function(json) {
+            "dataSrc": function (json) {
                 filteredCount = json.recordsFiltered || 0;
                 return json.data;
             },
@@ -450,12 +448,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             { data: 'circuito_c_atendido' },
             { data: 'linea_estrategica_nombre' }
         ],
-        "columnDefs": [
-           {
-           targets: 2, // Índice correcto para 'direccion_admin_operador'
-            width: "300px"
-        }
-        ],
+        "columnDefs": [{ targets: 2, width: "300px" }],
         language: {
             sLengthMenu: "Mostrar _MENU_ registros",
             sZeroRecords: "No se encontraron resultados",
@@ -465,7 +458,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             sSearch: "Buscar:",
             oPaginate: { sFirst: "Primero", sLast: "Último", sNext: "Siguiente", sPrevious: "Anterior" }
         },
-        initComplete: function(settings, json) {
+        initComplete: function (settings, json) {
             let savedPage = localStorage.getItem('datatable_page');
             if (savedPage !== null) {
                 table.page(parseInt(savedPage)).draw(false);
@@ -474,7 +467,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         }
     });
 
-    table.on('page.dt', function() {
+    table.on('page.dt', function () {
         let info = table.page.info();
         localStorage.setItem('datatable_page', info.page);
     });
