@@ -420,6 +420,7 @@
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">CANT.P</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">M</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">F</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PODER.P.ATENDIDO </td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PAÍS</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ESTADO</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">MUNICIPIO</td>
@@ -427,14 +428,14 @@
 
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">VÍA DE ATENCIÓN</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OBJETIVO DE LA ACTIVIDAD</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">PROPIEDAD INTELECTUAL</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">TEMÁTICA</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ORGANISMO PP</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">LINEA ESTRATEGICA</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">CASO REMITIDO A</td>
 
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">FECHA</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">ESTATUS</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">CASO CREADO POR</td>
+                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">DIR/OFIC/COORD/RESPONSABLE</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OPERADOR</td>
                                     <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">DETALLE</td>
                                 </tr>

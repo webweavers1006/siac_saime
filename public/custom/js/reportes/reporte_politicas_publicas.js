@@ -410,7 +410,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     className: 'btn-xs btn-dark',
                     title: 'Consolidado de Casos',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20],
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20,21,22],
                     },
                 }
             ],
@@ -456,7 +456,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
    { data: 'cant_personas' },
     { data: 'masculino' },
     { data: 'femenino' },                   // 6. Género
-        
+    { data: "circuito_c_atendido" },
     { data: 'pais_nombre' },              // 7. País
     { data: 'estado_nombre' },            // 8. Estado
     { data: 'municipio_nombre' },          // 9. Municipio

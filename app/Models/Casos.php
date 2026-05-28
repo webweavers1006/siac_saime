@@ -889,17 +889,13 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
             "data" => $data
         ];
     }
-   // Dataset específico para el reporte de Políticas Públicas
- public function getReporteData_Politicas_Publicas($params)
+  public function getReporteData_Politicas_Publicas($params)
 {
     $db = \Config\Database::connect();
 
     // --- Paso 1: Sanitización Ultra-Estricta ---
     foreach ($params as $key => $value) {
-        if ($key === 'search' && is_array($value) && isset($value['value'])) {
-            $value = $value['value'];
-            $params[$key] = $value;
-        }
+        if ($key === 'search' && is_array($value) && isset($value['value'])) { $value = $value['value']; $params[$key] = $value; }
         if (is_string($value)) {
             $value = trim($value); $valueLower = strtolower($value);
             if ($value === '' || $value === 'null' || $value === 'undefined' || $value === '0' || $value === '-1' || $valueLower === 'seleccione' || $valueLower === 'todos' || strpos($valueLower, 'seleccione') !== false || ($key === 'id_pais' && $value === '1') || ($key === 'id_estado' && $value === '26') || ($key === 'id_municipio' && $value === '336') || ($key === 'id_parroquia' && $value === '1135')) { $params[$key] = null; } else { $params[$key] = $value; }
@@ -976,17 +972,23 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
     $filteredQuery = $builderCount->select('COUNT(DISTINCT a.idcaso) as total')->get();
     $recordsFiltered = (int)($filteredQuery->getRow()->total ?? 0);
 
-    // --- Paso 5: SELECT Final (Con corrección de género M/F) ---
+    // --- Paso 5: SELECT Final ---
     $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, UPPER(a.casonom) as casonom, UPPER(a.casoape) as casoape, UPPER(a.casodesc) as casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
     
+    // Subconsulta Beneficiarios
     $subQueryPart = "(SELECT string_agg(DISTINCT UPPER(tb.tipo_beneficiario_nombre), ', ') FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id JOIN sgc_tipo_beneficiarios tb ON p.tipo_beneficiario = tb.tipo_beneficiario_id WHERE tp.id_caso = a.idcaso)";
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryPart, 'SIN PARTICIPANTES') ELSE UPPER(t_bene.tipo_beneficiario_nombre) END as tipo_beneficiario");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryPart, 'SIN PARTICIPANTES') ELSE COALESCE(UPPER(t_bene.tipo_beneficiario_nombre), 'N/A') END as tipo_beneficiario");
     
-    // Contadores corregidos buscando 'M' y 'F'
+    // Subconsulta Circuito C (Organismos)
+    $subQueryOrg = "(SELECT string_agg(DISTINCT UPPER(o.org_nombre), ', ') FROM sgc_talleres_participantes tp JOIN sgc_org_pod_popular o ON tp.org_id = o.org_id WHERE tp.id_caso = a.idcaso)";
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryOrg, 'NO APLICA') ELSE COALESCE(UPPER(org.org_nombre), 'N/A') END as circuito_c_atendido");
+    
+    // Contadores de Género
     $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes WHERE id_caso = a.idcaso) ELSE 1 END as cant_personas");
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'M') ELSE (CASE WHEN a.sexo = '1' THEN 1 ELSE 0 END) END as masculino");
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'F') ELSE (CASE WHEN a.sexo = '2' THEN 1 ELSE 0 END) END as femenino");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'M') ELSE (CASE WHEN a.sexo = 1 THEN 1 ELSE 0 END) END as masculino");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'F') ELSE (CASE WHEN a.sexo = 2 THEN 1 ELSE 0 END) END as femenino");
     
+    // --- Campos de información ---
     $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'NO APLICA' ELSE UPPER(ubi.descripcion) END as descripcion");
     $builder->select("CASE WHEN dir_ope.descripcion IS NULL THEN 'NO ASIGNADA' ELSE UPPER(dir_ope.descripcion) END as direccion_admin_operador");
     $builder->select("CASE WHEN line_est.descripcion IS NULL THEN 'NO APLICA' ELSE UPPER(line_est.descripcion) END as linea_estrategica_nombre");
@@ -994,7 +996,7 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
     $builder->select("CONCAT(a.caso_nacionalidad, '-', a.casoced) AS cedula");
     $builder->select("UPPER(CONCAT(a.casonom, ' ', a.casoape)) AS nombre");
     $builder->select("UPPER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) AS user_name");
-    $builder->select("CASE WHEN a.sexo='1' THEN 'MASCULINO' WHEN a.sexo='2' THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
+    $builder->select("CASE WHEN a.sexo=1 THEN 'MASCULINO' WHEN a.sexo=2 THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, UPPER(b.estnom) as estnom');
     $builder->select('UPPER(tpinte.tipo_prop_nombre) as tipo_prop_nombre, tpinte.tipo_prop_id');
     $builder->select("CASE WHEN UPPER(t_antusu.tipo_aten_nombre) = 'FORMACIÓN' THEN 'FORMAR' WHEN UPPER(t_antusu.tipo_aten_nombre) = 'ASESORÍA' THEN 'ASESORAR' ELSE UPPER(t_antusu.tipo_aten_nombre) END as tipo_aten_nombre");
