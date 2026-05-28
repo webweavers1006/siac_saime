@@ -406,6 +406,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
         "order": [[0, "desc"]],
         "paging": true,
         "lengthChange": true,
+        "autoWidth": false,
         "searching": true,
         "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'Todos']],
         "serverSide": true,
@@ -450,7 +451,10 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
             { data: 'linea_estrategica_nombre' }
         ],
         "columnDefs": [
-            { "targets": "_all", "className": "text-center py-2 px-1" }
+           {
+           targets: 2, // Índice correcto para 'direccion_admin_operador'
+            width: "300px"
+        }
         ],
         language: {
             sLengthMenu: "Mostrar _MENU_ registros",

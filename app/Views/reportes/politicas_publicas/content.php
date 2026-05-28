@@ -17,11 +17,22 @@ table.dataTable tr.child td.child {
     padding: 10px 15px !important;
     text-align: left !important;
 }
+table.dataTable td {
+    white-space: normal; /* Permite que el texto salte de línea */
+}
+/* Esto obliga a la tabla a ocupar el ancho real y permitir scroll horizontal si es necesario */
+.dataTables_wrapper {
+    overflow-x: auto;
+}
 
-/* Asegura que los elementos hijos se mantengan en línea */
-table.dataTable tr.child td.child > div {
-    white-space: nowrap;
-    display: inline-block;
+table.dataTable {
+    width: 100% !important;
+}
+
+/* Asegura que la celda específica tenga espacio */
+table.dataTable td:nth-child(3) {
+    min-width: 300px;
+    white-space: normal;
 }
 
         #table_casos td:first-child {
@@ -445,23 +456,23 @@ table.dataTable tr.child td.child > div {
                             <table class="display min-w-full divide-y divide-gray-200" id="table_casos" style="width:100%; margin-top: 20px">
                                 <thead class="bg-theme-gray text-white uppercase text-xs font-semibold tracking-wider">
                                 <tr>
-                                    <td class="text-center py-2 px-1" style="width: 1%;">Nº</td>
-                                    <td class="text-center py-2 px-1" style="width: 1%;">FECHA</td>
-                                    <td class="text-center py-2 px-1" style="width: 60%;">DIR/OFIC/COORD RESPONSABLE</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">TIPO ACTIVIDAD</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">TEMÁTICA</td>
-                                    <td class="text-center py-2 px-1" style="width: 5%;">OBJETIVO DE LA ACTIVIDAD</td>
-                                    <td class="text-center py-2 px-1" style="width: 5%;">DESCRIPCIÓN DE LA ACTIVIDAD</td>
-                                    <td class="text-center py-2 px-1" style="width: 3%;">PAÍS</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">ESTADO</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">MUNICIPIO</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">PARROQUIA</td>
-                                    <td class="text-center py-2 px-1" style="width: 2%;">P.ATEND</td>
-                                    <td class="text-center py-2 px-1" style="width: 2%;">CANT.P</td>
-                                    <td class="text-center py-2 px-1" style="width: 1%;">M</td>
-                                    <td class="text-center py-2 px-1" style="width: 1%;">F</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">PODER.P</td>
-                                    <td class="text-center py-2 px-1" style="width: 4%;">LINEA ESTRAT.</td>
+                                    <td class="text-center py-2 px-1" >Nº</td>
+                                    <td class="text-center py-2 px-1" >FECHA</td>
+                                    <td class="text-center py-2 px-1"style="width: 50%;" >DIR/OFIC/COORD RESPONSABLE</td>
+                                    <td class="text-center py-2 px-1" >TIPO ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" >TEMÁTICA</td>
+                                    <td class="text-center py-2 px-1" >OBJETIVO DE LA ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" >DESCRIPCIÓN DE LA ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" >PAÍS</td>
+                                    <td class="text-center py-2 px-1" >ESTADO</td>
+                                    <td class="text-center py-2 px-1" >MUNICIPIO</td>
+                                    <td class="text-center py-2 px-1" >PARROQUIA</td>
+                                    <td class="text-center py-2 px-1" >P.ATEND</td>
+                                    <td class="text-center py-2 px-1" >CANT.P</td>
+                                    <td class="text-center py-2 px-1" >M</td>
+                                    <td class="text-center py-2 px-1" >F</td>
+                                    <td class="text-center py-2 px-1" >PODER.P</td>
+                                    <td class="text-center py-2 px-1" >LINEA ESTRAT.</td>
                                 </tr>
                             </thead>
                                 <tbody id="listar_casos" class="divide-y divide-gray-200"></tbody>
