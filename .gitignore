@@ -1,9 +1,18 @@
-writable/logs/*.log
-writable/debugbar/
-writable/session/
-public/documentos_casos/session/
-public/documentos_casos/debugbar/
-public/documentos_casos/
-public/documentos_punto_cuenta/
-/.env
+# Archivos de entorno (Seguridad)
+.env
+env
+
+# Carpetas de CodeIgniter 4 (Escritura y caché)
+/writable/logs/*.log
+/writable/debugbar/
+/writable/session/
+/writable/cache/
+/writable/debugbar/
+
+# Carpetas de documentos públicos
+/public/documentos_casos/
+/public/documentos_punto_cuenta/
+
+# Otros archivos de sistema y editores
 .qodo
+.DS_Store
