@@ -6,6 +6,39 @@
     <title>Políticas Públicas</title>
 
     <style>
+
+        /* Elimina el estilo de lista por defecto de DataTables */
+table.dataTable tr.child ul.dtr-details {
+    display: block !important;
+}
+
+/* Fuerza a que la fila hija sea un bloque limpio y con buen tamaño */
+table.dataTable tr.child td.child {
+    padding: 10px 15px !important;
+    text-align: left !important;
+}
+
+/* Asegura que los elementos hijos se mantengan en línea */
+table.dataTable tr.child td.child > div {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+        #table_casos td:first-child {
+    padding-left: 30px !important;
+    position: relative;
+}
+
+        /* Ajuste para evitar el solapamiento del expansor con el ID */
+#table_casos td:first-child {
+    padding-left: 30px !important; /* Ajusta este valor según necesites (25px-35px suele ser suficiente) */
+    position: relative;
+}
+
+/* Asegurar que el icono de expansión tenga espacio y no quede pegado al borde */
+#table_casos td:first-child::before {
+    margin-right: 10px;
+}
       /* Paleta y superficies tipo Tailwind */
     :root {
         --slate-50: #f8fafc;
@@ -412,32 +445,23 @@
                             <table class="display min-w-full divide-y divide-gray-200" id="table_casos" style="width:100%; margin-top: 20px">
                                 <thead class="bg-theme-gray text-white uppercase text-xs font-semibold tracking-wider">
                                 <tr>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Nº</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">CÉDULA</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">P.ATENDIDO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">BENEFICIARIO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">TELÉFONO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">CANT.P</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">M</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">F</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PODER.P.ATENDIDO </td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">PAÍS</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ESTADO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">MUNICIPIO</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">PARROQUIA</td>
-
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">VÍA DE ATENCIÓN</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OBJETIVO DE LA ACTIVIDAD</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">TEMÁTICA</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">ORGANISMO PP</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">LINEA ESTRATEGICA</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">CASO REMITIDO A</td>
-
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">FECHA</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">ESTATUS</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">DIR/OFIC/COORD/RESPONSABLE</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">OPERADOR</td>
-                                    <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">DETALLE</td>
+                                    <td class="text-center py-2 px-1" style="width: 1%;">Nº</td>
+                                    <td class="text-center py-2 px-1" style="width: 1%;">FECHA</td>
+                                    <td class="text-center py-2 px-1" style="width: 60%;">DIR/OFIC/COORD RESPONSABLE</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">TIPO ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">TEMÁTICA</td>
+                                    <td class="text-center py-2 px-1" style="width: 5%;">OBJETIVO DE LA ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" style="width: 5%;">DESCRIPCIÓN DE LA ACTIVIDAD</td>
+                                    <td class="text-center py-2 px-1" style="width: 3%;">PAÍS</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">ESTADO</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">MUNICIPIO</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">PARROQUIA</td>
+                                    <td class="text-center py-2 px-1" style="width: 2%;">P.ATEND</td>
+                                    <td class="text-center py-2 px-1" style="width: 2%;">CANT.P</td>
+                                    <td class="text-center py-2 px-1" style="width: 1%;">M</td>
+                                    <td class="text-center py-2 px-1" style="width: 1%;">F</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">PODER.P</td>
+                                    <td class="text-center py-2 px-1" style="width: 4%;">LINEA ESTRAT.</td>
                                 </tr>
                             </thead>
                                 <tbody id="listar_casos" class="divide-y divide-gray-200"></tbody>
