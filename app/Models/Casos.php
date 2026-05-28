@@ -889,7 +889,7 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
             "data" => $data
         ];
     }
- public function getReporteData_Politicas_Publicas($params)
+  public function getReporteData_Politicas_Publicas($params)
 {
     $db = \Config\Database::connect();
 
@@ -930,69 +930,93 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
 
     // --- Conteo Total ---
     $builderTotal = clone $builder;
-    $totalQuery = $builderTotal->select('COUNT(DISTINCT a.idcaso) as total')->get();
-    $recordsTotal = (int)($totalQuery->getRow()->total ?? 0);
+    $totalQuery   = $builderTotal->select('COUNT(DISTINCT a.idcaso) as total')->get();
+    $recordsTotal = $totalQuery->getRow() ? (int)$totalQuery->getRow()->total : 0; 
 
     // --- Paso 3: Filtros Dinámicos ---
-    // (Mantén aquí todos tus filtros de búsqueda)
+    if (!empty($params['desde'])) { $builder->where('a.casofec >=', $params['desde']); }
+    if (!empty($params['hasta'])) { $builder->where('a.casofec <=', $params['hasta']); }
+    if (!empty($params['edad_min'])) { $builder->where('a.edad >=', $params['edad_min']); }
+    if (!empty($params['edad_max'])) { $builder->where('a.edad <=', $params['edad_max']); }
+    if (!empty($params['tipo_pi'])) { $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']); }
+    if (!empty($params['tipo_atencion_usu'])) { $builder->where('t_antusu.tipo_aten_id', $params['tipo_atencion_usu']); }
+    if (!empty($params['sexo'])) { $builder->where('a.sexo', $params['sexo']); }
+    if (!empty($params['via_atencion'])) { $builder->where('a.idrrss', $params['via_atencion']); }
+    if (!empty($params['direcciones_caso'])) { $builder->where('caso_r.direccion_id', $params['direcciones_caso']); }
+    if (!empty($params['usuarios'])) { $builder->where('a.idusuopr', $params['usuarios']); }
+    if (!empty($params['direccion_administrativa'])) { $builder->where('u_ope.id_direccion_administrativa', $params['direccion_administrativa']); }
+    if (!empty($params['tipo_beneficiario'])) { $builder->where('a.tipo_beneficiario', $params['tipo_beneficiario']); }
+    if (!empty($params['atencion_cuidadano'])) { $builder->where('a.ofiid', $params['atencion_cuidadano']); }
+    if (!empty($params['estatus'])) { $builder->where('a.idest', $params['estatus']); }
+    if (!empty($params['id_pais'])) { $builder->where('a.pais', $params['id_pais']); }
+    if (!empty($params['id_estado'])) { $builder->where('a.estadoid', $params['id_estado']); }
+    if (!empty($params['id_municipio'])) { $builder->where('a.municipioid', $params['id_municipio']); }
+    if (!empty($params['id_parroquia'])) { $builder->where('a.parroquiaid', $params['id_parroquia']); }
+    if (!empty($params['org_id'])) { $builder->where('a.caso_org_id', $params['org_id']); }
+    if (!empty($params['detalle_atencion'])) { $builder->where('a.tipo_atend_id', $params['detalle_atencion']); }
+    if (!empty($params['linea_estrategica']) && $params['linea_estrategica'] !== '0' && $params['linea_estrategica'] !== 'null') { $builder->where('a.id_linea_estrategica', $params['linea_estrategica']); }
+
+    if (!empty($params['search'])) {
+        $search = $params['search'];
+        $builder->groupStart();
+            $builder->like('CAST(a.idcaso AS TEXT)', $search);
+            $builder->orLike('TRIM(a.casoced)', $search);
+            $builder->orLike('LOWER(a.casonom)', strtolower($search));
+            $builder->orLike('LOWER(a.casoape)', strtolower($search));
+            $builder->orLike('LOWER(b.estnom)', strtolower($search));
+            $builder->orLike('LOWER(t_antusu.tipo_aten_nombre)', strtolower($search));
+            $builder->orLike('LOWER(tpinte.tipo_prop_nombre)', strtolower($search));
+            $builder->orLike('LOWER(t_bene.tipo_beneficiario_nombre)', strtolower($search));
+            $builder->orLike("LOWER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape))", strtolower($search));
+            $builder->orLike('LOWER(rs.red_s_nom)', strtolower($search));
+        $builder->groupEnd();
+    }
 
     $builderCount = clone $builder;
     $filteredQuery = $builderCount->select('COUNT(DISTINCT a.idcaso) as total')->get();
-    $recordsFiltered = (int)($filteredQuery->getRow()->total ?? 0);
+    $recordsFiltered = $filteredQuery->getRow() ? (int)$filteredQuery->getRow()->total : 0; 
 
-    // --- Paso 5: SELECT Final ---
-    $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, UPPER(a.casonom) as casonom, UPPER(a.casoape) as casoape, UPPER(a.casodesc) as casodesc, a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
+    // --- Paso 5: SELECT Final (Con subconsultas y alias exactos) ---
+    $builder->select('caso_r.casos_re_id, a.idcaso, a.casotel, TRIM(a.casoced) AS casoced, a.casonom, a.casoape, a.casodesc');
+    $builder->select('a.caso_nacionalidad, a.idrrss, a.ofiid, a.estadoid, a.id_tipo_atencion');
     
-    // Subconsulta Beneficiarios
+    // Subconsultas clave
     $subQueryPart = "(SELECT string_agg(DISTINCT UPPER(tb.tipo_beneficiario_nombre), ', ') FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id JOIN sgc_tipo_beneficiarios tb ON p.tipo_beneficiario = tb.tipo_beneficiario_id WHERE tp.id_caso = a.idcaso)";
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryPart, 'SIN PARTICIPANTES') ELSE COALESCE(UPPER(t_bene.tipo_beneficiario_nombre), 'N/A') END as tipo_beneficiario");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryPart, 'SIN PARTICIPANTES') ELSE UPPER(t_bene.tipo_beneficiario_nombre) END as tipo_beneficiario");
     
-    // Subconsulta Circuito C
     $subQueryOrg = "(SELECT string_agg(DISTINCT UPPER(o.org_nombre), ', ') FROM sgc_talleres_participantes tp JOIN sgc_org_pod_popular o ON tp.org_id = o.org_id WHERE tp.id_caso = a.idcaso)";
     $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE($subQueryOrg, 'SIN ORGANISMO') ELSE COALESCE(UPPER(org.org_nombre), 'N/A') END as circuito_c_atendido");
     
-    // Contadores de Género
     $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes WHERE id_caso = a.idcaso) ELSE 1 END as cant_personas");
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'M') ELSE (CASE WHEN a.sexo = 1 THEN 1 ELSE 0 END) END as masculino");
-    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'F') ELSE (CASE WHEN a.sexo = 2 THEN 1 ELSE 0 END) END as femenino");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'M') ELSE (CASE WHEN a.sexo = '1' THEN 1 ELSE 0 END) END as masculino");
+    $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN (SELECT COALESCE(COUNT(*), 0) FROM sgc_talleres_participantes tp JOIN sgc_participantes p ON tp.participante_id = p.id WHERE tp.id_caso = a.idcaso AND p.sexo = 'F') ELSE (CASE WHEN a.sexo = '2' THEN 1 ELSE 0 END) END as femenino");
     
-    // Campos informativos
     $builder->select("CASE WHEN ubi.descripcion IS NULL THEN 'NO APLICA' ELSE UPPER(ubi.descripcion) END as descripcion");
     $builder->select("CASE WHEN dir_ope.descripcion IS NULL THEN 'NO ASIGNADA' ELSE UPPER(dir_ope.descripcion) END as direccion_admin_operador");
     $builder->select("CASE WHEN line_est.descripcion IS NULL THEN 'NO APLICA' ELSE UPPER(line_est.descripcion) END as linea_estrategica_nombre");
-    
-    // NUEVO CAMPO: Tipo de Actividad
     $builder->select("CASE WHEN a.id_tipo_atencion = 7 THEN COALESCE(UPPER(t_det.tipo_atend_nombre), 'N/A') ELSE 'N/A' END as nombre_actividad");
     
     $builder->select('a.municipioid, a.parroquiaid');
     $builder->select("CONCAT(a.caso_nacionalidad, '-', a.casoced) AS cedula");
     $builder->select("UPPER(CONCAT(a.casonom, ' ', a.casoape)) AS nombre");
     $builder->select("UPPER(CONCAT(u_ope.usuopnom, ' ', u_ope.usuopape)) AS user_name");
-    $builder->select("CASE WHEN a.sexo=1 THEN 'MASCULINO' WHEN a.sexo=2 THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
-    $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, UPPER(b.estnom) as estnom');
-    $builder->select('UPPER(tpinte.tipo_prop_nombre) as tipo_prop_nombre, tpinte.tipo_prop_id');
-    $builder->select('UPPER(t_antusu.tipo_aten_nombre) as tipo_aten_nombre');
+    $builder->select("CASE WHEN a.sexo='1' THEN 'MASCULINO' WHEN a.sexo='2' THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
+    $builder->select("to_char(a.casofec, 'dd/mm/yyyy') as casofec, a.casofec as casofec_normal, UPPER(b.estnom) as estnom");
+    $builder->select('UPPER(tpinte.tipo_prop_nombre) as tipo_prop_nombre, tpinte.tipo_prop_id, UPPER(t_antusu.tipo_aten_nombre) as tipo_aten_nombre');
     $builder->select('UPPER(pais.paisnom) as pais_nombre, UPPER(est.estadonom) as estado_nombre, UPPER(mun.municipionom) as municipio_nombre, UPPER(par.parroquianom) as parroquia_nombre');
     $builder->select("CASE WHEN rs.red_s_nom IS NULL THEN 'NO APLICA' ELSE UPPER(rs.red_s_nom) END as via_atencion_nombre");
     $builder->select("CASE WHEN org.org_nombre IS NULL THEN 'NO APLICA' ELSE UPPER(org.org_nombre) END as organismo_pp_nombre");
 
     // --- Paso 6: Orden y límites ---
     if (!empty($params['order_column'])) { $builder->orderBy($params['order_column'], $params['order_direction'] ?? 'DESC'); } else { $builder->orderBy('a.idcaso', 'DESC'); }
-    if ($params['length'] != -1) { $builder->limit($params['length'], $params['start']); }
+    if (isset($params['length']) && $params['length'] != -1) { $builder->limit($params['length'], $params['start']); }
 
-    return [ "recordsTotal" => $recordsTotal, "recordsFiltered" => $recordsFiltered, "data" => $builder->get()->getResultArray() ];
+    return [
+        "recordsTotal"    => (int)$recordsTotal,
+        "recordsFiltered" => (int)$recordsFiltered,
+        "data"            => $builder->get()->getResultArray()
+    ];
 }
-
-
-
-
-
-
-
-
-
-
-
 // Dataset específico para el reporte de Operadores
     public function getReporteOperadorData(array $params)
     {
