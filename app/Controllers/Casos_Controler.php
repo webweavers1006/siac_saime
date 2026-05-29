@@ -274,6 +274,8 @@ public function nuevoCaso()
                         "pais"              => $datos["country"] ?? 1,
                         "sexo"              => $datos["sexo"] ?? 1,
                         "ofiid"             => $datos["office"] ?? null,
+                        "id_linea_estrategica" => isset($datos["linea-estrategica"]) ? (int)$datos["linea-estrategica"] : 1,
+
                         "casodesc"          => $descripcion_actual,
                         "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
                         "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
@@ -598,6 +600,7 @@ public function actualizarCaso()
             $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
             $newCase["tipo_atend_id"] = $datos["tipo_atend_id"];
             $newCase["profesion"] = $datos["profesion"];
+            $newCase["id_linea_estrategica"] = $datos["id_linea_estrategica"] ?? 1;
 
             if (empty($datos["record-work"])) {
                 $newCase["casonumsol"] = 'No Aplica';
@@ -611,8 +614,8 @@ public function actualizarCaso()
             {
                 $coordenadas["idcaso"] = $idcaso;
                 $coordenadas["nombre"] = $datos["nombre"];
-$coordenadas["latitud"] = isset($datos["latitud"]) ? $datos["latitud"] : '';
-$coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
+                $coordenadas["latitud"] = isset($datos["latitud"]) ? $datos["latitud"] : '';
+                $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
                 $coordenadas["borrado"] = false;
                 $coordenadas['idusuopr'] = $idusuopr;
                 
@@ -807,6 +810,7 @@ $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
             $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
             $newCase["profesion"] = $datos["profesion"];
             $newCase["casonumsol"] = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
+            $newCase["id_linea_estrategica"] = $datos["id_linea_estrategica"] ?? 1;
 
             $casoModel->actualizarCaso($newCase);
 
@@ -862,6 +866,7 @@ $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
             $newCase["fecha_nacimiento"] = $datos["fecha_nacimiento"];
             $newCase["profesion"] = $datos["profesion"];
             $newCase["casonumsol"] = empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"];
+            $newCase["id_linea_estrategica"] = $datos["id_linea_estrategica"] ?? 1;
 
             $casoModel->actualizarCaso($newCase);
             

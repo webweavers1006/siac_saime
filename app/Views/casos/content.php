@@ -519,6 +519,19 @@ $session = session();
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
+
+
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
+                                <label class="siac-label" for="linea-estrategica">Linea Estrategica</label>
+                                <select class="siac-select" id="linea-estrategica" name="linea-estrategica">
+                                   <option value="1" selected ></option>
+                                </select>
+                            </div>
+
+
+                                
+
                         </div>
                     </div>
                 </div>

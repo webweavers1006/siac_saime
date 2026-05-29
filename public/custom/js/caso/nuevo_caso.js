@@ -277,6 +277,7 @@ $(function() {
      llenar_Entes_asdcritos();
      llenar_Tipo_Beneficiarios();
      llenar_Organismos_PP();
+     llenar_Linea_Estrategica(Event);
 
    // 1. INICIALIZACIÓN DE SELECTORES PARA APODERADO SOLICITANTE
     llenar_Selectores_Iniciales("apoderado-solicitante");
@@ -324,6 +325,70 @@ $(function() {
     $(document).on('input', '.qty-pi', function() {
         actualizarTotalCasosPI();
     });
+
+
+
+
+//FUNCION PARA LLENAR EL COMBO LINEA ESTRATEGICA
+function llenar_Linea_Estrategica(e, id) {
+    e.preventDefault;
+    url = "/listar_linea_estrategica_activos";
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function(data) {},
+        success: function(data) {
+            if (data.length >= 1) {
+             $("#linea-estrategica").empty();
+                //$("#linea-estrategica").append(
+                   // "<option value=  selected disabled>Seleccione</option>"
+                //);
+                if (id === undefined) {
+                    $.each(data, function(i, item) {
+                        //
+                        $("#linea-estrategica").append(
+                            "<option value=" +
+                            item.id+
+                            ">" +
+                            item.descripcion +
+                            "</option>"
+                        );
+                    });
+                } else {
+                    $.each(data, function(i, item) {
+                        if (item.id=== id) {
+                            $("#linea-estrategica").append(
+                                "<option value=" +
+                                item.id+
+                                " selected>" +
+                                item.descripcion +
+                                "</option>"
+                            );
+                        } else {
+                            $("#linea-estrategica").append(
+                                "<option value=" +
+                                item.id+
+                                ">" +
+                                item.descripcion +
+                                "</option>"
+                            );
+                        }
+                    });
+                }
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            
+        },
+    });
+}
+
+
+
+
+
+
 
  // =================================================================
 // I. FUNCIONES DE LLENADO DE COMBOBOX (SELECTS)
@@ -1357,6 +1422,8 @@ $(document).on("click", "#guardar", function(e) {
         "town": $("#parroquia-caso").val(),
         "record-work": $("#num-tramite").val(),
         "pi-type": $("#tipo-pi").val() || 1,
+        "linea-estrategica": $("#linea-estrategica").val() || 1,
+
         "user-requirement": requerimiento_user,
         "office": $("#office").val(),
         "tipo-atencion-usu": tipo_atencion,

@@ -528,7 +528,18 @@ to {
         
         <span class="feedback-icon ms-2 fs-5"></span>
     </div>
-</div>
+        </div>
+
+                                    <div class="mb-0 col-compact">
+                                        <label for="correo">Linea Estrategica</label>
+                               
+                                    <select class="form-control"  id="linea-estrategica" name="linea-estrategica">
+                                        <option value="1" selected ></option>
+                                    </select>
+                                </div>
+
+
+
           </div>
           <br>
           <div class="">

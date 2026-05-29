@@ -14,7 +14,7 @@ table.dataTable tr.child ul.dtr-details {
 
 /* Fuerza a que la fila hija sea un bloque limpio y con buen tamaño */
 table.dataTable tr.child td.child {
-    padding: 10px 15px !important;
+    padding: 12px 15px !important;
     text-align: left !important;
 }
 table.dataTable td {
@@ -467,12 +467,12 @@ table.dataTable td:nth-child(3) {
                                     <td class="text-center py-2 px-1" >ESTADO</td>
                                     <td class="text-center py-2 px-1" >MUNICIPIO</td>
                                     <td class="text-center py-2 px-1" >PARROQUIA</td>
-                                    <td class="text-center py-2 px-1" >P.ATEND</td>
-                                    <td class="text-center py-2 px-1" >CANT.P</td>
-                                    <td class="text-center py-2 px-1" >M</td>
-                                    <td class="text-center py-2 px-1" >F</td>
-                                    <td class="text-center py-2 px-1" >PODER.P</td>
-                                    <td class="text-center py-2 px-1" >LINEA ESTRAT.</td>
+                                    <td class="text-center py-2 px-1" >PUBLICO ATENDIDO</td>
+                                    <td class="text-center py-2 px-1" >CANTIDAD DE PERSONAS</td>
+                                    <td class="text-center py-2 px-1" >MASCULINO </td>
+                                    <td class="text-center py-2 px-1" >FEMENINO</td>
+                                    <td class="text-center py-2 px-1" >PODER POPULAR ATENDIDO</td>
+                                    <td class="text-center py-2 px-1" >LINEA ESTRÁEGICA</td>
                                 </tr>
                             </thead>
                                 <tbody id="listar_casos" class="divide-y divide-gray-200"></tbody>

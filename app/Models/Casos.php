@@ -325,7 +325,11 @@ private function buildBaseQuery($builder)
     $builder->select('CASE WHEN sexo = \'1\' THEN \'M\' ELSE \'F\' END as sexo');
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id');
-    $builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
+$builder->select('t_antusu.tipo_aten_nombre, t_antusu.act_pro_int,t_antusu.organismo_pp ');
+    
+    // Línea Estratégica (para render del modal)
+    $builder->select('a.id_linea_estrategica');
+    $builder->select("line_est.descripcion AS linea_estrategica_nombre");
     
     // CORRECCIÓN: Agregar 'public.' a TODOS los JOINs y corregir JOIN de denuncias
     $builder->join('public.sgc_estatus b', 'b.idest = a.idest');
@@ -336,6 +340,9 @@ private function buildBaseQuery($builder)
     $builder->join('public.sgc_registro_cgr cgr', 'a.idcaso = cgr.id_caso', 'left');
     $builder->join('public.sgc_tipoatenciondetalle as d', 'a.tipo_atend_id = d.tipo_atend_id', 'left');
     $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
+    
+    // JOIN para Línea Estratégica
+    $builder->join('public.sgc_linea_estrategica as line_est', 'a.id_linea_estrategica = line_est.id', 'left');
     
     // CORRECCIÓN: Agregar JOINs faltantes para consistencia con getReporteData y getReporteOperadorData
     $builder->join('public.sgc_tipo_beneficiarios as t_bene', 'a.tipo_beneficiario = t_bene.tipo_beneficiario_id', 'left');
