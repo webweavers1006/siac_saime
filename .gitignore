@@ -6,6 +6,14 @@ writable/uploads/*
 !writable/uploads/index.html
 public/documentos_casos/
 public/documentos_punto_cuenta/
+public/static/
+public/img/174.jpeg
+public/img/175.jpeg
+public/img/sihic2.png
+public/css_paginas/actualizar_audiencias.css
+public/css_paginas/actualizar_citas.css
+public/css_paginas/actualizar_solicitud.css
+public/css_paginas/audiencias.css
 /.env
 .qodo
 deploy/nginx.conf

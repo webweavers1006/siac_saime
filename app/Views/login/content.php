@@ -7,7 +7,7 @@
 </style>
   <div class="login-box">
     <div class="login-logo">
-      <img src="<?php echo base_url(); ?>/theme/img/Logosapi-2020.png" style="max-width: 10rem; max-height: 10rem;">
+      <img src="<?= base_url((new \Config\Assets())->logoSapi) ?>" style="max-width: 10rem; max-height: 10rem;">
     </div>
     <!-- /.login-logo -->
     <div class="card">

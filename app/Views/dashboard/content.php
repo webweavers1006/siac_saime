@@ -91,7 +91,7 @@ $session = session();
             <div class="card-body imagen">
               <section class="form-login_imagen2">
                 <div class="imagencentral2">
-                  <img class="img-fluid mx-auto d-block" src="<?= base_url() ?>/img/LogoSIAC_sapi.png" id="imagencentral">
+                  <img class="img-fluid mx-auto d-block" src="<?= base_url((new \Config\Assets())->logoSiacSapi) ?>" id="imagencentral">
                 </div>
                
               </div>

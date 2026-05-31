@@ -16,23 +16,13 @@ class Administrador extends BaseController
 	{
 		$rolModel = new Roles();
 		$idrol = (session('userrol'));
-		// Realiza la solicitud a la API para obtener los datos
-		$session = session();
-		$token = $session->get('token');
-		// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
-		$contexto = stream_context_create([
-			'http' => [
-				'method'  => 'GET',
-				'header'  => "Authorization: Bearer $token\r\n"
-			]
-		]);
 		
 		$rows = array();
 		if ($this->session->get('userrol') == 1 or $this->session->get('userrol') == 5 ) {
 			//Preguntamos por los roles de los usuarios
 			$query = $rolModel->getRoles($idrol);
 			
-			$nivel_rol = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/roles",false, $contexto), true);
+			$nivel_rol = ['roless' => []];
 
 			
 			//Generamos los option para los formularios

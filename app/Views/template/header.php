@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Sistema Integrado de Atención al Ciudadano (SIAC)</title>
-  <link rel="icon" type="image/png" href="<?= base_url() ?>/img/LogoSIAC_sapi2.png" style="width: 50px; height: 50px;">
+  <link rel="icon" type="image/png" href="<?= base_url((new \Config\Assets())->logoFavicon) ?>" style="width: 50px; height: 50px;">
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- daterange picker -->

@@ -59,15 +59,47 @@ database.default.port = 5432
 database.default.DSN = pgsql:host=127.0.0.1;port=5432;dbname=siac_v2_saime;user=postgres;password=<tu-password>
 ```
 
-### 4. Crear base de datos
+### 4. Crear base de datos y ejecutar migraciones
 
 ```bash
-sudo -u postgres psql -c "CREATE DATABASE siac_v2_saime;"
-# Importar el dump si existe:
-# sudo -u postgres psql siac_v2_saime < dump.sql
+# Crear la base de datos
+sudo -u postgres psql -c "CREATE DATABASE siac_migraciones_test OWNER postgres;"
 ```
 
-### 5. Configurar Nginx
+Luego ejecutar migraciones y seeders:
+
+```bash
+# Crear todas las tablas + foreign keys (38 migraciones)
+php spark migrate
+
+# Poblar datos de catálogo + usuario admin (20 seeders en orden)
+php spark db:seed MainSeeder
+```
+
+> Esto crea 37 tablas, 22 foreign keys y carga: roles, países (216), estados (26), municipios (336), parroquias (1135), y un usuario administrador.
+
+#### Credenciales por defecto
+
+| Campo | Valor |
+|-------|-------|
+| Email | `admin@sala-situacional.test` |
+| Password | `admin123` |
+| Rol | Administrador |
+
+### 5. Comandos Spark útiles
+
+| Comando | Descripción |
+|---------|-------------|
+| `php spark migrate` | Ejecutar migraciones nuevas |
+| `php spark migrate:status` | Ver estado de migraciones |
+| `php spark migrate:refresh` | Rollback + migrate |
+| `php spark migrate:rollback` | Revertir último batch |
+| `php spark db:seed MainSeeder` | Ejecutar todos los seeders en orden |
+| `php spark db:seed RolesSeeder` | Ejecutar un seeder específico |
+| `php spark routes` | Ver rutas registradas |
+| `php spark list` | Ver todos los comandos |
+
+### 6. Configurar Nginx
 
 ```bash
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/siac_saime
@@ -75,13 +107,13 @@ sudo ln -s /etc/nginx/sites-available/siac_saime /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### 6. Agregar dominio local
+### 7. Agregar dominio local
 
 ```bash
 echo "127.0.0.1  salasituacional.test" | sudo tee -a /etc/hosts
 ```
 
-### 7. Crear carpetas necesarias y permisos
+### 8. Crear carpetas necesarias y permisos
 
 ```bash
 # Carpetas requeridas
@@ -102,7 +134,7 @@ sudo chmod -R 775 /var/www/siac_saime/public/documentos_punto_cuenta
 sudo usermod -a -G www-data $USER
 ```
 
-### 8. Configurar whitelist de acceso
+### 9. Configurar whitelist de acceso
 
 La lista principal de dominios/IPs autorizados está en `app/Config/Whitelist.php`:
 
@@ -120,13 +152,13 @@ whitelist.extra_ips = 127.0.0.1
 
 > Así la whitelist base se versiona y cada entorno agrega lo suyo sin tocar código.
 
-### 9. Verificar rutas
+### 10. Verificar rutas
 
 ```bash
 php spark routes
 ```
 
-### 10. Acceder
+### 11. Acceder
 
 Abrir en el navegador: `http://salasituacional.test`
 

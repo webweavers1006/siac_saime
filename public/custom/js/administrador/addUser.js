@@ -250,7 +250,7 @@ $(document).on('keyup', "#user-confirm-pass", (e) => {
 // //EVENTO PARA AGREGAR UN USUARIO
 $(document).on('submit', "#new-user", function(e) {
     e.preventDefault();
-    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia') || '{}');
     let id_direccion_administrativa = $("#id_direccion_administrativa").val();
     
     //VERIFICAR SI EL ROL ES DE AUDIENCIAS
@@ -523,7 +523,7 @@ $(document).on('submit', "#new-user", function(e) {
 $('#listar_usuarios').on('click', '.Editar', function(e) {
 
     
-  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+  const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia') || '{}');
     var idusuopr = $(this).attr('idusuopr');
     var usuopnom = $(this).attr('usuopnom');
     var usuopape = $(this).attr('usuopape');
@@ -728,7 +728,7 @@ function validarFormatoEmail(email) {
 // //Evento para guardar el usuario editado
 $(document).on('submit', "#edit-user", function(e) {
     e.preventDefault();
-    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia') || '{}');
     let id_user=$("#userid").val();
     let clave_actual = $("#edit-user-pass").val().trim();
     let clave_anterior = $("#edit-user-confirm-pass").val();
@@ -1168,7 +1168,7 @@ $("#acceso_audi").on('click', function() {
 
 $("#edit_acceso_audi").on('click', function() {
    let idusuopr=$('#userid').val();
-   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+   const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia') || '{}');
 
    if ($(this).is(':checked')) 
     {
@@ -1288,7 +1288,7 @@ $("#edit_acceso_audi").on('click', function() {
 });
 
 $("#ingreso_por_update").on('click', function() {
-    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia'));
+    const user_audiencia = JSON.parse(localStorage.getItem('user_audiencia') || '{}');
     let idusuopr=$('#userid').val();
     let identificacion =$("#edit_cedula").val();
 

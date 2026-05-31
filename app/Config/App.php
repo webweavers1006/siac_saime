@@ -268,4 +268,14 @@ class App extends BaseConfig
 	|   - http://www.w3.org/TR/CSP/
 	*/
 	public $CSPEnabled = false;
+
+	/*
+	|--------------------------------------------------------------------------
+	| Footer
+	|--------------------------------------------------------------------------
+	| Texto y enlace mostrados en el footer del sistema.
+	*/
+	public $footerAuthor = 'SAIME';
+	public $footerText   = 'Servicio Administrativo de Identificación, Migración y Extranjería';
+	public $footerLink   = 'https://www.saime.gob.ve';
 }

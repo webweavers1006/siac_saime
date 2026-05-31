@@ -1,11 +1,9 @@
 <!-- Main Footer -->
 <footer class="main-footer">
-  <!-- To the right -->
   <div class="float-right d-none d-sm-inline">
-  <strong><a href="#"> Creado por Freddy Torres</a></strong>
+    <strong>Creado por <?= config('App')->footerAuthor ?></strong>
   </div>
-  <!-- Default to the left -->
-  <strong>Copyleft &copy; 2027578 <a href="http://sapi.gob.ve">Servicio Autónomo de la Propiedad Intelectual</a>.</strong>
+  <strong>Copyleft &copy; <?= date('Y') ?> <a href="<?= config('App')->footerLink ?>"><?= config('App')->footerText ?></a>.</strong>
 </footer>
 </div>
 

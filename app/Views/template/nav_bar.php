@@ -340,7 +340,7 @@ $userdata = $session->get();
   
 <!-- Cintillo más ancho -->
   <div class="cintillo-container" style="display: flex; justify-content: center; align-items: center; width: 100%; max-width: 100%; margin: 0 20px;">
-    <img src="<?= base_url('img/cintillo_tradicional.png') ?>" 
+    <img src="<?= base_url((new \Config\Assets())->cintillo) ?>" 
          alt="Cintillo Institucional" 
          style="width: 100%; max-width: 100%; height: auto; max-height: 100px; object-fit: contain;">
 </div>
@@ -893,7 +893,7 @@ $userdata = $session->get();
       <!-- Brand Logo -->
       <a href="#" class="brand-link">
         <span class="brand-text font-weight-light"> SIAC </span>
-        <img src="<?php echo base_url(); ?>/img/favicon.jpg"  class="brand-image" style="opacity: .8; float: left; box-shadow: none; width: 35px;" onclick="return false;">
+        <img src="<?= base_url((new \Config\Assets())->brandLogo) ?>"  class="brand-image" style="opacity: .8; float: left; box-shadow: none; width: 35px;" onclick="return false;">
       </a>
       <!-- Sidebar -->
       <div class="sidebar">
@@ -1095,7 +1095,7 @@ $userdata = $session->get();
 
           <li class="nav-item">
             <a href="<?php echo base_url(); ?>/estadisticas_mapa" class="nav-link">
-              <img src="<?php echo base_url(); ?>/img/venezuela2.png" style='width:40px;height:30px'>
+              <img src="<?= base_url((new \Config\Assets())->bandera) ?>" style='width:40px;height:30px'>
               <p>Mapa de ayudas</p>
             </a>
           </li>

@@ -215,7 +215,7 @@ class Connection extends BaseConnection implements ConnectionInterface
 	 */
 	public function affectedRows(): int
 	{
-		return pg_affected_rows($this->resultID);
+		return is_resource($this->resultID) ? pg_affected_rows($this->resultID) : 0;
 	}
 
 	//--------------------------------------------------------------------

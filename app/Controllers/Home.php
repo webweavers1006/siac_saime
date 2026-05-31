@@ -26,56 +26,15 @@ class Home extends BaseController
 	//Vista principal de operadores aud
 	public function dashboard()
 	{
-
-		
 		if ($this->session->get('logged')) {
 
-			$token = $_COOKIE['token'];
-			$nivel_rol = $_COOKIE['nivel_rol'];
-  			$session = session();
-			
-			//MONTO EN SESSION EL TOKEN
- 			$session->set('token', $token);
-		    $session->set('nivel_rol', $nivel_rol);
-			$token = $session->get('token');
-			$nivel_rol = $session->get('nivel_rol');
-			
-			
-			// Crea un contexto de flujo para realizar una solicitud GET con el token como encabezado de autorización
-			$contexto = stream_context_create([
-				'http' => [
-					'method' => 'GET',
-					'header' => "Authorization: Bearer $token"
-				]
-			]);
-			
-			$estado = json_decode(file_get_contents("https://siac.sapi.gob.ve/api/audiencia/requerimientos/byEstados", false, $contexto), true);
-		   $data['estatus'] = $estado;
-
-			// BUSCO LOS PERMISOS DEL ROL
-			$url = "https://siac.sapi.gob.ve/api/audiencia/roles/".$nivel_rol;
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'Content-Type: application/json',
-				'Authorization: Bearer ' . $token
-			));
-			$response = curl_exec($ch);
-			$error_number = curl_errno($ch);
-			$error_message = curl_error($ch);
-			curl_close($ch);
-			if ($error_number) {
-				echo "Error: $error_message";
-			} else {
-				$permisos = json_decode($response, true);
-
-			}
-		  //ESTO TIENE TOLO LO DEL USUARIO EN SESION
+			$session = session();
 			$userdata = $session->get();
-			$session->set('permisos', $permisos);
+			$data = [];
+
 			echo view('template/header');
 			echo view('template/nav_bar');
-			echo view('dashboard/content',$data);
+			echo view('dashboard/content', $data);
 			echo view('template/footer');
 			echo view('dashboard/footer');
 		} else {
@@ -86,48 +45,7 @@ class Home extends BaseController
 	//Vista principal de los trabajadores
 	public function pantalla_bienvenida()
 	{
-		
-		if (session('logged')==TRUE) {
-
-
-			/* $token = $_COOKIE['token'];
-			$nivel_rol = $_COOKIE['nivel_rol'];
-  			$session = session();
-			
-			//MONTO EN SESSION EL TOKEN
- 			$session->set('token', $token);
-		    $session->set('nivel_rol', $nivel_rol);
-			$token = $session->get('token');
-			$nivel_rol = $session->get('nivel_rol');
-			
-			// BUSCO LOS PERMISOS DEL ROL
-			$url = "https://siac.sapi.gob.ve/api/audiencia/roles/".$nivel_rol;
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'Content-Type: application/json',
-				'Authorization: Bearer ' . $token
-			));
-			$response = curl_exec($ch);
-			$error_number = curl_errno($ch);
-			$error_message = curl_error($ch);
-			curl_close($ch);
-			if ($error_number) {
-				echo "Error: $error_message";
-			} else {
-				$permisos = json_decode($response, true);
-
-			}
-			$session->set('permisos', $permisos);
-			
-			//ESTO TIENE TODO LO DEL USUARIO EN SESION
-			$userdata = $session->get();
-			 */
-			
-
-			//ESTO TIENE TOLO LO DEL USUARIO EN SESION
-			
-			//Pasamos la tabla como parametro para la vista
+		if (session('logged') == TRUE) {
 			echo view('template/header');
 			echo view('template/nav_bar');
 			echo view('pantalla_bienvenida/content.php');
