@@ -104,16 +104,21 @@ sudo usermod -a -G www-data $USER
 
 ### 8. Configurar whitelist de acceso
 
-Editar `app/Controllers/BaseController.php` y agregar tu dominio/IP al array `$whitelist`:
+La lista principal de dominios/IPs autorizados está en `app/Config/Whitelist.php`:
 
 ```php
-protected $whitelist = [
-    // ... existentes ...
-    'salasituacional.test',
-    '127.0.0.1',
-    'localhost',
-];
+public $hosts = ['siac_v2.com', 'siac.sapi.gob.ve', ...];
+public $ips   = ['172.16.0.39', ...];
 ```
+
+Para agregar entradas solo para desarrollo/local, usar el `.env`:
+
+```ini
+whitelist.extra_hosts = salasituacional.test,localhost
+whitelist.extra_ips = 127.0.0.1
+```
+
+> Así la whitelist base se versiona y cada entorno agrega lo suyo sin tocar código.
 
 ### 9. Verificar rutas
 

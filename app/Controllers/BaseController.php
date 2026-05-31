@@ -41,54 +41,37 @@ class BaseController extends Controller
 	 * Constructor.
 	 */
 
+	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+	{
+		// No editar esta línea
+		parent::initController($request, $response, $logger);
 
-		protected $whitelist = 
-		[
-			'siac_v2.com', 
-			'siac.sapi.gob.ve', 
-			'atencion.sapi.gob.ve', 
-			'172.16.0.39', 
-			'186.167.8.181', 
-			'172.16.0.186',
-			'172.16.0.135',
-			'172.26.112.1',
-			'10.100.2.89',
-			'desarrollo-siac.sapi.gob.ve', 
-			'172.16.0.51',
-			'salasituacional.test',
-			'127.0.0.1',
-			'localhost',
-		];
-	
-		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-		{
-			// No editar esta línea
-			parent::initController($request, $response, $logger);
-	
-			// Precargar cualquier modelo, biblioteca, etc., aquí.
-			$this->session = \Config\Services::session();
-			$this->cache   = \Config\Services::cache();
-	
-			// Verificar el origen de la solicitud
-			$this->checkOrigin();
+		// Precargar cualquier modelo, biblioteca, etc., aquí.
+		$this->session = \Config\Services::session();
+		$this->cache   = \Config\Services::cache();
+
+		// Verificar el origen de la solicitud
+		$this->checkOrigin();
+	}
+
+	protected function checkOrigin()
+	{
+		$http_host   = $_SERVER['HTTP_HOST'] ?? '';
+		$remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
+
+		// Cargar whitelist desde archivo de configuración
+		$whitelist    = new \Config\Whitelist();
+		$allowedHosts = $whitelist->hosts;
+		$allowedIPs   = $whitelist->ips;
+
+		// Verificar
+		$host_autorizado = in_array($http_host, $allowedHosts);
+		$ip_autorizada   = in_array($remote_addr, $allowedIPs);
+
+		if (! $host_autorizado && ! $ip_autorizada) {
+			exit('Acceso no autorizado');
 		}
-	
-		protected function checkOrigin()
-		{
-			$http_host = $_SERVER['HTTP_HOST'] ?? '';
-			$remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
-		
-			// Verificar si el HTTP_HOST está en la whitelist
-			$host_autorizado = in_array($http_host, $this->whitelist);
-			
-			// Verificar si la IP del cliente está en la whitelist
-			$ip_autorizada = in_array($remote_addr, $this->whitelist);
-		
-			// Permitir acceso si cumple al menos una condición
-			if (!$host_autorizado && !$ip_autorizada) {
-				exit('Acceso no autorizado');
-			}
-		}
+	}
 
 	/*Funcion que formatea fechas*/
 	public function formatearFecha($fecha)
