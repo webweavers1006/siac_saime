@@ -91,6 +91,13 @@ class Exceptions
 	 */
 	protected $response;
 
+	/**
+	 * Formatter for API responses.
+	 *
+	 * @var mixed
+	 */
+	protected $formatter;
+
 	//--------------------------------------------------------------------
 
 	/**

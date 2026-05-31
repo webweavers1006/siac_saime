@@ -2,8 +2,8 @@
 //header('Access-Control-Allow-Origin: localhost:3000');
 header('Access-Control-Allow-Origin:*');
 
-// TEMPORAL: Mostrar errores para depuración
-error_reporting(E_ALL);
+// TEMPORAL: Mostrar errores para depuración (excluyendo E_DEPRECATED por compatibilidad PHP 8.2+)
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 

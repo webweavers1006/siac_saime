@@ -55,6 +55,9 @@ class BaseController extends Controller
 			'10.100.2.89',
 			'desarrollo-siac.sapi.gob.ve', 
 			'172.16.0.51',
+			'salasituacional.test',
+			'127.0.0.1',
+			'localhost',
 		];
 	
 		public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

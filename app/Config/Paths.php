@@ -50,7 +50,7 @@ class Paths
 	 * for maximum security, keeping it out of the app and/or
 	 * system directories.
 	 */
-	public $writableDirectory = __DIR__ . '/../../public/documentos_casos/';
+	public $writableDirectory = __DIR__ . '/../../writable';
 	public $puntoCuentaDirectory = __DIR__ . '/../../public/documentos_punto_cuenta/'; 
 
 

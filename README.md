@@ -1,57 +1,185 @@
-# CodeIgniter 4 Framework
+# SIAC-SAIME - Sistema de Atención al Ciudadano
 
-## What is CodeIgniter?
+Proyecto CodeIgniter 4.0.3 con PostgreSQL.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible, and secure. 
-More information can be found at the [official site](http://codeigniter.com).
+---
 
-This repository holds the distributable version of the framework,
-including the user guide. It has been built from the 
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Requisitos del sistema
 
-More information about the plans for version 4 can be found in [the announcement](http://forum.codeigniter.com/thread-62615.html) on the forums.
+| Componente | Versión |
+|-----------|---------|
+| PHP       | **7.4** (no compatible con PHP 8.x) |
+| PostgreSQL | 12+ |
+| Nginx     | 1.18+ (o Apache) |
+| Composer  | 2.x |
 
-The user guide corresponding to this version of the framework can be found
-[here](https://codeigniter4.github.io/userguide/). 
+### Extensiones PHP requeridas
 
+```bash
+sudo apt install -y php7.4-fpm php7.4-pgsql php7.4-intl php7.4-mbstring php7.4-curl php7.4-xml php7.4-json
+```
 
-## Important Change with index.php
+---
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## Instalación
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+### 1. Clonar el proyecto
 
-**Please** read the user guide for a better explanation of how CI4 works!
-The user guide updating and deployment is a bit awkward at the moment, but we are working on it!
+```bash
+git clone <repo-url> /var/www/siac_saime
+cd /var/www/siac_saime
+```
 
-## Repository Management
+### 2. Instalar dependencias
 
-We use Github issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+```bash
+composer install
+```
 
-This repository is a "distribution" one, built by our release preparation script. 
-Problems with it can be raised on our forum, or as issues in the main repository.
+### 3. Configurar entorno
 
-## Contributing
+Copiar el archivo de entorno y editarlo:
 
-We welcome contributions from the community.
+```bash
+cp env .env
+```
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing.md) section in the development repository.
+Editar `.env` con los datos de la base de datos:
 
-## Server Requirements
+```ini
+CI_ENVIRONMENT = development
+app.baseURL = 'http://salasituacional.test/'
 
-PHP version 7.2 or higher is required, with the following extensions installed: 
+database.default.DBDriver = Postgre
+database.default.hostname = 127.0.0.1
+database.default.database = siac_v2_saime
+database.default.username = postgres
+database.default.password = <tu-password>
+database.default.port = 5432
+database.default.DSN = pgsql:host=127.0.0.1;port=5432;dbname=siac_v2_saime;user=postgres;password=<tu-password>
+```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### 4. Crear base de datos
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```bash
+sudo -u postgres psql -c "CREATE DATABASE siac_v2_saime;"
+# Importar el dump si existe:
+# sudo -u postgres psql siac_v2_saime < dump.sql
+```
 
-- json (enabled by default - don't turn it off)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php)
-- xml (enabled by default - don't turn it off)
+### 5. Configurar Nginx
+
+```bash
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/siac_saime
+sudo ln -s /etc/nginx/sites-available/siac_saime /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### 6. Agregar dominio local
+
+```bash
+echo "127.0.0.1  salasituacional.test" | sudo tee -a /etc/hosts
+```
+
+### 7. Crear carpetas necesarias y permisos
+
+```bash
+# Carpetas requeridas
+sudo mkdir -p /var/www/siac_saime/writable/session
+sudo mkdir -p /var/www/siac_saime/writable/debugbar
+sudo mkdir -p /var/www/siac_saime/public/documentos_casos
+sudo mkdir -p /var/www/siac_saime/public/documentos_punto_cuenta
+
+# Permisos
+sudo chown -R www-data:www-data /var/www/siac_saime/writable
+sudo chown -R www-data:www-data /var/www/siac_saime/public/documentos_casos
+sudo chown -R www-data:www-data /var/www/siac_saime/public/documentos_punto_cuenta
+sudo chmod -R 775 /var/www/siac_saime/writable
+sudo chmod -R 775 /var/www/siac_saime/public/documentos_casos
+sudo chmod -R 775 /var/www/siac_saime/public/documentos_punto_cuenta
+
+# Agregar tu usuario al grupo www-data (para desarrollo)
+sudo usermod -a -G www-data $USER
+```
+
+### 8. Configurar whitelist de acceso
+
+Editar `app/Controllers/BaseController.php` y agregar tu dominio/IP al array `$whitelist`:
+
+```php
+protected $whitelist = [
+    // ... existentes ...
+    'salasituacional.test',
+    '127.0.0.1',
+    'localhost',
+];
+```
+
+### 9. Verificar rutas
+
+```bash
+php spark routes
+```
+
+### 10. Acceder
+
+Abrir en el navegador: `http://salasituacional.test`
+
+---
+
+## Configuraciones importantes
+
+### `app/Config/Paths.php`
+
+El directorio `$writableDirectory` debe apuntar a `writable/`:
+
+```php
+public $writableDirectory = __DIR__ . '/../../writable';
+```
+
+### `app/Config/App.php`
+
+- `$baseURL` — Debe coincidir con el dominio configurado en Nginx
+- `$indexPage` — Dejar como `'index.php'` (Nginx maneja el rewrite)
+- `$sessionSavePath` — Por defecto `WRITEPATH . 'session'`
+
+---
+
+## Solución de problemas comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `mkdir(): Permission denied` | `writable/` sin permisos para `www-data` | Paso 7 |
+| `Acceso no autorizado` | Dominio no está en la whitelist | Paso 8 |
+| `FILTER_SANITIZE_STRING is deprecated` | Usando PHP 8.x en vez de 7.4 | Instalar PHP 7.4 |
+| `Controller method is not found` | `Paths.php` con `$writableDirectory` incorrecto | Verificar `Paths.php` |
+| `404 - File Not Found` | Ruta no registrada o nginx mal configurado | Verificar `php spark routes` |
+
+---
+
+## Estructura del proyecto
+
+```
+siac_saime/
+├── app/                    # Código de la aplicación
+│   ├── Config/             # Configuraciones (App, Database, Routes, Paths, etc.)
+│   ├── Controllers/        # Controladores
+│   ├── Models/             # Modelos
+│   └── Views/              # Vistas
+├── deploy/                 # Archivos de despliegue
+│   └── nginx.conf          # Plantilla de configuración Nginx
+├── public/                 # Document root
+│   ├── index.php           # Entry point
+│   ├── documentos_casos/   # Uploads de documentos (requiere permisos)
+│   └── documentos_punto_cuenta/
+├── system/                 # Core de CodeIgniter 4
+├── vendor/                 # Dependencias de Composer
+├── writable/               # Archivos generados (requiere permisos de escritura)
+│   ├── session/            # Sesiones PHP
+│   ├── debugbar/           # Debug toolbar
+│   └── uploads/            # Uploads
+├── .env                    # Configuración de entorno (no versionar)
+├── env                     # Plantilla de .env
+├── composer.json
+└── spark                   # CLI de CodeIgniter
+```

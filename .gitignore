@@ -1,9 +1,11 @@
+/vendor/
 writable/logs/*.log
 writable/debugbar/
 writable/session/
-public/documentos_casos/session/
-public/documentos_casos/debugbar/
+writable/uploads/*
+!writable/uploads/index.html
 public/documentos_casos/
 public/documentos_punto_cuenta/
 /.env
 .qodo
+deploy/nginx.conf

@@ -372,7 +372,7 @@ class Request extends Message implements RequestInterface
 			{
 				$values[$key] = is_array($value)
 					? $this->fetchGlobal($method, $key, $filter, $flags)
-					: filter_var($value, $filter, $flags);
+					: ($flags === null ? filter_var($value, $filter) : filter_var($value, $filter, $flags));
 			}
 
 			return $values;
@@ -426,7 +426,7 @@ class Request extends Message implements RequestInterface
 			return $value;
 		}
 
-		return filter_var($value, $filter, $flags);
+		return $flags === null ? filter_var($value, $filter) : filter_var($value, $filter, $flags);
 	}
 
 	//--------------------------------------------------------------------
