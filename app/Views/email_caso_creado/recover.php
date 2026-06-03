@@ -265,19 +265,19 @@ h1 {
                                           <div class="contentEditable" align="center">
 
                                           <b>
-                                            <p style=" color:#222222;"><?php echo utf8_decode('¡Saludos!');?>, <?php echo $nombre; ?>
+                                            <p style=" color:#222222;"><?php echo '¡Saludos!';?>, <?php echo $nombre; ?>
                                           </b>
                                           <br>
 
-                                          <p style=" color:#222222;">  <?php echo utf8_decode('El caso que lleva por Nº');?> <?php echo $idcaso; ?> ha sido creado 
-                                          <?php echo utf8_decode(' de manera  satisfactoriamente.') ?> 
-                                          <?php echo utf8_decode('  Gracias por su confianza,dedicación y paciencia. ¡Hasta la próxima!') ?> 
+                                          <p style=" color:#222222;">  <?php echo 'El caso que lleva por Nº';?> <?php echo $idcaso; ?> ha sido creado 
+                                          <?php echo ' de manera  satisfactoriamente.' ?> 
+                                          <?php echo '  Gracias por su confianza,dedicación y paciencia. ¡Hasta la próxima!' ?> 
                                           </p>
                                           <br>
 
 
                                           <br>
-                                          <p style=" color:#222222;"> <?php echo utf8_decode('Dirección de Sistemas y Tecnologías de la Información: Soporte Tecnico del Sistema de Atención al Ciudadano(SIAC) del Servicio Autonomo de la Propiedad Intelectual')?></p>
+                                          <p style=" color:#222222;"> <?php echo 'Dirección de Sistemas y Tecnologías de la Información: Soporte Tecnico del Sistema de Atención al Ciudadano(SIAC) del Servicio Autonomo de la Propiedad Intelectual'?></p>
 
                                             </a>
                                             

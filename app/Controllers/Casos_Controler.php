@@ -25,14 +25,6 @@ use App\Models\SapiControversiaModel;
 
 use App\Models\NizaClasses;
 use App\Models\Notificaciones_Model;
-require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
-require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
-require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use VARIANT;
-
-
 
 class Casos_Controler extends BaseController
 {
@@ -116,7 +108,7 @@ public function Informacion_Usuarios($casoced=null)
 	} else {
 		$casos = $query;
 	}
-	echo json_encode($casos);
+	return $this->response->setJSON($casos);
 }
 
 
@@ -170,7 +162,8 @@ public function nuevoCaso()
         $detalles_generados = []; 
         $ids_generados = [];
 
-        // 3. CICLO DE PROCESAMIENTO
+        // 3. CICLO DE PROCESAMIENTO (con captura de errores SQL)
+        try {
         foreach ($lista_items as $item) {
             $repeticiones = (isset($item['cantidad']) && (int)$item['cantidad'] > 0) ? (int)$item['cantidad'] : 1;
 
@@ -206,10 +199,9 @@ public function nuevoCaso()
                     "casonumsol"        => empty($datos["record-work"]) ? 'No Aplica' : $datos["record-work"]
                 ];
 
-                // INSERCIÓN PRINCIPAL
-                if ($casoModel->insertarNuevoCaso($newCase)) {
-                    $_obtener_id = $casoModel->obtener_utimo_id();
-                    $idcaso = $_obtener_id->getRow()->ultimo_id; 
+                // INSERCIÓN PRINCIPAL (devuelve ID directamente desde la misma conexión)
+                $idcaso = $casoModel->insertarNuevoCaso($newCase);
+                if ($idcaso) {
 
                     // --- A. PROPIEDAD INTELECTUAL (Siempre se guarda) ---
                     $id_pi_final = $item['id_pi'] ?? ($datos["pi-type"] ?? 1);
@@ -300,6 +292,14 @@ public function nuevoCaso()
             }
         }
 
+    } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'mensaje' => 2,
+                'error'   => 'Error SQL: ' . $e->getMessage(),
+                'trace'   => ENVIRONMENT === 'development' ? $e->getTraceAsString() : null
+            ]);
+        }
+
         // Respuesta Final
         return $this->response->setJSON([
             'mensaje' => (!empty($ids_generados)) ? 1 : 2,
@@ -323,7 +323,7 @@ public function nuevoCaso()
 		$segModel = new Seguimientos();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales del caso
 			$newCase["idcaso"]    = $datos["idcaso"];
 			$newCase["borrado"]    = $datos["borrado"];
@@ -380,7 +380,7 @@ public function actualizarCaso()
     if ($this->session->get('logged') and $this->request->isAJAX()) {
         
         // Obtener datos del formulario
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         
         // Asignación de variables clave
         $idusuopr = $this->session->get('iduser');
@@ -914,11 +914,11 @@ public function DetalleCasoConsolidado($idcaso)
 		$remitirCase = array();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales del caso
 			$remitirCase["casos_id"]    = $datos["id_caso"];
 			$remitirCase["direccion_id"]     = $datos["direccion"];
-			$nombre_direccion["nombre_direccion"]     = utf8_decode($datos["nombre_direccion"]);
+			$nombre_direccion["nombre_direccion"]     = $datos["nombre_direccion"];
 			$remitirCase["idusuop"]    = $this->session->get('iduser');
 
 
@@ -960,7 +960,7 @@ public function DetalleCasoConsolidado($idcaso)
 					{
 						foreach ($buscar_descripcioncaso->getResult() as $row) 
 						{
-						$desc_caso=utf8_decode($row->casodesc);	
+						$desc_caso=$row->casodesc;	
 						}
 						//BUSCAMOS EL CORREO DE LA DIRECCION AL CUAL FUE REMITIDO EL CASO
 						$buscar_correo=	$direcciones->buscar_correo($datos["direccion"]);
@@ -980,7 +980,6 @@ public function DetalleCasoConsolidado($idcaso)
 							else 
 							{
 								//Enviamos un correo a la direccion Remitida 
-								$mail = new PHPMailer();
 								$dataEmail = array();
 
 								$dataEmail["idcaso"]=$datos["id_caso"];
@@ -991,55 +990,20 @@ public function DetalleCasoConsolidado($idcaso)
 								//Codificamos el JSON y lo encriptamos
 								$urlData = base64_encode(json_encode($dataEmail));
 								$dataEmail["urldata"] = $urlData;
-								$el_servidor  = "172.16.0.161";
-								$el_puerto    = "587";
-								$el_remitente = "adminsistemas@sapi.gob.ve";
-								$el_pass      = "As.12345";
 								try {
-									$smtpOptions = array(
-										'ssl' => array(
-											'verify_peer' => false,
-											'verify_peer_name' => false,
-											'allow_self_signed' => true
-										)
-									);
-								$correo=$correo;		
-								$io_mail = new PHPMailer();
-								$io_mail->isSMTP();
-								$io_mail->Host = $el_servidor;
-								$io_mail->Port = $el_puerto;
-								$io_mail->SMTPAuth = true;
-								$io_mail->Username = $el_remitente;
-								$io_mail->Password = $el_pass;
-								$io_mail->SMTPOptions = $smtpOptions;
-								$io_mail->setFrom($el_remitente);
-								$io_mail->AddAddress($correo); // Agrega la dirección de correo de destino
-								$io_mail->FromName = "No Reply";
-								$io_mail->Subject = utf8_decode("CASO Nª".' '.$datos["id_caso"].' '.' HA SIDO REMITIDO A SU DIRECCIÓN');
-								$io_mail->Body = view('mail/recover', $dataEmail);
-								$io_mail->AltBody = 'Este es un mensaje de prueba enviado desde el servidor SMTP';
-								$archivos=array();										
-								foreach ($buscar_archivos as $buscar_archivos) 
-								{
-										$archivos[]=$buscar_archivos->docu_ruta;				
-								}
-								foreach ($archivos as $archivo) 
-								{
-										$io_mail->AddAttachment(WRITEPATH.$archivo);
-								}
-								$rutaDestino = WRITEPATH ;
-								
-								if ($io_mail->send()) {
-									$url = base_url('mail/recover');
-									$link = "<a href='$url' </a>";
-									//return $this->respond(["message" => "Revisa tu correo para seguir los pasos de recuperación. $link"], 200);
-								} else {
-									$repuesta['mensaje']      = 2;
-									return json_encode($repuesta);
-									//return $this->respond(["message" => "No se pudo enviar el correo, pongase en contacto con el administrador del sistema para más información"], 404);
-								}
-								} catch (Exception $e) {
-									echo 'Error al establecer la conexión SMTP: ' . $e->getMessage();
+									$archivos = [];
+									foreach ($buscar_archivos as $buscar_archivos) {
+										$archivos[] = WRITEPATH . $buscar_archivos->docu_ruta;
+									}
+									$email = new \App\Libraries\EmailService();
+									$subject = "CASO Nª".' '.$datos["id_caso"].' '.' HA SIDO REMITIDO A SU DIRECCIÓN';
+									$body = view('mail/recover', $dataEmail);
+									if (!$email->send($correo, $subject, $body, $archivos)) {
+										$repuesta['mensaje'] = 2;
+										return json_encode($repuesta);
+									}
+								} catch (\Exception $e) {
+									log_message('error', 'Error SMTP: ' . $e->getMessage());
 								}
 								$repuesta['mensaje']      = 1;
 								$repuesta['idcaso']  = $datos["id_caso"];
@@ -1065,7 +1029,7 @@ public function DetalleCasoConsolidado($idcaso)
 						{
 							foreach ($buscar_descripcioncaso->getResult() as $row) 
 							{
-							$desc_caso=utf8_decode($row->casodesc);	
+							$desc_caso=$row->casodesc;	
 							}
 							$actualizar_datos['casos_id']=$datos["id_caso"];
 							$actualizar_datos['vigencia']=false;
@@ -1109,7 +1073,6 @@ public function DetalleCasoConsolidado($idcaso)
 										else 
 										{
 											//Enviamos un correo a la direccion Remitida 
-											$mail = new PHPMailer();
 											$dataEmail = array();
 											$dataEmail["idcaso"]=$datos["id_caso"];
 											$dataEmail["nombredireccion"]=$nombre_direccion["nombre_direccion"];
@@ -1120,55 +1083,20 @@ public function DetalleCasoConsolidado($idcaso)
 											//Codificamos el JSON y lo encriptamos
 											$urlData = base64_encode(json_encode($dataEmail));
 											$dataEmail["urldata"] = $urlData;
-											$el_servidor  = "172.16.0.161";
-											$el_puerto    = "587";
-											$el_remitente = "adminsistemas@sapi.gob.ve";
-											$el_pass      = "As.12345";
 											try {
-												$smtpOptions = array(
-													'ssl' => array(
-														'verify_peer' => false,
-														'verify_peer_name' => false,
-														'allow_self_signed' => true
-													)
-												);
-											$correo=$correo;		
-											$io_mail = new PHPMailer();
-											$io_mail->isSMTP();
-											$io_mail->Host = $el_servidor;
-											$io_mail->Port = $el_puerto;
-											$io_mail->SMTPAuth = true;
-											$io_mail->Username = $el_remitente;
-											$io_mail->Password = $el_pass;
-											$io_mail->SMTPOptions = $smtpOptions;
-											$io_mail->setFrom($el_remitente);
-											$io_mail->AddAddress($correo); // Agrega la dirección de correo de destino
-											$io_mail->FromName = "No Reply";
-											$io_mail->Subject = utf8_decode("CASO Nª".' '.$datos["id_caso"].' '.' HA SIDO REMITIDO A SU DIRECCIÓN');
-											$io_mail->Body = view('mail/recover', $dataEmail);
-											$io_mail->AltBody = 'Este es un mensaje de prueba enviado desde el servidor SMTP';
-											$archivos=array();										
-											foreach ($buscar_archivos as $buscar_archivos) {
-												$archivos[]=$buscar_archivos->docu_ruta;
-												
-											}
-											foreach ($archivos as $archivo) {
-												$io_mail->AddAttachment(WRITEPATH.$archivo);
-											}
-											
-								
-											if ($io_mail->send()) {
-												
-												$url = base_url('mail/recover');
-												$link = "<a href='$url' </a>";
-												//return $this->respond(["message" => "Revisa tu correo para seguir los pasos de recuperación. $link"], 200);
-											} else {
-												$repuesta['mensaje']      = 2;
-												return json_encode($repuesta);
-												//return $this->respond(["message" => "No se pudo enviar el correo, pongase en contacto con el administrador del sistema para más información"], 404);
-											}
-											} catch (Exception $e) {
-												echo 'Error al establecer la conexión SMTP: ' . $e->getMessage();
+												$archivos = [];
+												foreach ($buscar_archivos as $buscar_archivos) {
+													$archivos[] = WRITEPATH . $buscar_archivos->docu_ruta;
+												}
+												$email = new \App\Libraries\EmailService();
+												$subject = "CASO Nª".' '.$datos["id_caso"].' '.' HA SIDO REMITIDO A SU DIRECCIÓN';
+												$body = view('mail/recover', $dataEmail);
+												if (!$email->send($correo, $subject, $body, $archivos)) {
+													$repuesta['mensaje'] = 2;
+													return json_encode($repuesta);
+												}
+											} catch (\Exception $e) {
+												log_message('error', 'Error SMTP: ' . $e->getMessage());
 											}
 											$repuesta['mensaje']      = 1;
 											$repuesta['idcaso']  = $datos["id_caso"];
@@ -1274,7 +1202,7 @@ public function listar_Casos_Usuarios()
         "data" => $data['data']
     ];
 
-    echo json_encode($output);
+    return $this->response->setJSON($output);
 }
 
 
@@ -1298,26 +1226,26 @@ public function listar_Casos_Usuarios()
 		} else {
 			$ultimos_casos = $query;
 		}
-		echo json_encode($ultimos_casos);
+		return $this->response->setJSON($ultimos_casos);
 	}
 
 // Método para subir archivos
 public function upload()
 {
     $model = new Casos();
-    $id_caso_pdf = $_POST['id_caso_pdf'] ?? '';
-    $archivo = $_FILES['archivo'] ?? null;
+    $id_caso_pdf = $this->request->getPost('id_caso_pdf') ?? '';
+    $archivo = $this->request->getFile('archivo');
 
     // LISTA BLANCA
 	$config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx|ods|xls|xlsx|mp4|mp3|m4a|m4v|mov|wmv|avi|mkv|swf|odt';
     $tamañoMaximo = 10 * 1024 * 1024; // 10MB en bytes
 
     // Verificar si se ha subido un archivo
-    if ($archivo && $archivo["name"] != '') 
+    if ($archivo && $archivo->isValid() && $archivo->getName() != '') 
     {
         // Limpiar el nombre del archivo
-        $nombreArchivo = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', strtolower($id_caso_pdf . '_' . trim($archivo['name'])));
-        $archivoTemporal = trim($archivo['tmp_name']);
+        $nombreArchivo = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', strtolower($id_caso_pdf . '_' . trim($archivo->getName())));
+        $archivoTemporal = trim($archivo->getTempName());
         $rutaDestino = WRITEPATH . trim($nombreArchivo);
         $targetDir = WRITEPATH; // Directorio donde se guardarán los archivos subidos
         $targetFile = $targetDir . basename($nombreArchivo);
@@ -1337,7 +1265,7 @@ public function upload()
         }
 
         // Verificar el tamaño del archivo
-        if ($archivo["size"] > $tamañoMaximo) {
+        if ($archivo->getSize() > $tamañoMaximo) {
             return json_encode(1); // Archivo demasiado grande
         }
 
@@ -1421,7 +1349,7 @@ public function buscar_datos_usuarios()
 		} else {
 			$usuarios = $query_buscar_usuario->getResultArray();
 		}
-		echo json_encode($usuarios);
+		return $this->response->setJSON($usuarios);
 		
 	} else {
 		return redirect()->to('/');

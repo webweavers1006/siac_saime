@@ -91,7 +91,7 @@ class Administrador extends BaseController
 		} else {
 			$roles = $query->getResultArray();
 		}
-		echo json_encode($roles);
+		return $this->response->setJSON($roles);
 	}
 
 	//Metodo para añadir usuarios
@@ -99,56 +99,33 @@ class Administrador extends BaseController
 	public function addUsuarios()
 	{
 		$model = new Usuarios();
-		$model_buscarusuario = new Usuarios();
 
 		if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
 			$datos = json_decode(base64_decode($this->request->getPost('data')), true);
-			$query_usuarios = $model_buscarusuario->obtenerUsuario($datos["useremail"]);
 
+			// Verificar si el usuario ya existe
+			$query_usuarios = $model->obtenerUsuario($datos["useremail"]);
 			if (!empty($query_usuarios)) {
-				$mensaje = 0;
-				return json_encode($mensaje);
-			} else {
-				$query = $model->addUsuario(
-					array(
-						"usuopnom" => $datos["username"],
-						"usuopape" => $datos["userlastname"],
-						"usuoppass" => password_hash($datos["userpass"], PASSWORD_BCRYPT),
-						"idrol"    => $datos["userrol"],
-						"usuopemail" => $datos["useremail"],
-						"usercargo" => $datos["usercargo"],
-						"acceso_audi" => $datos["acceso_audi"],
-						"id_direccion_administrativa" => $datos["id_direccion_administrativa"]
-					)
-				);
-
-				
-
-			if ($datos["userrol"]=='9'or $datos["userrol"]==9 or $datos["acceso_audi"]==true)
-			{
-				$ultimo_id_insertado = $model_buscarusuario->ultimo_id_insertado();
-				$last_value = $ultimo_id_insertado;
-			
-				if (isset($query)) {
-					$mensaje = 1;
-					$mensaje = $last_value;
-					return json_encode($mensaje);
-				} else {
-					$mensaje = 2;
-					return json_encode($mensaje);
-				}
-			}else
-			{
-				if (isset($query)) {
-					$mensaje = 1;
-					return json_encode($mensaje);
-				} else {
-					$mensaje = 2;
-					return json_encode($mensaje);
-				}
-
+				return $this->response->setJSON(0);
 			}
-	
+
+			$query = $model->addUsuario(
+				array(
+					"usuopnom" => $datos["username"],
+					"usuopape" => $datos["userlastname"],
+					"usuoppass" => password_hash($datos["userpass"], PASSWORD_BCRYPT),
+					"idrol"    => $datos["userrol"],
+					"usuopemail" => $datos["useremail"],
+					"usercargo" => $datos["usercargo"],
+					"acceso_audi" => $datos["acceso_audi"] ?? false,
+					"id_direccion_administrativa" => $datos["id_direccion_administrativa"]
+				)
+			);
+
+			if (isset($query)) {
+				return $this->response->setJSON(1);
+			} else {
+				return $this->response->setJSON(2);
 			}
 		} else {
 			return $this->respond(["message" => "No autorizado"], 401);
@@ -161,7 +138,7 @@ class Administrador extends BaseController
 	// 	$model = new Usuarios();
 	// 	$data = array();
 	// 	if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-	// 		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+	// 		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 	// 		$query = $model->obtenerUsuarioPorId($datos["userid"]);
 	// 		if (isset($query)) {
 	// 			foreach ($query->getResult() as $row) {
@@ -210,7 +187,7 @@ class Administrador extends BaseController
 	// 	$model = new Usuarios();
 	// 	$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 	// 	if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-	// 		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+	// 		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 	// 		$cambio_clave = $datos["modulo_clave"];
 	// 		if ($cambio_clave == 'true') {
 	// 			$query = $model->actualizarUsuario(array(
@@ -305,7 +282,7 @@ class Administrador extends BaseController
 	// {
 	// 	$model = new Usuarios();
 	// 	if ($this->request->isAJAX() and $this->session->get('userrol') == 1 or $this->session->get('userrol') == 5) {
-	// 		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+	// 		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			
 	// 		$query = $model->actualizarUsuario(array(
 	// 			"idusuopr"   => $datos["idusuopr"],

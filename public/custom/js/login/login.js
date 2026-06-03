@@ -14,7 +14,7 @@ $(document).on('submit', "#login-user", function(e) {
    
     $.ajax({
         url: "/signin",
-        method: "GET",
+        method: "POST",
         dataType: "JSON",
         data: {
             "data": btoa(JSON.stringify(datos))
@@ -55,10 +55,7 @@ $(document).on('submit', "#login-user", function(e) {
 /*Verificacion de datos en el form*/
 $(document).on('change', '#usuario-email', function(e) {
     let texto = $("#usuario-email").val();
-    if (texto.match(/\w*.\w*\@sapi.gob.ve/) == null) {
-        $("#usuario-email").addClass('is-invalid');
-        $("button[type=submit]").attr('disabled', 'true');
-    } else if (texto.lenght < 5) {
+    if (texto.length < 5) {
         $("#usuario-email").addClass('is-invalid');
         $("button[type=submit]").attr('disabled', 'true');
     } else {

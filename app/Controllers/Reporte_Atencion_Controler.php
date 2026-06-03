@@ -60,7 +60,7 @@ class Reporte_Atencion_Controler extends BaseController
 		} else {
 			$casos = $query;
 		}
-		echo json_encode($casos);
+		return $this->response->setJSON($casos);
 	}
 
 
@@ -76,7 +76,7 @@ class Reporte_Atencion_Controler extends BaseController
 		} else {
 			$casos = $query;
 		}
-		echo json_encode($casos);
+		return $this->response->setJSON($casos);
 	}
 
 	public function vista_estadisticas()
@@ -1223,7 +1223,7 @@ class Reporte_Atencion_Controler extends BaseController
 	
 		// Retornar el array de resultados en formato JSON
 		header('Content-Type: application/json; charset=utf-8');
-		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+		return $this->response->setJSON($resultados, JSON_UNESCAPED_UNICODE);
 	}
 
 
@@ -1350,7 +1350,7 @@ class Reporte_Atencion_Controler extends BaseController
 	
 		// Retornar el array de resultados en formato JSON
 		header('Content-Type: application/json; charset=utf-8');
-		echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+		return $this->response->setJSON($resultados, JSON_UNESCAPED_UNICODE);
 	}
 
 	public function vista_estadisticas2()

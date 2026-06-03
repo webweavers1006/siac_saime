@@ -15,6 +15,7 @@
 #--------------------------------------------------------------------
 
 # CI_ENVIRONMENT = production
+CI_ENVIRONMENT = development
 
 #--------------------------------------------------------------------
 # APP
@@ -46,6 +47,11 @@ app.baseURL = 'http://salasituacional.test/'
 # app.CSPEnabled = false
 
 #--------------------------------------------------------------------
+# ENCRYPTION
+#--------------------------------------------------------------------
+encryption.key = e3eed672f2e24026abd8f1e80c715ab78f6989bc20b7f1d78742bf189f1d28a0
+
+#--------------------------------------------------------------------
 # DATABASE
 #--------------------------------------------------------------------
 database.default.DBDriver = Postgre  
@@ -63,6 +69,14 @@ database.default.DSN      = pgsql:host=127.0.0.1;port=5432;dbname=salasituaciona
 # database.tests.username = root
 # database.tests.password = root
 # database.tests.DBDriver = MySQLi
+
+#--------------------------------------------------------------------
+# SMTP EMAIL
+#--------------------------------------------------------------------
+smtp.host = 172.16.0.161
+smtp.port = 587
+smtp.user = adminsistemas@sapi.gob.ve
+smtp.pass = As.12345
 
 #--------------------------------------------------------------------
 # ACCESS WHITELIST (entradas adicionales)

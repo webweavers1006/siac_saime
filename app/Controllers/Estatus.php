@@ -10,12 +10,7 @@ use App\Models\Auditoria_sistema_Model;
 use App\Models\Notificaciones_Model;
 
 
-require_once APPPATH . '/ThirdParty/PHPMailer/PHPMailer.php';
-require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
-require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use VARIANT;
+
 class Estatus extends BaseController
 {
     use ResponseTrait;
@@ -46,7 +41,7 @@ public function Listar_Tipo_Estatus()
     } else {
         $estatus = $query;
     }
-    echo json_encode($estatus);
+    return $this->response->setJSON($estatus);
 }
 
 /*
@@ -61,7 +56,7 @@ public function Listar_Tipo_Atencion_filtro()
     } else {
         $atencion = $query;
     }
-    echo json_encode($atencion);
+    return $this->response->setJSON($atencion);
 }
 
 //Metodo para añadir tipo de atencion
@@ -71,7 +66,7 @@ public function add_Tipo_Estatus()
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->session->get('logged') and $this->request->isAJAX()) {
         //Obtenemos los datos del formulario
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         //llenamos los datos iniciales de las Direccion
         $estatus["estnom"]     = $datos["descripcion"];
         //Realizamos la insercion en la tabla
@@ -98,7 +93,7 @@ public function editTipoEstatus()
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->session->get('logged') and $this->request->isAJAX()) {
         //Obtenemos los datos del formulario
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         //llenamos los datos iniciales de las Direccion
         $estatus["estnom"]     = $datos["estnom"];
         $estatus["borrado"]     = $datos["borrado"];
@@ -126,7 +121,7 @@ public function editTipoEstatus()
         $segModel = new Seguimientos();
         $segQuery = '';
         if ($this->request->isAJAX() and $this->session->get('logged')) {
-            $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+            $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
             $data = array(
                 "idcaso" => $datos["caseid"],
                 "idest" => $datos["casestatus"]
@@ -167,7 +162,6 @@ public function editTipoEstatus()
                     if ($correo["env_correo"] == "t")
                     {
                         //Enviamos un correo al usuario
-                        $mail = new PHPMailer();
                         $correo = new casos();
                         //Buscamos el correo del Usuario , el  nombre del usuario 
                         $buscar_correo=	$correo->buscar_correo($datos["caseid"]);
@@ -190,42 +184,17 @@ public function editTipoEstatus()
                                 //Codificamos el JSON y lo encriptamos
                                 $urlData = base64_encode(json_encode($dataEmail));
                                 $dataEmail["urldata"] = $urlData;
-                                $el_servidor  = "172.16.0.161";
-                                $el_puerto    = "587";
-                                $el_remitente = "adminsistemas@sapi.gob.ve";
-                                $el_pass      = "As.12345";
                                 try {
-                                    $smtpOptions = array(
-                                        'ssl' => array(
-                                            'verify_peer' => false,
-                                            'verify_peer_name' => false,
-                                            'allow_self_signed' => true
-                                        )
-                                    );
-                                    $correo=$correo;		
-                                    $io_mail = new PHPMailer();
-                                    $io_mail->isSMTP();
-                                    $io_mail->Host = $el_servidor;
-                                    $io_mail->Port = $el_puerto;
-                                    $io_mail->SMTPAuth = true;
-                                    $io_mail->Username = $el_remitente;
-                                    $io_mail->Password = $el_pass;
-                                    $io_mail->SMTPOptions = $smtpOptions;
-                                    $io_mail->setFrom($el_remitente);
-                                    $io_mail->AddAddress($correo);
-                                    $io_mail->FromName = "No Reply";
-                                    $io_mail->Subject = utf8_decode("SU CASO Nª".' '.$datos["caseid"].' '.' HA SIDO CERRADO');
-                                    $io_mail->Body = view('email_caso_cerrado/recover',$dataEmail);
-                                    $io_mail->AltBody = 'Este es un mensaje de prueba enviado desde el servidor SMTP';
-                                    if ($io_mail->send()) {
-                                        $url = base_url('email_caso_cerrado/recover');
-                                        $link = "<a href='$url' </a>";
-                                    } else {
-                                    
+                                    $email = new \App\Libraries\EmailService();
+                                    $subject = "SU CASO Nª".' '.$datos["caseid"].' '.' HA SIDO CERRADO';
+                                    $body = view('email_caso_cerrado/recover', $dataEmail);
+                                    if (!$email->send($correo, $subject, $body)) {
+                                        $repuesta['mensaje'] = 4;
+                                        return json_encode($repuesta);
                                     }
-                            } catch (Exception $e) {
-                                echo 'Error al establecer la conexion SMTP: ' . $e->getMessage();
-                            }
+                                } catch (\Exception $e) {
+                                    log_message('error', 'Error SMTP: ' . $e->getMessage());
+                                }
                                 
                                 }
                             }  
@@ -424,7 +393,6 @@ public function editTipoEstatus()
         if ($tipocorreo=='1'||$tipocorreo==1)
         {
             //Enviamos un correo al usuario
-          $mail = new PHPMailer();
           $correo = new casos();
           //Buscamos el correo del Usuario , el  nombre del usuario 
           $buscar_correo=	$correo->buscar_correo($caseid);
@@ -449,43 +417,16 @@ public function editTipoEstatus()
                     //Codificamos el JSON y lo encriptamos
                     $urlData = base64_encode(json_encode($dataEmail));
                     $dataEmail["urldata"] = $urlData;
-                    $el_servidor  = "172.16.0.161";
-                    $el_puerto    = "587";
-                    $el_remitente = "adminsistemas@sapi.gob.ve";
-                    $el_pass      = "As.12345";
                     try {
-                        $smtpOptions = array(
-                            'ssl' => array(
-                                'verify_peer' => false,
-                                'verify_peer_name' => false,
-                                'allow_self_signed' => true
-                            )
-                        );
-             
-                        $correo=$correo;		
-                        $io_mail = new PHPMailer();
-                        $io_mail->isSMTP();
-                        $io_mail->Host = $el_servidor;
-                        $io_mail->Port = $el_puerto;
-                        $io_mail->SMTPAuth = true;
-                        $io_mail->Username = $el_remitente;
-                        $io_mail->Password = $el_pass;
-                        $io_mail->SMTPOptions = $smtpOptions;
-                        $io_mail->setFrom($el_remitente);
-                        $io_mail->AddAddress($correo);
-                        $io_mail->FromName = "No Reply";
-                        $io_mail->Subject = utf8_decode("SU CASO Nª".' '.$caseid.' '.' HA SIDO CREADO');
-                        $io_mail->Body = view('email_caso_creado/recover',$dataEmail);
-                        $io_mail->AltBody = 'Este es un mensaje de prueba enviado desde el servidor SMTP';
-                        if ($io_mail->send()) {
-                            $url = base_url('email_caso_creado/recover');
-                            $link = "<a href='$url' </a>";
-                        } else {
-                           $repuesta['mensaje']      = 4;
+                        $email = new \App\Libraries\EmailService();
+                        $subject = "SU CASO Nª".' '.$caseid.' '.' HA SIDO CREADO';
+                        $body = view('email_caso_creado/recover', $dataEmail);
+                        if (!$email->send($correo, $subject, $body)) {
+                           $repuesta['mensaje'] = 4;
                            return json_encode($repuesta);
                         }
-                    } catch (Exception $e) {
-                        echo 'Error al establecer la conexion SMTP: ' . $e->getMessage();
+                    } catch (\Exception $e) {
+                        log_message('error', 'Error SMTP: ' . $e->getMessage());
                     }              
                 }
           }  

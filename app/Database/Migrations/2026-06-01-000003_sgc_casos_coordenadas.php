@@ -26,11 +26,11 @@ class CasosCoordenadas extends Migration
             ],
             'latitud' => [
                 'null' => true,
-                'type' => 'DOUBLE',
+                'type' => 'FLOAT',
             ],
             'longitud' => [
                 'null' => true,
-                'type' => 'DOUBLE',
+                'type' => 'FLOAT',
             ],
             'fecha_creacion' => [
                 'null' => true,

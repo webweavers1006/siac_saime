@@ -12,7 +12,7 @@ class OrgPodPopularSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_org_pod_popular')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_org_pod_popular CASCADE');
 
         $this->db->table('sgc_org_pod_popular')->insertBatch([
             [

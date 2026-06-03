@@ -23,6 +23,15 @@ class Encryption extends BaseConfig
 
 	public $key = '';
 
+	/**
+	 * Constructor — carga la clave desde .env (nunca hardcodeada)
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->key = getenv('encryption.key') ?: '';
+	}
+
 	/*
 	  |--------------------------------------------------------------------------
 	  | Encryption driver to use

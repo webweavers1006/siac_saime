@@ -9,8 +9,6 @@ use CodeIgniter\API\ResponseTrait;
 
 
 use CodeIgniter\RESTful\ResourceController;
-use VARIANT;
-
 class PdfController extends BaseController
 {
 	use ResponseTrait;
@@ -36,7 +34,7 @@ class PdfController extends BaseController
 			$pdf->Header_planilla($datos_tipoatencion);
 		}
 		if (empty($query_pdf)) {
-			$pdf->cell(196, 5, utf8_decode('Sin Información Coincidente'), 1, 1, 'C', 1);
+			$pdf->cell(196, 5, 'Sin Información Coincidente'), 1, 1, 'C', 1;
 		} else {
 			foreach ($query_pdf as $query_pdf) {
 				$caso = $query_pdf->idcaso;

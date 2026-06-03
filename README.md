@@ -99,7 +99,34 @@ php spark db:seed MainSeeder
 | `php spark routes` | Ver rutas registradas |
 | `php spark list` | Ver todos los comandos |
 
-### 6. Configurar Nginx
+### 6. Cambios en base de datos (producción)
+
+Para modificar tablas sin perder datos, **nunca edites migraciones ya ejecutadas**.
+Crea una nueva con `spark migrate:create` y usa los métodos de Forge para alterar la estructura:
+
+```bash
+# Crear nueva migración con el cambio
+php spark migrate:create agregar_campo_x
+```
+
+Luego edita `up()` y `down()` según el cambio:
+
+| Cambio | Método en `up()` |
+|--------|-----------------|
+| Agregar columna | `$this->forge->addColumn('tabla', ['col' => ['type' => 'VARCHAR', ...]])` |
+| Modificar columna | `$this->forge->modifyColumn('tabla', ['col' => ['type' => 'TEXT', ...]])` |
+| Eliminar columna | `$this->forge->dropColumn('tabla', 'columna')` |
+| Agregar FK | `$this->db->query('ALTER TABLE t ADD CONSTRAINT ... FOREIGN KEY ...')` |
+| Agregar índice | `$this->db->query('CREATE INDEX ... ON tabla (col)')` |
+
+```bash
+# Ejecutar solo la nueva migración
+php spark migrate
+```
+
+> Spark compara la tabla `migrations` y solo ejecuta las que no están registradas. Las tablas y datos existentes no se tocan.
+
+### 7. Configurar Nginx
 
 ```bash
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/siac_saime
@@ -107,13 +134,13 @@ sudo ln -s /etc/nginx/sites-available/siac_saime /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### 7. Agregar dominio local
+### 8. Agregar dominio local
 
 ```bash
 echo "127.0.0.1  salasituacional.test" | sudo tee -a /etc/hosts
 ```
 
-### 8. Crear carpetas necesarias y permisos
+### 9. Crear carpetas necesarias y permisos
 
 ```bash
 # Carpetas requeridas
@@ -134,7 +161,7 @@ sudo chmod -R 775 /var/www/siac_saime/public/documentos_punto_cuenta
 sudo usermod -a -G www-data $USER
 ```
 
-### 9. Configurar whitelist de acceso
+### 10. Configurar whitelist de acceso
 
 La lista principal de dominios/IPs autorizados está en `app/Config/Whitelist.php`:
 
@@ -152,13 +179,13 @@ whitelist.extra_ips = 127.0.0.1
 
 > Así la whitelist base se versiona y cada entorno agrega lo suyo sin tocar código.
 
-### 10. Verificar rutas
+### 11. Verificar rutas
 
 ```bash
 php spark routes
 ```
 
-### 11. Acceder
+### 12. Acceder
 
 Abrir en el navegador: `http://salasituacional.test`
 

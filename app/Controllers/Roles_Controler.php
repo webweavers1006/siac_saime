@@ -36,7 +36,7 @@ class Roles_Controler extends BaseController
 		} else {
 			$roles = $query->getResultArray();
 		}
-		echo json_encode($roles);
+		return $this->response->setJSON($roles);
 	}
 	//Metodo para añadir Direcciones
 	public function add_Rol()
@@ -45,7 +45,7 @@ class Roles_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$roles["rolnom"]     = $datos["descripcion"];
 			//Realizamos la insercion en la tabla
@@ -69,7 +69,7 @@ class Roles_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$roles["rolnom"]     = $datos["descripcion"];
 			$roles["borrado"]     = $datos["borrado"];

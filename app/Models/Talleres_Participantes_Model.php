@@ -35,7 +35,8 @@ class Talleres_Participantes_Model extends Model
         $builder->where(['c.borrado' => false]);
         if ($desde !== null && $desde !== 'null' && $hasta !== null && $hasta !== 'null')
         {
-            $builder->where("c.casofec BETWEEN '$desde' AND '$hasta'");
+            $builder->where('c.casofec >=', $desde);
+            $builder->where('c.casofec <=', $hasta);
         }
         if ($sexo !== 'null' && $sexo!== null) {
             $builder->where("p.sexo", $sexo);

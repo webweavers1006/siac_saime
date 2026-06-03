@@ -264,18 +264,18 @@ h1 {
                                         
                                               <br>
                                               <br>
-                                              <p style=" color:#222222;">  <?php echo utf8_decode('¡Feliz! día Se notifica que, el caso Nº');?> <?php echo $idcaso; ?> ha sido remitido 
-                                                al departamento de <?php echo utf8_decode($nombredireccion); ?> a fin de realiza el seguimiento correspondiente .Gracias
+                                              <p style=" color:#222222;">  <?php echo '¡Feliz! día Se notifica que, el caso Nº';?> <?php echo $idcaso; ?> ha sido remitido 
+                                                al departamento de <?php echo $nombredireccion; ?> a fin de realiza el seguimiento correspondiente .Gracias
                                               </p>
                                               <br>
                                               <br>
-                                              <p style=" color:#222222;"><h3><?php echo utf8_decode('Descripción del Caso:')?></h3></p>   
+                                              <p style=" color:#222222;"><h3><?php echo 'Descripción del Caso:'?></h3></p>   
                                               <br>
                                               <br>        
-                                              <p style=" color:#222222;">  <?php echo utf8_decode($desc_caso);?></p>
+                                              <p style=" color:#222222;">  <?php echo $desc_caso;?></p>
                                               <br>
                                               <br>
-                                              <p style=" color:#222222; font-size: 11px;"> <?php echo utf8_decode('Dirección de  Atención al Ciudadano(SIAC) ')?></p>
+                                              <p style=" color:#222222; font-size: 11px;"> <?php echo 'Dirección de  Atención al Ciudadano(SIAC) '?></p>
 
                                                 </a>
                                                 

@@ -58,7 +58,7 @@ public function listar_talleres_participantes($desde = null, $hasta = null, $tip
 	} else {
 		$participantes = $query;
 	}
-	echo json_encode($participantes);
+	return $this->response->setJSON($participantes);
 }
 
 

@@ -21,8 +21,6 @@ require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use VARIANT;
-
 class Casos_Remitidos extends BaseController
 {
 
@@ -171,7 +169,7 @@ class Casos_Remitidos extends BaseController
 		} else {
 				$casos_remitidos = $query;
 		}
-		echo json_encode($casos_remitidos);
+		return $this->response->setJSON($casos_remitidos);
 		
 		
 	}
@@ -195,7 +193,7 @@ public function buscar_datos_usuarios()
 		} else {
 			$usuarios = $query_buscar_usuario->getResultArray();
 		}
-		echo json_encode($usuarios);
+		return $this->response->setJSON($usuarios);
 		
 	} else {
 		return redirect()->to('/');

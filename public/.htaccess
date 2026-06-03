@@ -2,19 +2,12 @@
 Options All -Indexes
 
 # ----------------------------------------------------------------------
-# Rewrite engine
+# CORS: Delegado al front controller (index.php) para validación dinámica.
+# Aquí solo manejamos el preflight OPTIONS para evitar llegar a CI4.
 # ----------------------------------------------------------------------
 <IfModule mod_headers.c>
-    # Permite el origen específico de tu app de desarrollo
-    Header set Access-Control-Allow-Origin "http://localhost:3000"
-    
-    # Permite los métodos HTTP necesarios
-    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-    
-    # Permite los encabezados que tu app esté enviando (ej: Content-Type, Authorization)
-    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-
-    # Obliga a que las peticiones OPTIONS (preflight) respondan siempre con un 200 OK
+    # Las cabeceras CORS las establece PHP en index.php según whitelist
+    # Solo forzamos el preflight a responder 200 sin pasar por CI4
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ $1 [R=200,L]

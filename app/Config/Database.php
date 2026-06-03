@@ -34,15 +34,15 @@ class Database extends \CodeIgniter\Database\Config
 
 
 	public $default = [
-		'DSN'      => 'pgsql:host=hostname;port=port;dbname=database',
-		'hostname' => '127.0.0.1',
-		'username' => 'postgres',
-		'password' => 'torres0707',
-		'database' => 'salasituaiconal',
-		'DBDriver' => 'pgsql',
+		'DSN'      => '',
+		'hostname' => '',
+		'username' => '',
+		'password' => '',
+		'database' => '',
+		'DBDriver' => 'Postgre',
 		'DBPrefix' => '',
 		'pConnect' => false,
-		'DBDebug'  => (ENVIRONMENT !== 'development'),
+		'DBDebug'  => (ENVIRONMENT !== 'production'),  // Muestra errores SQL en desarrollo
 		'cacheOn'  => false,
 		'cacheDir' => '',
 		'charset'  => 'utf8',

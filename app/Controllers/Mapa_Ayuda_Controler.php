@@ -14,7 +14,6 @@ require_once APPPATH . '/ThirdParty/PHPMailer/Exception.php';
 require_once APPPATH . '/ThirdParty/PHPMailer/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use VARIANT;
 class Mapa_Ayuda_Controler extends BaseController
 {
     use ResponseTrait;

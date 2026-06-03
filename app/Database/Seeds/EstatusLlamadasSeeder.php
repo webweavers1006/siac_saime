@@ -12,7 +12,7 @@ class EstatusLlamadasSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_estatus_llamadas')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_estatus_llamadas CASCADE');
 
         $this->db->table('sgc_estatus_llamadas')->insertBatch([
             [

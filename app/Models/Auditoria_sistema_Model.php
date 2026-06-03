@@ -28,10 +28,8 @@ class Auditoria_sistema_Model extends BaseModel
 
 	public function agregar($auditoria)
 	{
-
-		date_default_timezone_set('America/Caracas');
-		$hora = date("H:i:s A");
-		$auditoria['audi_hora'] = $hora;
+		$auditoria['audi_fecha'] = date('Y-m-d');
+		$auditoria['audi_hora']  = date("H:i:s A");
 		$builder = $this->dbconn('public.sgc_auditoria_sistema ');
 		$query = $builder->insert($auditoria);
 		return $query;

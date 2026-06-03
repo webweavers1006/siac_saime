@@ -36,7 +36,7 @@ class Ubi_Admini_Controler extends BaseController
 		} else {
 			$ubicacion = $query->getResultArray();
 		}
-		echo json_encode($ubicacion);
+		return $this->response->setJSON($ubicacion);
 	}
 
 	public function listar_direcciones_administrativas()
@@ -50,7 +50,7 @@ class Ubi_Admini_Controler extends BaseController
 		} else {
 			$direcciones = $query->getResultArray();
 		}
-		echo json_encode($direcciones);
+		return $this->response->setJSON($direcciones);
 	}
 
 	public function listar_direcciones_user_create($act_aud=null)
@@ -64,7 +64,7 @@ class Ubi_Admini_Controler extends BaseController
 		} else {
 			$direcciones = $query->getResultArray();
 		}
-		echo json_encode($direcciones);
+		return $this->response->setJSON($direcciones);
 	}
 	
 
@@ -83,7 +83,7 @@ class Ubi_Admini_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$direcciones["descripcion"]     = $datos["descripcion"];
 			$direcciones["correo"]     = $datos["correo"];
@@ -111,7 +111,7 @@ class Ubi_Admini_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$direcciones["descripcion"]     = $datos["descripcion"];
 			$direcciones["borrado"]     = $datos["borrado"];

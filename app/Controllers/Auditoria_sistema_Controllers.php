@@ -41,7 +41,7 @@ class Auditoria_sistema_Controllers extends BaseController
 			} else {
 				$auditoria = $query;
 			}
-			echo json_encode($auditoria);
+			return $this->response->setJSON($auditoria);
 		}
 	}
 }

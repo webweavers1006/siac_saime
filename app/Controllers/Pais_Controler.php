@@ -22,6 +22,6 @@ class Pais_Controler extends BaseController
 		} else {
 			$pais = $query;
 		}
-		echo json_encode($pais);
+		return $this->response->setJSON($pais);
 	}
 }

@@ -1,11 +1,36 @@
 <?php
-//header('Access-Control-Allow-Origin: localhost:3000');
-header('Access-Control-Allow-Origin:*');
+// ===================================================================
+// SEGURIDAD: CORS restringido (se valida contra Whitelist en el filtro)
+// En desarrollo local se permite 'salasituacional.test' y 'localhost'
+// ===================================================================
+$allowedOrigins = [
+    'http://salasituacional.test',
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin && in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+}
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-// TEMPORAL: Mostrar errores para depuración (excluyendo E_DEPRECATED por compatibilidad PHP 8.2+)
-error_reporting(E_ALL & ~E_DEPRECATED);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// ===================================================================
+// ERRORES: Solo mostrar en desarrollo. En producción van al log.
+// ===================================================================
+$isProduction = (getenv('CI_ENVIRONMENT') === 'production');
+if ($isProduction) {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+} else {
+    error_reporting(E_ALL & ~E_DEPRECATED);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+}
 
 // Path to the front controller (this file)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);

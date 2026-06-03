@@ -12,7 +12,7 @@ class TercerosSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_terceros')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_terceros CASCADE');
 
         $this->db->table('sgc_terceros')->insertBatch([
             [

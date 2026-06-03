@@ -16,7 +16,7 @@ class Login extends BaseController
 		$session = session();
 		$userdata = array();
 		if ($this->request->isAJAX()) {
-			$datos = json_decode(base64_decode($this->request->getGet('data')), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			$query = $model->obtenerUsuario($datos["username"]);
 			if (empty($query))
 			{
@@ -40,6 +40,7 @@ class Login extends BaseController
 						} else {
 							$userdata["logged"] = TRUE;
 							$session->set($userdata);
+							$session->regenerate();  // Renovar ID post-login (anti session fixation)
 							$mensaje = 1;
 							return json_encode($mensaje);
 							//return $this->respond(["message" => "Iniciando sesion"], 200);
@@ -84,7 +85,7 @@ class Login extends BaseController
 		} else {
 			$corr = $query;
 		}
-		echo json_encode($corr);
+		return $this->response->setJSON($corr);
 	}
 
 	

@@ -40,7 +40,7 @@ class Tipo_Atencion_Detalle_Controler extends BaseController
 		} else {
 			$detalle = $query;
 		}
-		echo json_encode($detalle);
+		return $this->response->setJSON($detalle);
 	}
 
 	/*
@@ -55,7 +55,7 @@ class Tipo_Atencion_Detalle_Controler extends BaseController
 		} else {
 			$detalle = $query;
 		}
-		echo json_encode($detalle);
+		return $this->response->setJSON($detalle);
 	}
 
 //Metodo que buscar_hijos_detalle_atencion
@@ -71,7 +71,7 @@ public function buscar_hijos_detalle_atencion($id_tipo_atencion=null)
 	{
 			$hijos = $query;
 	}
-	echo json_encode($hijos);
+	return $this->response->setJSON($hijos);
 		
 }
 
@@ -83,7 +83,7 @@ public function buscar_hijos_detalle_atencion($id_tipo_atencion=null)
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$detalle["tipo_atend_nombre"]     = $datos["tipo_atend_nombre"];
 			$detalle["tipo_aten_id"]     = $datos["tipo_aten_id"];
@@ -111,7 +111,7 @@ public function buscar_hijos_detalle_atencion($id_tipo_atencion=null)
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$detalle["tipo_atend_nombre"]     = $datos["tipo_atend_nombre"];
 			$detalle["tipo_atend_borrado"]     = $datos["tipo_atend_borrado"];

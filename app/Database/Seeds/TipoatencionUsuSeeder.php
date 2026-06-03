@@ -12,7 +12,7 @@ class TipoatencionUsuSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_tipoatencion_usu')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_tipoatencion_usu CASCADE');
 
         $this->db->table('sgc_tipoatencion_usu')->insertBatch([
             [
@@ -69,51 +69,7 @@ class TipoatencionUsuSeeder extends Seeder
                 'organismo_pp' => false,
                 'act_coordenadas' => false,
                 'act_punto_cuenta' => false,
-            ],
-            [
-                'tipo_aten_id' => 6,
-                'tipo_aten_nombre' => 'Petición',
-                'tipo_aten_borrado' => false,
-                'act_pro_int' => true,
-                'acc_participantes' => false,
-                'env_correo' => false,
-                'organismo_pp' => false,
-                'act_coordenadas' => true,
-                'act_punto_cuenta' => true,
-            ],
-            [
-                'tipo_aten_id' => 7,
-                'tipo_aten_nombre' => 'Formación',
-                'tipo_aten_borrado' => false,
-                'act_pro_int' => true,
-                'acc_participantes' => true,
-                'env_correo' => false,
-                'organismo_pp' => false,
-                'act_coordenadas' => false,
-                'act_punto_cuenta' => false,
-            ],
-            [
-                'tipo_aten_id' => 23,
-                'tipo_aten_nombre' => 'Mediacion',
-                'tipo_aten_borrado' => false,
-                'act_pro_int' => true,
-                'acc_participantes' => false,
-                'env_correo' => false,
-                'organismo_pp' => false,
-                'act_coordenadas' => false,
-                'act_punto_cuenta' => true,
-            ],
-            [
-                'tipo_aten_id' => 24,
-                'tipo_aten_nombre' => 'Consignación',
-                'tipo_aten_borrado' => false,
-                'act_pro_int' => true,
-                'acc_participantes' => false,
-                'env_correo' => false,
-                'organismo_pp' => false,
-                'act_coordenadas' => false,
-                'act_punto_cuenta' => false,
-            ],
+            ]
         ]);
 
     }

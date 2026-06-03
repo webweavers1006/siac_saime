@@ -39,7 +39,7 @@ $routes->setAutoRoute(false);
      $routes->get('/pantalla1', "Home::pantalla1");
      $routes->get('/pantalla2', "Home::pantalla2");
      $routes->get('/perfil/(:num)', 'Perfil::perfil/$1');
-     $routes->get('/signin', "Login::autenticar");
+     $routes->post('/signin', "Login::autenticar");
      $routes->get('/logout', "Login::logout");
      $routes->get('/buscar_rol_correo/(:any)', "Login::buscar_rol_correo/$1");
 /*

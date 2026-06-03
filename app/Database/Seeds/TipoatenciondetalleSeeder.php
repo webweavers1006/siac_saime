@@ -12,7 +12,7 @@ class TipoatenciondetalleSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_tipoatenciondetalle')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_tipoatenciondetalle CASCADE');
 
         $this->db->table('sgc_tipoatenciondetalle')->insertBatch([
             [

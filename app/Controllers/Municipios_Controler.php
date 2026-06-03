@@ -18,7 +18,7 @@ class Municipios_Controler extends BaseController
 		$model = new Municipios_Model();
 		$opt = '';
 		if ($this->request->isAJAX() and $this->session->get('logged')) {
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 
 			$query = $model->listar_Municipios($datos["id_estado"]);
 			if (isset($query)) {
@@ -43,7 +43,7 @@ class Municipios_Controler extends BaseController
 		$model = new Municipios_Model();
 		$opt = '';
 		if ($this->request->isAJAX() and $this->session->get('logged')) {
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			$query = $model->listar_Parroquias($datos["id_municipio"]);
 			if (isset($query)) {
 				foreach ($query->getResult() as $row) {

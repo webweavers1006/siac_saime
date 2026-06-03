@@ -12,7 +12,7 @@ class EnteAsdcritoSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_ente_asdcrito')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_ente_asdcrito CASCADE');
 
         $this->db->table('sgc_ente_asdcrito')->insertBatch([
             [

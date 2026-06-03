@@ -31,7 +31,7 @@ public function ver_documentos($idcaso = null)
         $model_docu_casos = new Documentos_casos_Model();
         $opt = '';
         if ($this->request->isAJAX() and $this->session->get('logged')) {
-            $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+            $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
             $query = $model_docu_casos->buscar_documentos_casos($datos["idcaso"]);
 
             if (isset($query)) {

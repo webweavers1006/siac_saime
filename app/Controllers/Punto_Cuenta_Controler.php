@@ -36,7 +36,7 @@ class Punto_Cuenta_Controler extends BaseController
 		} else {
 			$punto = $query;
 		}
-		echo json_encode($punto);
+		return $this->response->setJSON($punto);
 	}
 
 
@@ -47,7 +47,7 @@ class Punto_Cuenta_Controler extends BaseController
     $model = new Punto_Cuenta_Model(); 
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->session->get('logged') && $this->request->isAJAX()) {
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         $punto_cuenta = [
             'numero_punto_cuenta' => $datos["numero_punto_cuenta"],
             'fecha_punto_cuenta'  => $datos["fecha_punto_cuenta"],
@@ -156,7 +156,7 @@ class Punto_Cuenta_Controler extends BaseController
     $model = new Punto_Cuenta_Model(); 
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->session->get('logged') && $this->request->isAJAX()) {
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         $punto_cuenta = [
             'id'                  => $datos["id"], 
             'numero_punto_cuenta' => $datos["numero_punto_cuenta"],
@@ -201,7 +201,7 @@ class Punto_Cuenta_Controler extends BaseController
 		} else {
 			$casos_asociados = $query;
 		}
-		echo json_encode($casos_asociados);
+		return $this->response->setJSON($casos_asociados);
 	}
 
 
@@ -216,13 +216,13 @@ class Punto_Cuenta_Controler extends BaseController
 		} else {
 			$informacion = $query;
 		}
-		echo json_encode($informacion);
+		return $this->response->setJSON($informacion);
 	}
 
 
 	public function verificar_caso_punto_cuenta()
 	{
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 		$idcaso = $datos['idcaso'] ?? null;
         $model = new Punto_Cuenta_Model();
 		$query = $model->verificar_caso_punto_cuenta($idcaso);
@@ -231,7 +231,7 @@ class Punto_Cuenta_Controler extends BaseController
 		} else {
 			$punto = $query;
 		}
-		echo json_encode($punto);
+		return $this->response->setJSON($punto);
 	}
 
 
@@ -242,8 +242,8 @@ public function upload_docu_punto_cuenta()
 {
     // Carga el modelo (asumo que está correctamente configurado)
     $model = new Punto_Cuenta_Model();
-    $id_punto_cuenta = $_POST['id_punto_cuenta'] ?? '';
-    $archivo = $_FILES['archivo'] ?? null;
+    $id_punto_cuenta = $this->request->getPost('id_punto_cuenta') ?? '';
+    $archivo = $this->request->getFile('archivo');
 
     // Si el ID no está presente, es un error crítico
     if (empty($id_punto_cuenta)) {

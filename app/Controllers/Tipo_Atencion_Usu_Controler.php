@@ -38,7 +38,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 	/*
@@ -58,7 +58,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 	/*
@@ -73,7 +73,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 /*
@@ -88,7 +88,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 
@@ -100,7 +100,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$atencion["tipo_aten_nombre"]     = $datos["descripcion"];
 			$atencion["act_pro_int"]     = $datos["act_pro_int"];
@@ -134,7 +134,7 @@ class Tipo_Atencion_Usu_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$atencion["tipo_aten_nombre"]     = $datos["descripcion"];
 			$atencion["tipo_aten_borrado"]     = $datos["borrado"];

@@ -12,7 +12,7 @@ class TipoBeneficiariosSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_tipo_beneficiarios')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_tipo_beneficiarios CASCADE');
 
         $this->db->table('sgc_tipo_beneficiarios')->insertBatch([
             [

@@ -47,7 +47,7 @@ class Participantes_Mediacion_Controler extends BaseController
 		} else {
 			$participantes = $query;
 		}
-		echo json_encode($participantes);
+		return $this->response->setJSON($participantes);
 	}
 
 
@@ -57,7 +57,7 @@ public function edit_participante()
     $model = new SapiTerceroModel();
     $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
     if ($this->session->get('logged') && $this->request->isAJAX()) {
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         $ter_id = $datos['ter_id'] ?? null;
         
         if (empty($ter_id)) {
@@ -106,7 +106,7 @@ public function edit_participante()
 		} else {
 			$participantes = $query;
 		}
-		echo json_encode($participantes);
+		return $this->response->setJSON($participantes);
 	}
 
 /*

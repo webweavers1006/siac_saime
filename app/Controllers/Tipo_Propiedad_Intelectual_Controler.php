@@ -22,7 +22,7 @@ class Tipo_Propiedad_Intelectual_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 
@@ -36,7 +36,7 @@ class Tipo_Propiedad_Intelectual_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 

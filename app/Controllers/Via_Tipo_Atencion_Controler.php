@@ -25,7 +25,7 @@ class Via_Tipo_Atencion_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 }

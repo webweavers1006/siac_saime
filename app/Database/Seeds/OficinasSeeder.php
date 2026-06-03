@@ -12,7 +12,7 @@ class OficinasSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_oficinas')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_oficinas CASCADE');
 
         $this->db->table('sgc_oficinas')->insertBatch([
             [

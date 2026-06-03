@@ -12,7 +12,7 @@ class RedSocialSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_red_social')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_red_social CASCADE');
 
         $this->db->table('sgc_red_social')->insertBatch([
             [

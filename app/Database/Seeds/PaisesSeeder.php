@@ -12,7 +12,7 @@ class PaisesSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_paises')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_paises CASCADE');
 
         $this->db->table('sgc_paises')->insertBatch([
             [

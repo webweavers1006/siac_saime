@@ -12,7 +12,7 @@ class RolesSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_roles')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_roles CASCADE');
 
         $this->db->table('sgc_roles')->insertBatch([
             [

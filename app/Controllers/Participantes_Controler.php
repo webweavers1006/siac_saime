@@ -22,7 +22,7 @@ class Participantes_Controler extends BaseController
     if ($this->session->get('logged') && $this->request->isAJAX()) 
     {
         // Obtenemos los datos del formulario
-        $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+        $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
         $id_caso = ["id_caso" => $datos["id_caso"]];
         $participantes = $datos["solicitudes"]; 
         $ids_insertados = [];
@@ -98,7 +98,7 @@ public function actualizar_participantes($id_participante)
 	$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 	if ($this->session->get('logged') and $this->request->isAJAX()) {
 		//Obtenemos los datos del formulario
-		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 		$participante["nombre"]     = $datos["nombre"];
 		$participante["apellido"]     = $datos["apellido"];
 		$participante["cedula"]     = $datos["cedula"];
@@ -152,7 +152,7 @@ public function actualizar_participantes($id_participante)
 		} else {
 			$participantes = $query;
 		}
-		echo json_encode($participantes);
+		return $this->response->setJSON($participantes);
 	}
 
 	/*
@@ -169,7 +169,7 @@ public function actualizar_participantes($id_participante)
 		} else {
 			$participantes = $query;
 		}
-		echo json_encode($participantes);
+		return $this->response->setJSON($participantes);
 	}
 
 

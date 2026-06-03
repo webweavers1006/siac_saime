@@ -34,6 +34,12 @@ class Logger extends BaseConfig
 	*/
 	public $threshold = 9;
 
+	public function __construct()
+	{
+		// En producción solo loguear Critical (3), en desarrollo Debug (9)
+		$this->threshold = (getenv('CI_ENVIRONMENT') === 'production') ? 3 : 9;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Date Format for Logs

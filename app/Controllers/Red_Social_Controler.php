@@ -41,7 +41,7 @@ class Red_Social_Controler extends BaseController
 		} else {
 			$atencion = $query;
 		}
-		echo json_encode($atencion);
+		return $this->response->setJSON($atencion);
 	}
 
 
@@ -57,7 +57,7 @@ class Red_Social_Controler extends BaseController
 		} else {
 			$red_social = $query;
 		}
-		echo json_encode($red_social);
+		return $this->response->setJSON($red_social);
 	}
 
 	public function listar_Red_Social_filtro()
@@ -69,7 +69,7 @@ class Red_Social_Controler extends BaseController
 		} else {
 			$red_social = $query;
 		}
-		echo json_encode($red_social);
+		return $this->response->setJSON($red_social);
 	}
 
 	public function buscar_formacion_red_social($id_red_social=null)
@@ -83,7 +83,7 @@ class Red_Social_Controler extends BaseController
 		} else {
 			$f_red_social = $query;
 		}
-		echo json_encode($f_red_social);
+		return $this->response->setJSON($f_red_social);
 	}
 
 //Metodo para añadir via de atencion
@@ -93,7 +93,7 @@ public function add_Via_Atencion()
 	$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 	if ($this->session->get('logged') and $this->request->isAJAX()) {
 		//Obtenemos los datos del formulario
-		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 		//llenamos los datos iniciales de las Direccion
 		$atencion["red_s_nom"]     = $datos["red_s_nom"];
 		
@@ -125,7 +125,7 @@ public function editViaAtencion()
 	if ($this->session->get('logged') and $this->request->isAJAX()) 
 	{
 		//Obtenemos los datos del formulario
-		$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+		$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 		//llenamos los datos iniciales de las Direccion
 		$atencion["red_s_nom"]     = $datos["red_s_nom"];
 		$atencion["red_s_borrado"]     = $datos["borrado"];
@@ -236,7 +236,7 @@ public function buscar_hijos_via_atencion($id_Via_Atencion=null)
 		} else {
 			$hijos_red_social = $query;
 		}
-		echo json_encode($hijos_red_social);
+		return $this->response->setJSON($hijos_red_social);
 	}
 	
 }

@@ -22,6 +22,6 @@ class Entes_asdcritos_Controler extends BaseController
 		} else {
 			$entes_asdcritos = $query;
 		}
-		echo json_encode($entes_asdcritos);
+		return $this->response->setJSON($entes_asdcritos);
 	}
 }

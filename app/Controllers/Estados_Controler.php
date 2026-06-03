@@ -22,6 +22,6 @@ class Estados_Controler extends BaseController
 		} else {
 			$estados = $query;
 		}
-		echo json_encode($estados);
+		return $this->response->setJSON($estados);
 	}
 }

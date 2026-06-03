@@ -25,7 +25,7 @@ class Seguimiento_Controler extends BaseController
         } else {
             $seguimientos = $query;
         }
-        echo json_encode($seguimientos);
+        return $this->response->setJSON($seguimientos);
     }
 
     
@@ -292,7 +292,7 @@ class Seguimiento_Controler extends BaseController
         $segModel = new Seguimientos();
         $model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
         if ($this->request->isAJAX() and $this->session->get('logged')) {
-            $datos = json_decode(utf8_decode(base64_decode($this->request->getPost('data'))), TRUE);
+            $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
             $query = $segModel->eliminarSeguimiento(array(
                 "idsegcas" => $datos["idsegcas"],
                 "borrado" => $datos["borrado"],
@@ -318,7 +318,7 @@ class Seguimiento_Controler extends BaseController
     {
         $segModel = new Seguimientos();
         if ($this->request->isAJAX() and $this->session->get('logged')) {
-            $datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+            $datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
             $query = $segModel->obtenerSeguimientoDeCaso($datos["data"]);
             if (isset($query)) {
 

@@ -65,7 +65,8 @@ class Seguimientos extends BaseModel
         $builder->select("a.idsegcas, b.estllamnom, a.segcoment, a.segfec, c.usuopnom, c.usuopape");
         $builder->join("sgc_estatus_llamadas b", "a.idestllam = b.idestllam");
         $builder->join("sgc_usuario_operador c", "a.idusuopr = c.idusuopr");
-        $builder->where("a.segfec BETWEEN '" . $datos["fecha_inicio"] . "' AND '" . $datos["fecha_fin"] . "'");
+        $builder->where('a.segfec >=', $datos['fecha_inicio']);
+        $builder->where('a.segfec <=', $datos['fecha_fin']);
         $query = $builder->get();
         return $query;
     }
@@ -76,7 +77,8 @@ class Seguimientos extends BaseModel
         $builder = $this->dbconn("sgc_seguimiento_caso a");
         $builder->select("b.estllamnom, COUNT(a.idestllam)");
         $builder->join("sgc_estatus_llamadas b", "a.idestllam = b.idestllam");
-        $builder->where("a.segfec BETWEEN '" . $datos["fecha_inicio"] . "' AND '" . $datos["fecha_fin"] . "'");
+        $builder->where('a.segfec >=', $datos['fecha_inicio']);
+        $builder->where('a.segfec <=', $datos['fecha_fin']);
         $builder->groupBy('b.estllamnom');
         $query = $builder->get();
         return $query;

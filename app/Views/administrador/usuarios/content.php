@@ -174,11 +174,6 @@
 
 
        
-        <div class="form-group user_cedula"  style="display: none;" >
-          <label for="user-name">Cédula</label>
-          <input type="text" name="ceula" id="cedula"autocomplete="off" class="form-control">
-        </div>
-
         <div class="form-group">
           <label for="user-pass">Contraseña</label>
           <input type="password" name="user-pass" id="user-pass" autocomplete="off"class="form-control" required>
@@ -201,17 +196,6 @@
 
         
 
-        <div class="form-group id_rol_nivel" style="display: none;" >
-            <label for="user-rol">Nivel de Rol</label>
-            <select class="form-control" id="id_rol" name="id_rol">
-                <?php foreach($nivel_rol["roless"] as $rol) { ?>
-                    <option value="<?php echo $rol["id"]; ?>"><?php echo $rol["rol"]; ?></option>
-                <?php } ?>
-            </select>
-        </div>
-
-       
-        
         <div class="form-group">
           <label for="usercargo">Cargo</label>
           <input type="text" name="usercargo" onkeyup="mayus(this);" id="usercargo" class="form-control" placeholder="Ej: Director" required>
@@ -220,8 +204,7 @@
           <label for="user-confirm-pass">Confirmar Contraseña</label>
           <input type="password" name="user-confirm-pass" id="user-confirm-pass"autocomplete="off" class="form-control" required>
         </div>
-           <label for="user-email">Acceso a Audiencias</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <input type="checkbox" name="terminos" id="acceso_audi" class="form-check-input">
+
       </div>
     </div>
   </div>
@@ -296,16 +279,7 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group edit_id_rol_nivel" style="display: none;">
-                <label for="edit_id_rol">Nivel de Rol</label>
-                <select class="form-control" id="edit_id_rol" name="id_rol">
-                  <?php foreach($nivel_rol["roless"] as $rol) { ?>
-                    <option value="<?php echo $rol["id"]; ?>"><?php echo $rol["rol"]; ?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
+
           </div>
           <div class="row">
             <div class="col-md-6">
@@ -316,12 +290,7 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group edit_user_cedula" style="display: none;">
-                <label for="edit_cedula">Cédula</label>
-                <input type="text" name="ceula" id="edit_cedula" class="form-control">
-              </div>
-            </div>
+
           </div>
           <hr style="border-color: #e5e7eb; margin: 20px 0;">
           <div class="row">
@@ -360,21 +329,12 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="edit_acceso_audi">Acceso a Audiencias</label>
-                <div style="margin-top: 8px;">
-                  <input type="checkbox" name="terminos" id="edit_acceso_audi" style="width: 18px; height: 18px; accent-color: #1363DF;">
-                  <span style="margin-left: 8px; color: #4b5563;">Permitir acceso</span>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
         <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid #e5e7eb;">
           <button class="btn btn-sm btn-light" type="reset">Limpiar</button>
           <button class="btn btn-sm btn-primary" type="submit" id="guardar">Guardar</button>
-          <button class="btn btn-sm btn-primary" type="button" id="ingreso_por_update" style="display: none;">Guardar</button>
           <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cerrar</button>
         </div>
       </form>

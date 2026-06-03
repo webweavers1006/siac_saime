@@ -12,7 +12,7 @@ class TipoPropIntelecSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_tipo_prop_intelec')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_tipo_prop_intelec CASCADE');
 
         $this->db->table('sgc_tipo_prop_intelec')->insertBatch([
             [

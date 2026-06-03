@@ -421,8 +421,10 @@ private function buildBaseQuery($builder)
         $builder->join('public.sgc_casos_denuncias denu', 'a.idcaso = denu.denu_id_caso', 'left');
         
         $builder->where('cr.direccion_id', $id_direccion); 
+        $builder->groupStart();
         $builder->where('cr.vigencia', true);
         $builder->orWhere('cr.vigencia IS NULL');
+        $builder->groupEnd();
         $builder->where('a.borrado', false); 
         $query = $builder->get();
         return $query->getResult();
@@ -508,15 +510,6 @@ private function buildBaseQuery($builder)
         return $query->getRow(); 
     }
 
-    //Metodo para obtener EL ULTIMO ID INSERTADO
-    public function obtener_utimo_id()
-    {
-        $builder = $this->dbconn('public.sgc_casos');
-        $builder->select(" MAX(idcaso) as ultimo_id");
-        $query = $builder->get();
-        return $query;
-    }
-
     public function obtener_ultimos_casos(string $iduser)
     {
         $db = \Config\Database::connect();
@@ -551,15 +544,23 @@ private function buildBaseQuery($builder)
         return $query->getResult();
     }
 
-    //Metodo para insertar un nuevo caso en la BD
+    //Metodo para insertar un nuevo caso en la BD (devuelve el ID o 0 si falla)
     public function insertarNuevoCaso(array $datos)
     {
-        $builder = $this->dbconn('sgc_casos');
-        date_default_timezone_set('America/Caracas');
-        $hora = date("H:i:s A");
-        $datos['caso_hora'] = $hora;
-        $query = $builder->insert($datos);
-        return $query;
+        $db = \Config\Database::connect();
+        $builder = $db->table('sgc_casos');
+
+        $datos['caso_hora'] = date("H:i:s A");
+        $datos['borrado']   = false;  // Explícito para evitar NULL
+
+        $result = $builder->insert($datos);
+        
+        if (!$result) {
+            log_message('error', 'INSERT sgc_casos FALLÓ: ' . json_encode($db->error()));
+            return 0;
+        }
+        
+        return $db->insertID();
     }
     //Metodo para   actualizar  us Caso en la BD
     public function actualizarCaso(array $datos)
@@ -1195,7 +1196,8 @@ public function getReporteData($params)
         $builder->join("sgc_paises f", "e.paisid = f.paisid");
         $builder->join("sgc_municipio g", "a.municipioid = g.municipioid");
         $builder->join("sgc_parroquias h", "a.parroquiaid = h.parroquiaid");
-        $builder->where("a.casofec BETWEEN '" . $initDate . "' AND '" . $endDate . "'");
+        $builder->where('a.casofec >=', $initDate);
+        $builder->where('a.casofec <=', $endDate);
         $builder->where("a.borrado", false);
         $builder->orderBy('a.idcaso', "ASC");
         $query = $builder->get();
@@ -2598,7 +2600,7 @@ public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'n
         $builder->join('sta_usuarios_visitas AS v', 'c.casofec = v.fecha', 'left');
         $builder->where('c.casofec >=', $desde);
         $builder->where('c.casofec <=', $hasta);
-        $builder->where('v.idrrss', '3');
+        $builder->where('c.idrrss', '3');
         $builder->where('c.borrado', false);
         $builder->groupBy('c.casofec, TO_CHAR(c.casofec, \'Day\')');
         $builder->orderBy('c.casofec', 'ASC');
@@ -2631,24 +2633,14 @@ public function contarCasos_Tipo_Beneficiario_fecha($desde = 'null', $hasta = 'n
 		return $query;
 	}
 
-    // //Metodo que busca el correo del usuario en funcion del caso Y la descripcion del caso 
-    // public function buscar_token($token)
-	// {
-
-    //     $db      = \Config\Database::connect();
-    //     $strQuery = " SELECT t.id_usuario FROM  sgc_usuario_token as t   ";
-    //     $strQuery .= " where t.token='$token'";
-    //     $query = $db->query($strQuery);
-    //     $resultado = $query->getResult();
-        
-    //     return $resultado;
-	// }
-    // Método que busca el correo del usuario en función del caso y la descripción del caso
+    // Método que busca el token del usuario
     public function buscar_token($token)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sgc_usuario_token AS t');
         $builder->select('t.id_usuario');
+        // TODO: Almacenar tokens con hash('sha256', $token) al generarlos,
+        // luego comparar aquí con hash. Por ahora en texto plano.
         $builder->where('t.token', $token);
         $query = $builder->get();
         $resultado = $query->getResult();

@@ -263,19 +263,19 @@ h1 {
                                             <div class="contentEditable" align="center">
 
                                             <p style="color: #222222;">
-                                            <strong><?php echo utf8_decode('¡Saludos!'); ?>, <?php echo $nombre; ?></strong>
+                                            <strong><?php echo '¡Saludos!'; ?>, <?php echo $nombre; ?></strong>
                                           </p>
                                                                                         <br>
                                               
-                                              <p style=" color:#222222; ">  <?php echo utf8_decode('El caso que lleva por Nº');?> <?php echo $idcaso; ?> ha sido procesado 
-                                              <?php echo utf8_decode(' y solucionado satisfactoriamente. Debido a la culminación del proceso, se ve oportuno el cierre') ?> 
-                                              <?php echo utf8_decode(' del mismo, gracias por su confianza,dedicación y paciencia. ¡Hasta la próxima!') ?> 
+                                              <p style=" color:#222222; ">  <?php echo 'El caso que lleva por Nº';?> <?php echo $idcaso; ?> ha sido procesado 
+                                              <?php echo ' y solucionado satisfactoriamente. Debido a la culminación del proceso, se ve oportuno el cierre' ?> 
+                                              <?php echo ' del mismo, gracias por su confianza,dedicación y paciencia. ¡Hasta la próxima!' ?> 
                                             </p>
                                               <br>
                                               
                                               
                                               <br>
-                                              <p style=" color:#222222; font-size: 11px;"> <?php echo utf8_decode('Dirección de  Atención al Ciudadano(SIAC) ')?></p>
+                                              <p style=" color:#222222; font-size: 11px;"> <?php echo 'Dirección de  Atención al Ciudadano(SIAC) '?></p>
 
                                                 </a>
                                                 

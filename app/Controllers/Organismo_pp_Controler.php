@@ -41,7 +41,7 @@ class Organismo_pp_Controler extends BaseController
 		} else {
 			$organismo = $query;
 		}
-		echo json_encode($organismo);
+		return $this->response->setJSON($organismo);
 	}
 
 
@@ -56,7 +56,7 @@ class Organismo_pp_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) {
 			//Obtenemos los datos del formulario
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$organismo["org_nombre"]     = $datos["org_nombre"];
 			
@@ -89,7 +89,7 @@ class Organismo_pp_Controler extends BaseController
 		$model_Auditoria_sistema_Model = new Auditoria_sistema_Model();
 		if ($this->session->get('logged') and $this->request->isAJAX()) 
 		{
-			$datos = json_decode(utf8_encode(base64_decode($this->request->getPost('data'))), TRUE);
+			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			$organismo["org_nombre"]     = $datos["org_nombre"];
 			$organismo["org_borrado"]     = $datos["borrado"];
 			$organismo["org_id"]     = $datos["org_id"];
@@ -128,7 +128,7 @@ class Organismo_pp_Controler extends BaseController
 		} else {
 			$organismos = $query;
 		}
-		echo json_encode($organismos);
+		return $this->response->setJSON($organismos);
 	}
 	
 }

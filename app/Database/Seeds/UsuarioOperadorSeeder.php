@@ -15,7 +15,7 @@ class UsuarioOperadorSeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('sgc_usuario_operador')->truncate();
+        $this->db->query('TRUNCATE TABLE sgc_usuario_operador CASCADE');
 
         // Reset the sequence after truncate (PostgreSQL)
         $this->db->query("ALTER SEQUENCE sgc_usuario_operador_idusuopr_seq RESTART WITH 1");
