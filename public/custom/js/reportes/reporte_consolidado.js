@@ -15,6 +15,7 @@ $(function() {
     let edad_min = $('#edad_min').val();
     let edad_max = $('#edad_max').val();
     let sexo = $('#sexo').val();
+    let motivo_id = $('#motivo-caso').val();
  if (desde === '' && hasta === '') {
     desde = null; // ¡Sin comillas!
     hasta = null; // ¡Sin comillas!
@@ -28,7 +29,7 @@ if (edad_min === '' && edad_max === '') {
     edad_min = 'null';
     edad_max = 'null';
 }
-    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,detalle_atencion,org_id);
+    listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo,edad_min,edad_max,detalle_atencion,org_id, motivo_id);
     llenar_Propiedad_Intelectual(Event);
     llenar_Tipo_Atencion(Event);
     llenar_via_atencion(Event);
@@ -36,6 +37,11 @@ if (edad_min === '' && edad_max === '') {
     llenar_Tipo_Beneficiarios(Event);
     llenar_pais(Event);
     llenar_Organismos_PP(Event);
+
+    // Cargar motivos al cambiar área
+    $('#tipo-pi').on('change', function() {
+        llenar_Motivos_Por_Area($(this).val());
+    });
 });
 
 
@@ -208,7 +214,7 @@ function llenar_pais(e, id) {
 let filteredCount = 0;
 let pdfHeader = '';
 
-function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0) {
+function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atencion_usu = null, sexo = null, via_atencion = null, direcciones_caso = null, tipo_beneficiario = 0, atencion_cuidadano = 0, estatus = 0, id_pais = 0, id_estado = 0, id_municipio = 0, id_parroquia = 0, edad_min = null, edad_max = null, detalle_atencion = 0, org_id = 0, motivo_id = 0) {
 
     // 2. CONSTRUCCIÓN DEL ENCABEZADO DINÁMICO
     pdfHeader = '';
@@ -351,6 +357,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                 d.id_municipio = id_municipio; d.id_parroquia = id_parroquia;
                 d.edad_min = edad_min; d.edad_max = edad_max;
                 d.detalle_atencion = detalle_atencion; d.org_id = org_id;
+                d.motivo_id = motivo_id || $('#motivo-caso').val();
                 return d;
             }
         },
@@ -732,6 +739,28 @@ function llenar_Propiedad_Intelectual(e, id) {
         },
     });
 }
+
+//FUNCION PARA LLENAR EL COMBO DE MOTIVOS SEGÚN ÁREA
+function llenar_Motivos_Por_Area(idArea) {
+    var $select = $("#motivo-caso");
+    if (!idArea || idArea == '0') {
+        $select.empty().append("<option value='0' selected>Seleccione un área primero</option>").prop('disabled', true);
+        return;
+    }
+    var url = "/listar_motivos_por_area/" + idArea;
+    $.ajax({
+        url: url, method: "GET", dataType: "JSON",
+        success: function(data) {
+            $select.empty().prop('disabled', false);
+            $select.append("<option value='0' selected>Todos</option>");
+            $.each(data, function(i, item) {
+                $select.append("<option value='" + item.motivo_id + "'>" + item.motivo_nombre + "</option>");
+            });
+        },
+        error: function() { $select.empty().append("<option value='0'>Error</option>"); }
+    });
+}
+
 //FUNCION PARA LLENAR EL COMBO TIPO DE ATENCION USUARIO
 function llenar_Tipo_Atencion(e, id) {
     e.preventDefault;
@@ -809,6 +838,7 @@ $(document).on('click', '.consultar', function(e) {
     let id_municipio = $('#municipio-caso').val();
     let id_parroquia = $('#parroquia-caso').val();
     let org_id = $('#organismo-caso').val();
+    let motivo_id = $('#motivo-caso').val();
 
     let nombre_propiedad = $('#tipo-pi option:selected').text();
     let nombre_atencion = $('#tipo-atencion-usu option:selected').text();
@@ -869,7 +899,7 @@ $(document).on('click', '.consultar', function(e) {
         if (org_id && org_id !== '0') pdfHeader += 'Organismo PP: ' + $('#organismo-caso option:selected').text() + ' ';
         
         $("#table_casos").dataTable().fnDestroy();
-listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id);
+listar_reportes(desde, hasta, tipo_pi, tipo_atencion_usu, sexo, via_atencion, direcciones_caso, tipo_beneficiario,atencion_cuidadano,estatus,id_pais,id_estado,id_municipio,id_parroquia,edad_min,edad_max,detalle_atencion,org_id, motivo_id);
     }
 
 })

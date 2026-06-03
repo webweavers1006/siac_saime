@@ -76,7 +76,8 @@ public function reporte_consolidado()
         'edad_min' => $request->getVar('edad_min') ?? null,
         'edad_max' => $request->getVar('edad_max') ?? null,
         'detalle_atencion' => $request->getVar('detalle_atencion') ?? null,
-        'org_id' => $request->getVar('org_id') ?? null
+        'org_id' => $request->getVar('org_id') ?? null,
+        'motivo_id' => $request->getVar('motivo_id') ?? null
     ];
 
     // Mapea el índice de la columna al alias de la columna en tu consulta.
