@@ -433,7 +433,7 @@ to {
           </div>
           <div class="col-lg-3 col-sm-3 col-md-3">
               <label for="cedula-persona">Nº Cédula o Rif</label>
-              <input type="text" class="form-control" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off" required>
+              <input type="text" class="form-control" name="cedula-persona" min="7" id="cedula-persona" autocomplete="off">
           </div>
          
               <!-- <label for="edad">Edad</label> -->
@@ -568,7 +568,7 @@ to {
 
           
           <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
-              <label for="tipo-pi" class="label_propiedad">Tipo de Propiedad Intelectual </label>
+              <label for="tipo-pi" class="label_propiedad">Área</label>
               <select class="form-control  tipo-pi"  id="tipo-pi" name="tipo-pi">
               <option value="0">Seleccione</option>
               </select>
@@ -576,6 +576,13 @@ to {
           </div>
 <div id="pi-table-container" style="display: none; margin-top: 10px; width: 100%;"></div>
          
+
+          <div class="col-lg-4 col-sm-4 col-md-4  tipoproint" style="display: none;" >
+              <label for="motivo-caso">Motivo</label>
+              <select class="form-control" id="motivo-caso" name="motivo-caso" required>
+              <option value="0" disabled selected>Seleccione un área primero</option>
+              </select>
+          </div>
 
 
           <div class="col-lg-3 col-sm-3 col-md-3  org_pp "  style="display: none;">
@@ -1567,6 +1574,12 @@ function getFormattedDate() {
             let detalles_atencion = $("#detalles_atencion").val();
             let t_beneficiario = $("#t-beneficiario").val();
             
+            // Determinar si el tipo de beneficiario seleccionado requiere cédula
+            var $tipoBenef = $("#t-beneficiario");
+            var $optSel = $tipoBenef.find("option:selected");
+            var requiereCedula = $optSel.data("requiere-cedula");
+            var cedulaEsRequerida = (requiereCedula === undefined || requiereCedula === 'true' || requiereCedula === true || $tipoBenef.val() == '0');
+
             let hasError = false; // Bandera unificada para el paso actual
 
             // --- PASO 1: VALIDACIONES GENERALES ---
@@ -1591,8 +1604,8 @@ function getFormattedDate() {
                     Swal.fire({ icon: "error", html: '<strong>DEBE INGRESAR EL APELLIDO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
                     hasError = true;
                 } 
-                // Validación 4: Cédula
-                else if (cedula_persona == '') {
+                // Validación 4: Cédula (solo si el tipo de beneficiario la requiere)
+                else if (cedula_persona == '' && cedulaEsRequerida) {
                     $("#apellido-persona").removeClass('is-invalid');
                     $("#cedula-persona").addClass('is-invalid');
                     focusAndScroll("#cedula-persona");
@@ -1682,7 +1695,7 @@ function getFormattedDate() {
 
                         Swal.fire({ 
                             icon: "error", 
-                            html: '<strong>DEBE SELECCIONAR AL MENOS UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', 
+                            html: '<strong>DEBE SELECCIONAR AL MENOS UN ÁREA.</strong>', 
                             toast: true, 
                             position: "center", 
                             showConfirmButton: false, 
@@ -1690,7 +1703,18 @@ function getFormattedDate() {
                         });
                         hasError = true;
                     }
-                } 
+                }
+                // Validación 3.5: Motivo (requerido si el área está visible)
+                else if ($('.tipoproint').is(':visible')) {
+                    let motivo = $("#motivo-caso").val();
+                    if (motivo == null || motivo == '0' || motivo === '') {
+                        $("#tipo-pi").removeClass('is-invalid');
+                        $("#motivo-caso").addClass('is-invalid');
+                        focusAndScroll("#motivo-caso");
+                        Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN MOTIVO.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500 });
+                        hasError = true;
+                    }
+                }
                 // Validación 4: Tipo de atención 23 (Lógica de contraparte)
                 else if (tipo_atencion == 23) {
                     
@@ -1702,7 +1726,7 @@ function getFormattedDate() {
                     // --- 2.1. Validar Propiedad Intelectual ---
                     if (tipo_prop_intelec == null) {
                         $("#tipo-pi").addClass('is-invalid').focus().get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN TIPO DE PROPIEDAD INTELECTUAL.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
+                        Swal.fire({ icon: "error", html: '<strong>DEBE SELECCIONAR UN ÁREA.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3500, focusConfirm: false, allowOutsideClick: true });
                         hasErrorTipo23 = true;
                     } else {
                         $("#tipo-pi").removeClass('is-invalid');

@@ -35,6 +35,7 @@ class MainSeeder extends Seeder
         $this->call('TipoatenciondetalleSeeder');
         $this->call('DireccionesAdministrativasSeeder');
         $this->call('ViaTipoAtencionSeeder');
+        $this->call('MotivosSeeder');
 
         // 4. Dependen de PaisesSeeder
         $this->call('EstadosSeeder');

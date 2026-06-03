@@ -370,22 +370,23 @@ function llenar_Organismos_PP(e, caso_org_id) {
                 );
                 if (id === undefined) {
                     $.each(data, function(i, item) {
-                        //
+                        var requiere = (item.tipo_beneficiario_requiere_cedula == true || item.tipo_beneficiario_requiere_cedula == 't' || item.tipo_beneficiario_requiere_cedula == 1) ? 'true' : 'false';
                         $("#t-beneficiario").append(
                             "<option value=" +
                             item.tipo_beneficiario_id+
-                            ">" +
+                            " data-requiere-cedula='" + requiere + "'>" +
                             item.tipo_beneficiario_nombre +
                             "</option>"
                         );
                     });
                 } else {
                     $.each(data, function(i, item) {
-                        if (item.id=== ente_adscrito_id) {
+                        var requiere = (item.tipo_beneficiario_requiere_cedula == true || item.tipo_beneficiario_requiere_cedula == 't' || item.tipo_beneficiario_requiere_cedula == 1) ? 'true' : 'false';
+                        if (item.tipo_beneficiario_id == id) {
                             $("#t-beneficiario").append(
                                 "<option value=" +
                                 item.tipo_beneficiario_id+
-                                " selected>" +
+                                " data-requiere-cedula='" + requiere + "' selected>" +
                                 item.tipo_beneficiario_nombre +
                                 "</option>"
                             );
@@ -393,12 +394,16 @@ function llenar_Organismos_PP(e, caso_org_id) {
                             $("#t-beneficiario").append(
                                 "<option value=" +
                                 item.tipo_beneficiario_id+
-                                ">" +
+                                " data-requiere-cedula='" + requiere + "'>" +
                                 item.tipo_beneficiario_nombre +
                                 "</option>"
                             );
                         }
                     });
+                    // Activar toggle después de preseleccionar
+                    if (typeof toggleRequerimientoCedula === 'function') {
+                        toggleRequerimientoCedula();
+                    }
                 }
             }
         },

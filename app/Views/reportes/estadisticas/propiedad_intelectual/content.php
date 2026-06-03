@@ -12,7 +12,7 @@
         <div class="col-sm-6">
 
 
-          <h1>Estadísticas - Propiedad Intelectual</h1>
+          <h1>Estadísticas - Área</h1>
         </div>
      
       

@@ -5,8 +5,8 @@ namespace App\Database\Seeds;
 use CodeIgniter\Database\Seeder;
 
 /**
- * Seeder for table: sgc_tipo_prop_intelec (5 rows)
- * Generated from existing database data
+ * Seeder for table: sgc_tipo_prop_intelec
+ * Catálogo de cabeceras / áreas del SAIME.
  */
 class TipoPropIntelecSeeder extends Seeder
 {
@@ -22,22 +22,32 @@ class TipoPropIntelecSeeder extends Seeder
             ],
             [
                 'tipo_prop_id' => 2,
-                'tipo_prop_nombre' => 'Patentes',
+                'tipo_prop_nombre' => 'Caso Externo',
                 'tipo_prop_borrado' => false,
             ],
             [
                 'tipo_prop_id' => 3,
-                'tipo_prop_nombre' => 'Derecho de Autor',
+                'tipo_prop_nombre' => 'Extranjería',
                 'tipo_prop_borrado' => false,
             ],
             [
                 'tipo_prop_id' => 4,
-                'tipo_prop_nombre' => 'Indicación Geográfica Protegida',
+                'tipo_prop_nombre' => 'Identificación',
                 'tipo_prop_borrado' => false,
             ],
             [
                 'tipo_prop_id' => 5,
-                'tipo_prop_nombre' => 'Marcas',
+                'tipo_prop_nombre' => 'Verificación y Registro',
+                'tipo_prop_borrado' => false,
+            ],
+            [
+                'tipo_prop_id' => 6,
+                'tipo_prop_nombre' => 'Migración',
+                'tipo_prop_borrado' => false,
+            ],
+            [
+                'tipo_prop_id' => 7,
+                'tipo_prop_nombre' => 'Regiones',
                 'tipo_prop_borrado' => false,
             ],
         ]);

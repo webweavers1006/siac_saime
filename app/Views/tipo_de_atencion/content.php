@@ -126,7 +126,7 @@ $session = session();
                 <input type="checkbox" id="acceso_pro_int" name="borrado" value='false' class="sr-only peer" />
                 <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
               </label>
-              <label for="acceso_pro_int" class="text-sm font-medium text-gray-700">Propiedad Intelectual</label>
+              <label for="acceso_pro_int" class="text-sm font-medium text-gray-700">Área</label>
             </div>
 
             <div class="flex items-center space-x-2">
@@ -206,7 +206,7 @@ $session = session();
             <input type="checkbox" id="edit_acceso_pro_int" name="borrado" value='false' class="sr-only peer" />
             <span class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></span>
           </label>
-          <label for="edit_acceso_pro_int" class="text-sm font-medium text-gray-700">Propiedad Intelectual</label>
+          <label for="edit_acceso_pro_int" class="text-sm font-medium text-gray-700">Área</label>
         </div>
 
         <div class="flex items-center space-x-2">

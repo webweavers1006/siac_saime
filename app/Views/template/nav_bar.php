@@ -338,12 +338,12 @@ $userdata = $session->get();
     </li>
   </ul>
   
-<!-- Cintillo más ancho -->
-  <div class="cintillo-container" style="display: flex; justify-content: center; align-items: center; width: 100%; max-width: 100%; margin: 0 20px;">
+<!-- Cintillo más ancho (COMENTADO) -->
+  <!-- <div class="cintillo-container" style="display: flex; justify-content: center; align-items: center; width: 100%; max-width: 100%; margin: 0 20px;">
     <img src="<?= base_url((new \Config\Assets())->cintillo) ?>" 
          alt="Cintillo Institucional" 
          style="width: 100%; max-width: 100%; height: auto; max-height: 100px; object-fit: contain;">
-</div>
+</div> -->
   
   <!-- Lado derecho: Notificaciones + Salir -->
   <div style="display: flex; align-items: center;">

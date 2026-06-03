@@ -618,9 +618,9 @@ $(document).ready(function() {
                                     <option value="0" disabled>Seleccione</option>
                                 </select>
                             </div>
-                            <!-- Tipo de Propiedad Intelectual -->
+                            <!-- Área -->
                             <div class="beneficiario-item prop_int oculto">
-                                <span class="beneficiario-label">P.Intelec.:</span>
+                                <span class="beneficiario-label">Área:</span>
                                 <select disabled class="beneficiario-select" id="tipo-pi" name="tipo-pi">
                                     <option value="0" disabled>Seleccione</option>
                                 </select>

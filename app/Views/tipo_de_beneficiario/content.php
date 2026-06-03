@@ -125,7 +125,11 @@ $session = session();
               <div class="modal-body">
                 <div class="form-group">
                   <label for="user-name">Nombre</label>
-                  <input type="text" name="name-beneficiarios" id="name-beneficiarios" class="form-control" placeholder="Ej: Emprendedor" autocomplete="off" required>
+                  <input type="text" name="name-beneficiarios" id="name-beneficiarios" class="form-control" placeholder="Ej: Venezolano" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                  <label for="requiere-cedula-add">¿Requiere Cédula?</label>&nbsp;&nbsp;
+                  <input type="checkbox" class="requiere_cedula" id="requiere-cedula-add" name="requiere_cedula" value="true" checked>
                 </div>
               </div>
               <div class="modal-footer ">
@@ -161,6 +165,9 @@ $session = session();
 
                 &nbsp; <label for="user-pass">Activo</label>&nbsp;&nbsp;
                 <input type="checkbox" class="borrado" id="borrado" name="borrado" value='false'>
+                &nbsp;&nbsp;&nbsp;
+                <label for="requiere-cedula-edit">¿Requiere Cédula?</label>&nbsp;&nbsp;
+                <input type="checkbox" class="requiere_cedula_edit" id="requiere-cedula-edit" name="requiere_cedula_edit" value="true" checked>
               </div>
               <div class="modal-footer ">
                 <button class="btn btn-sm btn-light" type="reset">Limpiar</button>

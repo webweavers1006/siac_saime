@@ -228,6 +228,19 @@ $session = session();
                         </div>
                       </div>
 
+                      <!-- Motivo -->
+                      <div class="info-item-custom">
+                        <div class="d-flex align-items-center">
+                          <div class="icon-wrapper" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                            <i class="fas fa-tag text-white"></i>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="text-muted small text-uppercase font-weight-bold info-label">Motivo</span>
+                            <div class="text-dark font-weight-medium info-value"><?= !empty($motivo_nombre) ? $motivo_nombre : 'No Aplica' ?></div>
+                          </div>
+                        </div>
+                      </div>
+
                       <!-- Operador -->
                       <div class="info-item-custom">
                         <div class="d-flex align-items-center">
@@ -448,6 +461,19 @@ $session = session();
                           <div class="flex-grow-1">
                             <span class="text-muted small text-uppercase font-weight-bold info-label">Propiedad Intelectual</span>
                             <div class="text-dark font-weight-medium info-value"><?= !empty($tipo_prop_nombre) ? $tipo_prop_nombre : 'No Aplica' ?></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Motivo -->
+                      <div class="info-item-custom">
+                        <div class="d-flex align-items-center">
+                          <div class="icon-wrapper" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                            <i class="fas fa-tag text-white"></i>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="text-muted small text-uppercase font-weight-bold info-label">Motivo</span>
+                            <div class="text-dark font-weight-medium info-value"><?= !empty($motivo_nombre) ? $motivo_nombre : 'No Aplica' ?></div>
                           </div>
                         </div>
                       </div>

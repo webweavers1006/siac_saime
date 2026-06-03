@@ -223,7 +223,7 @@ function actualizarTablaModal(data, exportTitle) {
         { data: 'observacion', title: 'Observación'}, 
         { data: 'respuesta_text', title: 'Respuesta'}, 
         { data: 'telefono', title: 'Teléfono'}, 
-        { data: 'tipo_propiedad', title: 'Propiedad Intelectual' },
+        { data: 'tipo_propiedad', title: 'Área' },
         
         // 7. Columna para el botón de acción (corresponde a <th>Ver</th>)
         { 

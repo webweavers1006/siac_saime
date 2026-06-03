@@ -533,7 +533,7 @@
                     
                         <div class="row mt-3">
                             <div class="col-md-3">
-                                <label for="tipo-pi">Tipo de Propiedad Intelectual:</label>
+                                <label for="tipo-pi">Área:</label>
                                 <select class="form-control" id="tipo-pi" name="tipo-pi">
                                     <option value="0" selected disabled>seleccione</option>
                                 </select>

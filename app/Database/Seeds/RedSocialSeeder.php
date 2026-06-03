@@ -22,12 +22,7 @@ class RedSocialSeeder extends Seeder
             ],
             [
                 'red_s_id' => 2,
-                'red_s_nom' => 'Personal',
-                'red_s_borrado' => false,
-            ],
-            [
-                'red_s_id' => 3,
-                'red_s_nom' => 'Portal web ',
+                'red_s_nom' => 'Oficina presencial',
                 'red_s_borrado' => false,
             ],
             [
@@ -37,22 +32,7 @@ class RedSocialSeeder extends Seeder
             ],
             [
                 'red_s_id' => 5,
-                'red_s_nom' => 'Llamada Telefónica',
-                'red_s_borrado' => false,
-            ],
-            [
-                'red_s_id' => 6,
-                'red_s_nom' => 'Taquilla Expres',
-                'red_s_borrado' => false,
-            ],
-            [
-                'red_s_id' => 7,
-                'red_s_nom' => 'Stand Informativo',
-                'red_s_borrado' => false,
-            ],
-            [
-                'red_s_id' => 8,
-                'red_s_nom' => 'Taquilla Comunal',
+                'red_s_nom' => 'Centro de llamadas',
                 'red_s_borrado' => false,
             ],
             [

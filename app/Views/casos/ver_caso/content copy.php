@@ -216,14 +216,14 @@ $session = session();
                         </div>
                       </div>
 
-                      <!-- Propiedad Intelectual -->
+                      <!-- Área -->
                       <div class="info-item-custom">
                         <div class="d-flex align-items-center">
                           <div class="icon-wrapper" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <i class="far fa-lightbulb text-white"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="text-muted small text-uppercase font-weight-bold info-label">Propiedad Intelectual</span>
+                            <span class="text-muted small text-uppercase font-weight-bold info-label">Área</span>
                             <div class="text-dark font-weight-medium info-value"><?= !empty($tipo_prop_nombre) ? $tipo_prop_nombre : 'No Aplica' ?></div>
                           </div>
                         </div>
@@ -440,14 +440,14 @@ $session = session();
                         </div>
                       </div>
 
-                      <!-- Propiedad Intelectual -->
+                      <!-- Área -->
                       <div class="info-item-custom">
                         <div class="d-flex align-items-center">
                           <div class="icon-wrapper" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <i class="far fa-lightbulb text-white"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="text-muted small text-uppercase font-weight-bold info-label">Propiedad Intelectual</span>
+                            <span class="text-muted small text-uppercase font-weight-bold info-label">Área</span>
                             <div class="text-dark font-weight-medium info-value"><?= !empty($tipo_prop_nombre) ? $tipo_prop_nombre : 'No Aplica' ?></div>
                           </div>
                         </div>

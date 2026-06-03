@@ -630,9 +630,16 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-1">
                                 
                                 <div class="mb-2 col-compact">
-                                    <label for="tipo-pi">Tipo de Propiedad Intelectual:</label>
+                                    <label for="tipo-pi">Área:</label>
                                     <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="tipo-pi" name="tipo-pi">
                                         <option value="0" selected disabled>seleccione</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-2 col-compact">
+                                    <label for="motivo-caso">Motivo:</label>
+                                    <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="motivo-caso" name="motivo-caso" disabled>
+                                        <option value="0" selected>Seleccione un área primero</option>
                                     </select>
                                 </div>
                             
@@ -734,7 +741,7 @@
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 1%;">Tipo Ben</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 12%;">Beneficiario</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 3%;">Teléfono</td>
-                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Propiedad Intelectual</td>
+                      <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Área</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Género</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 4%;">Vía de Atención</td>
                       <td class="text-center py-3 px-3 whitespace-nowrap" style="width: 5%;">Tipo de Atención</td>

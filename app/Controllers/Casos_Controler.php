@@ -188,6 +188,7 @@ public function nuevoCaso()
                     "ofiid"             => $datos["office"] ?? null,
                     "casodesc"          => mb_strtoupper($datos["user-requirement"] ?? '', 'UTF-8'),
                     "tipo_beneficiario" => $datos["tipo_beneficiario"] ?? 1,
+                    "motivo_id"         => !empty($datos["motivo_id"]) ? (int)$datos["motivo_id"] : null,
                     "direccion"         => mb_strtoupper($datos["direccion"] ?? 'NO APLICA', 'UTF-8'),
                     "correo"            => mb_strtoupper($datos["correo"] ?? '', 'UTF-8'),
 "caso_org_id"       => (!empty($datos["organismo-caso"]) ? (int)$datos["organismo-caso"] : 1),
@@ -418,6 +419,7 @@ public function actualizarCaso()
             $newCase["casodesc"] = $datos["user-requirement"];
             // $newCase["id_tipo_atencion"] ya está asignado
             $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["motivo_id"] = !empty($datos["motivo_id"]) ? (int)$datos["motivo_id"] : null;
             $newCase["direccion"] = $datos["direccion"];
             $newCase["correo"] = $datos["correo"];
             $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
@@ -627,6 +629,7 @@ $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
             $newCase["casodesc"] = $datos["user-requirement"];
             $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
             $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["motivo_id"] = !empty($datos["motivo_id"]) ? (int)$datos["motivo_id"] : null;
             $newCase["direccion"] = $datos["direccion"];
             $newCase["correo"] = $datos["correo"];
             $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
@@ -682,6 +685,7 @@ $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
             $newCase["casodesc"] = $datos["user-requirement"];
             $newCase["id_tipo_atencion"] = $datos["tipo-atencion-usu"];
             $newCase["tipo_beneficiario"] = $datos["tipo_beneficiario"];
+            $newCase["motivo_id"] = !empty($datos["motivo_id"]) ? (int)$datos["motivo_id"] : null;
             $newCase["direccion"] = $datos["direccion"];
             $newCase["correo"] = $datos["correo"];
             $newCase["ente_adscrito_id"] = $datos["ente_adscrito_id"];
@@ -781,6 +785,7 @@ $coordenadas["longitud"] = isset($datos["longitud"]) ? $datos["longitud"] : '';
                     $data["tipo_aten_nombre"] = $row->tipo_aten_nombre;
                     $data["tipo_atend_nombre"] = $row->tipo_atend_nombre;
                     $data["tipo_prop_nombre"] = $row->tipo_prop_nombre;
+                    $data["motivo_nombre"] = $row->motivo_nombre ?? 'No Aplica';
 
                     
 					//$data["casodesc"] = ucfirst(strtolower($row->casodesc));	

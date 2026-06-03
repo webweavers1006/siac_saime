@@ -31,7 +31,7 @@ class Tipo_Beneficiario_Model extends BaseModel
     {
         $db = \Config\Database::connect();
         $builder = $db->table('public.sgc_tipo_beneficiarios as b');
-        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre');
+        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre, b.tipo_beneficiario_requiere_cedula');
         $builder->select("CASE WHEN b.tipo_beneficiario_borrado = 'f' THEN 'Activo' ELSE 'Inactivo' END as borrado");
         $builder->where('b.tipo_beneficiario_borrado', false);
         $query = $builder->get();
@@ -43,7 +43,7 @@ class Tipo_Beneficiario_Model extends BaseModel
     {
         $db = \Config\Database::connect();
         $builder = $db->table('public.sgc_tipo_beneficiarios as b');
-        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre');
+        $builder->select('b.tipo_beneficiario_id, b.tipo_beneficiario_nombre, b.tipo_beneficiario_requiere_cedula');
         $builder->select("CASE WHEN b.tipo_beneficiario_borrado = 'f' THEN 'Activo' ELSE 'Inactivo' END as borrado");
         $query = $builder->get();
         $resultado = $query->getResult();

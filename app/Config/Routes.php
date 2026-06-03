@@ -107,6 +107,8 @@ $routes->setAutoRoute(false);
      //Rutas del controlador Tipo de Propiedad Intelectual
      $routes->get('/Listar_Propiedad_Intelectual', "Tipo_Propiedad_Intelectual_Controler::Listar_Propiedad_Intelectual");
      $routes->get('/Listar_Propiedad_Intelectual_MOD', "Tipo_Propiedad_Intelectual_Controler::Listar_Propiedad_Intelectual_MOD");
+     //Rutas para el controlador de Motivos
+     $routes->get('/listar_motivos_por_area/(:num)', "Motivos_Controler::listarPorArea/$1");
      //Rutas para la vista de los Reportes
      $routes->get('/reportes', "Reporte_Controler::Vista_reportes");
 

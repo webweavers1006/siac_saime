@@ -347,6 +347,7 @@ private function buildBaseQuery($builder)
     $builder->join('public.sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
     $builder->join('public.sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
     $builder->join('public.sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
+    $builder->join('sgc_motivos as mot', 'a.motivo_id = mot.motivo_id', 'left');
     
     // CORRECCIÓN: Agregar filtro de vigencia para consistencia con getReporteData y getReporteOperadorData
     $builder->groupStart();
@@ -588,6 +589,7 @@ private function buildBaseQuery($builder)
          $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
          $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre,t_antusu.env_correo');
 $builder->select('deta.tipo_atend_nombre');
+         $builder->select('mot.motivo_nombre');
          $builder->select('ts.ter_nombre AS nombre_apo_sol');
          $builder->select('tc.ter_nombre AS nombre_apo_contra');
          $builder->join('sgc_estatus b', 'b.idest = a.idest');
@@ -604,6 +606,7 @@ $builder->join('sgc_tipoatenciondetalle as deta', 'a.tipo_atend_id = deta.tipo_a
          $builder->join('public.sgc_mediacion m', 'a.idcaso = m.med_caso_id', 'left');
          $builder->join('public.sgc_terceros ts', 'm.med_apo_sol_id = ts.ter_id', 'left');
          $builder->join('public.sgc_terceros tc', 'm.med_apo_contra_id = tc.ter_id', 'left');
+         $builder->join('public.sgc_motivos mot', 'a.motivo_id = mot.motivo_id', 'left');
          $builder->where('a.idcaso', $idcaso); 
          $query = $builder->get();
          $resultado = $query->getRow();
@@ -645,6 +648,7 @@ public function getReporteData($params)
     $builder->select("CASE WHEN a.sexo='1' THEN 'MASCULINO' WHEN a.sexo='2' THEN 'FEMENINO' ELSE 'NO DEFINIDO' END as sexo");
     $builder->select('to_char(a.casofec, \'dd/mm/yyyy\') as casofec, a.casofec as casofec_normal, b.estnom');
     $builder->select('tpinte.tipo_prop_nombre, tpinte.tipo_prop_id, t_antusu.tipo_aten_nombre');
+    $builder->select('mot.motivo_nombre');
     
     // Nuevos SELECTs para columnas adicionales
     $builder->select('pais.paisnom as pais_nombre');
@@ -671,6 +675,7 @@ public function getReporteData($params)
     $builder->join('sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
     $builder->join('sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
     $builder->join('sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
+    $builder->join('sgc_motivos as mot', 'a.motivo_id = mot.motivo_id', 'left');
 
     // Cláusulas WHERE Base
     $builder->where('a.borrado', false);
@@ -693,6 +698,9 @@ public function getReporteData($params)
     
     if (!empty($params['tipo_pi'])) {
         $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
+    if (!empty($params['motivo_id'])) {
+        $builder->where('a.motivo_id', $params['motivo_id']);
+    }
     }
 
     if (!empty($params['tipo_atencion_usu'])) {
@@ -955,6 +963,7 @@ public function getReporteData($params)
     $builder->join('sgc_parroquias as par', 'a.parroquiaid = par.parroquiaid', 'left');
     $builder->join('sgc_red_social as rs', 'a.idrrss = rs.red_s_id', 'left');
     $builder->join('sgc_org_pod_popular as org', 'a.caso_org_id = org.org_id', 'left');
+    $builder->join('sgc_motivos as mot', 'a.motivo_id = mot.motivo_id', 'left');
 
     // Cláusulas WHERE Base
     $builder->where('a.borrado', false);
@@ -982,6 +991,9 @@ public function getReporteData($params)
     
     if (!empty($params['tipo_pi'])) {
         $builder->where('tpinte.tipo_prop_id', $params['tipo_pi']);
+    if (!empty($params['motivo_id'])) {
+        $builder->where('a.motivo_id', $params['motivo_id']);
+    }
     }
 
     if (!empty($params['tipo_atencion_usu'])) {

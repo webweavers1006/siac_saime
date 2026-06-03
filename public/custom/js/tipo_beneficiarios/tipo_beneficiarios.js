@@ -31,7 +31,7 @@ function listar_Direcciones_Administra() {
                 orderable: true,
                 data: null,
                 render: function(data, type, row) {
-                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     tipo_beneficiario_id=' + row.tipo_beneficiario_id + '    tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '"     borrado=' + row.borrado + ' > <i class="material-icons " >create</i></a>'
+                    return '<a href="javascript:;" class="btn btn-xs btn-primary Editar" style=" font-size:1px" data-toggle="tooltip" title="Editar"     tipo_beneficiario_id=' + row.tipo_beneficiario_id + '    tipo_beneficiario_nombre="' + row.tipo_beneficiario_nombre + '"     borrado=' + row.borrado + '    requiere_cedula=' + row.tipo_beneficiario_requiere_cedula + ' > <i class="material-icons " >create</i></a>'
 
                 }
             }
@@ -75,8 +75,10 @@ $(document).on('submit', "#new-beneficiarios", function(e) {
     e.preventDefault();
     let descripcion = $("#name-beneficiarios").val();
     descripcion = descripcion.trim();
+    let requiere_cedula = $('#requiere-cedula-add').is(':checked');
     let datos = {
         "descripcion": descripcion,
+        "requiere_cedula": requiere_cedula,
     }
     $.ajax({
         url: "/add_Tipo_Beneficiarios",
@@ -128,6 +130,7 @@ $('#listar_tipo_Beneficiarios').on('click', '.Editar', function(e) {
     var id_beneficiario = $(this).attr('tipo_beneficiario_id');
     var descripcion = $(this).attr('tipo_beneficiario_nombre');
     var borrado = $(this).attr('borrado');
+    var requiere_cedula = $(this).attr('requiere_cedula');
     $("#editar").modal("show");
     $('#editar').find('#editar-beneficiario').val(descripcion);
     $('#editar').find('#id-beneficiario').val(id_beneficiario);
@@ -139,6 +142,14 @@ $('#listar_tipo_Beneficiarios').on('click', '.Editar', function(e) {
         $('#borrado').removeAttr('checked')
         $('#borrado').val('true')
     }
+    // Manejar checkbox requiere cédula
+    if (requiere_cedula == 'true' || requiere_cedula == 't' || requiere_cedula == '1' || requiere_cedula === true) {
+        $('#requiere-cedula-edit').prop('checked', true);
+        $('#requiere-cedula-edit').val('true');
+    } else {
+        $('#requiere-cedula-edit').prop('checked', false);
+        $('#requiere-cedula-edit').val('false');
+    }
 });
 
 
@@ -148,6 +159,7 @@ $(document).on('submit', "#edit-beneficiairos", function(e) {
     let descripcion = $("#editar-beneficiario").val();
     let borrado = $("#borrado").val();
     let id_beneficiario = $("#id-beneficiario").val();
+    let requiere_cedula = $('#requiere-cedula-edit').is(':checked');
     if ($('#borrado').is(':checked')) {
         borrado = 'false';
 
@@ -159,6 +171,7 @@ $(document).on('submit', "#edit-beneficiairos", function(e) {
         "descripcion": descripcion,
         "borrado": borrado,
         "id_beneficiario": id_beneficiario,
+        "requiere_cedula": requiere_cedula,
     }
     $.ajax({
         url: "/editTipoBeneficiario",

@@ -278,6 +278,11 @@ $(function() {
      llenar_Tipo_Beneficiarios();
      llenar_Organismos_PP();
 
+   // Evento: al cambiar tipo de beneficiario, validar si requiere cédula
+   $(document).on('change', '#t-beneficiario', function() {
+       toggleRequerimientoCedula();
+   });
+
    // 1. INICIALIZACIÓN DE SELECTORES PARA APODERADO SOLICITANTE
     llenar_Selectores_Iniciales("apoderado-solicitante");
 
@@ -394,7 +399,8 @@ $("#estado-caso").on('change', function() {
 
 $("#tipo-pi").on('change', function() {
     $("#tipo-pi").removeClass('is-invalid');
- 
+    var idArea = $(this).val();
+    llenar_Motivos_Por_Area(idArea);
 });
 
 
@@ -862,10 +868,13 @@ function llenar_Tipo_Beneficiarios(e) {
                     "<option value=0  selected disabled>Seleccione</option>"
                 );
                 $.each(data, function(i, item) {
+                    var requiere = (item.tipo_beneficiario_requiere_cedula == true || item.tipo_beneficiario_requiere_cedula == 't' || item.tipo_beneficiario_requiere_cedula == 1) ? 'true' : 'false';
                     $("#t-beneficiario").append(
-                        "<option value=" + item.tipo_beneficiario_id + ">" + item.tipo_beneficiario_nombre + "</option>"
+                        "<option value=" + item.tipo_beneficiario_id + " data-requiere-cedula='" + requiere + "'>" + item.tipo_beneficiario_nombre + "</option>"
                     );
                 });
+                // Aplicar estado inicial: por defecto requiere cédula hasta que se seleccione un tipo
+                toggleRequerimientoCedula();
             }
         },
         error: function(xhr, status, errorThrown) {
@@ -873,7 +882,49 @@ function llenar_Tipo_Beneficiarios(e) {
         },
     });
 }
- 
+
+/**
+ * Activa o desactiva el campo cédula como requerido según el tipo de beneficiario seleccionado.
+ * También ajusta automáticamente el campo "Tipo de Persona":
+ *   - "Venezolano" → V (Venezolano)
+ *   - "Extranjero *" → E (Extranjero)
+ * - Si requiere cédula (true): campo obligatorio, muestra asterisco/validación.
+ * - Si NO requiere cédula (false): campo opcional, se puede dejar vacío.
+ * - Si no hay selección (placeholder "Seleccione"): por defecto se requiere cédula.
+ */
+function toggleRequerimientoCedula() {
+    var $select = $("#t-beneficiario");
+    var $option = $select.find("option:selected");
+    var requiere = $option.data("requiere-cedula");
+    var $cedula = $("#cedula-persona");
+    var $tipoPersona = $("#tipo-persona");
+    var nombreBenef = ($option.text() || '').toLowerCase();
+
+    // Ajustar automáticamente Tipo de Persona según el tipo de beneficiario
+    if (nombreBenef.indexOf('extranjero') !== -1) {
+        $tipoPersona.val('E'); // Extranjero
+    } else if (nombreBenef.indexOf('venezolano') !== -1) {
+        $tipoPersona.val('V'); // Venezolano
+    }
+
+    // Si no hay data (placeholder "Seleccione"), por defecto requerir cédula
+    if (requiere === undefined || $select.val() == '0') {
+        $cedula.prop('required', true);
+        $cedula.attr('required', 'required');
+        return;
+    }
+
+    if (requiere === 'true' || requiere === true) {
+        // REQUIERE CÉDULA → obligatorio
+        $cedula.prop('required', true);
+        $cedula.attr('required', 'required');
+    } else {
+        // NO REQUIERE CÉDULA → opcional
+        $cedula.prop('required', false);
+        $cedula.removeAttr('required');
+    }
+}
+
 //FUNCION PARA LLENAR EL COMBO ENTES ADSCRITOS
 function llenar_Entes_asdcritos(e) {
     if (e && e.preventDefault) e.preventDefault();
@@ -966,6 +1017,50 @@ function llenar_Propiedad_Intelectual(e) {
         },
     });
 }
+
+// FUNCION PARA LLENAR EL COMBO DE MOTIVOS SEGÚN EL ÁREA SELECCIONADA
+function llenar_Motivos_Por_Area(idArea) {
+    var $select = $("#motivo-caso");
+    
+    if (!idArea || idArea == '0') {
+        $select.empty();
+        $select.append("<option value='0' disabled selected>Seleccione un área primero</option>");
+        $select.prop('disabled', true);
+        return;
+    }
+
+    var url = "/listar_motivos_por_area/" + idArea;
+    $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "JSON",
+        beforeSend: function() {
+            $select.empty();
+            $select.append("<option value='0' disabled selected>Cargando...</option>");
+            $select.prop('disabled', true);
+        },
+        success: function(data) {
+            $select.empty();
+            $select.prop('disabled', false);
+            if (data.length >= 1) {
+                $select.append("<option value='0' disabled selected>Seleccione</option>");
+                $.each(data, function(i, item) {
+                    $select.append(
+                        "<option value='" + item.motivo_id + "'>" + item.motivo_nombre + "</option>"
+                    );
+                });
+            } else {
+                $select.append("<option value='0' disabled selected>Sin motivos disponibles</option>");
+            }
+        },
+        error: function(xhr, status, errorThrown) {
+            console.error("Error al cargar motivos:", errorThrown);
+            $select.empty();
+            $select.append("<option value='0' disabled selected>Error al cargar</option>");
+        },
+    });
+}
+
 function generarTablaPropiedadIntelectual() {
     if (!window.propiedadIntelectualData || window.propiedadIntelectualData.length === 0) {
         console.error('No PI data available');
@@ -978,7 +1073,7 @@ function generarTablaPropiedadIntelectual() {
             <div class="card-header border-0 py-2" style="background-color: #0d56b3; color: white;">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-list-check me-2"></i>
-                    <small class="fw-bold text-uppercase">Tipo de Propiedad Intelectual </small>
+                    <small class="fw-bold text-uppercase">Área</small>
                 </div>
             </div>
             <div class="table-responsive">
@@ -1286,6 +1381,23 @@ if (tipo_atencion === '24') {
         $("#requerimiento-usuario").addClass('is-invalid');
         return Swal.fire({ icon: "error", html: '<strong>Indique la descripción del caso.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
     }
+    // Validación dinámica de cédula según tipo de beneficiario
+    var $tipoBenef = $("#t-beneficiario");
+    var $optSel = $tipoBenef.find("option:selected");
+    var requiereCedula = $optSel.data("requiere-cedula");
+    var cedulaVal = $("#cedula-persona").val().trim();
+    if ((requiereCedula === 'true' || requiereCedula === true) && cedulaVal === '') {
+        $("#cedula-persona").addClass('is-invalid');
+        return Swal.fire({ icon: "error", html: '<strong>La cédula o RIF es obligatorio para este tipo de beneficiario.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
+    }
+    // Validación de motivo si el área está visible
+    if ($('.tipoproint').is(':visible')) {
+        var motivoVal = $("#motivo-caso").val();
+        if (!motivoVal || motivoVal == '0' || motivoVal === '') {
+            $("#motivo-caso").addClass('is-invalid');
+            return Swal.fire({ icon: "error", html: '<strong>Debe seleccionar un motivo.</strong>', toast: true, position: "center", showConfirmButton: false, timer: 3000 });
+        }
+    }
 
     // Bloqueamos botón y limpiamos errores
     $("button[type=button]").attr('disabled', 'true');
@@ -1316,6 +1428,7 @@ if (tipo_atencion === '24') {
         "sexo": $("#sexo").val(),
         "tipo_atend_id": tipo_atend_id,
         "tipo_beneficiario": $("#t-beneficiario").val(),
+        "motivo_id": $("#motivo-caso").val() || null,
         "direccion": $("#office").val(),
         "correo": $("#correo").val(),
         "ente_adscrito": 0,

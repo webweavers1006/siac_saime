@@ -70,6 +70,7 @@ class Tipo_Beneficiarios_Controler extends BaseController
 			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$beneficiarios["tipo_beneficiario_nombre"]     = $datos["descripcion"];
+			$beneficiarios["tipo_beneficiario_requiere_cedula"] = isset($datos["requiere_cedula"]) ? filter_var($datos["requiere_cedula"], FILTER_VALIDATE_BOOLEAN) : true;
 			//Realizamos la insercion en la tabla
 			$query_insertar_beneficiarios = $model->add_beneficiarios($beneficiarios);
 			if (isset($query_insertar_beneficiarios)) {
@@ -97,6 +98,7 @@ class Tipo_Beneficiarios_Controler extends BaseController
 			$datos = json_decode(base64_decode($this->request->getPost('data')), TRUE);
 			//llenamos los datos iniciales de las Direccion
 			$Beneficiarios["tipo_beneficiario_nombre"]     = $datos["descripcion"];
+			$Beneficiarios["tipo_beneficiario_requiere_cedula"] = isset($datos["requiere_cedula"]) ? filter_var($datos["requiere_cedula"], FILTER_VALIDATE_BOOLEAN) : true;
 			$Beneficiarios["tipo_beneficiario_borrado"]     = $datos["borrado"];
 			$Beneficiarios["tipo_beneficiario_id"]     = $datos["id_beneficiario"];
 			//Realizamos la actualizacion en la tabla

@@ -591,7 +591,7 @@ $session = session();
                                 </select>
                             </div>
                             <div class="w-full md:w-3/12 px-1 mb-1">
-                                <label for="tipo-pi">Tipo de Propiedad Intelectual</label>
+                                <label for="tipo-pi">Área</label>
                                 <select class="compact-form-control border border-gray-300 rounded-lg focus:ring focus:ring-primary-blue" id="tipo-pi" name="tipo-pi">
                                     <option value="0" selected disabled>Seleccione</option>
                                 </select>
@@ -710,7 +710,7 @@ $session = session();
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 1%;">Tipo de Beneficiario</td>
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 12%;">Beneficiario</td>
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 3%;">Teléfono</td>
-                            <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 6%;">Propiedad Intelectual</td>
+                            <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 6%;">Área</td>
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 4%;">Tipo de Atención</td>
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 1%;">Fecha</td>
                             <td class="text-center py-2 px-2 whitespace-nowrap" style="width: 1%;">Estatus</td>
