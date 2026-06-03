@@ -819,9 +819,9 @@ public function getReporteData($params)
     
     if (!empty($params['tipo_pi'])) {
         $countSql .= " AND tpinte.tipo_prop_id = " . $db->escape($params['tipo_pi']);
+    }
     if (!empty($params['motivo_id'])) {
         $countSql .= " AND a.motivo_id = " . $db->escape($params['motivo_id']);
-    }
     }
 
     if (!empty($params['tipo_atencion_usu'])) {
@@ -1115,9 +1115,9 @@ public function getReporteData($params)
     
     if (!empty($params['tipo_pi'])) {
         $countSql .= " AND tpinte.tipo_prop_id = " . $db->escape($params['tipo_pi']);
+    }
     if (!empty($params['motivo_id'])) {
         $countSql .= " AND a.motivo_id = " . $db->escape($params['motivo_id']);
-    }
     }
 
     if (!empty($params['tipo_atencion_usu'])) {
