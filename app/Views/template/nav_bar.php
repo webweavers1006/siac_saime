@@ -1068,7 +1068,7 @@ $userdata = $session->get();
           <li class="nav-item">
             <a href="<?php echo base_url(); ?>/estadisticas_propiedad_intelectual/null/null" class="nav-link">
               <i class="nav-icon fas fa-clipboard" style='font-size:20px'></i>
-              <p>Propiedad Intelectual</p>
+              <p>Areas</p>
             </a>
           </li>
           <li class="nav-item">
