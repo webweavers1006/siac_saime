@@ -122,8 +122,6 @@ else if ($id_tipo_atencion == 5) {
 $pdf->Cell(20, 4, '', 0, 0); 
 
 // Reducimos un poco el ancho de las celdas (de 90 a 80) para que no se desborden por el margen derecho
-$pdf->Cell(110, 4, 'RECEPTOR: ' . iconv('UTF-8', 'CP1252', $row->user_name), 0, 0, 'L');
-$pdf->Cell(80, 4, 'CARGO: ' . iconv('UTF-8', 'CP1252', $row->usercargo), 0, 1, 'L');
 $pdf->Ln(15); // Un poco más de espacio para la firma
 
 // 2. LÍNEAS DE FIRMA: Centradas en sus respectivas columnas de 95

@@ -534,7 +534,7 @@ function cargarCasosAsociados(id_punto_cuenta) {
                         exportOptions: { columns: [1, 2, 3, 4] }, // No exporta la columna de botones
                         customize: function(doc) {
                             // Tu lógica de encabezado PDF (DetailBody, etc.)
-                            doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
+                            doc.styles.tableHeader = { fillColor: '#19375a', color: 'white', alignment: 'center' };
                             // (Mantenemos tu lógica original de splice y header aquí...)
                         }
                     },

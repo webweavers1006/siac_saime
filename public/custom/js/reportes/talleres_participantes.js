@@ -228,7 +228,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                         //Remove the title created by datatTables
                         doc.content.splice(0, 1);
                         doc.styles.title = {
-                            color: '#4c8aa0',
+                            color: '#19375a',
                             fontSize: '18',
                             alignment: 'center'
                         }
@@ -237,7 +237,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                 'max-width': '130px'
                             },
                             doc.styles.tableHeader = {
-                                fillColor: '#4c8aa0',
+                                fillColor: '#19375a',
                                 color: 'white',
                                 alignment: 'center'
                             },
@@ -245,7 +245,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                             doc.pageMargins = [10, 115, 0, 70];
                         doc['header'] = (function(page, pages) {
                             doc.styles.title = {
-                                color: '#4c8aa0',
+                                color: '#19375a',
                                 fontSize: '18',
                                 alignment: 'center',
                             }
@@ -259,7 +259,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                     },
                                     {
                                         margin: [-800, 75, -40, 0],
-                                        color: '#4c8aa0',
+                                        color: '#19375a',
                                         fontSize: '18',
                                         alignment: 'center',
                                         text: 'Participantes Talleres',

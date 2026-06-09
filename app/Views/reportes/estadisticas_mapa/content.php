@@ -3,7 +3,6 @@
 <div class="content-wrapper">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/css_paginas/mapa.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>/static/css/styles.css">
   <style>
     table.dataTable thead,
     table.dataTable tfoot {
@@ -36,16 +35,8 @@
                                     </div>
                                 </div>
                                 
-                                <div id="map">
-                                    
-                                </div>
-<script src="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.js"></script>
-                                <script src="/static/js/ruta.js"></script>
-                                <script src="/static/js/map-core.js"></script>
-                                <script src="/static/js/modal-config.js"></script>
-                                <script src="/static/js/map-modal.js"></script>
-                                <script src="/static/js/map-api.js"></script>
-                                <script src="/static/js/map-data.js"></script>
+                                <div id="map"></div>
+
                             </div>
                         </div>  
                     </div>
@@ -57,3 +48,5 @@
     </div>
   </div>
 </div>
+
+<script src="<?php echo base_url(); ?>/theme/plugins/leaflet/dist/leaflet.js"></script>

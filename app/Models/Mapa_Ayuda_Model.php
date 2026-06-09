@@ -57,6 +57,7 @@ public function Listar_Casos_Ayuda()
         'coor.fecha_creacion AS fecha_coordenada',
         
         // 📋 DETALLE Y DOCUMENTOS DEL CASO
+        't_usu.tipo_aten_nombre AS nombre_tipo_atencion',
         'deta.tipo_atend_nombre AS nombre_tipo_atencion_detalle', 
         'docu.docu_ruta AS ruta_documento', 
 

@@ -47,19 +47,19 @@ class Assets extends BaseConfig
 	 * Cintillo institucional (banner superior).
 	 * @var string
 	 */
-	public $cintillo = 'img/cintillo_tradicionals.png';
+	public $cintillo = 'img/cintillo.jpg';
 
 	/**
 	 * Cintillo para PDFs.
 	 * @var string
 	 */
-	public $cintilloPdf = 'img/cintillo_tradicional.png';
+	public $cintilloPdf = 'img/cintillo.jpg';
 
 	/**
 	 * Header para PDFs.
 	 * @var string
 	 */
-	public $headerPdf = 'img/header.png';
+	public $headerPdf = 'img/cintillo.jpg';
 
 	/**
 	 * Bandera / mapa (menú lateral).

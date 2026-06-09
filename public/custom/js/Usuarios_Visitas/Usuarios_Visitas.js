@@ -42,7 +42,7 @@ function listar_reportes(desde = null, hasta = null) {
                         //Remove the title created by datatTables
                         doc.content.splice(0, 1);
                         doc.styles.title = {
-                            color: '#4c8aa0',
+                            color: '#19375a',
                             fontSize: '18',
                             alignment: 'center'
                         }
@@ -50,7 +50,7 @@ function listar_reportes(desde = null, hasta = null) {
                                 width: '230px'
                             },
                             doc.styles.tableHeader = {
-                                fillColor: '#4c8aa0',
+                                fillColor: '#19375a',
                                 width: '230px',
                                 color: 'white',
                                 alignment: 'center'
@@ -59,7 +59,7 @@ function listar_reportes(desde = null, hasta = null) {
                             doc.pageMargins = [10, 95, 0, 70];
                         doc['header'] = (function(page, pages) {
                             doc.styles.title = {
-                                color: '#4c8aa0',
+                                color: '#19375a',
                                 fontSize: '18',
                                 alignment: 'center',
                             }
@@ -73,7 +73,7 @@ function listar_reportes(desde = null, hasta = null) {
                                     },
                                     {
                                         margin: [-800, 50, -25, 0],
-                                        color: '#4c8aa0',
+                                        color: '#19375a',
                                         fontSize: '18',
                                         alignment: 'center',
                                         text: 'Usuarios Visitas',

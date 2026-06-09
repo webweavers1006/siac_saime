@@ -46,7 +46,7 @@ function Listar_Casos(estatus=null) {
                         //Remove the title created by datatTables
                         doc.content.splice(0, 1);
                         doc.styles.title = {
-                            color: '#4c8aa0',
+                            color: '#19375a',
                             fontSize: '18',
                             alignment: 'center'
                         }
@@ -55,7 +55,7 @@ function Listar_Casos(estatus=null) {
                                 'max-width': '130px'
                             },
                             doc.styles.tableHeader = {
-                                fillColor: '#4c8aa0',
+                                fillColor: '#19375a',
                                 color: 'white',
                                 alignment: 'center'
                             },
@@ -63,7 +63,7 @@ function Listar_Casos(estatus=null) {
                             doc.pageMargins = [40, 95, 0, 70];
                         doc['header'] = (function(page, pages) {
                             doc.styles.title = {
-                                color: '#4c8aa0',
+                                color: '#19375a',
                                 fontSize: '18',
                                 alignment: 'center',
                             }
@@ -77,7 +77,7 @@ function Listar_Casos(estatus=null) {
                                     },
                                     {
                                         margin: [-800, 50, -25, 0],
-                                        color: '#4c8aa0',
+                                        color: '#19375a',
                                         fontSize: '18',
                                         alignment: 'center',
                                         text: 'Control de Casos',

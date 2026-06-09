@@ -280,7 +280,7 @@ function actualizarTablaModal(data, exportTitle) {
                     });
                     
                     doc.styles.title = {
-                        color: '#4c8aa0',
+                        color: '#19375a',
                         fontSize: '14', 
                         alignment: 'center',
                         margin: [0, 0, 0, 10] 
@@ -290,7 +290,7 @@ function actualizarTablaModal(data, exportTitle) {
                         'max-width': '130px'
                     },
                     doc.styles.tableHeader = {
-                        fillColor: '#4c8aa0',
+                        fillColor: '#19375a',
                         color: 'white',
                         alignment: 'center'
                     },
@@ -306,7 +306,7 @@ function actualizarTablaModal(data, exportTitle) {
                             },
                             {
                                 margin: [-800, 50, -25, 0],
-                                color: '#4c8aa0',
+                                color: '#19375a',
                                 fontSize: '18',
                                 alignment: 'center',
                                 text: 'Detalle de Encuesta',

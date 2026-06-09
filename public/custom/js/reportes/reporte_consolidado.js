@@ -281,7 +281,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                     },
                     customize: function(doc) {
                         doc.content.splice(0, 1); // Quitar título por defecto de DataTables
-                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center', fontSize: 10 };
+                        doc.styles.tableHeader = { fillColor: '#19375a', color: 'white', alignment: 'center', fontSize: 10 };
                         doc.defaultStyle.fontSize = 9;
                         
                         // Margen superior aumentado para dar espacio al título bajado
@@ -294,7 +294,7 @@ function listar_reportes(desde = null, hasta = null, tipo_pi = null, tipo_atenci
                                     { 
                                         // Margen superior en 75 para que el título no choque con los logos
                                         margin: [-780, 75, 20, 0], 
-                                        color: '#4c8aa0', 
+                                        color: '#19375a', 
                                         stack: [
                                             { text: 'CONSOLIDADO DE CASOS', fontSize: 16, bold: true, alignment: 'center' },
                                             { 

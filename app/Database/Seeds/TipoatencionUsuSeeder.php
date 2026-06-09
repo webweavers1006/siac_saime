@@ -23,7 +23,7 @@ class TipoatencionUsuSeeder extends Seeder
                 'acc_participantes' => false,
                 'env_correo' => false,
                 'organismo_pp' => false,
-                'act_coordenadas' => false,
+                'act_coordenadas' => true,
                 'act_punto_cuenta' => false,
             ],
             [
@@ -34,7 +34,7 @@ class TipoatencionUsuSeeder extends Seeder
                 'acc_participantes' => false,
                 'env_correo' => false,
                 'organismo_pp' => false,
-                'act_coordenadas' => false,
+                'act_coordenadas' => true,
                 'act_punto_cuenta' => false,
             ],
             [
@@ -45,7 +45,7 @@ class TipoatencionUsuSeeder extends Seeder
                 'acc_participantes' => false,
                 'env_correo' => false,
                 'organismo_pp' => false,
-                'act_coordenadas' => false,
+                'act_coordenadas' => true,
                 'act_punto_cuenta' => false,
             ],
             [
@@ -56,7 +56,7 @@ class TipoatencionUsuSeeder extends Seeder
                 'acc_participantes' => false,
                 'env_correo' => false,
                 'organismo_pp' => false,
-                'act_coordenadas' => false,
+                'act_coordenadas' => true,
                 'act_punto_cuenta' => false,
             ],
             [
@@ -67,7 +67,18 @@ class TipoatencionUsuSeeder extends Seeder
                 'acc_participantes' => false,
                 'env_correo' => false,
                 'organismo_pp' => false,
-                'act_coordenadas' => false,
+                'act_coordenadas' => true,
+                'act_punto_cuenta' => false,
+            ],
+            [
+                'tipo_aten_id' => 6,
+                'tipo_aten_nombre' => 'Peticion',
+                'tipo_aten_borrado' => false,
+                'act_pro_int' => true,
+                'acc_participantes' => false,
+                'env_correo' => false,
+                'organismo_pp' => false,
+                'act_coordenadas' => true,
                 'act_punto_cuenta' => false,
             ]
         ]);

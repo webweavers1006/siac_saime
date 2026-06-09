@@ -363,14 +363,30 @@ class FPDF
 		// Get current page number
 		return $this->page;
 	}
+
+	/**
+	 * Obtiene la ruta absoluta del cintillo para PDFs desde la configuración centralizada.
+	 * @return string
+	 */
+	private function _getCintilloPath()
+	{
+		static $path = null;
+		if ($path === null) {
+			$assets = new \Config\Assets();
+			$path = ROOTPATH . 'public/' . $assets->cintilloPdf;
+		}
+		return $path;
+	}
+
 function Header_Planilla($datos)
 {
     $azul_sapi  = [25, 55, 90];
     $gris_texto = [60, 60, 60];
     $this->AddFont('ZapfDingbats', '', 'zapfdingbats.php');
 
-    if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
-        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 10, 190);
+    $cintilloPath = $this->_getCintilloPath();
+    if (file_exists($cintilloPath)) {
+        $this->Image($cintilloPath, 10, 10, 190);
     }
     
     $this->SetY(40);  // ✅ FIJAR POSICIÓN Y=40 (CORRECCIÓN SUPERPOSICIÓN)
@@ -383,7 +399,7 @@ function Header_Planilla($datos)
 
     // --- SECCIÓN CHECKBOXES DINÁMICOS CON MÁS ESPACIO ---
     $id_actual = $datos['id_tipo_atencion'] ?? 0;
-    $tipos = [2=>'SUGERENCIA', 3=>'QUEJA', 4=>'RECLAMO', 6=>'PETICIÓN', 7=>'FORMACIÓN', 24=>'CONSIGNACIÓN'];
+    $tipos = [2=>'SUGERENCIA', 3=>'QUEJA', 4=>'RECLAMO', 6=>'PETICIÓN'];
     
     $this->SetFont('Arial', 'B', 7.5); 
     $this->SetTextColor($gris_texto[0], $gris_texto[1], $gris_texto[2]);
@@ -470,13 +486,13 @@ function Content_planilla($datos_Content_Planilla)
   // --- ANEXOS ---
     $this->SetFont('Arial', 'B', 8);
     // Se añadieron espacios adicionales entre SI, NO y las demás opciones
-    $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
+    /* $this->Cell(190, 6, iconv('utf-8', 'cp1252//IGNORE', 'ANEXA DOCUMENTOS:     SI [  ]      NO [  ]       ORIGINAL [  ]      COPIAS [  ]       PÁGINAS: ________'), 0, 1, 'C');
     $this->Ln(6);
     // --- RECEPTOR ---
     $this->SetFillColor(245, 245, 245);
     $this->SetFont('Arial', 'B', 8);
     $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  RECEPTOR: ' . ($datos_Content_Planilla['user_name'] ?? '')), 1, 0, 'L', true);
-    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  CARGO: ' . ($datos_Content_Planilla['usercargo'] ?? '')), 1, 1, 'L', true);
+    $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', '  CARGO: ' . ($datos_Content_Planilla['usercargo'] ?? '')), 1, 1, 'L', true); */
     
     $this->Ln(12);
     $this->Cell(95, 8, iconv('utf-8', 'cp1252//IGNORE', 'FECHA: __________________________'), 0, 0, 'C');
@@ -486,8 +502,7 @@ function Content_planilla($datos_Content_Planilla)
     $this->Ln(10);
     $this->SetFont('Arial', 'I', 7);
     $this->SetTextColor(100, 100, 100);
-    $advertencia = "IMPORTANTE: SI LA DENUNCIA RESULTARE FALSA E INFUNDADA O VERSARE SOBRE HECHOS QUE NO MERITEN AVERIGUACIÓN O CUYA SUSTANCIACIÓN NO CORRESPONDA A ESTA CONTRALORÍA SE PROCEDERÁ A DEJAR CONSTANCIA MEDIANTE AUTO EXPRESO. NO SE ADMITIRÁN DENUNCIAS ANÓNIMAS.";
-    $this->MultiCell(190, 4, iconv('utf-8', 'cp1252//IGNORE', $advertencia), 1, 'C');
+
 }
 
 function Footer_Planilla()
@@ -502,15 +517,16 @@ function Footer_Planilla()
     // Dirección y Teléfonos
     $this->SetFont('Arial', '', 7);
     $this->SetTextColor(100, 100, 100);
-    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Centro Simón Bolívar, Edificio Norte, Piso 4, El Silencio al lado de la Plaza Caracas.'), 0, 1, 'C');
-    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Caracas - Venezuela. Teléfonos (0212) 484.26.61 | Código Postal 1010'), 0, 1, 'C');
-    
+    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Servicio Administrativo de Identificación, Migración y Extranjería'), 0, 1, 'C');
+    $this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Avenida Baralt, frente a la Plaza Miranda, Saime Sede Central, Planta Baja. Caracas, Venezuela'), 0, 1, 'C');
+	$this->Cell(190, 4, iconv('UTF-8', 'CP1252//IGNORE', 'Teléfonos (0800)-SAIME-00 (0800-7246300) | Código Postal 1010'), 0, 1, 'C');
+
     $this->Ln(1); // Pequeño respiro antes de la web
 
     // Sitio Web en el azul institucional
     $this->SetFont('Arial', 'B', 8);
     $this->SetTextColor(25, 55, 90);
-    $this->Cell(190, 5, 'www.sapi.gob.ve', 0, 1, 'C');
+    $this->Cell(190, 5, 'www.saime.gob.ve', 0, 1, 'C');
 }
 
 function Header_Asesoria($datos = [])
@@ -518,8 +534,9 @@ function Header_Asesoria($datos = [])
     $azul_sapi = [25, 55, 90];
     $gris_texto = [40, 40, 40];
 
-    if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
-        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 10, 190);
+    $cintilloPath = $this->_getCintilloPath();
+    if (file_exists($cintilloPath)) {
+        $this->Image($cintilloPath, 10, 10, 190);
     }
     
     $this->Ln(25);
@@ -598,8 +615,9 @@ function Content_Asesoria($datos)
 function Header_Denuncia($datos = [])
 {
     $azul_sapi = [25, 55, 90];
-    if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
-        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 10, 190);
+    $cintilloPath = $this->_getCintilloPath();
+    if (file_exists($cintilloPath)) {
+        $this->Image($cintilloPath, 10, 10, 190);
     }
     $this->Ln(22);
     
@@ -725,9 +743,9 @@ function Content_Planilla_SAPI($datos)
 
     $this->SetMargins(10, 10, 10);
     
-    // Nota: ROOTPATH es una constante de CodeIgniter 4
-    if (file_exists(ROOTPATH . 'public/img/cintillo_tradicional.png')) {
-        $this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 10, 10, 190);
+    $cintilloPath = $this->_getCintilloPath();
+    if (file_exists($cintilloPath)) {
+        $this->Image($cintilloPath, 10, 10, 190);
     }
 
     $this->SetTitle(iconv("UTF-8", "CP1252", "PLANILLA DE MEDIACIÓN SAPI"));
@@ -908,7 +926,7 @@ function Footer_Mediacion()
 
 	function Header_Usuarios_Visitas()
 	{
-		$this->Image(ROOTPATH . 'public/img/cintillo_tradicional.png', 6, 15, 210, 15, 'png');
+		$this->Image($this->_getCintilloPath(), 6, 15, 210, 15);
 		$this->SetTitle("Usuarios Visitas");
 		$this->Ln(30);
 		$this->SetFillColor(255, 255, 255);

@@ -221,15 +221,15 @@ function listar_reportes(
                     alignment: 'center',
                     customize: function(doc) {
                         doc.content.splice(0, 1);
-                        doc.styles.title = { color: '#4c8aa0', fontSize: '18', alignment: 'center' };
+                        doc.styles.title = { color: '#19375a', fontSize: '18', alignment: 'center' };
                         doc.styles['td:nth-child(2)'] = { width: '130px', 'max-width': '130px' };
-                        doc.styles.tableHeader = { fillColor: '#4c8aa0', color: 'white', alignment: 'center' };
+                        doc.styles.tableHeader = { fillColor: '#19375a', color: 'white', alignment: 'center' };
                         doc.pageMargins = [10, 95, 0, 70];
                         doc['header'] = (function() {
                             return {
                                 columns: [
                                     { margin: [10, 3, 40, 40], image: ruta_imagen, width: 780, height: 46 },
-                                    { margin: [-800, 50, -25, 0], color: '#4c8aa0', fontSize: '18', alignment: 'center', text: 'Consolidado de Casos', fontSize: 18 },
+                                    { margin: [-800, 50, -25, 0], color: '#19375a', fontSize: '18', alignment: 'center', text: 'Consolidado de Casos', fontSize: 18 },
                                     { margin: [-700, 80, -25, 0], text: insertarSaltoDeLinea(encabezado, 100) },
                                 ],
                             };
